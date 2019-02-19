@@ -1,50 +1,64 @@
 import React, { Component } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Button, Text, Toast, Root} from 'native-base'
 
-
+import {AsyncStorage, View } from 'react-native';
+import { Root,H2 } from 'native-base'
+import { createStore, compose } from 'redux'
+import reducer from './src/store/reducers'
+import { Provider } from 'react-redux'
 
 export default class App extends Component {
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            dataLoaded: false
+        }
+        
+        /* Connect to redux dev tools in dev mode */
+        if (__DEV__) {
+            this.composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+        }else{
+            this.composeEnhancers = compose
+        }
+        /* Get redux state from async storage */
+        this.retrieveData()
+
+    }
+
+  retrieveData = async () => {
+      try {
+      //Check if previous state exists
+          const value = await AsyncStorage.getItem('reduxState');
+          if (value) {
+              // We have state!!
+              this.store = createStore(reducer, JSON.parse(value), this.composeEnhancers())
+          } else {
+              //Create a new store with initial data
+              this.store = createStore(reducer, this.composeEnhancers())
+          }
+          //persist data each time when an action is called
+          this.store.subscribe(() => {
+              AsyncStorage.setItem('reduxState', JSON.stringify(this.store.getState()))
+          })
+          //UI can be loaded now
+          this.setState({ dataLoaded: true })
+      } catch (error) {
+      // Error retrieving data
+      }
+  }
   render() {
-    return (
-      <Root>
-        <View style={styles.container}>
-          <Text style={styles.welcome}>Welcome to React Native!</Text>
-          <Text style={styles.welcome}>Testing react native app</Text>
-          <Button onPress={() => {
-            Toast.show({
-              text: 'Toast is integrated',
-              type: 'success',
-              duration: 3000
-            })
-          }}
-            style={{alignSelf: 'center',}}
-          >
-            <Text>
-              Show Toast
-          </Text>
-          </Button>
-        </View>
-      </Root>
-    );
+      return (
+          this.state.dataLoaded ?
+              <Root>
+                  <Provider store={this.store}>
+                      <View style={{alignItems: 'center',justifyContent: 'center'}}>
+                          <H2>
+                            Redux Integrated
+                          </H2>
+                      </View>
+                  </Provider>
+              </Root>
+              : null
+      )
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
