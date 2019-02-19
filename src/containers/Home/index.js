@@ -1,0 +1,184 @@
+import React from 'react';
+import { 
+    StyleSheet, 
+    KeyboardAvoidingView, 
+    ImageBackground 
+} from 'react-native';
+import {
+    Form,
+    Container,
+    Content,
+    Toast,
+    Text
+} from 'native-base';
+
+/* Redux */
+import { connect } from 'react-redux'
+import { auth,dev } from '../../store/actions'
+/* Custom components */
+import Logo from '../../components/Logo'
+import Slogan from '../../components/Slogan'
+import RoundButton from '../../components/RoundButton'
+/* Assets */
+import image from '../../assets/image.jpg'
+/* Utilities */
+import clearStackNavigate from '../../utilities/clearStackNavigate'
+/* Services */
+import {logout} from '../../services/bAuth'
+class Home extends React.Component {
+    componentWillMount() {
+        if(this.props.isFreshInstall){
+            clearStackNavigate('TermsAndConditions',this.props)
+        }else if (!this.props.isAuthenticate) {
+            clearStackNavigate('LoginPage',this.props)
+        }
+    }
+    signOutHandler = () => {
+        logout({
+            accountAlias: this.props.accountAlias,
+            email:this.props.email
+        }).then(()=>{
+            this.props.deAuthenticate()
+            Toast.show({
+                text: 'Signed out Successfully',
+                type: "success"
+            })
+            clearStackNavigate('LoginPage',this.props)
+        }).catch(()=>{
+            Toast.show({
+                text: 'Unable to communicate with server',
+                type: "danger"
+            })
+        })
+    }
+
+    clearDataHandler=()=>{
+        Toast.show({
+            text: 'Data Cleared.. Please reboot the app',
+            type: "success",
+            duration:3000
+        })
+        this.props.clearData()
+        this.props.navigation.navigate('LoginPage')
+    }
+    render() {
+
+        return (
+
+            <Container>
+                <Content
+                    contentContainerStyle={styles.container}
+                >
+                    <ImageBackground
+                        source={image}
+                        style={styles.image}
+                    >
+                        <KeyboardAvoidingView
+                            behavior='padding'
+
+                            style={styles.container}
+                        >
+
+                            <Form style={styles.form}>
+
+                                <Logo />
+
+                                <Slogan />
+
+                                <Text style={{color:'white',marginVertical:15}}>Wellcome {this.props.firstName}!</Text>
+                                
+                                <RoundButton
+                                    onPress={()=>{
+                                        this.props.navigation.navigate('SurveyIntro',{
+                                            surveyId:'2 ',
+                                            surveyName:'Daily-Questionnaire',
+                                            surveyDescription:'Daily Survey',
+                                            surveyNote:'note',
+                                            surveyLevel:'beginner'
+                                        })
+                                    }}
+                                    value='Daily Questionnaire'
+                                />
+                                <RoundButton
+                                    onPress={()=>{
+                                        this.props.navigation.navigate('SurveyIntro',{
+                                            surveyId:'1 ',
+                                            surveyName:'Weekly-Questionnaire',
+                                            surveyDescription:'Weekly Survey',
+                                            surveyNote:'note',
+                                            surveyLevel:'beginner'
+                                        })
+                                    }}
+                                    value='Weekly Questionnaire'
+                                />
+                                <RoundButton
+                                    onPress={()=>{
+                                        this.notification = {
+                                            title: 'Hello From HappyWorks',
+                                            body: '',
+                                            color: 'white',
+                                            android: {
+                                                sound: true,
+                                                viberate: true,
+                                                priority: 'high'
+                                            }
+                                        
+                                        }
+                                        
+                                    }}
+                                    value='Send Notification'
+                                />
+                                <RoundButton
+                                    onPress={this.clearDataHandler}
+                                    value='Clear App data to see T&C page'
+                                />
+                                <RoundButton
+                                    onPress={this.signOutHandler}
+                                    value='Sign Out'
+                                />
+        
+                            </Form>
+
+                        </KeyboardAvoidingView>
+                    </ImageBackground>
+                </Content>
+            </Container>
+
+        );
+    }
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1
+    },
+    form: {
+        flex: 1,
+        alignItems: "center",
+        flexDirection: "column",
+        paddingTop: 70
+    },
+    image: {
+        width: '100%',
+        height: '100%'
+    }
+});
+
+const mapStateToProps = (state) => {
+    return {
+        isAuthenticate: state.isAuthenticate,
+        accountAlias: state.user.accountAlias,
+        email: state.user.emailAddress,
+        isFreshInstall: state.system.isFreshInstall,
+        firstName: state.user.firstName
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        clearData: () => dispatch({ type: dev.CLEAR_DATA })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home)

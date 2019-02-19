@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-
-import {AsyncStorage, View } from 'react-native';
-import { Root,H2 } from 'native-base'
+import Navigator from './src/containers/Navigator'
+import { AsyncStorage } from 'react-native';
+import { Root } from 'native-base'
 import { createStore, compose } from 'redux'
 import reducer from './src/store/reducers'
 import { Provider } from 'react-redux'
@@ -13,11 +13,11 @@ export default class App extends Component {
         this.state = {
             dataLoaded: false
         }
-        
+
         /* Connect to redux dev tools in dev mode */
         if (__DEV__) {
             this.composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
-        }else{
+        } else {
             this.composeEnhancers = compose
         }
         /* Get redux state from async storage */
@@ -51,11 +51,7 @@ export default class App extends Component {
           this.state.dataLoaded ?
               <Root>
                   <Provider store={this.store}>
-                      <View style={{alignItems: 'center',justifyContent: 'center'}}>
-                          <H2>
-                            Redux Integrated
-                          </H2>
-                      </View>
+                      <Navigator />
                   </Provider>
               </Root>
               : null
