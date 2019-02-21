@@ -4,8 +4,7 @@ import {
     ImageBackground,
     Image,
     TouchableOpacity,
-    Animated,
-    Platform
+    Animated
 } from 'react-native';
 import {
     Form,
@@ -28,8 +27,6 @@ import image from '../../assets/image.jpg'
 import key from '../../assets/key.png'
 /* Services */
 import { confirmPassword } from '../../services/bAuth'
-/* Utilities */
-import clearStackNavigate from '../../utilities/clearStackNavigate'
 /* Styles */
 import styles from '../ForgotPassword/style'
 class ConfirmPassword extends React.Component {
@@ -43,71 +40,10 @@ class ConfirmPassword extends React.Component {
             shift: new Animated.Value(0),
             fade:new Animated.Value(1)
         }
-        this.keyboardDidShowHandler = null
-        this.keyboardDidHideHandler = null
+
         /* Refs are used to redirect the focus to the next component using keyboard button */
         this.textInputOtp = React.createRef();
         this.textInputPassword = React.createRef();
-    }
-
-    componentDidMount() {
-        /*Custom logic for android as scroll is handled by content container on IOS */
-        if (Platform.OS === 'android') {
-            this.keyboardDidShowHandler = Keyboard.addListener('keyboardDidShow', this.handleKeyboardDidShow)
-            this.keyboardDidHideHandler = Keyboard.addListener('keyboardDidHide', this.handleKeyboardDidHide)
-        }
-    }
-
-    handleKeyboardDidShow = (event) => {
-        const keyboardHeight = event.endCoordinates.height;
-        Animated.parallel([
-            Animated.timing(
-                this.state.shift,
-                {
-                    toValue: -keyboardHeight,
-                    duration: 500,
-                    useNativeDriver: true
-                }
-            ),
-            Animated.timing(
-                this.state.fade,
-                {
-                    toValue: 0,
-                    duration: 500,
-                    useNativeDriver: true
-                }
-            )
-        ]).start()
-        
-    }
-
-    handleKeyboardDidHide = () => {
-
-        Animated.parallel([
-            Animated.timing(
-                this.state.shift,
-                {
-                    toValue: 0,
-                    duration: 200,
-                    useNativeDriver: true
-                }
-            ),Animated.timing(
-                this.state.fade,
-                {
-                    toValue: 1,
-                    duration: 200,
-                    useNativeDriver: true
-                }
-            )
-        ]).start();
-        
-    }
-
-    componentWillUnmount() {
-        if (Platform.OS === 'android') {
-            this.keyboardDidShowHandler.remove()
-            this.keyboardDidHideHandler.remove()
-        }
     }
 
     confirmPasswordHandler = () => {
@@ -169,7 +105,7 @@ class ConfirmPassword extends React.Component {
     }
 
     render() {
-        const { shift,fade } = this.state;
+        const { fade } = this.state;
         return (
 
             <Container>
@@ -195,7 +131,7 @@ class ConfirmPassword extends React.Component {
                             <View
                                 style={styles.triangle}
                             />
-                            <Animated.View style={[styles.customForm, { transform: [{ translateY: shift }] }]}>
+                            <Animated.View style={styles.customForm}>
                                 <Text style={styles.header}>Enter OTP</Text>
                                 <Text style={styles.text}
                                 >We have sent OTP to your registered mobile number. Please check your message inbox</Text>

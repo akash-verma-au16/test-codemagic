@@ -4,8 +4,7 @@ import {
     ImageBackground,
     Image,
     TouchableOpacity,
-    Animated,
-    Platform
+    Animated
 } from 'react-native';
 import {
     Form,
@@ -43,71 +42,10 @@ class ForgotPassword extends React.Component {
             shift: new Animated.Value(0),
             fade:new Animated.Value(1)
         }
-        this.keyboardDidShowHandler = null
-        this.keyboardDidHideHandler = null
+
         /* Refs are used to redirect the focus to the next component using keyboard button */
         this.textInputAccountAlias = React.createRef();
         this.textInputEmail = React.createRef(); 
-    }
-
-    componentDidMount() {
-        /*Custom logic for android as scroll is handled by content container on IOS */
-        if (Platform.OS === 'android') {
-            this.keyboardDidShowHandler = Keyboard.addListener('keyboardDidShow', this.handleKeyboardDidShow)
-            this.keyboardDidHideHandler = Keyboard.addListener('keyboardDidHide', this.handleKeyboardDidHide)
-        }
-    }
-
-    handleKeyboardDidShow = (event) => {
-        const keyboardHeight = event.endCoordinates.height;
-        Animated.parallel([
-            Animated.timing(
-                this.state.shift,
-                {
-                    toValue: -keyboardHeight,
-                    duration: 500,
-                    useNativeDriver: true
-                }
-            ),
-            Animated.timing(
-                this.state.fade,
-                {
-                    toValue: 0,
-                    duration: 500,
-                    useNativeDriver: true
-                }
-            )
-        ]).start()
-        
-    }
-
-    handleKeyboardDidHide = () => {
-
-        Animated.parallel([
-            Animated.timing(
-                this.state.shift,
-                {
-                    toValue: 0,
-                    duration: 200,
-                    useNativeDriver: true
-                }
-            ),Animated.timing(
-                this.state.fade,
-                {
-                    toValue: 1,
-                    duration: 200,
-                    useNativeDriver: true
-                }
-            )
-        ]).start();
-        
-    }
-
-    componentWillUnmount() {
-        if (Platform.OS === 'android') {
-            this.keyboardDidShowHandler.remove()
-            this.keyboardDidHideHandler.remove()
-        }
     }
 
     forgotPasswordHandler = () => {
@@ -167,7 +105,7 @@ class ForgotPassword extends React.Component {
     }
 
     render() {
-        const { shift,fade } = this.state;
+        const { fade } = this.state;
         return (
             <Container>
                 <Content
@@ -192,7 +130,7 @@ class ForgotPassword extends React.Component {
                             <View
                                 style={styles.triangle}
                             />
-                            <Animated.View style={[styles.customForm, { transform: [{ translateY: shift }] }]}>
+                            <Animated.View style={styles.customForm}>
                                 <Text style={styles.header}>Forgot Password?</Text>
                                 <Text style={styles.text}
                                 >We just need your registered Email id to send you password reset instructions</Text>

@@ -4,8 +4,7 @@ import {
     Keyboard,
     ImageBackground,
     TouchableOpacity,
-    Animated,
-    Platform
+    Animated
 } from 'react-native';
 
 /* Native Base */
@@ -43,26 +42,15 @@ class LoginPage extends React.Component {
             accountAlias: "",
             email: "",
             password: "",
-            shift: new Animated.Value(0),
             logoShift: new Animated.Value(-50),
             logoFade: new Animated.Value(0),
             sloganFade: new Animated.Value(0)
         }
-        this.keyboardDidShowHandler = null
-        this.keyboardDidHideHandler = null
 
         /* Refs are used to redirect the focus to the next component using keyboard button */
         this.textInputAccountAlias = React.createRef();
         this.textInputEmail = React.createRef();
         this.textInputPassword = React.createRef();
-    }
-
-    componentDidMount() {
-        /*Custom logic for android as scroll is handled by content container on IOS */
-        if (Platform.OS === 'android') {
-            this.keyboardDidShowHandler = Keyboard.addListener('keyboardDidShow', this.handleKeyboardDidShow)
-            this.keyboardDidHideHandler = Keyboard.addListener('keyboardDidHide', this.handleKeyboardDidHide)
-        }
     }
 
     loadComponents = () => {
@@ -95,37 +83,7 @@ class LoginPage extends React.Component {
             )
         ]).start()
     }
-    handleKeyboardDidShow = (event) => {
-        const keyboardHeight = event.endCoordinates.height;
-        this.setState({ isShowingKeyboard: true })
-        Animated.timing(
-            this.state.shift,
-            {
-                toValue: -keyboardHeight,
-                duration: 500,
-                useNativeDriver: true
-            }
-        ).start();
-    }
 
-    handleKeyboardDidHide = () => {
-        this.setState({ isShowingKeyboard: false })
-        Animated.timing(
-            this.state.shift,
-            {
-                toValue: 0,
-                duration: 200,
-                useNativeDriver: true
-            }
-        ).start();
-    }
-
-    componentWillUnmount() {
-        if (Platform.OS === 'android') {
-            this.keyboardDidShowHandler.remove()
-            this.keyboardDidHideHandler.remove()
-        }
-    }
     forgotPasswordHandler=()=>{
         this.setState({password:''})
         this.props.navigation.navigate('ForgotPassword',{
@@ -260,12 +218,13 @@ class LoginPage extends React.Component {
     }
 
     render() {
-        const { shift, logoFade, logoShift, sloganFade } = this.state
+        const { logoFade, logoShift, sloganFade } = this.state
         return (
 
             <Container>
                 <Content
                     contentContainerStyle={styles.container}
+                    
                 >
                     <ImageBackground
                         source={image}
@@ -283,7 +242,7 @@ class LoginPage extends React.Component {
                             </Animated.View>
                             <View style={styles.container} ></View>
 
-                            <Animated.View style={[{ alignItems: 'center' }, { transform: [{ translateY: shift }], opacity: logoFade }]}>
+                            <Animated.View style={[{ alignItems: 'center' }, { opacity: logoFade }]}>
                                 <TextInput
                                     placeholder='Account Alias'
                                     value={this.state.accountAlias}
