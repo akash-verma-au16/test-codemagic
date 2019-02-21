@@ -29,9 +29,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-               BuildableName = "nativeApp-tvOS.app"
-               BlueprintName = "nativeApp-tvOS"
-               ReferencedContainer = "container:nativeApp.xcodeproj">
+               BuildableName = "HappyWorks-tvOS.app"
+               BlueprintName = "HappyWorks-tvOS"
+               ReferencedContainer = "container:HappyWorks.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -43,9 +43,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D02E48F1E0B4A5D006451C7"
-               BuildableName = "nativeApp-tvOSTests.xctest"
-               BlueprintName = "nativeApp-tvOSTests"
-               ReferencedContainer = "container:nativeApp.xcodeproj">
+               BuildableName = "HappyWorks-tvOSTests.xctest"
+               BlueprintName = "HappyWorks-tvOSTests"
+               ReferencedContainer = "container:HappyWorks.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -61,9 +61,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D02E48F1E0B4A5D006451C7"
-               BuildableName = "nativeApp-tvOSTests.xctest"
-               BlueprintName = "nativeApp-tvOSTests"
-               ReferencedContainer = "container:nativeApp.xcodeproj">
+               BuildableName = "HappyWorks-tvOSTests.xctest"
+               BlueprintName = "HappyWorks-tvOSTests"
+               ReferencedContainer = "container:HappyWorks.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -71,9 +71,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-            BuildableName = "nativeApp-tvOS.app"
-            BlueprintName = "nativeApp-tvOS"
-            ReferencedContainer = "container:nativeApp.xcodeproj">
+            BuildableName = "HappyWorks-tvOS.app"
+            BlueprintName = "HappyWorks-tvOS"
+            ReferencedContainer = "container:HappyWorks.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -94,9 +94,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-            BuildableName = "nativeApp-tvOS.app"
-            BlueprintName = "nativeApp-tvOS"
-            ReferencedContainer = "container:nativeApp.xcodeproj">
+            BuildableName = "HappyWorks-tvOS.app"
+            BlueprintName = "HappyWorks-tvOS"
+            ReferencedContainer = "container:HappyWorks.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -113,9 +113,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-            BuildableName = "nativeApp-tvOS.app"
-            BlueprintName = "nativeApp-tvOS"
-            ReferencedContainer = "container:nativeApp.xcodeproj">
+            BuildableName = "HappyWorks-tvOS.app"
+            BlueprintName = "HappyWorks-tvOS"
+            ReferencedContainer = "container:HappyWorks.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

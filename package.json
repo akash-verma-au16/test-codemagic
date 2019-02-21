@@ -5,6 +5,7 @@
   "scripts": {
     "start": "concurrently --kill-others \"npm run android\" \"npm run debug\"  ",
     "android": "react-native run-android",
+    "build-apk":"cd android && ./gradlew assembleRelease",
     "debug": "cd debugger && react-native-debugger.exe",
     "ios": "react-native run-ios"
   },

@@ -1,4 +1,4 @@
-package com.nativeapp;
+package com.happyworks;
 
 import android.app.Application;
 
