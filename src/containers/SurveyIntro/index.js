@@ -12,12 +12,10 @@ import {
 import {
     Container,
     Content,
-    Text,
     Icon,
     Form,
     Toast,
     H1,
-    H2,
     H3
 } from 'native-base';
 /* Redux */

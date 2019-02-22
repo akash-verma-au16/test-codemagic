@@ -120,7 +120,9 @@ class QuestionContainer extends React.Component {
                         uuid : '3448cd7e-aef7-452f-a697-22d85114d6cf',
                         event_name : this.questionData.survey.type
                     }).then((res)=>{
+                        console.log(res)
                     }).catch(err=>{
+                        console.log(err)
                     })
                     clearStackNavigate('SurveyExit', this.props)
                 }).catch(error=>{

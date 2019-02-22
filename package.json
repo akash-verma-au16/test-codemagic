@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "start": "concurrently --kill-others \"npm run android\" \"npm run debug\"  ",
+    "android-emulator": "emulator -avd Pixel_2_XL_API_28 -netdelay none -netspeed full",
     "android": "react-native run-android",
-    "build-apk":"cd android && ./gradlew assembleRelease",
+    "build-apk": "cd android && ./gradlew assembleRelease",
     "debug": "cd debugger && react-native-debugger.exe",
     "ios": "react-native run-ios"
   },
@@ -16,6 +17,7 @@
     "react": "16.6.3",
     "react-native": "0.58.4",
     "react-native-gesture-handler": "^1.0.15",
+    "react-native-ionicons": "^4.5.5",
     "react-navigation": "^3.0.9",
     "react-redux": "^6.0.0",
     "redux": "^4.0.1",
