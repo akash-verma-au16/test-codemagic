@@ -3,17 +3,15 @@
   "version": "0.1.1",
   "private": true,
   "scripts": {
-    "start": "concurrently --kill-others \"npm run android\" \"npm run debug\"  ",
     "android-emulator": "emulator -avd Pixel_2_XL_API_28 -netdelay none -netspeed full",
     "android": "react-native run-android",
     "build-apk": "cd android && ./gradlew assembleRelease",
     "debug-windows": "cd debugger && react-native-debugger.exe",
-    "debug-mac":"cd debugger && open -a react-native-debugger",
-    "ios": "react-native run-ios"
+    "debug-mac": "cd debugger && open -a react-native-debugger",
+    "ios": "npm run debug-mac && react-native run-ios"
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "concurrently": "^4.1.0",
     "native-base": "^2.11.0",
     "react": "16.6.3",
     "react-native": "0.58.4",
