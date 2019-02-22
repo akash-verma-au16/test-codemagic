@@ -7,7 +7,8 @@
     "android-emulator": "emulator -avd Pixel_2_XL_API_28 -netdelay none -netspeed full",
     "android": "react-native run-android",
     "build-apk": "cd android && ./gradlew assembleRelease",
-    "debug": "cd debugger && react-native-debugger.exe",
+    "debug-windows": "cd debugger && react-native-debugger.exe",
+    "debug-mac":"cd debugger && open -a react-native-debugger",
     "ios": "react-native run-ios"
   },
   "dependencies": {
