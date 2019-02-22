@@ -13,12 +13,8 @@ import {
 import {
     Container,
     Content,
-    Text,
-    Icon,
     Form,
-    Toast,
     H1,
-    H2,
     H3
 } from 'native-base';
 /* Redux */
@@ -29,8 +25,6 @@ import RoundButton from '../../components/RoundButton'
 /* Assets */
 import image from '../../assets/surveyBackground.jpg'
 import icon from '../../assets/trophy.png'
-/* Services */
-import { read_survey } from '../../services/questionBank'
 import clearStackNavigate from '../../utilities/clearStackNavigate';
 class SurveyExit extends React.Component {
 
@@ -41,11 +35,8 @@ class SurveyExit extends React.Component {
             trophyFade: new Animated.Value(0),
             trophyScale: new Animated.Value(2)
         }
-        this.surveyId = this.props.navigation.getParam('surveyId')
-        this.surveyName = this.props.navigation.getParam('surveyName')
-        this.surveyDescription = this.props.navigation.getParam('surveyDescription')
-        this.surveyNote = this.props.navigation.getParam('surveyNote')
-        this.surveyLevel = this.props.navigation.getParam('surveyLevel')
+        this.rewardPoints = this.props.navigation.getParam('rewardPoints', 0)
+
     }
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -80,11 +71,11 @@ class SurveyExit extends React.Component {
 
     }
     exitSurveyHandler = () => {
-        clearStackNavigate('Home',this.props)
+        clearStackNavigate('Home', this.props)
     }
 
     render() {
-        const {trophyFade,trophyScale} = this.state
+        const { trophyFade, trophyScale } = this.state
         return (
 
             <Container>
@@ -119,14 +110,22 @@ class SurveyExit extends React.Component {
                             <Form style={styles.form}>
                                 <View style={{ flex: 3, alignItems: 'center', justifyContent: 'flex-start', margin: 15 }}>
 
-                                    <H1 style={styles.text}>Rewards Achieved</H1>
-                                    <H3 style={styles.text}>50 points</H3>
-
+                                    {this.rewardPoints === 0 ?
+                                        <React.Fragment>
+                                            <H1 style={styles.text}>Better luck next time</H1>
+                                            <H3 style={styles.text}>Looks like no rewards are configured with this survey</H3>
+                                        </React.Fragment>
+                                        :
+                                        <React.Fragment>
+                                            <H1 style={styles.text}>Rewards Achieved</H1>
+                                            <H3 style={styles.text}>{this.rewardPoints} points</H3>
+                                        </React.Fragment>
+                                    }
                                 </View>
                                 <RoundButton
                                     onPress={this.exitSurveyHandler}
                                     value='finish'
-                                    
+
                                 />
                             </Form>
                         </View>
@@ -160,7 +159,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'space-between',
         paddingTop: 15,
-        color:'#fefefeaa'
+        color: '#fefefeaa'
     },
     header: {
         color: 'white',

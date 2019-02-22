@@ -26,6 +26,13 @@ import clearStackNavigate from '../../utilities/clearStackNavigate'
 /* Services */
 import {logout} from '../../services/bAuth'
 class Home extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            
+            isSignInLoading: false
+        }
+    }
     componentWillMount() {
         if(this.props.isFreshInstall){
             clearStackNavigate('TermsAndConditions',this.props)
@@ -34,6 +41,7 @@ class Home extends React.Component {
         }
     }
     signOutHandler = () => {
+        this.setState({isSignInLoading:true})
         logout({
             accountAlias: this.props.accountAlias,
             email:this.props.email
@@ -49,6 +57,7 @@ class Home extends React.Component {
                 text: 'Unable to communicate with server',
                 type: "danger"
             })
+            this.setState({isSignInLoading:false})
         })
     }
 
@@ -111,30 +120,11 @@ class Home extends React.Component {
                                     }}
                                     value='Weekly Questionnaire'
                                 />
-                                <RoundButton
-                                    onPress={()=>{
-                                        this.notification = {
-                                            title: 'Hello From HappyWorks',
-                                            body: '',
-                                            color: 'white',
-                                            android: {
-                                                sound: true,
-                                                viberate: true,
-                                                priority: 'high'
-                                            }
-                                        
-                                        }
-                                        
-                                    }}
-                                    value='Send Notification'
-                                />
-                                <RoundButton
-                                    onPress={this.clearDataHandler}
-                                    value='Clear App data to see T&C page'
-                                />
+                                
                                 <RoundButton
                                     onPress={this.signOutHandler}
                                     value='Sign Out'
+                                    isLoading={this.state.isSignInLoading}
                                 />
         
                             </Form>
