@@ -19,6 +19,7 @@ import { auth,dev } from '../../store/actions'
 import Logo from '../../components/Logo'
 import Slogan from '../../components/Slogan'
 import RoundButton from '../../components/RoundButton'
+import RatingScale from "../../components/RatingScale";
 /* Assets */
 import image from '../../assets/image.jpg'
 /* Utilities */
@@ -126,7 +127,14 @@ class Home extends React.Component {
                                     value='Sign Out'
                                     isLoading={this.state.isSignInLoading}
                                 />
-        
+                                <RatingScale
+                                    questionId={'1'}
+                                    data={''}
+                                    selectedOption={null}
+                                    pageSwitchHandler={''}
+                                    isSubmitLoading={''}
+                                    answerHandler={''}
+                                />
                             </Form>
 
                         </KeyboardAvoidingView>

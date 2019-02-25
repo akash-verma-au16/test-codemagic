@@ -57,7 +57,7 @@ class SurveyIntro extends React.Component {
 
                 read_survey(this.surveyId).then(response => {
                     this.props.navigation.navigate('QuestionContainer', {
-                        questionData: sampleJson.data
+                        questionData: response.data.data
                     })
                     this.setState({ isLoading: false })
                 }).catch((error) => {
