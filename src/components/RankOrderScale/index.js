@@ -6,6 +6,12 @@ import DraggableFlatList from 'react-native-draggable-flatlist'
 class RankOrderScale extends React.Component {
     constructor(props) {
         super(props);
+        this.data =[
+            {key:0,label:'bmw'},
+            {key:1,label:'audi'},
+            {key:2,label:'maruti'}
+        ]
+        
         this.state={
             questionId:this.props.questionId,
             value:0,
@@ -13,11 +19,7 @@ class RankOrderScale extends React.Component {
                 value: '',
                 text: ''
             },
-            data: [...Array(10)].map((d, index) => ({
-                key: `index`,
-                label: index,
-                backgroundColor: `rgb(${Math.floor(Math.random() * 255)}, ${index * 5}, ${132})`
-            }))
+            data: this.data
         }
     }
     optionHandler=(option)=>{
@@ -39,21 +41,22 @@ class RankOrderScale extends React.Component {
     renderItem = ({ item, index, move, moveEnd, isActive }) => {
         return (
             <TouchableOpacity
-                style={{ 
-                    height: 100,
-                    width: 200, 
-                    backgroundColor: isActive ? 'blue' : item.backgroundColor,
-                    alignItems: 'center', 
-                    justifyContent: 'center' 
-                }}
+                key={index}
+                style={[
+                    styles.option,
+                    {backgroundColor: isActive ? 'blue' : item.backgroundColor}
+                ]}
                 onLongPress={move}
                 onPressOut={moveEnd}
+                onPress={()=>console.log(this.state.data)}
             >
-                <Text style={{ 
-                    fontWeight: 'bold', 
-                    color: 'white',
-                    fontSize: 32
-                }}>{item.label}</Text>
+                <Text
+                    style={{
+                        fontSize:16,
+                        color:'white'
+                        
+                    }}
+                >{item.label}</Text>
             </TouchableOpacity>
         )
     }
@@ -66,7 +69,6 @@ class RankOrderScale extends React.Component {
                 <DraggableFlatList
                     data={this.state.data}
                     renderItem={this.renderItem}
-                    keyExtractor={(item, index) => `draggable-item-${item.key}`}
                     scrollPercent={5}
                     onMoveEnd={({ data }) => this.setState({ data })}
                 />
