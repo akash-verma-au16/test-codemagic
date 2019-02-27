@@ -81,11 +81,13 @@ class QuestionContainer extends React.Component {
         if (this.questionData.questions.length) {
 
             this.questionData.questions.map((question, index) => {
+                console.log(question)
                 this.questions.push(
                     <View key={index}>
                         <Question
                             questionId={question.question_id}
                             question={question.question.title}
+                            type={question.type}
                             options={question.question.options}
                             pageSwitchHandler={this.switchToNextPage}
                             isSubmitLoading={this.state.isSubmitLoading}

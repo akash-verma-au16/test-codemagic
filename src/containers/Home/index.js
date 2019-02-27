@@ -101,6 +101,18 @@ class Home extends React.Component {
                                 <RoundButton
                                     onPress={()=>{
                                         this.props.navigation.navigate('SurveyIntro',{
+                                            surveyId:'3',
+                                            surveyName:'Slider',
+                                            surveyDescription:'Daily Survey',
+                                            surveyNote:'note',
+                                            surveyLevel:'beginner'
+                                        })
+                                    }}
+                                    value='Slider'
+                                />
+                                <RoundButton
+                                    onPress={()=>{
+                                        this.props.navigation.navigate('SurveyIntro',{
                                             surveyId:'2 ',
                                             surveyName:'Daily-Questionnaire',
                                             surveyDescription:'Daily Survey',
@@ -128,14 +140,14 @@ class Home extends React.Component {
                                     value='Sign Out'
                                     isLoading={this.state.isSignInLoading}
                                 />
-                                {/* <RatingScale
+                                <RatingScale
                                     questionId={'1'}
                                     data={''}
                                     selectedOption={null}
                                     pageSwitchHandler={''}
                                     isSubmitLoading={''}
                                     answerHandler={''}
-                                /> */}
+                                /> 
 
                                 <RankOrderScale
                                     questionId={'1'}
