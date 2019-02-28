@@ -55,7 +55,7 @@ const Question = (props) => {
                 <H3 style={styles.questionText}>
                     {props.question}
                 </H3>
-                <Text style={styles.questionText}>{helperText}</Text>
+                <Text style={[styles.questionText,{margin:10}]}>{helperText}</Text>
             </View>
             <View style={styles.optionArea}>
                 <ScrollView style={styles.scrollableView}>

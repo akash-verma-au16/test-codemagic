@@ -9,21 +9,21 @@ class RatingScale extends React.Component {
         this.startScale = -5
         this.endScale = 5
         this.data={}
-        this.scaleComponents=[]
-        props.data.rows.map((item,index)=>{
-            this.scaleComponents.push(
-                this.scaleComponent(item.text,index)
-            )
+        
+        props.data.rows.map((item)=>{
+            
             this.data={
                 ...this.data,
-                [item.text]:this.startScale
+                [item.text]:0
             }
         })
         this.state={
             questionId:this.props.questionId,
             data : this.data
         }
+        
         this.props.answerHandler(this.state.questionId,this.state.data)
+    
     }
     optionHandler=(option)=>{
         if(this.props.isSubmitLoading){
@@ -47,7 +47,7 @@ class RatingScale extends React.Component {
             <Text
                 style={{
                     borderBottomColor: '#1c92c4',
-                    borderBottomWidth: 10,
+                    borderBottomWidth: 1,
                     marginHorizontal:15,
                     paddingBottom:10
                 }}
@@ -65,12 +65,15 @@ class RatingScale extends React.Component {
                     {this.startScale}
                 </Text>
                 <Text>
+                    {this.state.data[text]}
+                </Text>
+                <Text>
                     {this.endScale}
                 </Text>
             </View>
             <Slider
                 style={{
-                    marginHorizontal:10
+                    marginHorizontal:15
                 }}
                 minimumValue={this.startScale}
                 maximumValue={this.endScale}
@@ -78,7 +81,7 @@ class RatingScale extends React.Component {
                 trackStyle={styles.track}
                 thumbStyle={styles.thumb}
                 minimumTrackTintColor='#1c92c4'
-                
+                value={0}
                 onValueChange={(value) =>{
                     this.setState({data:{
                         ...this.state.data,
@@ -91,7 +94,12 @@ class RatingScale extends React.Component {
             />
         </View>)
     render(){
-        
+        this.scaleComponents=[]
+        this.props.data.rows.map((item,index)=>{
+            this.scaleComponents.push(
+                this.scaleComponent(item.text,index)
+            )
+        })
         return(this.scaleComponents)
     }
             
