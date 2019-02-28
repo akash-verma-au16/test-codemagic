@@ -64,12 +64,42 @@ class QuestionContainer extends React.Component {
     componentWillUnmount() {
         this.backHandler.remove()
     }
+    // for MCQ
     answerHandler = (questionId, answerObj) => {
         this.answerSet = {
             ...this.answerSet,
 
             [questionId]: {
                 answer: answerObj.text
+            }
+
+        }
+    }
+    // for ROS
+    ROSHandler = (questionId, answerObj) => {
+        let ranks = {}
+        
+        answerObj.map((item,index)=>{
+            ranks={
+                ...ranks,
+                [item.label]:index
+            }
+        })
+        this.answerSet = {
+            ...this.answerSet,
+
+            [questionId]: ranks
+
+        }
+        console.log('AnswerSet: ',this.answerSet)
+    }
+    // for SCQ
+    SCQHandler = (questionId, answerObj) => {
+        this.answerSet = {
+            ...this.answerSet,
+
+            [questionId]: {
+                [answerObj.title]: answerObj.value
             }
 
         }
@@ -81,7 +111,6 @@ class QuestionContainer extends React.Component {
         if (this.questionData.questions.length) {
 
             this.questionData.questions.map((question, index) => {
-                console.log(question)
                 this.questions.push(
                     <View key={index}>
                         <Question
@@ -92,6 +121,7 @@ class QuestionContainer extends React.Component {
                             pageSwitchHandler={this.switchToNextPage}
                             isSubmitLoading={this.state.isSubmitLoading}
                             answerHandler={this.answerHandler}
+                            ROSHandler={this.ROSHandler}
                         />
                     </View>
                 )

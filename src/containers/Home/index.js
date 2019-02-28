@@ -140,23 +140,7 @@ class Home extends React.Component {
                                     value='Sign Out'
                                     isLoading={this.state.isSignInLoading}
                                 />
-                                <RatingScale
-                                    questionId={'1'}
-                                    data={''}
-                                    selectedOption={null}
-                                    pageSwitchHandler={''}
-                                    isSubmitLoading={''}
-                                    answerHandler={''}
-                                /> 
-
-                                <RankOrderScale
-                                    questionId={'1'}
-                                    data={''}
-                                    selectedOption={null}
-                                    pageSwitchHandler={''}
-                                    isSubmitLoading={''}
-                                    answerHandler={''}
-                                />
+                                
                             </Form>
 
                         </KeyboardAvoidingView>

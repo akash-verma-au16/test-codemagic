@@ -15,7 +15,6 @@ const Question = (props) => {
             <MultipleChoice
                 questionId={props.questionId}
                 data={props.options}
-                selectedOption={null}
                 pageSwitchHandler={props.pageSwitchHandler}
                 isSubmitLoading={props.isSubmitLoading}
                 answerHandler={props.answerHandler}
@@ -28,7 +27,6 @@ const Question = (props) => {
             <RatingScale
                 questionId={'1'}
                 data={''}
-                selectedOption={null}
                 pageSwitchHandler={''}
                 isSubmitLoading={''}
                 answerHandler={''}
@@ -38,12 +36,11 @@ const Question = (props) => {
     case 'ROS':
         option=(
             <RankOrderScale
-                questionId={'1'}
-                data={''}
-                selectedOption={null}
+                questionId={props.questionId}
+                data={props.options}
                 pageSwitchHandler={''}
-                isSubmitLoading={''}
-                answerHandler={''}
+                isSubmitLoading={props.isSubmitLoading}
+                answerHandler={props.ROSHandler}
             />
         )
         break

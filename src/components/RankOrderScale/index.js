@@ -6,12 +6,15 @@ import DraggableFlatList from 'react-native-draggable-flatlist'
 class RankOrderScale extends React.Component {
     constructor(props) {
         super(props);
-        this.data =[
-            {key:0,label:'bmw'},
-            {key:1,label:'audi'},
-            {key:2,label:'maruti'}
-        ]
         
+        this.data=[]
+        props.data.map((item,index)=>{
+            this.data.push({
+                key:index,
+                label:item.text
+            })
+        })
+   
         this.state={
             questionId:this.props.questionId,
             value:0,
@@ -21,6 +24,7 @@ class RankOrderScale extends React.Component {
             },
             data: this.data
         }
+        this.props.answerHandler(this.state.questionId,this.data)
     }
     optionHandler=(option)=>{
         if(this.props.isSubmitLoading){
@@ -34,8 +38,6 @@ class RankOrderScale extends React.Component {
             this.setState({selectedOption:option},()=>{
                 this.props.answerHandler(this.state.questionId,this.state.selectedOption)
             })
-            /* trigger page switch */
-            this.props.pageSwitchHandler()
         }
     }
     renderItem = ({ item, index, move, moveEnd, isActive }) => {
@@ -44,18 +46,17 @@ class RankOrderScale extends React.Component {
                 key={index}
                 style={[
                     styles.option,
-                    {backgroundColor: isActive ? 'blue' : item.backgroundColor}
+                    {backgroundColor: isActive ? '#1c92c4' : '#fff'}
                 ]}
                 onLongPress={move}
                 onPressOut={moveEnd}
-                onPress={()=>console.log(this.state.data)}
+                
             >
                 <Text
-                    style={{
-                        fontSize:16,
-                        color:'white'
-                        
-                    }}
+                    style={[
+                        styles.text,
+                        {color:isActive ? '#fff' : '#1c92c4'}
+                    ]}
                 >{item.label}</Text>
             </TouchableOpacity>
         )
@@ -70,7 +71,12 @@ class RankOrderScale extends React.Component {
                     data={this.state.data}
                     renderItem={this.renderItem}
                     scrollPercent={5}
-                    onMoveEnd={({ data }) => this.setState({ data })}
+                    onMoveEnd={({ data }) => {
+                        this.setState({ data },()=>{
+                            this.props.answerHandler(this.state.questionId,data)
+                        })
+                        
+                    }}
                 />
             </View>
                 
@@ -80,17 +86,10 @@ class RankOrderScale extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    track: {
-        height: 4,
-        borderRadius: 2
-    },
-    thumb: {
-        width: 30,
-        height: 30,
-        borderRadius: 30 / 2,
-        backgroundColor: 'white',
-        borderColor: '#1c92c4',
-        borderWidth: 2
+    text:{
+        textAlign:'left',
+        marginHorizontal:30,
+        color:'#1c92c4'
     },
     option: {
         marginTop:15,
@@ -99,8 +98,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         width: Dimensions.get('window').width-30 ,
         borderColor: '#1c92c4',
-        borderWidth: 1,
-        backgroundColor:'white'
+        borderWidth: 1
     }
 
 })
