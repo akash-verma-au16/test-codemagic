@@ -98,11 +98,10 @@ class QuestionContainer extends React.Component {
         this.answerSet = {
             ...this.answerSet,
 
-            [questionId]: {
-                [answerObj.title]: answerObj.value
-            }
+            [questionId]: answerObj
 
         }
+        console.log('AnswerSet: ',this.answerSet)
     }
     /* create questions based on payload */
     createQuestions = () => {
@@ -122,6 +121,7 @@ class QuestionContainer extends React.Component {
                             isSubmitLoading={this.state.isSubmitLoading}
                             answerHandler={this.answerHandler}
                             ROSHandler={this.ROSHandler}
+                            SCQHandler={this.SCQHandler}
                         />
                     </View>
                 )

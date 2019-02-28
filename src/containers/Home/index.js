@@ -19,8 +19,6 @@ import { auth,dev } from '../../store/actions'
 import Logo from '../../components/Logo'
 import Slogan from '../../components/Slogan'
 import RoundButton from '../../components/RoundButton'
-import RatingScale from "../../components/RatingScale";
-import RankOrderScale from '../../components/RankOrderScale'
 /* Assets */
 import image from '../../assets/image.jpg'
 /* Utilities */
@@ -102,18 +100,6 @@ class Home extends React.Component {
                                     onPress={()=>{
                                         this.props.navigation.navigate('SurveyIntro',{
                                             surveyId:'3',
-                                            surveyName:'Slider',
-                                            surveyDescription:'Daily Survey',
-                                            surveyNote:'note',
-                                            surveyLevel:'beginner'
-                                        })
-                                    }}
-                                    value='Slider'
-                                />
-                                <RoundButton
-                                    onPress={()=>{
-                                        this.props.navigation.navigate('SurveyIntro',{
-                                            surveyId:'2 ',
                                             surveyName:'Daily-Questionnaire',
                                             surveyDescription:'Daily Survey',
                                             surveyNote:'note',

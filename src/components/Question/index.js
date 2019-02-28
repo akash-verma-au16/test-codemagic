@@ -1,16 +1,18 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native'
+import { StyleSheet, View, ScrollView,Text } from 'react-native'
 import { H3 } from 'native-base';
 import MultipleChoice from '../MultipleChoice'
 import RankOrderScale from '../RankOrderScale'
 import RatingScale from '../RatingScale'
 const Question = (props) => {
     let option = null
+    let helperText = null
 
     switch (props.type) {
 
     case 'MCQ':
     case 'DSQ':
+        helperText = '[choose any option]'
         option = (
             <MultipleChoice
                 questionId={props.questionId}
@@ -23,17 +25,19 @@ const Question = (props) => {
         break
 
     case 'SCQ':
+        helperText = '[Drag the Slider(s)]'
         option=(
             <RatingScale
-                questionId={'1'}
-                data={''}
+                questionId={props.questionId}
+                data={props.options}
                 pageSwitchHandler={''}
-                isSubmitLoading={''}
-                answerHandler={''}
+                isSubmitLoading={props.isSubmitLoading}
+                answerHandler={props.SCQHandler}
             /> 
         )
         break
     case 'ROS':
+        helperText = '[press and hold to drag]'
         option=(
             <RankOrderScale
                 questionId={props.questionId}
@@ -51,7 +55,7 @@ const Question = (props) => {
                 <H3 style={styles.questionText}>
                     {props.question}
                 </H3>
-
+                <Text style={styles.questionText}>{helperText}</Text>
             </View>
             <View style={styles.optionArea}>
                 <ScrollView style={styles.scrollableView}>

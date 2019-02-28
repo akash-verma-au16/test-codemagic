@@ -1,19 +1,29 @@
 import React from 'react';
-import { StyleSheet , Dimensions } from 'react-native'
+import { StyleSheet , Dimensions} from 'react-native'
 import {  Text,Toast, View } from 'native-base';
 import Slider from 'react-native-slider'
 
 class RatingScale extends React.Component {
     constructor(props) {
         super(props);
+        this.startScale = -5
+        this.endScale = 5
+        this.data={}
+        this.scaleComponents=[]
+        props.data.rows.map((item,index)=>{
+            this.scaleComponents.push(
+                this.scaleComponent(item.text,index)
+            )
+            this.data={
+                ...this.data,
+                [item.text]:this.startScale
+            }
+        })
         this.state={
             questionId:this.props.questionId,
-            value:0,
-            selectedOption: {
-                value: '',
-                text: ''
-            }
+            data : this.data
         }
+        this.props.answerHandler(this.state.questionId,this.state.data)
     }
     optionHandler=(option)=>{
         if(this.props.isSubmitLoading){
@@ -27,48 +37,62 @@ class RatingScale extends React.Component {
             this.setState({selectedOption:option},()=>{
                 this.props.answerHandler(this.state.questionId,this.state.selectedOption)
             })
-            /* trigger page switch */
-            this.props.pageSwitchHandler()
         }
     }
+    scaleComponent=(text,key) => (
+        <View
+            style={styles.option}
+            key={key}
+        >   
+            <Text
+                style={{
+                    borderBottomColor: '#1c92c4',
+                    borderBottomWidth: 10,
+                    marginHorizontal:15,
+                    paddingBottom:10
+                }}
+            >{text}</Text>
+        
+            <View
+                style={{
+                    flexDirection:'row',
+                    justifyContent:'space-between',
+                    marginHorizontal:15
+                }}
+            >
 
+                <Text>
+                    {this.startScale}
+                </Text>
+                <Text>
+                    {this.endScale}
+                </Text>
+            </View>
+            <Slider
+                style={{
+                    marginHorizontal:10
+                }}
+                minimumValue={this.startScale}
+                maximumValue={this.endScale}
+                step={1}
+                trackStyle={styles.track}
+                thumbStyle={styles.thumb}
+                minimumTrackTintColor='#1c92c4'
+                
+                onValueChange={(value) =>{
+                    this.setState({data:{
+                        ...this.state.data,
+                        [text]:value
+                    }},()=>{
+                        this.props.answerHandler(this.state.questionId,this.state.data)
+                    })
+                    
+                } }
+            />
+        </View>)
     render(){
         
-        return(
-            <View
-                style={styles.option}
-            >
-                <View
-                    style={{
-                        flexDirection:'row',
-                        justifyContent:'space-between',
-                        marginHorizontal:15
-                    }}
-                >
-                    <Text>
-                    0
-                    </Text>
-                    <Text>
-                    10
-                    </Text>
-                </View>
-                <Slider
-                    style={{
-                        marginHorizontal:10
-                    }}
-                    minimumValue={0}
-                    maximumValue={10}
-                    step={1}
-                    trackStyle={styles.track}
-                    thumbStyle={styles.thumb}
-                    minimumTrackTintColor='#1c92c4'
-                    value={this.state.value}
-                    onValueChange={(value) => this.setState({value})}
-                />
-                <Text>
-                    Value : {this.state.value}
-                </Text>
-            </View>)
+        return(this.scaleComponents)
     }
             
 }
