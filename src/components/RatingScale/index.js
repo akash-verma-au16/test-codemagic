@@ -46,10 +46,7 @@ class RatingScale extends React.Component {
         >   
             <Text
                 style={{
-                    borderBottomColor: '#1c92c4',
-                    borderBottomWidth: 1,
-                    marginHorizontal:15,
-                    paddingBottom:10
+                    marginHorizontal:15
                 }}
             >{text}</Text>
         

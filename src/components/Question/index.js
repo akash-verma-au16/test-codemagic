@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     },
     questionText: {
         color: 'white',
-        fontWeight: 'bold',
+        
         marginHorizontal: 30,
         textAlign: 'center'
     },

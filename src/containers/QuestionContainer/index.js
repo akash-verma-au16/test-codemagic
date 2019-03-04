@@ -39,16 +39,7 @@ class QuestionContainer extends React.Component {
             currentPage: 0,
             pageCount: this.questionData.questions.length,
             isSubmitLoading: false,
-            answer_set: {
-                "97b7b8cb-a607-4cfb-8165-f7b98e6a4bf6": {
-                    "row": "col",
-                    "Customer Service Experience": "Well Above Average",
-                    "Purchase Experience": "Well Below Average"
-                },
-                "0cca5f8e-3826-406d-9c92-f48055fd05eb": {
-                    "My Experience was": "Somewhat Pleasant"
-                }
-            },
+            
             answerSet: {}
         }
         this.pager = React.createRef();
@@ -91,7 +82,6 @@ class QuestionContainer extends React.Component {
             [questionId]: ranks
 
         }
-        console.log('AnswerSet: ',this.answerSet)
     }
     // for SCQ
     SCQHandler = (questionId, answerObj) => {
@@ -101,7 +91,6 @@ class QuestionContainer extends React.Component {
             [questionId]: answerObj
 
         }
-        console.log('AnswerSet: ',this.answerSet)
     }
     /* create questions based on payload */
     createQuestions = () => {
@@ -226,11 +215,11 @@ class QuestionContainer extends React.Component {
                             </IndicatorViewPager>
                             {this.state.currentPage === this.state.pageCount - 1 ?
 
-                                <TouchableOpacity style={styles.submitButton}>
+                                <TouchableOpacity style={styles.submitButton} onPress={this.submitHandler}>
                                     {this.state.isSubmitLoading ?
                                         <Spinner color='white' />
                                         :
-                                        <Icon name='md-checkmark' style={{ color: 'white' }} onPress={this.submitHandler} />
+                                        <Icon name='md-checkmark' style={{ color: 'white' }} />
                                     }
                                 </TouchableOpacity>
 
