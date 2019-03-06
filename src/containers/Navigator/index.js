@@ -10,6 +10,7 @@ import SurveyIntro from '../SurveyIntro'
 import SurveyExit from '../SurveyExit'
 import QuestionContainer from '../QuestionContainer'
 import ForceChangePassword from '../ForceChangePassword'
+import CreatePost from '../CreatePost'
 /* This stack will contain list of all pages */
 const RootStack = createStackNavigator(
     {
@@ -21,7 +22,8 @@ const RootStack = createStackNavigator(
         SurveyIntro,
         SurveyExit,
         QuestionContainer,
-        ForceChangePassword
+        ForceChangePassword,
+        CreatePost
     },
     {
         initialRouteName: 'Home',

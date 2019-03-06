@@ -120,7 +120,14 @@ class Home extends React.Component {
                                     }}
                                     value='Weekly Questionnaire'
                                 />
-                                
+                                <RoundButton
+                                    onPress={()=>{
+                                        this.props.navigation.navigate('CreatePost',{
+                                            
+                                        })
+                                    }}
+                                    value='Leave a note'
+                                />
                                 <RoundButton
                                     onPress={this.signOutHandler}
                                     value='Sign Out'
