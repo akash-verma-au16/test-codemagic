@@ -8,7 +8,9 @@
     "build-apk": "cd android && ./gradlew assembleRelease",
     "debug-windows": "cd debugger && react-native-debugger.exe",
     "debug-mac": "cd debugger && open -a react-native-debugger",
-    "ios": "npm run debug-mac && react-native run-ios"
+    "ios": "npm run debug-mac && react-native run-ios",
+    "get-ip":"ifconfig |grep inet",
+    "connect-wifi":"adb connect 192.168.1.10:5555"
   },
   "dependencies": {
     "axios": "^0.18.0",

@@ -6,11 +6,8 @@ import {
     Alert,
     BackHandler,
     TouchableOpacity,
-    Dimensions,
     Text,
-    TextInput,
-    Modal,
-    TouchableHighlight
+    TextInput
 } from 'react-native';
 
 /* Native Base */
@@ -18,23 +15,27 @@ import {
     Container,
     Content,
     Icon,
-    Spinner,
-    Toast,
-    H3
+    H3,
+    Toast
 } from 'native-base';
-
+/* Redux */
+import { connect } from 'react-redux'
 /* Assets */
 import image from '../../assets/surveyBackground.jpg'
-
-/* Utilities */
-import clearStackNavigate from '../../utilities/clearStackNavigate'
+/* Services */
+import {create_post} from '../../services/post'
+/* Components */
+import VisibilityModal from '../VisibilityModal'
 class CreatePost extends React.Component {
 
     constructor(props) {
         super(props)
         this.state={
-            visibilityModal:true
+            visibilityModal:false,
+            visibilitySelection:'',
+            text:''
         }
+
     }
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -48,24 +49,62 @@ class CreatePost extends React.Component {
     }
 
     goBack = () => {
-        Alert.alert(
-            'Are you sure?',
-            'Your post is not created yet',
-            [
-                {
-                    text: 'Cancel',
-                    style: 'cancel'
-                },
-                {
-                    text: 'OK', onPress: () => {
-                        clearStackNavigate('Home', this.props)
+        if(this.state.text===''){
+            this.props.navigation.navigate('Home')
+        }else{
+            Alert.alert(
+                'Are you sure?',
+                'Note will not be saved',
+                [
+                    {
+                        text: 'Cancel',
+                        style: 'cancel'
+                    },
+                    {
+                        text: 'OK', onPress: () => {
+                            this.props.navigation.navigate('Home')
+                        }
                     }
-                }
-            ],
-            { cancelable: false },
-        )
+                ],
+                { cancelable: false },
+            )
+        }
+        
     }
+    postSubmitHandler=()=>{
+        if(this.state.text===''){
+            Toast.show({
+                text: 'Please write someting',
+                type: 'danger',
+                duration:3000
+            })
+            return
+        }
+        const payload = {
+            tenant_id: this.props.accountAlias,
+            associate_id:this.props.associate_id,
+            type: "post",
+            message: this.state.text,
+            privacy: this.state.visibilitySelection
+        }
+        create_post(payload).then(response=>{
+            Toast.show({
+                text: response.data.message,
+                type: 'success',
+                duration:3000
+            })
+            this.props.navigation.navigate('Home')
+        }).catch(()=>{
+            Toast.show({
+                text: 'Something went wrong',
+                type: 'danger',
+                duration:3000
+            })
+        })
+    }
+
     render() {
+        const fontSize=15
         return (
 
             <Container>
@@ -81,7 +120,7 @@ class CreatePost extends React.Component {
                         <View name='header' style={styles.headerContainer}>
                             <Icon name='ios-arrow-back' style={styles.header} onPress={this.goBack} />
                             <H3 style={styles.headerText}>Leave a note</H3>
-                            <Icon name='md-checkmark' style={styles.header} onPress={this.goBack} />
+                            <Icon name='md-checkmark' style={styles.header} onPress={this.postSubmitHandler} />
                         </View>
 
                         <View name='content' style={styles.content}>
@@ -108,7 +147,7 @@ class CreatePost extends React.Component {
                                     onPress={()=>this.setState({visibilityModal:true})}
                                 >
                                     <Icon name='md-eye' style={{fontSize:12,paddingHorizontal:5,color:'white'}} />
-                                    <Text style={styles.buttonText}>Anyone</Text>
+                                    <Text style={styles.buttonText}>{this.state.visibilitySelection}</Text>
                                 </TouchableOpacity>
                                 <View style={{
                                     backgroundColor:'#333',
@@ -118,6 +157,7 @@ class CreatePost extends React.Component {
                                 }}/>
                                 <TextInput
                                     multiline = {true}
+                                    maxLength={255}
                                     placeholder='Write something here'
                                     scrollEnabled={true}
                                     style={{
@@ -128,9 +168,10 @@ class CreatePost extends React.Component {
                                         width:'100%',
                                         textAlignVertical:'top'
                                         
-                                    }}>
-                                    
-                                </TextInput>
+                                    }}
+                                    onChangeText={(text)=>this.setState({text:text})}
+                                />
+                                
                                 <View style={{
                                     backgroundColor:'#333',
                                     height:1,
@@ -145,13 +186,21 @@ class CreatePost extends React.Component {
                                     alignItems:'center',
                                     justifyContent: 'center'
                                 }}>
-                                    <TouchableOpacity style={styles.button}>
-                                        <Icon name='md-people' style={{fontSize:12,paddingHorizontal:5,color:'white'}} />
-                                        <Text style={styles.buttonText}>Endorse</Text>
+                                    <TouchableOpacity style={styles.button} onPress={()=>Toast.show({
+                                        text: 'coming soon!',
+                                        type: 'success',
+                                        duration:3000
+                                    })}>
+                                        <Icon name='md-people' style={{fontSize:fontSize,paddingHorizontal:5,color:'white'}} />
+                                        <Text style={[styles.buttonText,{fontSize:fontSize}]}>Endorse</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={styles.button}>
-                                        <Icon name='md-thumbs-up' style={{fontSize:12,paddingHorizontal:5,color:'white'}} />
-                                        <Text style={styles.buttonText}>Gratitude</Text>
+                                    <TouchableOpacity style={styles.button} onPress={()=>Toast.show({
+                                        text: 'coming soon!',
+                                        type: 'success',
+                                        duration:3000
+                                    })}>
+                                        <Icon name='md-thumbs-up' style={{fontSize:fontSize,paddingHorizontal:5,color:'white'}} />
+                                        <Text style={[styles.buttonText,{fontSize:fontSize}]}>Gratitude</Text>
                                     </TouchableOpacity>
                                     
                                 </View>
@@ -161,106 +210,21 @@ class CreatePost extends React.Component {
                     </ImageBackground>
 
                 </Content>
-                <Modal
-                    animationType='fade'
-                    transparent={true}
-                    visible={this.state.visibilityModal}
-                    hardwareAccelerated={true}
-                    onRequestClose={() => {
+                
+                <VisibilityModal
+                    enabled={this.state.visibilityModal}
+                    data={[
+                        {icon:'md-globe',text:'Everyone'},
+                        {icon:'md-people',text:'Project Only'}
+                    ]}
+                    onChangeListener={(text)=>{
+                        this.setState({visibilitySelection:text})
+                    }}
+                    visibilityDisableHandler={()=>{
                         this.setState({visibilityModal:false})
                     }}
-                    style={{
-                        height:500,
-                        width:500,
-                        backgroundColor:'#00000033'
-                    }}
-                >
-                    <TouchableHighlight
-                        style={{
-                            flex:1,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            backgroundColor:'#00000055'
-                        }}
-                        onPress={()=>this.setState({visibilityModal:false})}
-                    >
-                        <View
-                            style={{
-                                
-                                width:'80%',
-                                backgroundColor:'white',
-                                borderRadius:5,
-                                alignItems:'center',
-                                padding:10
-                            }}
-                        >
-                            <View
-                                name='header'
-                                style={{
-                                    flexDirection:'row',
-                                    
-                                    justifyContent: 'center',
-                                    alignItems: 'center'
-                                }}
-                            >
-                                <Icon name='md-eye' style={{fontSize:20,paddingHorizontal:5,color:'black'}} />
-                                <Text style={{
-                                    color: 'black',
-                                    textAlign: 'center'
-                                    
-                                }}
-                                >Visibility</Text>
-                            </View>
-                            
-                            <View style={{
-                                backgroundColor:'#333',
-                                height:1,
-                                width:'100%',
-                                marginVertical: 10
-                            }}/>
-
-                            <TouchableOpacity
-                                style={{
-                                    
-                                    flexDirection: 'row',
-                                    padding:10,
-                                    width:'100%'
-                                }}
-                                onPress={()=>console.log('clicked on anyone')}
-                            >
-                                <Icon name='md-globe' style={{fontSize:20,paddingHorizontal:10,color:'#1c92c4'}} />
-                                <Text style={{
-                                    color: '#1c92c4',
-                                    textAlign: 'center'
-                                    
-                                }}
-                                >Anyone</Text>
-                            </TouchableOpacity>
-                            <View style={{
-                                backgroundColor:'#ddd',
-                                height:1,
-                                width:'90%',
-                                marginVertical: 10
-                            }}/>
-                            <View
-                                style={{
-                                    
-                                    flexDirection: 'row',
-                                    padding:10,
-                                    width:'100%'
-                                }}
-                            >
-                                <Icon name='md-people' style={{fontSize:20,paddingHorizontal:10,color:'#aaa'}} />
-                                <Text style={{
-                                    color: '#aaa',
-                                    textAlign: 'center'
-                                    
-                                }}
-                                >Team</Text>
-                            </View>
-                        </View>
-                    </TouchableHighlight>
-                </Modal>
+                    state={this.state.visibilitySelection}
+                />
             </Container>
             
         );
@@ -310,9 +274,17 @@ const styles = StyleSheet.create({
     },
     buttonText:{
         color: 'white',
-        textAlign: 'center',
-        fontSize:12
+        textAlign: 'center'
+        
     }
 });
 
-export default CreatePost
+const mapStateToProps = (state) => {
+    return {
+        accountAlias:state.user.accountAlias,
+        associate_id: state.user.associate_id
+
+    };
+}
+
+export default connect(mapStateToProps, null)(CreatePost)
