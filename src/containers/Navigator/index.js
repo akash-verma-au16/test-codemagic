@@ -3,7 +3,6 @@ import { createStackNavigator, createAppContainer } from 'react-navigation';
 /* Page Containers */
 import LoginPage from '../LoginPage'
 import ForgotPassword from '../ForgotPassword'
-import Home from '../Home'
 import ConfirmPassword from '../ConfirmPassword'
 import TermsAndConditions from '../TermsAndConditions'
 import SurveyIntro from '../SurveyIntro'
@@ -15,7 +14,6 @@ import TabNavigator from '../TabNavigator'
 /* This stack will contain list of all pages */
 const RootStack = createStackNavigator(
     {
-        Home,
         LoginPage,
         ForgotPassword,
         ConfirmPassword,

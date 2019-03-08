@@ -33,13 +33,7 @@ class Home extends React.Component {
             isSignInLoading: false
         }
     }
-    componentWillMount() {
-        if(this.props.isFreshInstall){
-            clearStackNavigate('TermsAndConditions',this.props)
-        }else if (!this.props.isAuthenticate) {
-            clearStackNavigate('LoginPage',this.props)
-        }
-    }
+    
     signOutHandler = () => {
         this.setState({isSignInLoading:true})
         logout({
@@ -52,6 +46,7 @@ class Home extends React.Component {
                 type: "success"
             })
             clearStackNavigate('LoginPage',this.props)
+            return
         }).catch(()=>{
             Toast.show({
                 text: 'Unable to communicate with server',
@@ -61,15 +56,6 @@ class Home extends React.Component {
         })
     }
 
-    clearDataHandler=()=>{
-        Toast.show({
-            text: 'Data Cleared.. Please reboot the app',
-            type: "success",
-            duration:3000
-        })
-        this.props.clearData()
-        this.props.navigation.navigate('LoginPage')
-    }
     render() {
 
         return (
@@ -120,14 +106,7 @@ class Home extends React.Component {
                                     }}
                                     value='Weekly Questionnaire'
                                 />
-                                <RoundButton
-                                    onPress={()=>{
-                                        this.props.navigation.navigate('CreatePost',{
-                                            
-                                        })
-                                    }}
-                                    value='Leave a note'
-                                />
+                                
                                 <RoundButton
                                     onPress={this.signOutHandler}
                                     value='Sign Out'

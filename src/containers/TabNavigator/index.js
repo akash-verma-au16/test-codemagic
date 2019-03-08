@@ -1,23 +1,14 @@
 import React from 'react';
-import { Text, View } from 'react-native';
 import { Icon } from 'native-base'
 import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
 import Home from '../Home'
 import CreatePost from '../CreatePost'
-class HomeScreen extends React.Component {
-    render() {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>posts</Text>
-            </View>
-        );
-    }
-}
+import ListPost from '../ListPost'
 
 const TabNavigator = createBottomTabNavigator({
-    Home: { screen: HomeScreen },
+    Home: { screen: ListPost },
     CreatePost: { screen: CreatePost },
-    Settings: { screen: Home }
+    Profile: { screen: Home }
 },
 {
     defaultNavigationOptions: ({ navigation }) => ({
@@ -37,8 +28,8 @@ const getTabBarIcon = (navigation, focused, tintColor) => {
     if (routeName === 'Home') {
         iconName = 'md-home'
 
-    } else if (routeName === 'Settings') {
-        iconName = 'md-settings'
+    } else if (routeName === 'Profile') {
+        iconName = 'md-person'
     } else if (routeName === 'CreatePost') {
         iconName = 'md-add'
     }

@@ -21,7 +21,7 @@ import {
 /* Redux */
 import { connect } from 'react-redux'
 /* Assets */
-import image from '../../assets/surveyBackground.jpg'
+import image from '../../assets/image.jpg'
 /* Services */
 import {create_post} from '../../services/post'
 /* Components */
@@ -97,8 +97,12 @@ class CreatePost extends React.Component {
                     type: 'success',
                     duration:3000
                 })
-                this.props.navigation.navigate('TabNavigator')
-                this.setState({isLoading:false})
+                this.setState({
+                    isLoading:false,
+                    text:''
+                })
+                this.props.navigation.navigate('Home',{refresh:true})
+                
             }).catch((error)=>{
                 
                 Toast.show({
@@ -186,6 +190,7 @@ class CreatePost extends React.Component {
                                         textAlignVertical:'top'
                                         
                                     }}
+                                    value={this.state.text}
                                     onChangeText={(text)=>this.setState({text:text})}
                                 />
                                 
@@ -231,8 +236,9 @@ class CreatePost extends React.Component {
                 <VisibilityModal
                     enabled={this.state.visibilityModal}
                     data={[
-                        {icon:'md-globe',text:'Everyone'},
-                        {icon:'md-people',text:'Project Only'}
+                        {icon:'md-globe',text:'Organization'},
+                        {icon:'md-people',text:'Project'},
+                        {icon:'md-person',text:'Private'}
                     ]}
                     onChangeListener={(text)=>{
                         this.setState({visibilitySelection:text})
