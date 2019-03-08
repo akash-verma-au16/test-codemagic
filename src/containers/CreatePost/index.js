@@ -26,6 +26,7 @@ import image from '../../assets/surveyBackground.jpg'
 import {create_post} from '../../services/post'
 /* Components */
 import VisibilityModal from '../VisibilityModal'
+import LoadingModal from '../LoadingModal'
 class CreatePost extends React.Component {
 
     constructor(props) {
@@ -33,7 +34,8 @@ class CreatePost extends React.Component {
         this.state={
             visibilityModal:false,
             visibilitySelection:'',
-            text:''
+            text:'',
+            isLoading:false
         }
 
     }
@@ -87,20 +89,35 @@ class CreatePost extends React.Component {
             message: this.state.text,
             privacy: this.state.visibilitySelection
         }
-        create_post(payload).then(response=>{
+        this.setState({isLoading:true})
+        try {
+            create_post(payload).then(response=>{
+                Toast.show({
+                    text: response.data.message,
+                    type: 'success',
+                    duration:3000
+                })
+                this.props.navigation.navigate('Home')
+                this.setState({isLoading:false})
+            }).catch((error)=>{
+                
+                Toast.show({
+                    text: error.response.data.code,
+                    type: 'danger',
+                    duration:3000
+                })
+                this.setState({isLoading:false})
+                
+            })    
+        } catch (error) {
             Toast.show({
-                text: response.data.message,
-                type: 'success',
-                duration:3000
-            })
-            this.props.navigation.navigate('Home')
-        }).catch(()=>{
-            Toast.show({
-                text: 'Something went wrong',
+                text: 'No internet connection',
                 type: 'danger',
                 duration:3000
             })
-        })
+            this.setState({isLoading:false})
+        }
+        
     }
 
     render() {
@@ -224,6 +241,9 @@ class CreatePost extends React.Component {
                         this.setState({visibilityModal:false})
                     }}
                     state={this.state.visibilitySelection}
+                />
+                <LoadingModal
+                    enabled={this.state.isLoading}
                 />
             </Container>
             
