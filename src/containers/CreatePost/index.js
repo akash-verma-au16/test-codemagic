@@ -135,7 +135,7 @@ class CreatePost extends React.Component {
                     >
 
                         <View name='header' style={styles.headerContainer}>
-                            <Icon name='ios-arrow-back' style={styles.header} onPress={this.goBack} />
+                            <Icon style={styles.header} />
                             <H3 style={styles.headerText}>Leave a note</H3>
                             <Icon name='md-checkmark' style={styles.header} onPress={this.postSubmitHandler} />
                         </View>
