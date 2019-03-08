@@ -11,6 +11,7 @@ import SurveyExit from '../SurveyExit'
 import QuestionContainer from '../QuestionContainer'
 import ForceChangePassword from '../ForceChangePassword'
 import CreatePost from '../CreatePost'
+import TabNavigator from '../TabNavigator'
 /* This stack will contain list of all pages */
 const RootStack = createStackNavigator(
     {
@@ -23,10 +24,11 @@ const RootStack = createStackNavigator(
         SurveyExit,
         QuestionContainer,
         ForceChangePassword,
-        CreatePost
+        CreatePost,
+        TabNavigator
     },
     {
-        initialRouteName: 'Home',
+        initialRouteName: 'TabNavigator',
         defaultNavigationOptions: { /* Applied Header styles to all Component in RootStack */
             header: null
         }

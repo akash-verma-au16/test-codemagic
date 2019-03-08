@@ -43,7 +43,7 @@ class SurveyIntro extends React.Component {
     }
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            this.props.navigation.navigate('Home')
+            this.props.navigation.navigate('TabNavigator')
             return true
         })
     }
@@ -87,7 +87,7 @@ class SurveyIntro extends React.Component {
                         
                     >
                         <View name='header' style={styles.headerContainer}>
-                            <Icon name='ios-arrow-back' style={styles.header} onPress={()=>this.props.navigation.navigate('Home')} />
+                            <Icon name='ios-arrow-back' style={styles.header} onPress={()=>this.props.navigation.navigate('TabNavigator')} />
                             <Image
                                 source={icon}
                                 style={{height: '50%',resizeMode:'contain'}}

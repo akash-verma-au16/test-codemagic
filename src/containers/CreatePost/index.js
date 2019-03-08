@@ -52,7 +52,7 @@ class CreatePost extends React.Component {
 
     goBack = () => {
         if(this.state.text===''){
-            this.props.navigation.navigate('Home')
+            this.props.navigation.navigate('TabNavigator')
         }else{
             Alert.alert(
                 'Are you sure?',
@@ -64,7 +64,7 @@ class CreatePost extends React.Component {
                     },
                     {
                         text: 'OK', onPress: () => {
-                            this.props.navigation.navigate('Home')
+                            this.props.navigation.navigate('TabNavigator')
                         }
                     }
                 ],
@@ -97,7 +97,7 @@ class CreatePost extends React.Component {
                     type: 'success',
                     duration:3000
                 })
-                this.props.navigation.navigate('Home')
+                this.props.navigation.navigate('TabNavigator')
                 this.setState({isLoading:false})
             }).catch((error)=>{
                 

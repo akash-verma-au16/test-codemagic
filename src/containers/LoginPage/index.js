@@ -134,7 +134,7 @@ class LoginPage extends React.Component {
                                 type: "success"
                             })
                             this.props.authenticate(payload);
-                            clearStackNavigate('Home', this.props)
+                            clearStackNavigate('TabNavigator', this.props)
                             
                         }).catch((error) => {
                             

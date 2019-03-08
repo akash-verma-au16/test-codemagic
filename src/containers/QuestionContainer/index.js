@@ -178,7 +178,7 @@ class QuestionContainer extends React.Component {
                 },
                 {
                     text: 'OK', onPress: () => {
-                        clearStackNavigate('Home', this.props)
+                        clearStackNavigate('TabNavigator', this.props)
                     }
                 }
             ],

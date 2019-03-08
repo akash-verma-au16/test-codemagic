@@ -71,7 +71,7 @@ class SurveyExit extends React.Component {
 
     }
     exitSurveyHandler = () => {
-        clearStackNavigate('Home', this.props)
+        clearStackNavigate('TabNavigator', this.props)
     }
 
     render() {
