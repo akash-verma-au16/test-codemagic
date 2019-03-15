@@ -29,6 +29,7 @@ import image from '../../assets/image.jpg'
 /* Services */
 import { login } from '../../services/bAuth'
 import { read_member } from '../../services/tenant'
+import { configureFirebase } from '../../services/firebase'
 /* Utilities */
 import toSentenceCase from '../../utilities/toSentenceCase'
 import clearStackNavigate from '../../utilities/clearStackNavigate'
@@ -134,6 +135,13 @@ class LoginPage extends React.Component {
                                 type: "success"
                             })
                             this.props.authenticate(payload);
+                            //configure firebase for push notification
+                            const email=this.state.email.toLowerCase().trim()
+                            configureFirebase({
+                                firstName,
+                                lastName,
+                                email
+                            })
                             clearStackNavigate('TabNavigator', this.props)
                             
                         }).catch((error) => {
