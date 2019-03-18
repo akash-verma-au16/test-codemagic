@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Navigator from './src/containers/Navigator'
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage ,StatusBar} from 'react-native';
 import { Root } from 'native-base'
 import { createStore, compose } from 'redux'
 import reducer from './src/store/reducers'
@@ -49,6 +49,7 @@ export default class App extends Component {
         return (
             this.state.dataLoaded ?
                 <Root>
+                    <StatusBar backgroundColor='#1c92c4' barStyle='light-content' />
                     <Provider store={this.store}>
                         <Navigator />
                     </Provider>
