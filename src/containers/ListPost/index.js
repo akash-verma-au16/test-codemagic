@@ -106,9 +106,9 @@ class ListPost extends React.Component {
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}>
-                            <Icon name='person' style={{fontSize:20,color:'#ddd'}}/>
+                            <Icon name='person' style={{fontSize:20,color:'white'}}/>
                         </View>
-                        <Text style={{marginHorizontal:10}}>John Snow</Text>
+                        <Text style={{marginHorizontal:10,color:'#333',fontWeight:'500'}}>John Snow</Text>
                     </View>
                     <View style={{
                         backgroundColor: '#ddd',
@@ -151,7 +151,7 @@ class ListPost extends React.Component {
 
         return (
 
-            <Container style={{backgroundColor:'#eee',paddingTop:30}}>
+            <Container style={{backgroundColor:'#eee'}}>
                 <Content
                     contentContainerStyle={styles.container}
                     scrollEnabled={true}
@@ -187,7 +187,7 @@ class ListPost extends React.Component {
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        padding: 10,
+        
         backgroundColor:'#eee'
     },
 

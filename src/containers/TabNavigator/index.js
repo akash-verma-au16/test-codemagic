@@ -17,7 +17,8 @@ const TabNavigator = createBottomTabNavigator({
     }),
     tabBarOptions: {
         activeTintColor: '#1c92c4',
-        inactiveTintColor: '#aaa'
+        inactiveTintColor: 'black',
+        showLabel: false
     }
 }
 );
@@ -34,7 +35,7 @@ const getTabBarIcon = (navigation, focused, tintColor) => {
         iconName = 'md-add'
     }
 
-    return <Icon name={iconName} style={{ fontSize: 20, color: tintColor }} />
+    return <Icon name={iconName} style={{ color: tintColor }} />
 };
 
 export default createAppContainer(TabNavigator);
