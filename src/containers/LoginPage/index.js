@@ -122,7 +122,7 @@ class LoginPage extends React.Component {
                             let firstName = toSentenceCase(response.data.payload.idToken.payload.given_name);
                             let lastName = toSentenceCase(response.data.payload.idToken.payload.family_name);
                             const payload = {
-                                accountAlias: this.state.accountAlias,
+                                accountAlias: this.state.accountAlias.toLowerCase().trim(),
                                 tenant_name: this.state.accountAlias.toLowerCase().trim(),
                                 associate_id:res.data.data.associate_id,
                                 firstName: firstName,
