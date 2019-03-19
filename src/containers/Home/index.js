@@ -9,7 +9,8 @@ import {
     Container,
     Content,
     Toast,
-    Text
+    Text,
+    Icon
 } from 'native-base';
 
 /* Redux */
@@ -33,7 +34,21 @@ class Home extends React.Component {
             isSignInLoading: false
         }
     }
-    
+    static navigationOptions = ({ navigation }) => {
+        return {
+            
+            headerRight: (
+                <Icon name='md-settings' style={
+                    {color: 'white',
+                        margin:20
+                    }
+                } onPress={()=>navigation.navigate('settings')} />
+            ),
+            headerLeft: (
+                <React.Fragment/>
+            )
+        };
+    };
     signOutHandler = () => {
         this.setState({isSignInLoading:true})
         logout({
