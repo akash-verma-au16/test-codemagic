@@ -54,59 +54,36 @@ class Home extends React.Component {
                 <Content
                     contentContainerStyle={styles.container}
                 >
-                    <ImageBackground
-                        source={image}
-                        style={styles.image}
-                    >
-                        <KeyboardAvoidingView
-                            behavior='padding'
 
-                            style={styles.container}
-                        >
-
-                            <Form style={styles.form}>
-
-                                <Logo />
-
-                                <Slogan />
-
-                                <Text style={{color:'white',marginVertical:15}}>Wellcome {this.props.firstName}!</Text>
+                    <Form style={styles.form}>
+                         
+                        <RoundButton
+                            onPress={()=>{
+                                this.props.navigation.navigate('SurveyIntro',{
+                                    surveyId:'3',
+                                    surveyName:'Daily-Questionnaire',
+                                    surveyDescription:'Daily Survey',
+                                    surveyNote:'note',
+                                    surveyLevel:'beginner'
+                                })
+                            }}
+                            value='Daily Questionnaire'
+                        />
+                        <RoundButton
+                            onPress={()=>{
+                                this.props.navigation.navigate('SurveyIntro',{
+                                    surveyId:'1 ',
+                                    surveyName:'Weekly-Questionnaire',
+                                    surveyDescription:'Weekly Survey',
+                                    surveyNote:'note',
+                                    surveyLevel:'beginner'
+                                })
+                            }}
+                            value='Weekly Questionnaire'
+                        />
                                 
-                                <RoundButton
-                                    onPress={()=>{
-                                        this.props.navigation.navigate('SurveyIntro',{
-                                            surveyId:'3',
-                                            surveyName:'Daily-Questionnaire',
-                                            surveyDescription:'Daily Survey',
-                                            surveyNote:'note',
-                                            surveyLevel:'beginner'
-                                        })
-                                    }}
-                                    value='Daily Questionnaire'
-                                />
-                                <RoundButton
-                                    onPress={()=>{
-                                        this.props.navigation.navigate('SurveyIntro',{
-                                            surveyId:'1 ',
-                                            surveyName:'Weekly-Questionnaire',
-                                            surveyDescription:'Weekly Survey',
-                                            surveyNote:'note',
-                                            surveyLevel:'beginner'
-                                        })
-                                    }}
-                                    value='Weekly Questionnaire'
-                                />
-                                
-                                <RoundButton
-                                    onPress={this.signOutHandler}
-                                    value='Sign Out'
-                                    isLoading={this.state.isSignInLoading}
-                                />
-                                
-                            </Form>
-
-                        </KeyboardAvoidingView>
-                    </ImageBackground>
+                    </Form>
+                       
                 </Content>
             </Container>
 

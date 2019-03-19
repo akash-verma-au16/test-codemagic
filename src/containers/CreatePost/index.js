@@ -144,103 +144,92 @@ class CreatePost extends React.Component {
         return (
 
             <Container>
-                <Content
-                    contentContainerStyle={styles.container}
-                >
-                    <ImageBackground
-                        source={image}
-                        style={styles.image}
-                        onLoadEnd={this.loadComponents}
-                    >
 
-                        <View name='content' style={styles.content}>
-                            <View style={{
-                                flex: 1,
-                                backgroundColor: '#fff',
+                <View name='content' style={styles.content}>
+                    <View style={{
+                        flex: 1,
+                        backgroundColor: '#fff',
+                        marginHorizontal: 10,
+                        marginBottom: 20,
+                        borderRadius: 5,
+                        alignItems: 'center'
+                    }}>
+                        <TouchableOpacity
+                            style={{
+                                backgroundColor: '#1c92c4',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                paddingHorizontal: 10,
+                                paddingVertical: 5,
                                 marginHorizontal: 10,
-                                marginBottom: 20,
-                                borderRadius: 5,
-                                alignItems: 'center'
-                            }}>
-                                <TouchableOpacity
-                                    style={{
-                                        backgroundColor: '#1c92c4',
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        paddingHorizontal: 10,
-                                        paddingVertical: 5,
-                                        marginHorizontal: 10,
-                                        marginTop: 10,
-                                        borderRadius: 5
-                                    }}
-                                    onPress={() => this.setState({ visibilityModal: true })}
-                                >
-                                    <Icon name='md-eye' style={{ fontSize: 12, paddingHorizontal: 5, color: 'white' }} />
-                                    <Text style={styles.buttonText}>{this.state.visibilitySelection}</Text>
-                                </TouchableOpacity>
-                                <View style={{
-                                    backgroundColor: '#333',
-                                    height: 1,
-                                    width: '90%',
-                                    marginVertical: 10
-                                }} />
-                                <TextInput
-                                    multiline={true}
-                                    maxLength={255}
-                                    placeholder='Write something here'
-                                    scrollEnabled={true}
-                                    style={{
+                                marginTop: 10,
+                                borderRadius: 5
+                            }}
+                            onPress={() => this.setState({ visibilityModal: true })}
+                        >
+                            <Icon name='md-eye' style={{ fontSize: 12, paddingHorizontal: 5, color: 'white' }} />
+                            <Text style={styles.buttonText}>{this.state.visibilitySelection}</Text>
+                        </TouchableOpacity>
+                        <View style={{
+                            backgroundColor: '#333',
+                            height: 1,
+                            width: '90%',
+                            marginVertical: 10
+                        }} />
+                        <TextInput
+                            multiline={true}
+                            maxLength={255}
+                            placeholder='Write something here'
+                            scrollEnabled={true}
+                            style={{
 
-                                        padding: 20,
-                                        flex: 1,
-                                        fontSize: 20,
-                                        width: '100%',
-                                        textAlignVertical: 'top'
+                                padding: 20,
+                                flex: 1,
+                                fontSize: 20,
+                                width: '100%',
+                                textAlignVertical: 'top'
 
-                                    }}
-                                    value={this.state.text}
-                                    onChangeText={(text) => this.setState({ text: text })}
-                                />
+                            }}
+                            value={this.state.text}
+                            onChangeText={(text) => this.setState({ text: text })}
+                        />
 
-                                <View style={{
-                                    backgroundColor: '#333',
-                                    height: 1,
-                                    width: '70%',
-                                    marginVertical: 10
-                                }} />
+                        <View style={{
+                            backgroundColor: '#333',
+                            height: 1,
+                            width: '70%',
+                            marginVertical: 10
+                        }} />
 
-                                <View name='buttonContainer' style={{
-                                    marginHorizontal: 5,
-                                    marginBottom: 10,
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}>
-                                    <TouchableOpacity style={styles.button} onPress={() => Toast.show({
-                                        text: 'coming soon!',
-                                        type: 'success',
-                                        duration: 3000
-                                    })}>
-                                        <Icon name='md-people' style={{ fontSize: fontSize, paddingHorizontal: 5, color: 'white' }} />
-                                        <Text style={[styles.buttonText, { fontSize: fontSize }]}>Endorse</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.button} onPress={() => Toast.show({
-                                        text: 'coming soon!',
-                                        type: 'success',
-                                        duration: 3000
-                                    })}>
-                                        <Icon name='md-thumbs-up' style={{ fontSize: fontSize, paddingHorizontal: 5, color: 'white' }} />
-                                        <Text style={[styles.buttonText, { fontSize: fontSize }]}>Gratitude</Text>
-                                    </TouchableOpacity>
-
-                                </View>
-                            </View>
+                        <View name='buttonContainer' style={{
+                            marginHorizontal: 5,
+                            marginBottom: 10,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>
+                            <TouchableOpacity style={styles.button} onPress={() => Toast.show({
+                                text: 'coming soon!',
+                                type: 'success',
+                                duration: 3000
+                            })}>
+                                <Icon name='md-people' style={{ fontSize: fontSize, paddingHorizontal: 5, color: 'white' }} />
+                                <Text style={[styles.buttonText, { fontSize: fontSize }]}>Endorse</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.button} onPress={() => Toast.show({
+                                text: 'coming soon!',
+                                type: 'success',
+                                duration: 3000
+                            })}>
+                                <Icon name='md-thumbs-up' style={{ fontSize: fontSize, paddingHorizontal: 5, color: 'white' }} />
+                                <Text style={[styles.buttonText, { fontSize: fontSize }]}>Gratitude</Text>
+                            </TouchableOpacity>
 
                         </View>
-                    </ImageBackground>
+                    </View>
 
-                </Content>
+                </View>
 
                 <VisibilityModal
                     enabled={this.state.visibilityModal}
