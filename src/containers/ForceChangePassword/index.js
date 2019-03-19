@@ -28,8 +28,7 @@ import image from '../../assets/image.jpg'
 import key from '../../assets/key.png'
 /* Services */
 import { forceChangePassword } from '../../services/bAuth'
-/* Utilities */
-import clearStackNavigate from '../../utilities/clearStackNavigate'
+
 /* Styles */
 import styles from '../ForgotPassword/style'
 class ForceChangePassword extends React.Component {
@@ -145,7 +144,7 @@ class ForceChangePassword extends React.Component {
                             type: "success"
                         })
                         this.setState({ isButtonLoading: false })
-                        clearStackNavigate('LoginPage', this.props)
+                        this.props.navigation.navigate('LoginPage')
                     }).catch((error) => {
                         if (error.response.data.code) {
                             Toast.show({

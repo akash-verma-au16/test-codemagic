@@ -19,8 +19,7 @@ import {
 import {list_posts} from '../../services/post'
 /* Components */
 import LoadingModal from '../LoadingModal'
-/* Utilities */
-import clearStackNavigate from '../../utilities/clearStackNavigate'
+import { NavigationEvents } from 'react-navigation';
 class ListPost extends React.Component {
     constructor(props){
         super(props)
@@ -29,7 +28,7 @@ class ListPost extends React.Component {
         }
         this.postList=[]
     }
-    static navigationOptions = ({ navigation }) => {
+    static navigationOptions = () => {
         return {
             
             headerRight: (
@@ -56,7 +55,7 @@ class ListPost extends React.Component {
             this.props.navigation.navigate('LoginPage')
             return
         }
-        this.loadPosts()
+        
     }
 
     commingSoon=()=>{
@@ -192,7 +191,9 @@ class ListPost extends React.Component {
                 <LoadingModal
                     enabled={this.state.isLoading}
                 />
-                
+                <NavigationEvents
+                    onWillFocus={() => this.loadPosts()}
+                />
             </Container>
 
         );

@@ -25,7 +25,7 @@ import RoundButton from '../../components/RoundButton'
 /* Assets */
 import image from '../../assets/surveyBackground.jpg'
 import icon from '../../assets/trophy.png'
-import clearStackNavigate from '../../utilities/clearStackNavigate';
+
 class SurveyExit extends React.Component {
 
     constructor(props) {
@@ -71,7 +71,7 @@ class SurveyExit extends React.Component {
 
     }
     exitSurveyHandler = () => {
-        clearStackNavigate('TabNavigator', this.props)
+        this.props.navigation.navigate('TabNavigator')
     }
 
     render() {

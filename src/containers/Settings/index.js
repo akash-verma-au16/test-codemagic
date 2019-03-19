@@ -18,7 +18,6 @@ import {
 } from 'native-base';
 /* Services */
 import {logout} from '../../services/bAuth'
-import clearStackNavigate from '../../utilities/clearStackNavigate'
 /* Custom Components */
 import LoadingModal from '../LoadingModal'
 class CreatePost extends React.Component {

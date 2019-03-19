@@ -28,7 +28,6 @@ import image from '../../assets/surveyBackground.jpg'
 import { save_answers } from '../../services/dataApi'
 import {give_rewards} from '../../services/rewards'
 /* Utilities */
-import clearStackNavigate from '../../utilities/clearStackNavigate'
 import { IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
 class QuestionContainer extends React.Component {
 
@@ -178,7 +177,7 @@ class QuestionContainer extends React.Component {
                 },
                 {
                     text: 'OK', onPress: () => {
-                        clearStackNavigate('TabNavigator', this.props)
+                        this.props.navigation.navigate('TabNavigator')
                     }
                 }
             ],

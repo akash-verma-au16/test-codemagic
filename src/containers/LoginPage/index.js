@@ -33,7 +33,7 @@ import { read_member } from '../../services/tenant'
 import { configureFirebase } from '../../services/firebase'
 /* Utilities */
 import toSentenceCase from '../../utilities/toSentenceCase'
-import clearStackNavigate from '../../utilities/clearStackNavigate'
+
 class LoginPage extends React.Component {
 
     constructor(props) {
@@ -151,8 +151,7 @@ class LoginPage extends React.Component {
                                 lastName,
                                 email
                             })
-                            clearStackNavigate('TabNavigator', this.props)
-                            
+                            this.props.navigation.navigate('TabNavigator')
                         }).catch((error) => {
                             
                             Toast.show({

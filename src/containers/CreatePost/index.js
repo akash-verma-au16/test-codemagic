@@ -15,7 +15,6 @@ import {
     Container,
     Content,
     Icon,
-    H3,
     Toast
 } from 'native-base';
 /* Redux */
@@ -117,7 +116,7 @@ class CreatePost extends React.Component {
                     isLoading: false,
                     text: ''
                 })
-                this.props.navigation.navigate('Home', { refresh: true })
+                this.props.navigation.navigate('Home')
 
             }).catch((error) => {
 
