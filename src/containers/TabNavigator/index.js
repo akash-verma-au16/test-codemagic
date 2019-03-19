@@ -1,14 +1,66 @@
 import React from 'react';
 import { Icon } from 'native-base'
-import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
+import { createStackNavigator, createBottomTabNavigator, createAppContainer } from 'react-navigation';
 import Home from '../Home'
 import CreatePost from '../CreatePost'
 import ListPost from '../ListPost'
 
+const HomeStack = createStackNavigator({
+    'home': {
+        screen: ListPost,
+        navigationOptions: {
+            headerStyle: {
+                backgroundColor: '#1c92c4'
+            },
+            title: 'HappyWorks',
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+                textAlign:"center",
+                flex: 1
+            }
+        }
+    }
+});
+const CreatePostStack = createStackNavigator({
+    'createPost': {
+        screen: CreatePost,
+        navigationOptions: {
+            headerStyle: {
+                backgroundColor: '#1c92c4'
+            },
+            title: 'Leave a note',
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+                textAlign:"center",
+                flex: 1
+            }
+        }
+    }
+});
+
+const ProfileStack = createStackNavigator({
+    'profile': {
+        screen: Home,
+        navigationOptions: {
+            headerStyle: {
+                backgroundColor: '#1c92c4'
+            },
+            title: 'Profile',
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+                textAlign:"center",
+                flex: 1
+            }
+        }
+    }
+});
 const TabNavigator = createBottomTabNavigator({
-    Home: { screen: ListPost },
-    CreatePost: { screen: CreatePost },
-    Profile: { screen: Home }
+    Home: { screen: HomeStack },
+    CreatePost: { screen: CreatePostStack },
+    Profile: { screen: ProfileStack }
 },
 {
     defaultNavigationOptions: ({ navigation }) => ({
