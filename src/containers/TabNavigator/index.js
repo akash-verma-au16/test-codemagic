@@ -4,7 +4,7 @@ import { createStackNavigator, createBottomTabNavigator, createAppContainer } fr
 import Home from '../Home'
 import CreatePost from '../CreatePost'
 import ListPost from '../ListPost'
-
+import Settings from '../Settings'
 const HomeStack = createStackNavigator({
     'home': {
         screen: ListPost,
@@ -48,6 +48,21 @@ const ProfileStack = createStackNavigator({
                 backgroundColor: '#1c92c4'
             },
             title: 'Profile',
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+                textAlign:"center",
+                flex: 1
+            }
+        }
+    },
+    'settings': {
+        screen: Settings,
+        navigationOptions: {
+            headerStyle: {
+                backgroundColor: '#1c92c4'
+            },
+            title: 'Settings',
             headerTintColor: '#fff',
             headerTitleStyle: {
                 fontWeight: 'bold',

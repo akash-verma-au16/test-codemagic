@@ -29,7 +29,25 @@ class ListPost extends React.Component {
         }
         this.postList=[]
     }
-
+    static navigationOptions = ({ navigation }) => {
+        return {
+            
+            headerRight: (
+                <Icon name='md-notifications' style={
+                    {color: 'white',
+                        margin:20
+                    }
+                } onPress={()=>Toast.show({
+                    text: 'List of notifications will be displayed here',
+                    type: 'warning',
+                    duration:3000
+                })} />
+            ),
+            headerLeft: (
+                <React.Fragment/>
+            )
+        };
+    };
     componentWillMount() {
         if(this.props.isFreshInstall){
             clearStackNavigate('TermsAndConditions',this.props)
