@@ -8,7 +8,6 @@ import {
     Form,
     Container,
     Content,
-    Toast,
     Text,
     Icon
 } from 'native-base';
@@ -22,10 +21,7 @@ import Slogan from '../../components/Slogan'
 import RoundButton from '../../components/RoundButton'
 /* Assets */
 import image from '../../assets/image.jpg'
-/* Utilities */
-import clearStackNavigate from '../../utilities/clearStackNavigate'
-/* Services */
-import {logout} from '../../services/bAuth'
+
 class Home extends React.Component {
     constructor(props) {
         super(props)
@@ -49,27 +45,6 @@ class Home extends React.Component {
             )
         };
     };
-    signOutHandler = () => {
-        this.setState({isSignInLoading:true})
-        logout({
-            accountAlias: this.props.accountAlias,
-            email:this.props.email
-        }).then(()=>{
-            this.props.deAuthenticate()
-            Toast.show({
-                text: 'Signed out Successfully',
-                type: "success"
-            })
-            clearStackNavigate('LoginPage',this.props)
-            return
-        }).catch(()=>{
-            Toast.show({
-                text: 'Unable to communicate with server',
-                type: "danger"
-            })
-            this.setState({isSignInLoading:false})
-        })
-    }
 
     render() {
 

@@ -4,7 +4,8 @@ import {
     ImageBackground,
     Image,
     TouchableOpacity,
-    Animated
+    Animated,
+    BackHandler
 } from 'react-native';
 import {
     Form,
@@ -47,7 +48,16 @@ class ForgotPassword extends React.Component {
         this.textInputAccountAlias = React.createRef();
         this.textInputEmail = React.createRef(); 
     }
+    componentDidMount() {
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            this.props.navigation.navigate('LoginPage')
+            return true
+        })
+    }
 
+    componentWillUnmount() {
+        this.backHandler.remove()
+    }
     forgotPasswordHandler = () => {
         /* Hiding the keyboard to prevent Toast overlap */
         Keyboard.dismiss()

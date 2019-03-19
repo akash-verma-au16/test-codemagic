@@ -4,7 +4,9 @@ import {
     ImageBackground,
     Image,
     TouchableOpacity,
-    Animated
+    Animated,
+    Alert,
+    BackHandler
 } from 'react-native';
 import {
     Form,
@@ -45,7 +47,33 @@ class ConfirmPassword extends React.Component {
         this.textInputOtp = React.createRef();
         this.textInputPassword = React.createRef();
     }
+    componentDidMount() {
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            
+            Alert.alert(
+                'Are you sure?',
+                'Otp has already been sent and will expire after going back',
+                [
+                    {
+                        text: 'Cancel',
+                        style: 'cancel'
+                    },
+                    {
+                        text: 'OK', onPress: () => {
+                            this.props.navigation.navigate('LoginPage')
+                        }
+                    }
+                ],
+                { cancelable: false },
+            )
+            return true
+        })
+    }
 
+    componentWillUnmount() {
+        this.backHandler.remove()
+    }
+    
     confirmPasswordHandler = () => {
         /* Hiding the keyboard to prevent Toast overlap */
         Keyboard.dismiss()

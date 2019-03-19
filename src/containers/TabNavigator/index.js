@@ -5,6 +5,7 @@ import Home from '../Home'
 import CreatePost from '../CreatePost'
 import ListPost from '../ListPost'
 import Settings from '../Settings'
+
 const HomeStack = createStackNavigator({
     'home': {
         screen: ListPost,

@@ -5,7 +5,9 @@ import {
     TouchableOpacity,
     FlatList
 } from 'react-native';
-
+/* Redux */
+import { connect } from 'react-redux'
+import { auth,dev } from '../../store/actions'
 /* Native Base */
 import {
     Container,
@@ -14,8 +16,18 @@ import {
     H3,
     Toast
 } from 'native-base';
-
+/* Services */
+import {logout} from '../../services/bAuth'
+import clearStackNavigate from '../../utilities/clearStackNavigate'
+/* Custom Components */
+import LoadingModal from '../LoadingModal'
 class CreatePost extends React.Component {
+    constructor(props){
+        super(props)
+        this.state={
+            isLoading:false
+        }
+    }
     static navigationOptions = () => {
         return {
             
@@ -60,10 +72,32 @@ class CreatePost extends React.Component {
         {
             key:'Logout',
             icon:'md-log-out',
-            onPress:()=>this.toast()
+            onPress:()=>this.signOutHandler()
         }
     ]
 
+    signOutHandler = () => {
+        this.setState({isLoading:true})
+        logout({
+            accountAlias: this.props.accountAlias,
+            email:this.props.email
+        }).then(()=>{
+            this.props.deAuthenticate()
+            this.setState({isLoading:false})
+            Toast.show({
+                text: 'Signed out Successfully',
+                type: "success"
+            })
+            this.props.navigation.navigate('LoginPage')
+            return
+        }).catch(()=>{
+            Toast.show({
+                text: 'Unable to communicate with server',
+                type: "danger"
+            })
+            this.setState({isLoading:false})
+        })
+    }
     render() {
 
         return (
@@ -114,6 +148,9 @@ class CreatePost extends React.Component {
                         }
                     />
                 </Content>
+                <LoadingModal
+                    enabled={this.state.isLoading}
+                />
             </Container>
 
         );
@@ -127,5 +164,18 @@ const styles = StyleSheet.create({
         color:'#1c92c4'
     }
 })
+const mapStateToProps = (state) => {
+    return {
+        accountAlias: state.user.accountAlias,
+        email: state.user.emailAddress
 
-export default CreatePost
+    };
+}
+const mapDispatchToProps = (dispatch) => {
+    return {
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        clearData: () => dispatch({ type: dev.CLEAR_DATA })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CreatePost)

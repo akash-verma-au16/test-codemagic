@@ -4,7 +4,8 @@ import {
     Keyboard,
     ImageBackground,
     TouchableOpacity,
-    Animated
+    Animated,
+    BackHandler
 } from 'react-native';
 
 /* Native Base */
@@ -53,7 +54,15 @@ class LoginPage extends React.Component {
         this.textInputEmail = React.createRef();
         this.textInputPassword = React.createRef();
     }
+    componentDidMount() {
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            return true
+        })
+    }
 
+    componentWillUnmount() {
+        this.backHandler.remove()
+    }
     loadComponents = () => {
         Animated.sequence([
             Animated.parallel([

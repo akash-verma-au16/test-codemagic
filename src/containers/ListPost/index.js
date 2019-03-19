@@ -50,15 +50,12 @@ class ListPost extends React.Component {
     };
     componentWillMount() {
         if(this.props.isFreshInstall){
-            clearStackNavigate('TermsAndConditions',this.props)
+            this.props.navigation.navigate('TermsAndConditions')
             return
         }else if (!this.props.isAuthenticate) {
-            clearStackNavigate('LoginPage',this.props)
+            this.props.navigation.navigate('LoginPage')
             return
         }
-        this.loadPosts()
-    }
-    componentWillReceiveProps(){    
         this.loadPosts()
     }
 
