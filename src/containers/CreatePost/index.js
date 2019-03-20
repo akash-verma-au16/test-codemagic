@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     StyleSheet,
-    ImageBackground,
     View,
     Alert,
     BackHandler,
@@ -13,14 +12,11 @@ import {
 /* Native Base */
 import {
     Container,
-    Content,
     Icon,
     Toast
 } from 'native-base';
 /* Redux */
 import { connect } from 'react-redux'
-/* Assets */
-import image from '../../assets/image.png'
 /* Services */
 import { create_post } from '../../services/post'
 /* Components */

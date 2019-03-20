@@ -20,7 +20,7 @@ import {
 import {logout} from '../../services/bAuth'
 /* Custom Components */
 import LoadingModal from '../LoadingModal'
-class Notifications extends React.Component {
+class ListSurvey extends React.Component {
     constructor(props){
         super(props)
         this.state={
@@ -170,4 +170,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Notifications)
+export default connect(mapStateToProps, mapDispatchToProps)(ListSurvey)

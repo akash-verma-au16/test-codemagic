@@ -5,7 +5,7 @@ import Home from '../Home'
 import CreatePost from '../CreatePost'
 import ListPost from '../ListPost'
 import Settings from '../Settings'
-import Notifications from '../Notifications'
+import ListSurvey from '../ListSurvey'
 const HomeStack = createStackNavigator({
     'home': {
         screen: ListPost,
@@ -22,13 +22,13 @@ const HomeStack = createStackNavigator({
             }
         }
     },
-    'notifications': {
-        screen: Notifications,
+    'listSurvey': {
+        screen: ListSurvey,
         navigationOptions: {
             headerStyle: {
                 backgroundColor: '#1c92c4'
             },
-            title: 'Notifications',
+            title: 'Surveys',
             headerTintColor: '#fff',
             headerTitleStyle: {
                 fontWeight: 'bold',

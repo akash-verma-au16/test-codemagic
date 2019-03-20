@@ -32,11 +32,11 @@ class ListPost extends React.Component {
         return {
             
             headerRight: (
-                <Icon name='md-notifications' style={
+                <Icon name='md-stats' style={
                     {color: 'white',
                         margin:20
                     }
-                } onPress={()=>navigation.navigate('notifications')} />
+                } onPress={()=>navigation.navigate('listSurvey')} />
             ),
             headerLeft: (
                 <React.Fragment/>
