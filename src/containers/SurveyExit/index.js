@@ -125,7 +125,7 @@ class SurveyExit extends React.Component {
                                 <RoundButton
                                     onPress={this.exitSurveyHandler}
                                     value='finish'
-
+                                    isLight={false}
                                 />
                             </Form>
                         </View>

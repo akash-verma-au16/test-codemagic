@@ -24,7 +24,7 @@ import Slogan from '../../components/Slogan'
 import TextInput from '../../components/TextInput'
 import RoundButton from '../../components/RoundButton'
 /* Assets */
-import image from '../../assets/image.jpg'
+import image from '../../assets/image.png'
 import key from '../../assets/key.png'
 /* Services */
 import { forceChangePassword } from '../../services/bAuth'
@@ -230,6 +230,7 @@ class ForceChangePassword extends React.Component {
                                     onPress={this.forceChangePasswordHandler}
                                     value='Submit'
                                     isLoading={this.state.isButtonLoading}
+                                    isLight={false}
                                 />
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate('LoginPage')}>
                                     <Text style={styles.navigationLink}>Back to Login Page</Text>

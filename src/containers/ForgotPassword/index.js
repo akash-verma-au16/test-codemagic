@@ -13,7 +13,8 @@ import {
     Content,
     Toast,
     View,
-    Text
+    Text,
+    Icon
 } from 'native-base';
 /* Redux */
 import { connect } from 'react-redux'
@@ -24,7 +25,7 @@ import Slogan from '../../components/Slogan'
 import TextInput from '../../components/TextInput'
 import RoundButton from '../../components/RoundButton'
 /* Assets */
-import image from '../../assets/image.jpg'
+import image from '../../assets/image.png'
 import key from '../../assets/key.png'
 /* Services */
 import { forgotPassword } from '../../services/bAuth'
@@ -134,7 +135,7 @@ class ForgotPassword extends React.Component {
                             <View style={styles.imageWrapper}>
                                 {/* This wrapper will shrink based on screen size making room for other components */}
                                 <Animated.View style={[styles.imageContainer,{opacity:fade}]}>
-                                    <Image source={key} style={styles.icon} />
+                                    <Icon name='ios-key' style={styles.icon} />
                                 </Animated.View>
                             </View>
                             <View
@@ -166,6 +167,7 @@ class ForgotPassword extends React.Component {
                                     onPress={this.forgotPasswordHandler}
                                     value='Reset Password'
                                     isLoading={this.state.isButtonLoading}
+                                    isLight={false}
                                 />
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate('LoginPage')}>
                                     <Text style={styles.navigationLink}>Back to Login Page</Text>

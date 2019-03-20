@@ -17,7 +17,7 @@ export default StyleSheet.create({
         maxHeight: 100,
         aspectRatio: 1 / 1,
         borderRadius: 50,
-        backgroundColor: '#1c92c4',
+        backgroundColor: '#fff',
         justifyContent: 'center',
         alignItems: 'center',
         margin: 15
@@ -27,11 +27,6 @@ export default StyleSheet.create({
         alignItems:'center',
         justifyContent:'center'
     },
-    icon: {
-        height: '60%',
-        aspectRatio: 1 / 1
-    }
-    ,
     header: {
         fontWeight: "bold",
         margin: 15,
@@ -67,6 +62,10 @@ export default StyleSheet.create({
     navigationLink: {
         color: '#1c92c4',
         marginBottom:15
+    },
+    icon: {
+        fontSize: 50,
+        paddingHorizontal: 10,
+        color:'#1c92c4'
     }
-
 })

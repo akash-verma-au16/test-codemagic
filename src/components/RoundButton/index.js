@@ -5,16 +5,14 @@ import { Button, Spinner, Text, Item } from 'native-base';
 const RoundButton = (props) => (
     <Item last style={styles.item}>
         <Button
-            disabled={props.isLoading || props.isDisabled}
+            disabled={props.isLoading}
             block
-            style={props.isDisabled ?
-                { ...styles.button, ...styles.buttonDisabled }
-                :styles.button}
+            style={[styles.button,{backgroundColor: props.isLight?'#fff':'#1c92c4'},props.isDisabled?styles.buttonDisabled:null]}
             onPress={props.onPress}>
             {props.isLoading ?
-                <Spinner color='white' />
+                <Spinner color={props.isLight?'#1c92c4':'#fff'} />
                 :
-                <Text>
+                <Text style={{color: props.isLight?'#1c92c4':'#fff'}}>
                     {props.value}
                 </Text>
             }
@@ -34,14 +32,13 @@ const styles = StyleSheet.create({
     },
     button: {
         justifyContent: "center",
-        backgroundColor: '#1c92c4',
         paddingVertical: 20,
         borderRadius: 10,
         width: Dimensions.get('window').width - 30,
         height: 60
     },
     buttonDisabled: {
-        backgroundColor: '#adadad'
+        backgroundColor: '#d3d3d3'
     }
 })
 

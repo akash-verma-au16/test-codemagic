@@ -20,7 +20,7 @@ import {
 /* Redux */
 import { connect } from 'react-redux'
 /* Assets */
-import image from '../../assets/image.jpg'
+import image from '../../assets/image.png'
 /* Services */
 import { create_post } from '../../services/post'
 /* Components */

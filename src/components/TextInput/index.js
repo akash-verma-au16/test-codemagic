@@ -35,7 +35,7 @@ class InputText extends React.Component {
                     returnKeyType={"next"}
                     selectionColor='#1c92c4'
                     placeholderTextColor={this.baseColor}
-                    onFocus={() => this.setState({ borderColor: '#1c92c4' })}
+                    onFocus={() => this.setState({ borderColor: '#64acc9' })}
                     onBlur={() => this.setState({ borderColor: this.baseColor })}
                     blurOnSubmit={false}
                     ref={this.props.inputRef}

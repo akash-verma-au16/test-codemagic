@@ -108,6 +108,7 @@ class SurveyIntro extends React.Component {
                                     onPress={this.readSurveyHandler}
                                     value='start'
                                     isLoading={this.state.isLoading}
+                                    isLight={false}
                                 />
                             </Form>
                         </View>

@@ -26,7 +26,7 @@ import Slogan from '../../components/Slogan'
 import TextInput from '../../components/TextInput'
 import RoundButton from '../../components/RoundButton'
 /* Assets */
-import image from '../../assets/image.jpg'
+import image from '../../assets/image.png'
 /* Services */
 import { login } from '../../services/bAuth'
 import { read_member } from '../../services/tenant'
@@ -286,6 +286,7 @@ class LoginPage extends React.Component {
                                     onPress={this.signinHandler}
                                     value='Sign In Now!'
                                     isLoading={this.state.isSignInLoading}
+                                    isLight={true}
                                 />
                                 <TouchableOpacity onPress={this.forgotPasswordHandler}>
                                     <Text style={styles.navigationLink}>Forgot Password?</Text>
