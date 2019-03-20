@@ -50,11 +50,6 @@ class Settings extends React.Component {
             onPress:()=>this.toast()
         },
         {
-            key:'Change Password',
-            icon:'md-key',
-            onPress:()=>this.toast()
-        },
-        {
             key:'Privacy Policy',
             icon:'md-lock',
             onPress:()=>this.toast()
