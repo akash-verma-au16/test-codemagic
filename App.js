@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import Navigator from './src/containers/Navigator'
-import { AsyncStorage ,StatusBar} from 'react-native';
+import { AsyncStorage ,StatusBar,Alert} from 'react-native';
 import { Root } from 'native-base'
 import { createStore, compose } from 'redux'
 import reducer from './src/store/reducers'
 import { Provider } from 'react-redux'
+import firebase from 'react-native-firebase';
 export default class App extends Component {
 
     constructor(props) {
@@ -45,6 +46,71 @@ export default class App extends Component {
             // Error retrieving data
         }
     }
+
+    async componentDidMount() {
+        this.checkPermission();
+        this.createNotificationListeners();
+    }
+
+    componentWillUnmount() {
+        this.notificationListener();
+        this.notificationOpenedListener();
+    }
+    //1
+    async checkPermission() {
+        const enabled = await firebase.messaging().hasPermission();
+        if (!enabled) {
+            this.requestPermission();
+        } 
+    }
+    async createNotificationListeners() {
+        /*
+        * Triggered when a particular notification has been received in foreground
+        * */
+        this.notificationListener = firebase.notifications().onNotification((notification) => {
+            const { title, body } = notification;
+            this.showAlert(title, body);
+            const localNotification = new firebase.notifications.Notification({
+                sound: 'default',
+                show_in_foreground: true
+            })
+                .setNotificationId(notification.notificationId)
+                .setTitle(notification.title)
+                .setSubtitle(notification.subtitle)
+                .setBody(notification.body)
+                .setData(notification.data)
+                .android.setChannelId('channelId') // e.g. the id you chose above
+                .android.setColor('#000000') // you can set a color here
+                .android.setPriority(firebase.notifications.Android.Priority.High);
+            firebase.notifications()
+                .displayNotification(localNotification)
+                .catch(err => console.error(err));
+        });
+
+    }
+
+    showAlert(title, body) {
+        Alert.alert(
+            title, body,
+            [
+                { text: 'OK', onPress: () => console.log('OK Pressed') }
+            ],
+            { cancelable: false },
+        );
+    }
+
+    //2
+    async requestPermission() {
+        try {
+            await firebase.messaging().requestPermission();
+            // User has authorised
+            this.getToken();
+        } catch (error) {
+            // User has rejected permissions
+            console.log('permission rejected');
+        }
+    }
+
     render() {
         return (
             this.state.dataLoaded ?
