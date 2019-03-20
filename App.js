@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Navigator from './src/containers/Navigator'
-import { AsyncStorage ,StatusBar,Alert} from 'react-native';
+import { AsyncStorage, StatusBar, Alert } from 'react-native';
 import { Root } from 'native-base'
 import { createStore, compose } from 'redux'
 import reducer from './src/store/reducers'
@@ -61,15 +61,20 @@ export default class App extends Component {
         const enabled = await firebase.messaging().hasPermission();
         if (!enabled) {
             this.requestPermission();
-        } 
+        }
     }
     async createNotificationListeners() {
+        const channel = new firebase.notifications.Android.Channel(
+            '1',
+            'happyworks',
+            firebase.notifications.Android.Importance.Max
+        ).setDescription('A natural description of the channel');
+        firebase.notifications().android.createChannel(channel);
+
         /*
         * Triggered when a particular notification has been received in foreground
         * */
         this.notificationListener = firebase.notifications().onNotification((notification) => {
-            const { title, body } = notification;
-            this.showAlert(title, body);
             const localNotification = new firebase.notifications.Notification({
                 sound: 'default',
                 show_in_foreground: true
@@ -79,24 +84,14 @@ export default class App extends Component {
                 .setSubtitle(notification.subtitle)
                 .setBody(notification.body)
                 .setData(notification.data)
-                .android.setChannelId('channelId') // e.g. the id you chose above
-                .android.setColor('#000000') // you can set a color here
+                .android.setChannelId('1') 
+                .android.setColor('#000000')
                 .android.setPriority(firebase.notifications.Android.Priority.High);
             firebase.notifications()
                 .displayNotification(localNotification)
                 .catch(err => console.error(err));
         });
 
-    }
-
-    showAlert(title, body) {
-        Alert.alert(
-            title, body,
-            [
-                { text: 'OK', onPress: () => console.log('OK Pressed') }
-            ],
-            { cancelable: false },
-        );
     }
 
     //2
@@ -107,7 +102,6 @@ export default class App extends Component {
             this.getToken();
         } catch (error) {
             // User has rejected permissions
-            console.log('permission rejected');
         }
     }
 
