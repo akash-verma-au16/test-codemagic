@@ -48,7 +48,7 @@ module.exports = {
         "quotes": [0, "single"],
         "indent": [2, 4],
         "jsx-quotes": [1,"prefer-single"],
-        "react/jsx-no-undef": 1,
+        "react/jsx-no-undef": 2,
         "react/jsx-uses-react": 1,
         "react/jsx-uses-vars": 1,
         "react/prop-types": 0,

@@ -1,47 +1,48 @@
 import React from 'react';
-import { 
-    StyleSheet, 
-    KeyboardAvoidingView, 
-    ImageBackground 
+import {
+    StyleSheet,
+    View,
+    Dimensions,
+    Image
 } from 'react-native';
 import {
-    Form,
+
     Container,
     Content,
     Text,
-    Icon
+    Icon,
+    H3,
+    H2
+
 } from 'native-base';
 
 /* Redux */
 import { connect } from 'react-redux'
-import { auth,dev } from '../../store/actions'
-/* Custom components */
-import Logo from '../../components/Logo'
-import Slogan from '../../components/Slogan'
-import RoundButton from '../../components/RoundButton'
+
 /* Assets */
-import image from '../../assets/image.jpg'
+import image from '../../assets/profileImage.png'
 
 class Home extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            
+
             isSignInLoading: false
         }
     }
     static navigationOptions = ({ navigation }) => {
         return {
-            
+
             headerRight: (
                 <Icon name='md-settings' style={
-                    {color: 'white',
-                        margin:20
+                    {
+                        color: 'white',
+                        margin: 20
                     }
-                } onPress={()=>navigation.navigate('settings')} />
+                } onPress={() => navigation.navigate('settings')} />
             ),
             headerLeft: (
-                <React.Fragment/>
+                <React.Fragment />
             )
         };
     };
@@ -51,7 +52,40 @@ class Home extends React.Component {
         return (
 
             <Container>
-               
+                <Content style={{flex:1}} contentContainerStyle={{alignItems:'center'}} scrollEnabled={true}>
+                    
+                    <Image 
+                        style={{ borderRadius: Dimensions.get('window').width/2, width:100,height:100, aspectRatio:1/1 , margin:10}}
+                        source={image}
+                        resizeMode='stretch'
+                    />
+
+                    <H2>{this.props.firstName + ' ' + this.props.lastName}</H2>
+
+                    <Text style={styles.coloredText}>{this.props.email}</Text>
+                    <View style={{ borderColor: 'black', borderTopWidth: 1, borderBottomWidth: 1, flexDirection: 'row',margin:10,width:'90%',alignItems: 'center',justifyContent: 'space-between'}}>
+
+                        <View style={styles.detailsTile}>
+                            <H3>9</H3>
+                            <Text style={styles.coloredText} >Thanks</Text>
+                        </View>
+                        
+                        <View style={{backgroundColor:'black',width:1,height:'50%'}}/>
+
+                        <View style={styles.detailsTile}>
+                            <H3>100</H3>
+                            <Text style={styles.coloredText} >Points</Text>
+                        </View>
+
+                        <View style={{backgroundColor:'black',width:1,height:'50%'}}/>
+
+                        <View style={styles.detailsTile}>
+                            <H3>5</H3>
+                            <Text style={styles.coloredText} >Endorses</Text>
+                        </View>
+                    </View>
+
+                </Content>
             </Container>
 
         );
@@ -59,36 +93,22 @@ class Home extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1
+    
+    detailsTile:{
+        alignItems: 'center',
+        margin:10
     },
-    form: {
-        flex: 1,
-        alignItems: "center",
-        flexDirection: "column",
-        paddingTop: 70
-    },
-    image: {
-        width: '100%',
-        height: '100%'
+    coloredText:{
+        color:'#1c92c4'
     }
 });
 
 const mapStateToProps = (state) => {
     return {
-        isAuthenticate: state.isAuthenticate,
-        accountAlias: state.user.accountAlias,
         email: state.user.emailAddress,
-        isFreshInstall: state.system.isFreshInstall,
-        firstName: state.user.firstName
+        firstName: state.user.firstName,
+        lastName: state.user.lastName
     };
 }
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
-        clearData: () => dispatch({ type: dev.CLEAR_DATA })
-    };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Home)
+export default connect(mapStateToProps, null)(Home)
