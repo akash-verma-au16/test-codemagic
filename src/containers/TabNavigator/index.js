@@ -5,7 +5,7 @@ import Home from '../Home'
 import CreatePost from '../CreatePost'
 import ListPost from '../ListPost'
 import Settings from '../Settings'
-
+import Notifications from '../Notifications'
 const HomeStack = createStackNavigator({
     'home': {
         screen: ListPost,
@@ -21,6 +21,22 @@ const HomeStack = createStackNavigator({
                 flex: 1
             }
         }
+    },
+    'notifications': {
+        screen: Notifications,
+        navigationOptions: {
+            headerStyle: {
+                backgroundColor: '#1c92c4'
+            },
+            title: 'Notifications',
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+                textAlign:"center",
+                flex: 1
+            }
+        }
+        
     }
 });
 const CreatePostStack = createStackNavigator({

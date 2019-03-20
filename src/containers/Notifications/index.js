@@ -20,7 +20,7 @@ import {
 import {logout} from '../../services/bAuth'
 /* Custom Components */
 import LoadingModal from '../LoadingModal'
-class Settings extends React.Component {
+class Notifications extends React.Component {
     constructor(props){
         super(props)
         this.state={
@@ -45,33 +45,26 @@ class Settings extends React.Component {
     }
     data = [
         {
-            key:'Push Notification',
-            icon:'md-notifications',
-            onPress:()=>this.toast()
+            key:'Daily Survey',
+            icon:'md-stats',
+            onPress:()=>this.props.navigation.navigate('SurveyIntro',{
+                surveyId:'3',
+                surveyName:'Daily-Questionnaire',
+                surveyDescription:'Daily Survey',
+                surveyNote:'note',
+                surveyLevel:'beginner'
+            })
         },
         {
-            key:'Change Password',
-            icon:'md-key',
-            onPress:()=>this.toast()
-        },
-        {
-            key:'Privacy Policy',
-            icon:'md-lock',
-            onPress:()=>this.toast()
-        },
-        {
-            key:'User Agreement',
-            icon:'md-document',
-            onPress:()=>this.toast()
-        },
-        {
-            key:'App Version : 1.4',
-            icon:'md-phone-portrait'
-        },
-        {
-            key:'Logout',
-            icon:'md-log-out',
-            onPress:()=>this.signOutHandler()
+            key:'Weekly Survey',
+            icon:'md-stats',
+            onPress:()=>this.props.navigation.navigate('SurveyIntro',{
+                surveyId:'1 ',
+                surveyName:'Weekly-Questionnaire',
+                surveyDescription:'Weekly Survey',
+                surveyNote:'note',
+                surveyLevel:'beginner'
+            })
         }
     ]
 
@@ -177,4 +170,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Settings)
+export default connect(mapStateToProps, mapDispatchToProps)(Notifications)

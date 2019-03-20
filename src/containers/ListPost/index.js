@@ -28,7 +28,7 @@ class ListPost extends React.Component {
         }
         this.postList=[]
     }
-    static navigationOptions = () => {
+    static navigationOptions = ({navigation}) => {
         return {
             
             headerRight: (
@@ -36,11 +36,7 @@ class ListPost extends React.Component {
                     {color: 'white',
                         margin:20
                     }
-                } onPress={()=>Toast.show({
-                    text: 'List of notifications will be displayed here',
-                    type: 'warning',
-                    duration:3000
-                })} />
+                } onPress={()=>navigation.navigate('notifications')} />
             ),
             headerLeft: (
                 <React.Fragment/>

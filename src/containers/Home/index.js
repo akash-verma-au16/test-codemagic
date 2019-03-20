@@ -51,40 +51,7 @@ class Home extends React.Component {
         return (
 
             <Container>
-                <Content
-                    contentContainerStyle={styles.container}
-                >
-
-                    <Form style={styles.form}>
-                         
-                        <RoundButton
-                            onPress={()=>{
-                                this.props.navigation.navigate('SurveyIntro',{
-                                    surveyId:'3',
-                                    surveyName:'Daily-Questionnaire',
-                                    surveyDescription:'Daily Survey',
-                                    surveyNote:'note',
-                                    surveyLevel:'beginner'
-                                })
-                            }}
-                            value='Daily Questionnaire'
-                        />
-                        <RoundButton
-                            onPress={()=>{
-                                this.props.navigation.navigate('SurveyIntro',{
-                                    surveyId:'1 ',
-                                    surveyName:'Weekly-Questionnaire',
-                                    surveyDescription:'Weekly Survey',
-                                    surveyNote:'note',
-                                    surveyLevel:'beginner'
-                                })
-                            }}
-                            value='Weekly Questionnaire'
-                        />
-                                
-                    </Form>
-                       
-                </Content>
+               
             </Container>
 
         );
