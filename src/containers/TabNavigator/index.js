@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon } from 'native-base'
 import { createStackNavigator, createBottomTabNavigator, createAppContainer } from 'react-navigation';
-import Home from '../Home'
+import ListSurvey from '../ListSurvey'
 import CreatePost from '../CreatePost'
 import ListPost from '../ListPost'
 const HomeStack = createStackNavigator({
@@ -39,14 +39,14 @@ const CreatePostStack = createStackNavigator({
     }
 });
 
-const ProfileStack = createStackNavigator({
-    'profile': {
-        screen: Home,
+const ListSurveyStack = createStackNavigator({
+    'listSurvey': {
+        screen: ListSurvey,
         navigationOptions: {
             headerStyle: {
                 backgroundColor: '#1c92c4'
             },
-            title: 'Profile',
+            title: 'List Survey',
             headerTintColor: '#fff',
             headerTitleStyle: {
                 fontWeight: 'bold',
@@ -59,7 +59,7 @@ const ProfileStack = createStackNavigator({
 const TabNavigator = createBottomTabNavigator({
     Home: { screen: HomeStack },
     CreatePost: { screen: CreatePostStack },
-    Profile: { screen: ProfileStack }
+    ListSurvey: { screen: ListSurveyStack }
 },
 {
     defaultNavigationOptions: ({ navigation }) => ({
@@ -80,8 +80,8 @@ const getTabBarIcon = (navigation, focused, tintColor) => {
     if (routeName === 'Home') {
         iconName = 'md-home'
 
-    } else if (routeName === 'Profile') {
-        iconName = 'md-person'
+    } else if (routeName === 'ListSurvey') {
+        iconName = 'md-stats'
     } else if (routeName === 'CreatePost') {
         iconName = 'md-add'
     }

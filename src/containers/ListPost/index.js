@@ -4,7 +4,8 @@ import {
     Text,
     View,
     ScrollView,
-    RefreshControl
+    RefreshControl,
+    TouchableOpacity
 } from 'react-native';
 /* Redux */
 import { connect } from 'react-redux'
@@ -13,12 +14,14 @@ import {
     Container,
     H2,
     Icon,
-    Toast
+    Toast,
+    Thumbnail
 } from 'native-base';
 /* Services */
 import { list_posts } from '../../services/post'
 /* Components */
 import { NavigationEvents } from 'react-navigation';
+import thumbnail from '../../assets/thumbnail.jpg'
 class ListPost extends React.Component {
     constructor(props) {
         super(props)
@@ -31,15 +34,30 @@ class ListPost extends React.Component {
         return {
 
             headerRight: (
-                <Icon name='md-stats' style={
+                <Icon name='md-notifications' style={
                     {
                         color: 'white',
                         margin: 20
                     }
-                } onPress={() => navigation.navigate('listSurvey')} />
+                } onPress={() => navigation.navigate('notifications')} />
             ),
             headerLeft: (
-                <React.Fragment />
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('Profile')}
+                    
+                >
+                    <Thumbnail
+                        source={thumbnail} 
+                    
+                        style={
+                            {
+                                height:'70%',
+                                borderRadius:50
+                                
+                            }}
+                        resizeMode='contain'
+                    />
+                </TouchableOpacity>
             )
         };
     };

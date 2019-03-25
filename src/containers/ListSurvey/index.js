@@ -14,12 +14,14 @@ import {
     Content,
     Icon,
     H3,
-    Toast
+    Toast,
+    Thumbnail
 } from 'native-base';
 /* Services */
 import {logout} from '../../services/bAuth'
 /* Custom Components */
 import LoadingModal from '../LoadingModal'
+import thumbnail from '../../assets/thumbnail.jpg'
 class ListSurvey extends React.Component {
     constructor(props){
         super(props)
@@ -27,13 +29,29 @@ class ListSurvey extends React.Component {
             isLoading:false
         }
     }
-    static navigationOptions = () => {
+    static navigationOptions = ({navigation}) => {
         return {
             
             headerRight: (
                 <React.Fragment/>
+            ),
+            headerLeft: (
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('Profile')}  
+                >
+                    <Thumbnail
+                        source={thumbnail} 
+                    
+                        style={
+                            {
+                                height:'70%',
+                                borderRadius:50,
+                                margin:10
+                            }}
+                        resizeMode='contain'
+                    />
+                </TouchableOpacity>
             )
-            
         };
     };
     toast = ()=>{

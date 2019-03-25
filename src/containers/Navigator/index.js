@@ -11,11 +11,26 @@ import QuestionContainer from '../QuestionContainer'
 import ForceChangePassword from '../ForceChangePassword'
 import TabNavigator from '../TabNavigator'
 import Settings from "../Settings";
-import ListSurvey from '../ListSurvey'
+import Home from '../Home'
 /* This stack will contain list of all pages */
 const RootStack = createStackNavigator(
     {
-        
+        'Profile': {
+            screen: Home,
+            navigationOptions: {
+                headerStyle: {
+                    backgroundColor: '#1c92c4'
+                },
+                title: 'Profile',
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                    textAlign:"center",
+                    flex: 1
+                }
+            }
+        },
+
         'LoginPage': {
             screen: LoginPage,
             navigationOptions: {
@@ -77,23 +92,6 @@ const RootStack = createStackNavigator(
             navigationOptions: {
                 header:null
             }
-        },
-
-        'listSurvey': {
-            screen: ListSurvey,
-            navigationOptions: {
-                headerStyle: {
-                    backgroundColor: '#1c92c4'
-                },
-                title: 'Surveys',
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                    fontWeight: 'bold',
-                    textAlign:"center",
-                    flex: 1
-                }
-            }
-            
         },
 
         'settings': {

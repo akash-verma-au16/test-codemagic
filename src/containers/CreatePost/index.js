@@ -13,7 +13,8 @@ import {
 import {
     Container,
     Icon,
-    Toast
+    Toast,
+    Thumbnail
 } from 'native-base';
 /* Redux */
 import { connect } from 'react-redux'
@@ -22,6 +23,7 @@ import { create_post } from '../../services/post'
 /* Components */
 import VisibilityModal from '../VisibilityModal'
 import LoadingModal from '../LoadingModal'
+import thumbnail from '../../assets/thumbnail.jpg'
 class CreatePost extends React.Component {
 
     constructor(props) {
@@ -45,7 +47,21 @@ class CreatePost extends React.Component {
                 } onPress={navigation.getParam('postSubmitHandler')} />
             ),
             headerLeft: (
-                <React.Fragment/>
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('Profile')}  
+                >
+                    <Thumbnail
+                        source={thumbnail} 
+                    
+                        style={
+                            {
+                                height:'70%',
+                                borderRadius:50,
+                                margin:10
+                            }}
+                        resizeMode='contain'
+                    />
+                </TouchableOpacity>
             )
         };
     };

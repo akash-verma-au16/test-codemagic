@@ -40,9 +40,6 @@ class Home extends React.Component {
                         margin: 20
                     }
                 } onPress={() => navigation.navigate('settings')} />
-            ),
-            headerLeft: (
-                <React.Fragment />
             )
         };
     };
