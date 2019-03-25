@@ -7,7 +7,8 @@ import {
 } from 'react-native';
 /* Redux */
 import { connect } from 'react-redux'
-import { auth,dev } from '../../store/actions'
+import { auth, dev } from '../../store/actions'
+import { StackActions, NavigationActions } from 'react-navigation';
 /* Native Base */
 import {
     Container,
@@ -17,79 +18,83 @@ import {
     Toast
 } from 'native-base';
 /* Services */
-import {logout} from '../../services/bAuth'
+import { logout } from '../../services/bAuth'
 /* Custom Components */
 import LoadingModal from '../LoadingModal'
 class Settings extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props)
-        this.state={
-            isLoading:false
+        this.state = {
+            isLoading: false
         }
     }
     static navigationOptions = () => {
         return {
-            
+
             headerRight: (
-                <React.Fragment/>
+                <React.Fragment />
             )
-            
+
         };
     };
-    toast = ()=>{
+    toast = () => {
         Toast.show({
             text: 'Releasing in next update',
             type: 'success',
-            duration:3000
+            duration: 3000
         })
     }
     data = [
         {
-            key:'Push Notification',
-            icon:'md-notifications',
-            onPress:()=>this.toast()
+            key: 'Push Notification',
+            icon: 'md-notifications',
+            onPress: () => this.toast()
         },
         {
-            key:'Privacy Policy',
-            icon:'md-lock',
-            onPress:()=>this.toast()
+            key: 'Privacy Policy',
+            icon: 'md-lock',
+            onPress: () => this.toast()
         },
         {
-            key:'User Agreement',
-            icon:'md-document',
-            onPress:()=>this.toast()
+            key: 'User Agreement',
+            icon: 'md-document',
+            onPress: () => this.toast()
         },
         {
-            key:'App Version : 1.4',
-            icon:'md-phone-portrait'
+            key: 'App Version : 1.4',
+            icon: 'md-phone-portrait'
         },
         {
-            key:'Logout',
-            icon:'md-log-out',
-            onPress:()=>this.signOutHandler()
+            key: 'Logout',
+            icon: 'md-log-out',
+            onPress: () => this.signOutHandler()
         }
     ]
 
     signOutHandler = () => {
-        this.setState({isLoading:true})
+        this.setState({ isLoading: true })
         logout({
             accountAlias: this.props.accountAlias,
-            email:this.props.email
-        }).then(()=>{
+            email: this.props.email
+        }).then(() => {
             this.props.deAuthenticate()
-            this.setState({isLoading:false})
+            this.setState({ isLoading: false })
             Toast.show({
                 text: 'Signed out Successfully',
                 type: "success"
             })
-            this.props.navigation.navigate('LoginPage')
+            const resetAction = StackActions.reset({
+                index: 0,
+                actions: [NavigationActions.navigate({ routeName: 'LoginPage' })]
+            });
+            this.props.navigation.dispatch(resetAction);
             return
-        }).catch(()=>{
+        }).catch(() => {
             Toast.show({
                 text: 'Unable to communicate with server',
                 type: "danger"
             })
-            this.setState({isLoading:false})
+            this.setState({ isLoading: false })
         })
     }
     render() {
@@ -107,9 +112,9 @@ class Settings extends React.Component {
                     <FlatList
                         data={this.data}
                         renderItem={
-                            ({item}) =>
+                            ({ item }) =>
                                 <TouchableOpacity
-                                    disabled={item.onPress?false:true}
+                                    disabled={item.onPress ? false : true}
                                     style={{
                                         flexDirection: 'row',
                                         paddingVertical: 20,
@@ -132,12 +137,12 @@ class Settings extends React.Component {
                                             {item.key}
                                         </H3>
                                     </View>
-                                    {item.onPress?
+                                    {item.onPress ?
                                         <Icon name='ios-arrow-forward' style={[
                                             styles.icon,
-                                            {color:'black'}
+                                            { color: 'black' }
                                         ]} />
-                                        :null}
+                                        : null}
                                 </TouchableOpacity>
                         }
                     />
@@ -155,7 +160,7 @@ const styles = StyleSheet.create({
     icon: {
         fontSize: 20,
         paddingHorizontal: 10,
-        color:'#1c92c4'
+        color: '#1c92c4'
     }
 })
 const mapStateToProps = (state) => {

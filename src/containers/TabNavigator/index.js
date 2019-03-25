@@ -4,8 +4,6 @@ import { createStackNavigator, createBottomTabNavigator, createAppContainer } fr
 import Home from '../Home'
 import CreatePost from '../CreatePost'
 import ListPost from '../ListPost'
-import Settings from '../Settings'
-import ListSurvey from '../ListSurvey'
 const HomeStack = createStackNavigator({
     'home': {
         screen: ListPost,
@@ -21,22 +19,6 @@ const HomeStack = createStackNavigator({
                 flex: 1
             }
         }
-    },
-    'listSurvey': {
-        screen: ListSurvey,
-        navigationOptions: {
-            headerStyle: {
-                backgroundColor: '#1c92c4'
-            },
-            title: 'Surveys',
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-                fontWeight: 'bold',
-                textAlign:"center",
-                flex: 1
-            }
-        }
-        
     }
 });
 const CreatePostStack = createStackNavigator({
@@ -65,21 +47,6 @@ const ProfileStack = createStackNavigator({
                 backgroundColor: '#1c92c4'
             },
             title: 'Profile',
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-                fontWeight: 'bold',
-                textAlign:"center",
-                flex: 1
-            }
-        }
-    },
-    'settings': {
-        screen: Settings,
-        navigationOptions: {
-            headerStyle: {
-                backgroundColor: '#1c92c4'
-            },
-            title: 'Settings',
             headerTintColor: '#fff',
             headerTitleStyle: {
                 fontWeight: 'bold',
