@@ -43,8 +43,7 @@ class ListPost extends React.Component {
             ),
             headerLeft: (
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('Profile')}
-                    
+                    onPress={() => navigation.navigate('Profile')}  
                 >
                     <Thumbnail
                         source={thumbnail} 
@@ -52,8 +51,8 @@ class ListPost extends React.Component {
                         style={
                             {
                                 height:'70%',
-                                borderRadius:50
-                                
+                                borderRadius:50,
+                                margin:10
                             }}
                         resizeMode='contain'
                     />
