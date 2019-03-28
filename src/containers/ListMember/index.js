@@ -76,7 +76,7 @@ class ListMember extends React.Component {
 
                         }
                     } onPress={this.closeHandler} />
-                    <View style={{ flexDirection: 'row', flex: 1, backgroundColor: 'white',borderRadius:50,margin:10 }}>
+                    <View style={{ flexDirection: 'row', flex: 1, backgroundColor: 'white',borderRadius:50,marginRight:10 }}>
                         <Icon name='ios-search' style={
                             {
                                 color: '#1c92c4',
