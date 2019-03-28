@@ -20,8 +20,7 @@ import {
 import { connect } from 'react-redux'
 
 /* Assets */
-import image from '../../assets/profileImage.png'
-
+import thumbnail from '../../assets/thumbnail.jpg'
 class Home extends React.Component {
     constructor(props) {
         super(props)
@@ -53,7 +52,7 @@ class Home extends React.Component {
                     
                     <Image 
                         style={{ borderRadius: Dimensions.get('window').width/2, width:100,height:100, aspectRatio:1/1 , margin:10}}
-                        source={image}
+                        source={thumbnail}
                         resizeMode='stretch'
                     />
 
