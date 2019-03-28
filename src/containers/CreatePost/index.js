@@ -34,32 +34,33 @@ class CreatePost extends React.Component {
             visibilitySelection: '',
             text: '',
             isLoading: false,
-            EndorseModalVisibility:false
+            EndorseModalVisibility: false
         }
 
     }
     static navigationOptions = ({ navigation }) => {
         return {
-            
+
             headerRight: (
                 <Icon name='md-checkmark' style={
-                    {color: 'white',
-                        margin:20
+                    {
+                        color: 'white',
+                        margin: 20
                     }
                 } onPress={navigation.getParam('postSubmitHandler')} />
             ),
             headerLeft: (
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('Profile')}  
+                    onPress={() => navigation.navigate('Profile')}
                 >
                     <Thumbnail
-                        source={thumbnail} 
-                    
+                        source={thumbnail}
+
                         style={
                             {
-                                height:'70%',
-                                borderRadius:50,
-                                margin:10
+                                height: '70%',
+                                borderRadius: 50,
+                                margin: 10
                             }}
                         resizeMode='contain'
                     />
@@ -153,8 +154,8 @@ class CreatePost extends React.Component {
 
     }
 
-    closeEndorseModal=()=>{
-        this.setState({EndorseModalVisibility:false})
+    closeEndorseModal = () => {
+        this.setState({ EndorseModalVisibility: false })
     }
     render() {
         const fontSize = 15
@@ -215,7 +216,7 @@ class CreatePost extends React.Component {
                         <View style={{
                             backgroundColor: '#333',
                             height: 1,
-                            width: '70%',
+                            width: '90%',
                             marginVertical: 10
                         }} />
 
@@ -227,13 +228,13 @@ class CreatePost extends React.Component {
                             justifyContent: 'center'
                         }}>
                             <TouchableOpacity style={styles.button} onPress={() => {
-                                this.setState({EndorseModalVisibility:true})
+                                this.setState({ EndorseModalVisibility: true })
                             }}>
                                 <Icon name='md-people' style={{ fontSize: fontSize, paddingHorizontal: 5, color: 'white' }} />
                                 <Text style={[styles.buttonText, { fontSize: fontSize }]}>Endorse</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.button} onPress={() => {
-                                this.setState({EndorseModalVisibility:true})
+                                this.setState({ EndorseModalVisibility: true })
                             }}>
                                 <Icon name='md-thumbs-up' style={{ fontSize: fontSize, paddingHorizontal: 5, color: 'white' }} />
                                 <Text style={[styles.buttonText, { fontSize: fontSize }]}>Gratitude</Text>
@@ -263,8 +264,8 @@ class CreatePost extends React.Component {
                     enabled={this.state.isLoading}
                 />
                 <ListMember
-                    enabled={this.state.EndorseModalVisibility}  
-                    closeHandler={this.closeEndorseModal}  
+                    enabled={this.state.EndorseModalVisibility}
+                    closeHandler={this.closeEndorseModal}
                 />
             </Container>
 

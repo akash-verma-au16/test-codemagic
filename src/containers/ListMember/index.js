@@ -38,20 +38,6 @@ class ListMember extends React.Component {
     searchUpdated(term) {
         this.setState({ searchTerm: term })
     }
-    static navigationOptions = ({ navigation }) => {
-        return {
-
-            headerRight: (
-                <Icon name='ios-arrow-round-forward' style={
-                    {
-                        color: 'white',
-                        margin: 20
-                    }
-                } onPress={navigation.getParam('postSubmitHandler')} />
-            )
-
-        };
-    };
 
     loadMembers = () => {
         this.setState({ refreshing: true })
@@ -65,6 +51,10 @@ class ListMember extends React.Component {
             .catch(() => {
                 this.setState({ refreshing: false })
             })
+    }
+    closeHandler=()=>{
+        this.setState({searchTerm:''})
+        this.props.closeHandler()
     }
     render() {
         const filteredData = this.data.filter(createFilter(this.state.searchTerm, KEYS_TO_FILTERS))
@@ -85,10 +75,7 @@ class ListMember extends React.Component {
                             margin: 20
 
                         }
-                    } onPress={()=>{
-                        this.setState({searchTerm:''})
-                        this.props.closeHandler()
-                    }} />
+                    } onPress={this.closeHandler} />
                     <View style={{ flexDirection: 'row', flex: 1, backgroundColor: 'white',borderRadius:50,margin:10 }}>
                         <Icon name='ios-search' style={
                             {
