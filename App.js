@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Navigator from './src/containers/Navigator'
-import { AsyncStorage, StatusBar, Alert } from 'react-native';
+import { AsyncStorage, StatusBar } from 'react-native';
 import { Root } from 'native-base'
 import { createStore, compose } from 'redux'
 import reducer from './src/store/reducers'
