@@ -10,7 +10,7 @@ import SurveyExit from '../SurveyExit'
 import QuestionContainer from '../QuestionContainer'
 import ForceChangePassword from '../ForceChangePassword'
 import TabNavigator from '../TabNavigator'
-import Settings from "../Settings";
+import Settings from "../Settings"
 import Home from '../Home'
 /* This stack will contain list of all pages */
 const RootStack = createStackNavigator(

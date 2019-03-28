@@ -24,6 +24,7 @@ import { create_post } from '../../services/post'
 import VisibilityModal from '../VisibilityModal'
 import LoadingModal from '../LoadingModal'
 import thumbnail from '../../assets/thumbnail.jpg'
+import ListMember from '../ListMember'
 class CreatePost extends React.Component {
 
     constructor(props) {
@@ -32,7 +33,8 @@ class CreatePost extends React.Component {
             visibilityModal: false,
             visibilitySelection: '',
             text: '',
-            isLoading: false
+            isLoading: false,
+            EndorseModalVisibility:false
         }
 
     }
@@ -151,6 +153,9 @@ class CreatePost extends React.Component {
 
     }
 
+    closeEndorseModal=()=>{
+        this.setState({EndorseModalVisibility:false})
+    }
     render() {
         const fontSize = 15
         return (
@@ -221,19 +226,15 @@ class CreatePost extends React.Component {
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}>
-                            <TouchableOpacity style={styles.button} onPress={() => Toast.show({
-                                text: 'coming soon!',
-                                type: 'success',
-                                duration: 3000
-                            })}>
+                            <TouchableOpacity style={styles.button} onPress={() => {
+                                this.setState({EndorseModalVisibility:true})
+                            }}>
                                 <Icon name='md-people' style={{ fontSize: fontSize, paddingHorizontal: 5, color: 'white' }} />
                                 <Text style={[styles.buttonText, { fontSize: fontSize }]}>Endorse</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.button} onPress={() => Toast.show({
-                                text: 'coming soon!',
-                                type: 'success',
-                                duration: 3000
-                            })}>
+                            <TouchableOpacity style={styles.button} onPress={() => {
+                                this.setState({EndorseModalVisibility:true})
+                            }}>
                                 <Icon name='md-thumbs-up' style={{ fontSize: fontSize, paddingHorizontal: 5, color: 'white' }} />
                                 <Text style={[styles.buttonText, { fontSize: fontSize }]}>Gratitude</Text>
                             </TouchableOpacity>
@@ -261,6 +262,10 @@ class CreatePost extends React.Component {
                 <LoadingModal
                     enabled={this.state.isLoading}
                 />
+                <ListMember
+                    enabled={this.state.EndorseModalVisibility}  
+                    closeHandler={this.closeEndorseModal}  
+                />
             </Container>
 
         );
@@ -279,35 +284,11 @@ const styles = StyleSheet.create({
         margin: 5,
         borderRadius: 5
     },
-    container: {
-        flex: 1
-    },
-    headerContainer: {
-        flex: 1,
-        alignItems: 'center',
-        flexDirection: 'row',
-        marginHorizontal: 30,
-        justifyContent: 'space-between'
-    },
+
     content: {
         flex: 9
     },
-    image: {
-        width: '100%',
-        height: '100%',
-        flex: 1,
-        justifyContent: 'space-between',
-        paddingTop: 15
-    },
 
-    header: {
-        color: 'white',
-        width: 20
-    },
-    headerText: {
-        color: 'white',
-        textAlign: 'center'
-    },
     buttonText: {
         color: 'white',
         textAlign: 'center'
