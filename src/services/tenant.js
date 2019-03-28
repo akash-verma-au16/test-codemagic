@@ -10,3 +10,10 @@ export const read_member = (
     const endpoint = url + "/" + env + "/" + config.role.admin + "/" + config.api.read_member
     return axios.post(endpoint,payload)
 }
+
+export const list_associate = (
+    payload
+) => {
+    const endpoint = url + "/" + env + "/" + config.role.admin + "/" + config.api.list_associate
+    return axios.post(endpoint,payload)
+}

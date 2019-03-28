@@ -22,9 +22,12 @@ import {
 /* Redux */
 import { connect } from 'react-redux'
 
+/* Service */
+import { list_associate } from '../../services/tenant'
+
 import SearchInput, { createFilter } from 'react-native-search-filter';
 
-const KEYS_TO_FILTERS = ['user.name', 'subject'];
+const KEYS_TO_FILTERS = ['first_name', 'last_name'];
 class ListMember extends React.Component {
 
     constructor(props) {
@@ -33,6 +36,10 @@ class ListMember extends React.Component {
             searchTerm: '',
             refreshing: false
         }
+        this.data=[]
+    }
+    componentWillMount(){
+        this.loadMembers()
     }
     searchUpdated(term) {
         this.setState({ searchTerm: term })
@@ -50,11 +57,24 @@ class ListMember extends React.Component {
             
         }; */
     };
+    
     loadMembers =()=>{
-        
+        this.setState({refreshing:true})
+        list_associate({
+            tenant_id:"1l3jtp3hn"
+        })
+            .then(response=>{
+                this.data=response.data.data
+                console.log(this.data)
+                this.setState({refreshing:false})
+            })
+            .catch(error=>{
+                console.log(error.response)
+                this.setState({refreshing:false})
+            })
     }
     render() {
-        const filteredEmails = emails.filter(createFilter(this.state.searchTerm, KEYS_TO_FILTERS))
+        const filteredData = this.data.filter(createFilter(this.state.searchTerm, KEYS_TO_FILTERS))
         return (
             <View style={styles.container}>
                 <SearchInput
@@ -70,12 +90,13 @@ class ListMember extends React.Component {
                         />
                     }
                 >
-                    {filteredEmails.map(email => {
+                    {filteredData.map((item,index) => {
+                        const name = item.first_name + ' ' + item.last_name
                         return (
-                            <TouchableOpacity onPress={() => alert(email.user.name)} key={email.id} style={styles.emailItem}>
+                            <TouchableOpacity onPress={() => alert(name)} key={index} style={styles.emailItem}>
                                 <View>
-                                    <Text>{email.user.name}</Text>
-                                    <Text style={styles.emailSubject}>{email.subject}</Text>
+                                    <Text>{name}</Text>
+                                    
                                 </View>
                             </TouchableOpacity>
                         )
@@ -169,163 +190,8 @@ const emails = [
             name: 'Chili'
         },
         subject: 'Awesome!'
-    },
-    {
-        id: 1,
-        user: {
-            name: 'Juniper'
-        },
-        subject: 'Hello World!'
-    },
-
-    {
-        id: 2,
-        user: {
-            name: 'Robert'
-        },
-        subject: 'React is <3'
-    }, {
-        id: 3,
-        user: {
-            name: 'you can'
-        },
-        subject: "What's Up?"
     }
-    , {
-        id: 4,
-        user: {
-            name: 'Georgia'
-        },
-        subject: 'How are you today?'
-    }, {
-        id: 5,
-        user: {
-            name: 'Albert'
-        },
-        subject: 'Hey!'
-    }, {
-        id: 6,
-        user: {
-            name: 'Zoey'
-        },
-        subject: 'React Native!'
-    }, {
-        id: 7,
-        user: {
-            name: 'Cody'
-        },
-        subject: 'is super!'
-    }, {
-        id: 8,
-        user: {
-            name: 'Chili'
-        },
-        subject: 'Awesome!'
-    },
-    {
-        id: 1,
-        user: {
-            name: 'Juniper'
-        },
-        subject: 'Hello World!'
-    },
-
-    {
-        id: 2,
-        user: {
-            name: 'Robert'
-        },
-        subject: 'React is <3'
-    }, {
-        id: 3,
-        user: {
-            name: 'you can'
-        },
-        subject: "What's Up?"
-    }
-    , {
-        id: 4,
-        user: {
-            name: 'Georgia'
-        },
-        subject: 'How are you today?'
-    }, {
-        id: 5,
-        user: {
-            name: 'Albert'
-        },
-        subject: 'Hey!'
-    }, {
-        id: 6,
-        user: {
-            name: 'Zoey'
-        },
-        subject: 'React Native!'
-    }, {
-        id: 7,
-        user: {
-            name: 'Cody'
-        },
-        subject: 'is super!'
-    }, {
-        id: 8,
-        user: {
-            name: 'Chili'
-        },
-        subject: 'Awesome!'
-    },
-    {
-        id: 1,
-        user: {
-            name: 'Juniper'
-        },
-        subject: 'Hello World!'
-    },
-
-    {
-        id: 2,
-        user: {
-            name: 'Robert'
-        },
-        subject: 'React is <3'
-    }, {
-        id: 3,
-        user: {
-            name: 'you can'
-        },
-        subject: "What's Up?"
-    }
-    , {
-        id: 4,
-        user: {
-            name: 'Georgia'
-        },
-        subject: 'How are you today?'
-    }, {
-        id: 5,
-        user: {
-            name: 'Albert'
-        },
-        subject: 'Hey!'
-    }, {
-        id: 6,
-        user: {
-            name: 'Zoey'
-        },
-        subject: 'React Native!'
-    }, {
-        id: 7,
-        user: {
-            name: 'Cody'
-        },
-        subject: 'is super!'
-    }, {
-        id: 8,
-        user: {
-            name: 'Chili'
-        },
-        subject: 'Awesome!'
-    }
+    
 ]
 
 const response = {

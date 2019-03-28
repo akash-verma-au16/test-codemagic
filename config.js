@@ -23,7 +23,8 @@ export default {
         give_rewards:"give_rewards",
         read_member:"read_member",
         create_post:"create_post",
-        list_posts:"list_posts"
+        list_posts:"list_posts",
+        list_associate:"list_associate"
     },
     type:{
         survey:"survey",
