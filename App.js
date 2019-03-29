@@ -6,6 +6,10 @@ import { createStore, compose } from 'redux'
 import reducer from './src/store/reducers'
 import { Provider } from 'react-redux'
 import firebase from 'react-native-firebase';
+import { Client } from 'bugsnag-react-native';
+
+const bugsnag = new Client("92e5cb01626cd2496fddc87114d1f793");
+
 export default class App extends Component {
 
     constructor(props) {
@@ -47,9 +51,14 @@ export default class App extends Component {
         }
     }
 
+    //async
     async componentDidMount() {
         this.checkPermission();
         this.createNotificationListeners();
+        
+        // Test error(to be removed in release)
+        // var foo = undefined;
+        // foo.substring(1);
     }
 
     componentWillUnmount() {

@@ -13,10 +13,11 @@ import {
     Form,
     Container,
     Content,
-    Toast,
+    Toast, 
     Text,
     View
 } from 'native-base';
+
 /* Redux */
 import { connect } from 'react-redux'
 import { auth } from '../../store/actions'
