@@ -36,7 +36,7 @@ class CreatePost extends React.Component {
             isLoading: false,
             EndorseModalVisibility: false
         }
-
+        this.inputTextRef = React.createRef();
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -157,6 +157,18 @@ class CreatePost extends React.Component {
     closeEndorseModal = () => {
         this.setState({ EndorseModalVisibility: false })
     }
+    listMemberListener = (name) => {
+        let message = ''
+        if(this.state.text.trim()!==''){
+            message = `\n`
+        }
+        message += `@` + name + ` thanks for `
+        this.setState({
+            EndorseModalVisibility: false,
+            text: this.state.text + message
+        })
+        this.inputTextRef.current.focus()
+    }
     render() {
         const fontSize = 15
         return (
@@ -211,6 +223,7 @@ class CreatePost extends React.Component {
                             }}
                             value={this.state.text}
                             onChangeText={(text) => this.setState({ text: text })}
+                            ref={this.inputTextRef}
                         />
 
                         <View style={{
@@ -227,9 +240,11 @@ class CreatePost extends React.Component {
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}>
-                            <TouchableOpacity style={styles.button} onPress={() => {
-                                this.setState({ EndorseModalVisibility: true })
-                            }}>
+                            <TouchableOpacity style={styles.button} onPress={() => Toast.show({
+                                text: 'Coming Soon!',
+                                type: 'success',
+                                duration: 3000
+                            })}>
                                 <Icon name='md-people' style={{ fontSize: fontSize, paddingHorizontal: 5, color: 'white' }} />
                                 <Text style={[styles.buttonText, { fontSize: fontSize }]}>Endorse</Text>
                             </TouchableOpacity>
@@ -266,6 +281,7 @@ class CreatePost extends React.Component {
                 <ListMember
                     enabled={this.state.EndorseModalVisibility}
                     closeHandler={this.closeEndorseModal}
+                    onPressListener={this.listMemberListener}
                 />
             </Container>
 

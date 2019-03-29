@@ -52,8 +52,8 @@ class ListMember extends React.Component {
                 this.setState({ refreshing: false })
             })
     }
-    closeHandler=()=>{
-        this.setState({searchTerm:''})
+    closeHandler = () => {
+        this.setState({ searchTerm: '' })
         this.props.closeHandler()
     }
     render() {
@@ -76,20 +76,20 @@ class ListMember extends React.Component {
 
                         }
                     } onPress={this.closeHandler} />
-                    <View style={{ flexDirection: 'row', flex: 1, backgroundColor: 'white',borderRadius:50,marginRight:10 }}>
+                    <View style={{ flexDirection: 'row', flex: 1, backgroundColor: 'white', borderRadius: 50, marginRight: 10 }}>
                         <Icon name='ios-search' style={
                             {
                                 color: '#1c92c4',
                                 margin: 10,
-                                marginHorizontal:20
+                                marginHorizontal: 20
                             }
                         } onPress={null} />
                         <SearchInput
                             onChangeText={(term) => { this.searchUpdated(term) }}
                             style={{
                                 flex: 1,
-                                maxWidth:'90%',
-                                minWidth:'50%'
+                                maxWidth: '90%',
+                                minWidth: '50%'
                             }}
                             placeholder='Search recipient'
 
@@ -112,7 +112,13 @@ class ListMember extends React.Component {
 
                             /* const initals = item.first_name.chatAt(0)  */
                             return (
-                                <TouchableOpacity onPress={() => alert(name)} key={index} style={styles.item}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        this.props.onPressListener(item.first_name)        
+                                    }} 
+                                    key={index} 
+                                    style={styles.item}
+                                >
                                     <View style={{
                                         backgroundColor: '#BBBBBE',
                                         height: '80%',
