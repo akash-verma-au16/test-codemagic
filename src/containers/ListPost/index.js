@@ -233,7 +233,12 @@ class ListPost extends React.Component {
                 </ScrollView>
 
                 <NavigationEvents
-                    onWillFocus={() => this.loadPosts()}
+                    onWillFocus={() =>{
+                        if (!this.props.isFreshInstall) {
+                            if (this.props.isAuthenticate)
+                                this.loadPosts()
+                        }
+                    }}
                 />
                 {this.state.newPostVisibility ?
 
