@@ -41,7 +41,7 @@ class ListPost extends React.Component {
                         color: 'white',
                         margin: 20
                     }
-                } onPress={() => navigation.navigate('notifications')} />
+                } onPress={navigation.getParam('commingSoon')} />
             ),
             headerLeft: (
                 <TouchableOpacity
@@ -63,6 +63,7 @@ class ListPost extends React.Component {
         };
     };
     componentWillMount() {
+        this.props.navigation.setParams({ commingSoon: this.commingSoon });
         if (this.props.isFreshInstall) {
             this.props.navigation.navigate('TermsAndConditions')
             return
