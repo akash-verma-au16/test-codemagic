@@ -104,7 +104,7 @@ class CreatePost extends React.Component {
 
     }
     postSubmitHandler = () => {
-        if (this.state.text === '') {
+        if (this.state.text.trim() === '') {
             Toast.show({
                 text: 'Please write someting',
                 type: 'danger',
@@ -116,7 +116,7 @@ class CreatePost extends React.Component {
             tenant_id: this.props.accountAlias,
             associate_id: this.props.associate_id,
             type: "post",
-            message: this.state.text,
+            message: this.state.text.trim(),
             privacy: this.state.visibilitySelection
         }
         this.setState({ isLoading: true })
