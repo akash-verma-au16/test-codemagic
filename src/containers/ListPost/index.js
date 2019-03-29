@@ -29,6 +29,8 @@ class ListPost extends React.Component {
             refreshing: false
         }
         this.postList = []
+        this.scrollViewRef = React.createRef();
+        this.payloadBackup = []
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -78,7 +80,6 @@ class ListPost extends React.Component {
         })
     }
     loadPosts = () => {
-        this.postList = []
         const payload = {
             tenant_id: this.props.accountAlias,
             associate_id: this.props.associate_id
@@ -87,6 +88,26 @@ class ListPost extends React.Component {
         this.setState({ refreshing: true })
         try {
             list_posts(payload).then(response => {
+                
+                /* take payload backup to check for changes later */
+                if(this.payloadBackup.length===response.data.data.length){
+                    /* No change in payload hence do nothing */
+                    this.setState({ refreshing: false })
+                    return
+                }else{
+                    /* Change in payload */
+
+                    /* Take Backup */
+                    this.payloadBackup = response.data.data
+
+                    /* reset the tiles */
+                    this.postList = []
+                    
+                    /* Scroll to top to point the latest post */
+                    this.scrollViewRef.current.scrollTo({x: 0, y: 0, animated: true})
+                }
+                
+                /* Create UI tiles to display */
                 this.createTiles(response.data.data)
                 this.setState({ refreshing: false })
             }).catch((error) => {
@@ -185,6 +206,7 @@ class ListPost extends React.Component {
                         />
                     }
                     contentContainerStyle={styles.container}
+                    ref={this.scrollViewRef}
                 >
                     {this.postList}
                 </ScrollView>
