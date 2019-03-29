@@ -5,12 +5,12 @@ import {
     View,
     ScrollView,
     RefreshControl,
-    TouchableOpacity
+    TouchableOpacity,
+    Dimensions
 } from 'react-native';
 /* Redux */
 import { connect } from 'react-redux'
 import {
-
     Container,
     H2,
     Icon,
@@ -26,11 +26,14 @@ class ListPost extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            refreshing: false
+            refreshing: true,
+            newPostVisibility: false
         }
         this.postList = []
         this.scrollViewRef = React.createRef();
         this.payloadBackup = []
+        this.windowWidth = Dimensions.get("window").width;
+        this.scrollPosition = 0
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -45,16 +48,16 @@ class ListPost extends React.Component {
             ),
             headerLeft: (
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('Profile')}  
+                    onPress={() => navigation.navigate('Profile')}
                 >
                     <Thumbnail
-                        source={thumbnail} 
-                    
+                        source={thumbnail}
+
                         style={
                             {
-                                height:'70%',
-                                borderRadius:50,
-                                margin:10
+                                height: '70%',
+                                borderRadius: 50,
+                                margin: 10
                             }}
                         resizeMode='contain'
                     />
@@ -71,7 +74,6 @@ class ListPost extends React.Component {
             this.props.navigation.navigate('LoginPage')
             return
         }
-
     }
     commingSoon = () => {
         Toast.show({
@@ -80,34 +82,48 @@ class ListPost extends React.Component {
             duration: 3000
         })
     }
+    newPostHandler = () => {
+
+        /* Hide the Button */
+        this.setState({ newPostVisibility: false })
+
+        /* Scroll to top to point the latest post */
+        this.scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true })
+
+    }
     loadPosts = () => {
         const payload = {
             tenant_id: this.props.accountAlias,
             associate_id: this.props.associate_id
 
         }
-        this.setState({ refreshing: true })
         try {
             list_posts(payload).then(response => {
-                
+
                 /* take payload backup to check for changes later */
-                if(this.payloadBackup.length===response.data.data.length){
+                if (this.payloadBackup.length === response.data.data.length) {
                     /* No change in payload hence do nothing */
                     this.setState({ refreshing: false })
                     return
-                }else{
+                } else {
                     /* Change in payload */
 
                     /* Take Backup */
                     this.payloadBackup = response.data.data
 
+                    /* Skip for initial post load */
+                    if (this.postList.length !== 0) {
+
+                        if (this.scrollPosition > 150) {
+                            /* Show th new post button */ 
+                            this.setState({ newPostVisibility: true })
+                        }
+                    }
+
                     /* reset the tiles */
                     this.postList = []
-                    
-                    /* Scroll to top to point the latest post */
-                    this.scrollViewRef.current.scrollTo({x: 0, y: 0, animated: true})
                 }
-                
+
                 /* Create UI tiles to display */
                 this.createTiles(response.data.data)
                 this.setState({ refreshing: false })
@@ -203,11 +219,15 @@ class ListPost extends React.Component {
                     refreshControl={
                         <RefreshControl
                             refreshing={this.state.refreshing}
-                            onRefresh={this.loadPosts}
+                            onRefresh={() => {
+                                /* Show loader when manual refresh is triggered */
+                                this.setState({ refreshing: true }, this.loadPosts())
+                            }}
                         />
                     }
                     contentContainerStyle={styles.container}
                     ref={this.scrollViewRef}
+                    onScroll={(event) => { this.scrollPosition = event.nativeEvent.contentOffset.y}}
                 >
                     {this.postList}
                 </ScrollView>
@@ -215,6 +235,32 @@ class ListPost extends React.Component {
                 <NavigationEvents
                     onWillFocus={() => this.loadPosts()}
                 />
+                {this.state.newPostVisibility ?
+
+                    <TouchableOpacity
+                        style={{
+                            position: 'absolute',
+                            left: this.windowWidth / 2 - 50,
+                            width: 100,
+                            height: 50,
+                            marginVertical: 10,
+                            backgroundColor: '#1c92c4',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            borderRadius: 100,
+                            shadowOffset: { width: 5, height: 5 },
+                            shadowColor: 'black',
+                            shadowOpacity: 0.2,
+                            elevation: 2
+                        }}
+                        onPress={this.newPostHandler}
+
+                    >
+                        <Text style={{ fontWeight: '500',color:'#fff' }}>New Post</Text>
+                    </TouchableOpacity>
+                    :
+                    null
+                }
             </Container>
 
         );
