@@ -39,7 +39,7 @@ class Settings extends React.Component {
     };
     toast = () => {
         Toast.show({
-            text: 'Releasing in next update',
+            text: 'Coming Soon!',
             type: 'success',
             duration: 3000
         })
