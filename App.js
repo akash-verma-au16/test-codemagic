@@ -52,13 +52,13 @@ export default class App extends Component {
     }
 
     //async
-    componentDidMount() {
+    async componentDidMount() {
         this.checkPermission();
         this.createNotificationListeners();
         
         // Test error(to be removed in release)
-        var foo = undefined;
-        foo.substring(1);
+        // var foo = undefined;
+        // foo.substring(1);
     }
 
     componentWillUnmount() {
