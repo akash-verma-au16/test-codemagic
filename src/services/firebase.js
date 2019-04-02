@@ -1,5 +1,6 @@
 import firebase from 'react-native-firebase';
-import { AsyncStorage,Platform } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+import { Platform } from 'react-native';
 import slackLogger from '../services/slackLogger'
 let Name=''
 let Email=''
