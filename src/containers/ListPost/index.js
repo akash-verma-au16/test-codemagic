@@ -6,7 +6,8 @@ import {
     ScrollView,
     RefreshControl,
     TouchableOpacity,
-    Dimensions
+    Dimensions,
+    BackHandler
 } from 'react-native';
 /* Redux */
 import { connect } from 'react-redux'
@@ -74,6 +75,14 @@ class ListPost extends React.Component {
             this.props.navigation.navigate('LoginPage')
             return
         }
+    }
+    componentDidMount(){
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            return true
+        })
+    }
+    componentWillUnmount() {
+        this.backHandler.remove()
     }
     commingSoon = () => {
         Toast.show({
