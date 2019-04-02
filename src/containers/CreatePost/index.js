@@ -52,6 +52,7 @@ class CreatePost extends React.Component {
             headerLeft: (
                 <TouchableOpacity
                     onPress={() => navigation.navigate('Profile')}
+                    disabled={true}
                 >
                     <Thumbnail
                         source={thumbnail}
