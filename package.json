@@ -1,0 +1,53 @@
+{
+  "name": "happyworks-native-app",
+  "version": "0.1.1",
+  "private": true,
+  "scripts": {
+    "android-emulator": "emulator -avd Pixel_2_XL_API_28 -netdelay none -netspeed full",
+    "android": "react-native run-android",
+    "build-apk": "cd android && ./gradlew assembleRelease",
+    "debug-windows": "cd debugger && react-native-debugger.exe",
+    "debug-mac": "cd debugger && open -a react-native-debugger",
+    "ios": "npm run debug-mac && react-native run-ios",
+    "get-ip": "ifconfig |grep inet",
+    "connect-wifi": "adb connect 192.168.1.10:5555"
+  },
+  "dependencies": {
+    "@react-native-community/async-storage": "^1.2.2",
+    "axios": "^0.18.0",
+    "bugsnag-react-native": "^2.15.0",
+    "native-base": "^2.12.1",
+    "react": "16.6.3",
+    "react-native": "^0.59.2",
+    "react-native-draggable-flatlist": "^1.1.7",
+    "react-native-firebase": "^5.2.3",
+    "react-native-gesture-handler": "^1.0.15",
+    "react-native-ionicons": "^4.5.5",
+    "react-native-search-filter": "^0.1.4",
+    "react-native-slider": "^0.11.0",
+    "react-navigation": "^3.0.9",
+    "react-redux": "^6.0.0",
+    "redux": "^4.0.1",
+    "rn-viewpager": "^1.2.9"
+  },
+  "devDependencies": {
+    "babel-core": "7.0.0-bridge.0",
+    "babel-jest": "24.1.0",
+    "jest": "24.1.0",
+    "metro-react-native-babel-preset": "0.51.1",
+    "react-test-renderer": "16.6.3",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.12.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-react": "^7.12.3",
+    "eslint-plugin-react-native": "^3.5.0",
+    "eslint-plugin-standard": "^4.0.0"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
