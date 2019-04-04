@@ -26,6 +26,7 @@ import Logo from '../../components/Logo'
 import Slogan from '../../components/Slogan'
 import TextInput from '../../components/TextInput'
 import RoundButton from '../../components/RoundButton'
+
 /* Assets */
 import image from '../../assets/image.png'
 /* Services */
