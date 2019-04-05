@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Navigator from './src/containers/Navigator'
-import { AsyncStorage, StatusBar, NetInfo } from "react-native";
+import { AsyncStorage, StatusBar, NetInfo} from "react-native";
 import { Root } from 'native-base'
 import { createStore, compose } from 'redux'
 import reducer from './src/store/reducers'
@@ -132,7 +132,7 @@ export default class App extends Component {
             this.state.dataLoaded ?
                 <Root>
                     <StatusBar backgroundColor='#1c92c4' barStyle='light-content' />
-                    <OfflineNotice isConnected = {this.state.isConnected}/>
+                    <OfflineNotice isConnected={this.state.isConnected}/>
                     <Provider store={this.store}>
                         <Navigator />
                     </Provider>
