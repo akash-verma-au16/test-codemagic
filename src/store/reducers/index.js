@@ -14,7 +14,8 @@ const initialState = {
         tenantImageUrl: ""
     },
     system: {
-        isFreshInstall: true
+        isFreshInstall: true,
+        isConnected: undefined
     }
 }
 export default (state = initialState, action) => {
@@ -53,6 +54,18 @@ export default (state = initialState, action) => {
             system:{
                 ...state.system,
                 isFreshInstall:false
+            }
+        }
+    }
+
+    // Setting Internet Connectivity flag
+
+    case system.CHECK_CONNECTIVITY: {
+        return {
+            ...state,
+            system: {
+                ...state.system,
+                isConnected: state.isConnected
             }
         }
     }
