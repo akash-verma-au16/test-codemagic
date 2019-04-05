@@ -4,7 +4,8 @@ export const auth = {
 }
 
 export const system ={
-    AGREE_POLICY : 'AGREE_POLICY'
+    AGREE_POLICY : 'AGREE_POLICY',
+    CHECK_CONNECTIVITY: 'CHECK_CONNECTIVITY'
 }
 export const dev = {
     CLEAR_DATA : 'CLEAR_DATA'
