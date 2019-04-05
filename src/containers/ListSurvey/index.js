@@ -1,52 +1,49 @@
 import React from 'react';
 import {
-    StyleSheet,
     View,
-    TouchableOpacity,
-    FlatList
+    TouchableOpacity
 } from 'react-native';
+import { H2 } from 'native-base'
 /* Redux */
 import { connect } from 'react-redux'
-import { auth,dev } from '../../store/actions'
+import { auth, dev } from '../../store/actions'
+import { BarChart } from 'react-native-charts-wrapper';
 /* Native Base */
 import {
     Container,
     Content,
-    Icon,
-    H3,
     Toast,
     Thumbnail
 } from 'native-base';
-/* Services */
-import {logout} from '../../services/bAuth'
+import SurveyTabNavigator from '../SurveyTabNavigator'
 /* Custom Components */
 import LoadingModal from '../LoadingModal'
 import thumbnail from '../../assets/thumbnail.jpg'
 class ListSurvey extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props)
-        this.state={
-            isLoading:false
+        this.state = {
+            isLoading: false
         }
     }
-    static navigationOptions = ({navigation}) => {
+    static navigationOptions = ({ navigation }) => {
         return {
-            
+
             headerRight: (
-                <React.Fragment/>
+                <React.Fragment />
             ),
             headerLeft: (
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('Profile')}  
+                    onPress={() => navigation.navigate('Profile')}
                 >
                     <Thumbnail
-                        source={thumbnail} 
-                    
+                        source={thumbnail}
+
                         style={
                             {
-                                height:'70%',
-                                borderRadius:50,
-                                margin:10
+                                height: '70%',
+                                borderRadius: 50,
+                                margin: 10
                             }}
                         resizeMode='contain'
                     />
@@ -54,109 +51,70 @@ class ListSurvey extends React.Component {
             )
         };
     };
-    toast = ()=>{
+    toast = () => {
         Toast.show({
             text: 'Coming Soon!',
             type: 'success',
-            duration:3000
+            duration: 3000
         })
     }
+
     data = [
         {
-            key:'Daily Survey',
-            icon:'md-stats',
-            onPress:()=>this.props.navigation.navigate('SurveyIntro',{
-                surveyId:'3',
-                surveyName:'Daily-Questionnaire',
-                surveyDescription:'Daily Survey',
-                surveyNote:'note',
-                surveyLevel:'beginner'
+            key: 'Daily Survey',
+            icon: 'md-stats',
+            onPress: () => this.props.navigation.navigate('SurveyIntro', {
+                surveyId: '3',
+                surveyName: 'Daily-Questionnaire',
+                surveyDescription: 'Daily Survey',
+                surveyNote: 'note',
+                surveyLevel: 'beginner'
             })
         },
         {
-            key:'Weekly Survey',
-            icon:'md-stats',
-            onPress:()=>this.props.navigation.navigate('SurveyIntro',{
-                surveyId:'1 ',
-                surveyName:'Weekly-Questionnaire',
-                surveyDescription:'Weekly Survey',
-                surveyNote:'note',
-                surveyLevel:'beginner'
+            key: 'Weekly Survey',
+            icon: 'md-stats',
+            onPress: () => this.props.navigation.navigate('SurveyIntro', {
+                surveyId: '1 ',
+                surveyName: 'Weekly-Questionnaire',
+                surveyDescription: 'Weekly Survey',
+                surveyNote: 'note',
+                surveyLevel: 'beginner'
             })
         }
     ]
 
-    signOutHandler = () => {
-        this.setState({isLoading:true})
-        logout({
-            accountAlias: this.props.accountAlias,
-            email:this.props.email
-        }).then(()=>{
-            this.props.deAuthenticate()
-            this.setState({isLoading:false})
-            Toast.show({
-                text: 'Signed out Successfully',
-                type: "success"
-            })
-            this.props.navigation.navigate('LoginPage')
-            return
-        }).catch(()=>{
-            Toast.show({
-                text: 'Unable to communicate with server',
-                type: "danger"
-            })
-            this.setState({isLoading:false})
-        })
-    }
     render() {
 
         return (
 
-            <Container>
-                <Content
-                    contentContainerStyle={styles.container}
-                    scrollEnabled={true}
-                    style={{
-                        paddingHorizontal: 20
+            <Container style={{ backgroundColor: '#eee' }}>
+
+                <View style={{
+                    flex: 1, 
+                    margin: 10,
+                    backgroundColor: '#fff', 
+                    borderRadius: 5, 
+                    shadowOffset: { width: 5, height: 5 },
+                    shadowColor: 'black',
+                    shadowOpacity: 0.5,
+                    elevation: 2
+                }}>
+                    <H2 style={{ margin: 20, marginBottom: 10 }}>Survey summary</H2>
+                    <BarChart style={{
+                        flex: 1,
+                        margin: 10
+
                     }}
-                >
-                    <FlatList
-                        data={this.data}
-                        renderItem={
-                            ({item}) =>
-                                <TouchableOpacity
-                                    disabled={item.onPress?false:true}
-                                    style={{
-                                        flexDirection: 'row',
-                                        paddingVertical: 20,
-                                        justifyContent: 'space-between',
-                                        width: '100%',
-                                        borderColor: 'black',
-                                        borderBottomWidth: 1
-                                    }}
-                                    onPress={item.onPress}
-                                >
-                                    <View style={{ flexDirection: 'row' }}>
-                                        <Icon name={item.icon} style={styles.icon} />
-
-                                        <H3 style={{
-                                            color: 'black',
-                                            textAlign: 'center'
-
-                                        }}
-                                        >
-                                            {item.key}
-                                        </H3>
-                                    </View>
-                                    {item.onPress?
-                                        <Icon name='ios-arrow-forward' style={[
-                                            styles.icon,
-                                            {color:'black'}
-                                        ]} />
-                                        :null}
-                                </TouchableOpacity>
-                        }
+                    data={{ dataSets: [{ label: "Sample Data", values: [{ y: 10 }, { y: 20 }, { y: 1 }, { y: 10 }, { y: 15 }, { y: 5 }, { y: 18 }, { y: 12 }, { y: 1 }] }] }}
                     />
+                </View>
+                <Content
+                    contentContainerStyle={{ flex: 1 }}
+                    scrollEnabled={true}
+         
+                >
+                    <SurveyTabNavigator />
                 </Content>
                 <LoadingModal
                     enabled={this.state.isLoading}
@@ -167,13 +125,6 @@ class ListSurvey extends React.Component {
     }
 }
 
-const styles = StyleSheet.create({
-    icon: {
-        fontSize: 20,
-        paddingHorizontal: 10,
-        color:'#1c92c4'
-    }
-})
 const mapStateToProps = (state) => {
     return {
         accountAlias: state.user.accountAlias,
