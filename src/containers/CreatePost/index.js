@@ -14,7 +14,8 @@ import {
     Container,
     Icon,
     Toast,
-    Thumbnail
+    Thumbnail,
+    H3
 } from 'native-base';
 /* Redux */
 import { connect } from 'react-redux'
@@ -25,7 +26,7 @@ import VisibilityModal from '../VisibilityModal'
 import LoadingModal from '../LoadingModal'
 import thumbnail from '../../assets/thumbnail.jpg'
 import ListMember from '../ListMember'
-import { NavigationEvents } from 'react-navigation'
+import MultiSelect from 'react-native-multiple-select';
 class CreatePost extends React.Component {
 
     constructor(props) {
@@ -36,10 +37,39 @@ class CreatePost extends React.Component {
             visibilitySelection: 'Organization',
             text: '',
             isLoading: false,
-            EndorseModalVisibility: false
+            EndorseModalVisibility: false,
+            selectedItems: []
         }
         this.state = this.initialState
         this.inputTextRef = React.createRef();
+        this.items = [{
+            id: '92iijs7yta',
+            name: 'Ondo'
+        }, {
+            id: 'a0s0a8ssbsd',
+            name: 'Ogun'
+        }, {
+            id: '16hbajsabsd',
+            name: 'Calabar'
+        }, {
+            id: 'nahs75a5sg',
+            name: 'Lagos'
+        }, {
+            id: '667atsas',
+            name: 'Maiduguri'
+        }, {
+            id: 'hsyasajs',
+            name: 'Anambra'
+        }, {
+            id: 'djsjudksjd',
+            name: 'Benue'
+        }, {
+            id: 'sdhyaysdj',
+            name: 'Kaduna'
+        }, {
+            id: 'suudydjsjd',
+            name: 'Abuja'
+        }];
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -158,7 +188,9 @@ class CreatePost extends React.Component {
         }
 
     }
-
+    onSelectedItemsChange = selectedItems => {
+        this.setState({ selectedItems });
+    };
     closeEndorseModal = () => {
         this.setState({ EndorseModalVisibility: false })
     }
@@ -176,93 +208,116 @@ class CreatePost extends React.Component {
     }
     render() {
         const fontSize = 15
+        const { selectedItems } = this.state;
         return (
 
-            <Container>
+            <Container style={{flex:1}}>
 
-                <View name='content' style={styles.content}>
-                    <View style={{
-                        flex: 1,
-                        backgroundColor: '#fff',
-                        marginHorizontal: 10,
-                        marginBottom: 20,
-                        borderRadius: 5,
-                        alignItems: 'center'
-                    }}>
-                        <TouchableOpacity
-                            style={{
-                                backgroundColor: '#1c92c4',
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                paddingHorizontal: 10,
-                                paddingVertical: 5,
-                                marginHorizontal: 10,
-                                marginTop: 10,
-                                borderRadius: 5
-                            }}
-                            onPress={() => this.setState({ visibilityModal: true })}
-                        >
-                            <Icon name='md-eye' style={{ fontSize: 12, paddingHorizontal: 5, color: 'white' }} />
-                            <Text style={styles.buttonText}>{this.state.visibilitySelection}</Text>
-                        </TouchableOpacity>
-                        <View style={{
-                            backgroundColor: '#333',
-                            height: 1,
-                            width: '90%',
-                            marginVertical: 10
-                        }} />
-                        <TextInput
-                            multiline={true}
-                            maxLength={255}
-                            placeholder='Write something here'
-                            scrollEnabled={true}
-                            style={{
+                <View style={{
+                    
+                    backgroundColor: '#eee',
+                    flex:1,
+                    borderRadius: 5,
+                    alignItems: 'center'
+                }}>
 
-                                padding: 20,
-                                flex: 1,
-                                fontSize: 20,
-                                width: '100%',
-                                textAlignVertical: 'top'
-
-                            }}
-                            value={this.state.text}
-                            onChangeText={(text) => this.setState({ text: text })}
-                            ref={this.inputTextRef}
-                        />
-
-                        <View style={{
-                            backgroundColor: '#333',
-                            height: 1,
-                            width: '90%',
-                            marginVertical: 10
-                        }} />
-
-                        <View name='buttonContainer' style={{
-                            marginHorizontal: 5,
-                            marginBottom: 10,
+                    <TouchableOpacity
+                        style={{
+                            backgroundColor: '#1c92c4',
                             flexDirection: 'row',
                             alignItems: 'center',
-                            justifyContent: 'center'
-                        }}>
-                            <TouchableOpacity style={styles.button} onPress={() => Toast.show({
-                                text: 'Coming Soon!',
-                                type: 'success',
-                                duration: 3000
-                            })}>
-                                <Icon name='md-people' style={{ fontSize: fontSize, paddingHorizontal: 5, color: 'white' }} />
-                                <Text style={[styles.buttonText, { fontSize: fontSize }]}>Endorse</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.button} onPress={() => {
-                                this.setState({ EndorseModalVisibility: true })
-                            }}>
-                                <Icon name='md-thumbs-up' style={{ fontSize: fontSize, paddingHorizontal: 5, color: 'white' }} />
-                                <Text style={[styles.buttonText, { fontSize: fontSize }]}>Gratitude</Text>
-                            </TouchableOpacity>
+                            justifyContent: 'center',
+                            paddingHorizontal: 10,
+                            paddingVertical: 5,
+                            marginHorizontal: 10,
+                            marginTop: 10,
+                            borderRadius: 5
+                        }}
+                        onPress={() => this.setState({ visibilityModal: true })}
+                    >
+                        <Icon name='md-eye' style={{ fontSize: 12, paddingHorizontal: 5, color: 'white' }} />
+                        <Text style={styles.buttonText}>{this.state.visibilitySelection}</Text>
+                    </TouchableOpacity>
+                    <View style={{
+                        backgroundColor: '#333',
+                        height: 1,
+                        width: '90%',
+                        marginVertical: 10
+                    }} />
 
+                    <View style={{
+                        alignItems:'center',
+                        width: '90%',
+                        borderRadius: 10,
+                        backgroundColor:'#fff'
+                    }}>
+                        <View style={{backgroundColor:'#1c92c4', flexDirection: 'row',borderTopRightRadius:10,borderTopLeftRadius:10, justifyContent: 'space-between', alignItems: 'center',paddingHorizontal:20, padding: 10, width: '100%' }}>
+
+                            <H3 style={{color:'#fff'}}>Tag your colleagues</H3>
+                            {this.state.selectedItems.length>0?
+                                <Icon name='ios-close'style={{color:'#fff'}} onPress={()=>this.setState({selectedItems:[]})} />
+                                :null}
+                            
+                        </View>
+                       
+                        <View style={{ width: '100%',paddingHorizontal:20,marginTop:10,marginBottom:10}}>
+
+                            <MultiSelect
+
+                                items={this.items}
+                                uniqueKey='id'
+                                ref={(component) => { this.multiSelect = component }}
+                                onSelectedItemsChange={this.onSelectedItemsChange}
+                                selectedItems={selectedItems}
+                                selectText='Select colleagues'
+                                searchInputPlaceholderText='Search colleagues...'
+                                onChangeInput={(text) => console.log(text)}
+                                tagRemoveIconColor='#1c92c4'
+                                tagBorderColor='#1c92c4'
+                                tagTextColor='#1c92c4'
+                                selectedItemTextColor='#1c92c4'
+                                selectedItemIconColor='#1c92c4'
+                                itemTextColor='#000'
+                                displayKey='name'
+                                searchInputStyle={{ color: '#1c92c4' }}
+                                submitButtonColor='#1c92c4'
+                                submitButtonText='Submit'
+                            />
                         </View>
                     </View>
+                    <View style={{ flex: 1 }}>
 
+                    </View>
+                    <View style={{
+                        backgroundColor: '#333',
+                        height: 1,
+                        width: '90%',
+                        marginVertical: 10
+                    }} />
+
+                    <View name='buttonContainer' style={{
+                        marginHorizontal: 5,
+                        marginBottom: 10,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                        <TouchableOpacity style={styles.button} onPress={() => Toast.show({
+                            text: 'Coming Soon!',
+                            type: 'success',
+                            duration: 3000
+                        })}>
+                            <Icon name='md-people' style={{ fontSize: fontSize, paddingHorizontal: 5, color: 'white' }} />
+                            <Text style={[styles.buttonText, { fontSize: fontSize }]}>Endorse</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={() => {
+                            this.setState({ EndorseModalVisibility: true })
+                        }}>
+                            <Icon name='md-thumbs-up' style={{ fontSize: fontSize, paddingHorizontal: 5, color: 'white' }} />
+                            <Text style={[styles.buttonText, { fontSize: fontSize }]}>Gratitude</Text>
+                        </TouchableOpacity>
+
+                    </View>
                 </View>
 
                 <VisibilityModal
