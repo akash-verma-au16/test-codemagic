@@ -67,36 +67,44 @@ class ForgotPassword extends React.Component {
         }, () => {
             try {
                 if (this.state.accountAlias && this.state.email) {
-                    forgotPassword({
-                        accountAlias: this.state.accountAlias,
-                        email: this.state.email
-                    }).then(() => {
-
-                        Toast.show({
-                            text: 'OTP has been sent',
-                            type: "success"
-                        })
-
-                        this.props.navigation.navigate('ConfirmPassword', {
+                    if(this.props.isConnected) {
+                        forgotPassword({
                             accountAlias: this.state.accountAlias,
                             email: this.state.email
+                        }).then(() => {
+                            Toast.show({
+                                text: 'OTP has been sent',
+                                type: "success"
+                            })
+
+                            this.props.navigation.navigate('ConfirmPassword', {
+                                accountAlias: this.state.accountAlias,
+                                email: this.state.email
+                            })
+                            this.setState({ isButtonLoading: false })
+                        }).catch((error) => {
+                            if (error.response.data.code) {
+                                Toast.show({
+                                    text: error.response.data.message,
+                                    type: "danger"
+                                })
+                            } else {
+                                Toast.show({
+                                    text: 'Invalid Credentials',
+                                    type: "danger"
+                                })
+                            }
+
+                            this.setState({ isButtonLoading: false })
+                        })
+                    } else {
+                        Toast.show({
+                            text: 'Please, connect to the internet',
+                            type: "danger"
                         })
                         this.setState({ isButtonLoading: false })
-                    }).catch((error) => {
-                        if (error.response.data.code) {
-                            Toast.show({
-                                text: error.response.data.message,
-                                type: "danger"
-                            })
-                        } else {
-                            Toast.show({
-                                text: 'Invalid Credentials',
-                                type: "danger"
-                            })
-                        }
-
-                        this.setState({ isButtonLoading: false })
-                    })
+                    }   
+                    
                 } else {
                     Toast.show({
                         text: 'All fields are required',
@@ -107,7 +115,7 @@ class ForgotPassword extends React.Component {
 
             } catch (error) {
                 Toast.show({
-                    text: 'Please check your internet connection',
+                    text: 'Something went wrong',
                     type: "danger"
                 })
                 this.setState({ isButtonLoading: false })
@@ -185,7 +193,8 @@ class ForgotPassword extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        isAuthenticate: state.isAuthenticate
+        isAuthenticate: state.isAuthenticate,
+        isConnected: state.system.isConnected
     };
 }
 

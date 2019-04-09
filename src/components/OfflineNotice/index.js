@@ -1,5 +1,7 @@
 import React, { PureComponent } from "react";
-import { View, Text, Dimensions, StyleSheet} from 'react-native';
+import { View, Text, Dimensions, StyleSheet, NetInfo} from 'react-native';
+import { connect } from 'react-redux';
+import { system } from '../../store/actions'
 
 const { width } = Dimensions.get('window');
 
@@ -11,7 +13,25 @@ function MiniOfflineSign() {
     );
 }
 
-export default class OfflineNotice extends PureComponent {
+class OfflineNotice extends PureComponent {
+    constructor(props) {
+        super(props)
+        this.props.initialStatus(this.props.isConnected)
+    }
+    componentDidMount() {
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+    }
+
+    componentWillUnmount() {
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+    }
+
+    handleConnectivityChange = isConnected => {
+        this.props.updateStatus(isConnected? 
+            true : 
+            false)
+    }
+
     render() {
         if (!this.props.isConnected) {
             return (
@@ -34,3 +54,12 @@ const styles = StyleSheet.create({
     },
     offlineText: { color: '#fff' }
 });
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        initialStatus: (value) => dispatch({ type: system.NETWORK_STATUS, payload: value}),
+        updateStatus: (value) => dispatch({ type: system.NETWORK_STATUS, payload: value})
+    }
+}
+
+export default connect(null, mapDispatchToProps)(OfflineNotice)

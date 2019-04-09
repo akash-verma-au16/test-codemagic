@@ -34,6 +34,7 @@ export default class App extends Component {
         try {
             //Check if previous state exists
             const value = await AsyncStorage.getItem('reduxState');
+            
             if (value) {
                 // We have state!!
                 this.store = createStore(reducer, JSON.parse(value), this.composeEnhancers())
@@ -54,7 +55,7 @@ export default class App extends Component {
 
     componentWillMount() {
         NetInfo.isConnected.fetch().then(isConnected => {
-            this.setState({ isConnected: isConnected ? true : false });
+            this.setState({ isConnected: isConnected ? true : false })
         });
     }
 
@@ -130,10 +131,10 @@ export default class App extends Component {
     render() {
         return (
             this.state.dataLoaded ?
-                <Root>
+                <Root style={{zIndex:0}}>
                     <StatusBar backgroundColor='#1c92c4' barStyle='light-content' />
-                    <OfflineNotice isConnected={this.state.isConnected}/>
                     <Provider store={this.store}>
+                        <OfflineNotice isConnected={this.state.isConnected} />
                         <Navigator />
                     </Provider>
                 </Root>
@@ -141,3 +142,4 @@ export default class App extends Component {
         )
     }
 }
+
