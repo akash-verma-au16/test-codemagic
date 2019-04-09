@@ -3,7 +3,8 @@ import {
     StyleSheet,
     View,
     TouchableOpacity,
-    FlatList
+    FlatList,
+    Alert
 } from 'react-native';
 /* Redux */
 import { connect } from 'react-redux'
@@ -71,31 +72,57 @@ class Settings extends React.Component {
         }
     ]
 
-    signOutHandler = () => {
+    signOut() {
         this.setState({ isLoading: true })
-        logout({
-            accountAlias: this.props.accountAlias,
-            email: this.props.email
-        }).then(() => {
-            this.props.deAuthenticate()
-            this.setState({ isLoading: false })
-            Toast.show({
-                text: 'Signed out Successfully',
-                type: "success"
+        if (this.props.isConnected) {
+            logout({
+                accountAlias: this.props.accountAlias,
+                email: this.props.email
+            }).then(() => {
+                this.props.deAuthenticate()
+                this.setState({ isLoading: false })
+                Toast.show({
+                    text: 'Signed out Successfully',
+                    type: "success"
+                })
+                const resetAction = StackActions.reset({
+                    index: 0,
+                    actions: [NavigationActions.navigate({ routeName: 'LoginPage' })]
+                });
+                this.props.navigation.dispatch(resetAction);
+                return
+            }).catch(() => {
+                Toast.show({
+                    text: 'Unable to communicate with server',
+                    type: "danger"
+                })
+                this.setState({ isLoading: false })
             })
-            const resetAction = StackActions.reset({
-                index: 0,
-                actions: [NavigationActions.navigate({ routeName: 'LoginPage' })]
-            });
-            this.props.navigation.dispatch(resetAction);
-            return
-        }).catch(() => {
+        }
+        else {
             Toast.show({
-                text: 'Unable to communicate with server',
+                text: 'Please, connect to the internet',
                 type: "danger"
             })
             this.setState({ isLoading: false })
-        })
+        }
+    }
+
+    signOutHandler = () => {
+        Alert.alert(
+            'Logout?',
+            'Are you sure you want to logout?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Yes', onPress: () => {this.signOut()}
+                }
+            ],
+            { cancelable: false },
+        ) 
     }
     render() {
 
@@ -166,7 +193,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         accountAlias: state.user.accountAlias,
-        email: state.user.emailAddress
+        email: state.user.emailAddress,
+        isConnected: state.system.isConnected
 
     };
 }
