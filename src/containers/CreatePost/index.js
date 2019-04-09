@@ -25,6 +25,7 @@ import LoadingModal from '../LoadingModal'
 import thumbnail from '../../assets/thumbnail.jpg'
 import AssociateTager from '../../components/AssociateTager'
 import Endorsement from '../../components/Endorsement'
+import Gratitude from '../../components/Gratitude'
 class CreatePost extends React.Component {
 
     constructor(props) {
@@ -35,7 +36,8 @@ class CreatePost extends React.Component {
             visibilitySelection: 'Organization',
             text: '',
             isLoading: false,
-            EndorseModalVisibility: false
+            EndorseModalVisibility: false,
+            GratitudeModalVisibility: false
         }
         this.state = this.initialState
         this.inputTextRef = React.createRef();
@@ -162,6 +164,9 @@ class CreatePost extends React.Component {
     closeEndorseModal = () => {
         this.setState({ EndorseModalVisibility: false })
     }
+    closeGratitudeModal = () => {
+        this.setState({ GratitudeModalVisibility: false })
+    }
     toggleButton = () => {
         const fontSize = 18
         const iconSize = 50
@@ -190,7 +195,9 @@ class CreatePost extends React.Component {
                     backgroundColor: '#ccc',
                     width: 1
                 }} />
-                <TouchableOpacity style={styles.button} >
+                <TouchableOpacity style={styles.button} onPress={() => {
+                    this.setState({ GratitudeModalVisibility: true })
+                }}>
                     <Icon name='md-thumbs-up' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
                     <Text style={[styles.buttonText, { fontSize: fontSize, color: '#1c92c4' }]}>Gratitude</Text>
                 </TouchableOpacity>
@@ -232,7 +239,7 @@ class CreatePost extends React.Component {
 
                     <AssociateTager />
 
-                    {!this.state.EndorseModalVisibility ?
+                    {!this.state.EndorseModalVisibility && !this.state.GratitudeModalVisibility ?
                         <this.toggleButton />
                         : null}
 
@@ -241,7 +248,11 @@ class CreatePost extends React.Component {
                             closeEndorseModal={this.closeEndorseModal}
                         />
                         : null}
-
+                    {this.state.GratitudeModalVisibility ?
+                        <Gratitude
+                            closeEndorseModal={this.closeGratitudeModal}
+                        />
+                        : null}
                 </View>
 
                 <VisibilityModal

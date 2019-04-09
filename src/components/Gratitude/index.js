@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity, Alert, Dimensions } from 'react-native';
 import { Icon, Content } from 'native-base'
 
-class Endorsement extends Component {
+class Gratitude extends Component {
     constructor(props) {
         super(props);
 
@@ -77,7 +77,7 @@ class Endorsement extends Component {
                 <View style={{ backgroundColor: '#1c92c4', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Icon name='md-people' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
-                        <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Endorse</Text>
+                        <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Gratitude</Text>
                     </View>
                     <Icon name='md-close' style={{ fontSize: 18, color: '#fff' }} onPress={() => {
                         if (this.state.text === '') {
@@ -153,4 +153,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default Endorsement
+export default Gratitude
