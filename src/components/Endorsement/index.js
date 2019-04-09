@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity,Alert } from 'react-native';
 import { Icon } from 'native-base'
 
 class Endorsement extends Component {
     constructor(props) {
         super(props);
-        this.state = {
+
+        this.initialState = {
             showTemplates: true,
             text: ''
         }
+        this.state= this.initialState
         this.endorsementData = [
             `I just wanted to say ThankYou`,
             `I really appreciate you`,
@@ -19,8 +21,7 @@ class Endorsement extends Component {
             `I couldn't imagine working without you`,
             `Without you I'd be lost. Thanks for your support`,
             `I am so lucky to have you as my mentor`,
-            `You come up with fantastic ideas`,
-            `You come up with fantastic ideas,You come up with fantastic ideas,You come up with fantastic ideas,You come up with fantastic ideas`
+            `You come up with fantastic ideas`
 
         ]
     }
@@ -76,7 +77,29 @@ class Endorsement extends Component {
                         <Icon name='md-people' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
                         <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Endorse</Text>
                     </View>
-                    <Icon name='md-close' style={{ fontSize: 18, color: '#fff' }} onPress={() => this.setState({ selectedItems: [] })} />
+                    <Icon name='md-close' style={{ fontSize: 18, color: '#fff' }} onPress={()=>{
+                        if (this.state.text === '') {
+                            this.props.closeEndorseModal()
+                        } else {
+                            Alert.alert(
+                                'Are you sure?',
+                                'Note will not be saved',
+                                [
+                                    {
+                                        text: 'Cancel',
+                                        style: 'cancel'
+                                    },
+                                    {
+                                        text: 'OK', onPress: () => {
+                                            this.setState(this.initialState)
+                                            this.props.closeEndorseModal()
+                                        }
+                                    }
+                                ],
+                                { cancelable: false },
+                            )
+                        }
+                    }} />
                 </View>
                 <TextInput
                     multiline={true}

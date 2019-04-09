@@ -162,10 +162,44 @@ class CreatePost extends React.Component {
     closeEndorseModal = () => {
         this.setState({ EndorseModalVisibility: false })
     }
-
-    render() {
+    toggleButton = () => {
         const fontSize = 18
         const iconSize = 50
+        return (
+            <View style={{
+                alignItems: 'center',
+                width: '90%',
+                borderRadius: 10,
+                backgroundColor: '#fff',
+                shadowOffset: { width: 5, height: 5 },
+                shadowColor: 'black',
+                shadowOpacity: 0.2,
+                elevation: 2,
+                marginTop: 10,
+                flexDirection: 'row',
+                height: 200
+            }}>
+                <TouchableOpacity style={styles.button} onPress={() => {
+                    this.setState({ EndorseModalVisibility: true })
+                }}>
+                    <Icon name='md-people' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
+                    <Text style={[styles.buttonText, { fontSize: fontSize, color: '#1c92c4' }]}>Endorse</Text>
+                </TouchableOpacity>
+                <View style={{
+                    height: 150,
+                    backgroundColor: '#ccc',
+                    width: 1
+                }} />
+                <TouchableOpacity style={styles.button} >
+                    <Icon name='md-thumbs-up' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
+                    <Text style={[styles.buttonText, { fontSize: fontSize, color: '#1c92c4' }]}>Gratitude</Text>
+                </TouchableOpacity>
+
+            </View>
+        )
+    }
+    render() {
+
         return (
 
             <Container style={{ flex: 1 }}>
@@ -198,42 +232,16 @@ class CreatePost extends React.Component {
 
                     <AssociateTager />
 
-                    <View style={{
-                        alignItems: 'center',
-                        width: '90%',
-                        borderRadius: 10,
-                        backgroundColor: '#fff',
-                        shadowOffset: { width: 5, height: 5 },
-                        shadowColor: 'black',
-                        shadowOpacity: 0.2,
-                        elevation: 2,
-                        marginTop:10,
-                        flexDirection:'row',
-                        height:200
-                    }}>
-                        <TouchableOpacity style={styles.button} onPress={() => Toast.show({
-                            text: 'Coming Soon!',
-                            type: 'success',
-                            duration: 3000
-                        })}>
-                            <Icon name='md-people' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
-                            <Text style={[styles.buttonText, { fontSize: fontSize,color:'#1c92c4' }]}>Endorse</Text>
-                        </TouchableOpacity>
-                        <View style={{
-                            height:150,
-                            backgroundColor:'#ccc',
-                            width:1
-                        }}/>
-                        <TouchableOpacity style={styles.button} onPress={() => {
-                            this.setState({ EndorseModalVisibility: true })
-                        }}>
-                            <Icon name='md-thumbs-up' style={{ fontSize: iconSize, paddingHorizontal: 5, color:'#1c92c4' }} />
-                            <Text style={[styles.buttonText, { fontSize: fontSize,color:'#1c92c4' }]}>Gratitude</Text>
-                        </TouchableOpacity>
+                    {!this.state.EndorseModalVisibility ?
+                        <this.toggleButton />
+                        : null}
 
-                    </View>
+                    {this.state.EndorseModalVisibility ?
+                        <Endorsement
+                            closeEndorseModal={this.closeEndorseModal}
+                        />
+                        : null}
 
-                    <Endorsement/>
                 </View>
 
                 <VisibilityModal
