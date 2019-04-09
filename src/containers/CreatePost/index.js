@@ -5,8 +5,7 @@ import {
     Alert,
     BackHandler,
     TouchableOpacity,
-    Text,
-    TextInput
+    Text
 } from 'react-native';
 
 /* Native Base */
@@ -14,8 +13,7 @@ import {
     Container,
     Icon,
     Toast,
-    Thumbnail,
-    H3
+    Thumbnail
 } from 'native-base';
 /* Redux */
 import { connect } from 'react-redux'
@@ -25,8 +23,7 @@ import { create_post } from '../../services/post'
 import VisibilityModal from '../VisibilityModal'
 import LoadingModal from '../LoadingModal'
 import thumbnail from '../../assets/thumbnail.jpg'
-import ListMember from '../ListMember'
-import MultiSelect from 'react-native-multiple-select';
+import AssociateTager from '../../components/AssociateTager'
 class CreatePost extends React.Component {
 
     constructor(props) {
@@ -37,39 +34,11 @@ class CreatePost extends React.Component {
             visibilitySelection: 'Organization',
             text: '',
             isLoading: false,
-            EndorseModalVisibility: false,
-            selectedItems: []
+            EndorseModalVisibility: false
         }
         this.state = this.initialState
         this.inputTextRef = React.createRef();
-        this.items = [{
-            id: '92iijs7yta',
-            name: 'Ondo'
-        }, {
-            id: 'a0s0a8ssbsd',
-            name: 'Ogun'
-        }, {
-            id: '16hbajsabsd',
-            name: 'Calabar'
-        }, {
-            id: 'nahs75a5sg',
-            name: 'Lagos'
-        }, {
-            id: '667atsas',
-            name: 'Maiduguri'
-        }, {
-            id: 'hsyasajs',
-            name: 'Anambra'
-        }, {
-            id: 'djsjudksjd',
-            name: 'Benue'
-        }, {
-            id: 'sdhyaysdj',
-            name: 'Kaduna'
-        }, {
-            id: 'suudydjsjd',
-            name: 'Abuja'
-        }];
+       
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -188,27 +157,13 @@ class CreatePost extends React.Component {
         }
 
     }
-    onSelectedItemsChange = selectedItems => {
-        this.setState({ selectedItems });
-    };
+
     closeEndorseModal = () => {
         this.setState({ EndorseModalVisibility: false })
     }
-    listMemberListener = (name) => {
-        let message = ''
-        if (this.state.text.trim() !== '') {
-            message = `\n`
-        }
-        message += `@` + name + ` thanks for `
-        this.setState({
-            EndorseModalVisibility: false,
-            text: this.state.text + message
-        })
-        this.inputTextRef.current.focus()
-    }
+
     render() {
         const fontSize = 15
-        const { selectedItems } = this.state;
         return (
 
             <Container style={{flex:1}}>
@@ -230,7 +185,7 @@ class CreatePost extends React.Component {
                             paddingHorizontal: 10,
                             paddingVertical: 5,
                             marginHorizontal: 10,
-                            marginTop: 10,
+                            marginVertical:10,
                             borderRadius: 5
                         }}
                         onPress={() => this.setState({ visibilityModal: true })}
@@ -238,53 +193,9 @@ class CreatePost extends React.Component {
                         <Icon name='md-eye' style={{ fontSize: 12, paddingHorizontal: 5, color: 'white' }} />
                         <Text style={styles.buttonText}>{this.state.visibilitySelection}</Text>
                     </TouchableOpacity>
-                    <View style={{
-                        backgroundColor: '#333',
-                        height: 1,
-                        width: '90%',
-                        marginVertical: 10
-                    }} />
-
-                    <View style={{
-                        alignItems:'center',
-                        width: '90%',
-                        borderRadius: 10,
-                        backgroundColor:'#fff'
-                    }}>
-                        <View style={{backgroundColor:'#1c92c4', flexDirection: 'row',borderTopRightRadius:10,borderTopLeftRadius:10, justifyContent: 'space-between', alignItems: 'center',paddingHorizontal:20, padding: 10, width: '100%' }}>
-
-                            <H3 style={{color:'#fff'}}>Tag your colleagues</H3>
-                            {this.state.selectedItems.length>0?
-                                <Icon name='ios-close'style={{color:'#fff'}} onPress={()=>this.setState({selectedItems:[]})} />
-                                :null}
-                            
-                        </View>
-                       
-                        <View style={{ width: '100%',paddingHorizontal:20,marginTop:10,marginBottom:10}}>
-
-                            <MultiSelect
-
-                                items={this.items}
-                                uniqueKey='id'
-                                ref={(component) => { this.multiSelect = component }}
-                                onSelectedItemsChange={this.onSelectedItemsChange}
-                                selectedItems={selectedItems}
-                                selectText='Select colleagues'
-                                searchInputPlaceholderText='Search colleagues...'
-                                onChangeInput={(text) => console.log(text)}
-                                tagRemoveIconColor='#1c92c4'
-                                tagBorderColor='#1c92c4'
-                                tagTextColor='#1c92c4'
-                                selectedItemTextColor='#1c92c4'
-                                selectedItemIconColor='#1c92c4'
-                                itemTextColor='#000'
-                                displayKey='name'
-                                searchInputStyle={{ color: '#1c92c4' }}
-                                submitButtonColor='#1c92c4'
-                                submitButtonText='Submit'
-                            />
-                        </View>
-                    </View>
+                    
+                    <AssociateTager/>
+                    
                     <View style={{ flex: 1 }}>
 
                     </View>
@@ -337,11 +248,6 @@ class CreatePost extends React.Component {
                 />
                 <LoadingModal
                     enabled={this.state.isLoading}
-                />
-                <ListMember
-                    enabled={this.state.EndorseModalVisibility}
-                    closeHandler={this.closeEndorseModal}
-                    onPressListener={this.listMemberListener}
                 />
             </Container>
 

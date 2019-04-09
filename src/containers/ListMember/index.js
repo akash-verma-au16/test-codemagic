@@ -156,9 +156,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         height: 70
-    },
-    emailSubject: {
-        color: 'rgba(0,0,0,0.5)'
     }
 });
 const mapStateToProps = (state) => {
