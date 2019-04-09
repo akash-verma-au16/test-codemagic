@@ -112,6 +112,15 @@ class ListPost extends React.Component {
                 /* take payload backup to check for changes later */
                 if (this.payloadBackup.length === response.data.data.length) {
                     /* No change in payload hence do nothing */
+
+                    /* Checking if any data is available */
+                    if (response.data.data.length === 0) {
+                        /* Display warning on the screen */
+                        this.postList = []
+                        this.postList.push(<Text style={{margin:10}} key={0}>No post to display</Text>)
+                        this.postList.push(<Text style={{margin:10}} key={1}>Create a new post by clicking on + icon</Text>)
+                    }
+                    /* Update state to render warning */
                     this.setState({ refreshing: false })
                     return
                 } else {
@@ -156,10 +165,7 @@ class ListPost extends React.Component {
         }
     }
     createTiles = (data) => {
-        if (data.length === 0) {
-            this.postList.push(<Text key={0}>No post to display</Text>)
-            return
-        }
+        
         data.map((item, index) => {
             this.postList.push(
                 <View style={styles.card} key={index}>
