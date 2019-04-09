@@ -24,6 +24,7 @@ import VisibilityModal from '../VisibilityModal'
 import LoadingModal from '../LoadingModal'
 import thumbnail from '../../assets/thumbnail.jpg'
 import AssociateTager from '../../components/AssociateTager'
+import Endorsement from '../../components/Endorsement'
 class CreatePost extends React.Component {
 
     constructor(props) {
@@ -232,6 +233,7 @@ class CreatePost extends React.Component {
 
                     </View>
 
+                    <Endorsement/>
                 </View>
 
                 <VisibilityModal
