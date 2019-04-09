@@ -5,7 +5,8 @@ import {
     Alert,
     BackHandler,
     TouchableOpacity,
-    Text
+    Text,
+    Keyboard
 } from 'react-native';
 
 /* Native Base */
@@ -37,7 +38,8 @@ class CreatePost extends React.Component {
             text: '',
             isLoading: false,
             EndorseModalVisibility: false,
-            GratitudeModalVisibility: false
+            GratitudeModalVisibility: false,
+            isShowingKeyboard: false
         }
         this.state = this.initialState
         this.inputTextRef = React.createRef();
@@ -80,9 +82,29 @@ class CreatePost extends React.Component {
             this.goBack()
             return true
         })
+        this.keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            this._keyboardDidShow,
+        );
+        this.keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            this._keyboardDidHide,
+        );
+    }
+
+    _keyboardDidShow = () => {
+        this.setState({ isShowingKeyboard: true })
+        console.log('show')
+    }
+
+    _keyboardDidHide = () => {
+        this.setState({ isShowingKeyboard: false })
+        console.log('hide')
     }
 
     componentWillUnmount() {
+        this.keyboardDidShowListener.remove();
+        this.keyboardDidHideListener.remove();
         this.backHandler.remove()
     }
 
@@ -237,7 +259,9 @@ class CreatePost extends React.Component {
                         <Text style={styles.buttonText}>{this.state.visibilitySelection}</Text>
                     </TouchableOpacity>
 
-                    <AssociateTager />
+                    <AssociateTager
+                        isShowingKeyboard={this.state.isShowingKeyboard}
+                    />
 
                     {!this.state.EndorseModalVisibility && !this.state.GratitudeModalVisibility ?
                         <this.toggleButton />

@@ -43,13 +43,13 @@ class Gratitude extends Component {
         this.setState({ showTemplates: true })
     }
     suggestionSection = () => (
-        <View style={{ flex: 1, height: 120, width: '100%',alignItems:'center' }}>
+        <View style={{ flex: 1, height: 120, width: '100%', alignItems: 'center' }}>
 
             <View style={{
                 height: 1,
                 backgroundColor: '#ccc',
                 width: '90%'
-                
+
             }} />
             <Content contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
 

@@ -54,13 +54,13 @@ class AssociateTager extends Component {
                 elevation: 2
             }}>
                 <View style={{ backgroundColor: '#1c92c4', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
-                    <View style={{ flexDirection: 'row',alignItems:'center' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Icon name='md-person-add' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
-                        <Text style={{fontSize:18, color: '#fff', marginVertical: 10 }}>Tag your colleagues</Text>
+                        <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Tag your colleagues</Text>
                     </View>
 
                     {this.state.selectedItems.length > 0 ?
-                        <Icon name='md-close' style={{ fontSize:18, color: '#fff' }} onPress={() => this.setState({ selectedItems: [] })} />
+                        <Icon name='md-close' style={{ fontSize: 18, color: '#fff' }} onPress={() => this.setState({ selectedItems: [] })} />
                         : null}
 
                 </View>
@@ -70,7 +70,7 @@ class AssociateTager extends Component {
                     <View style={{ width: '100%', paddingHorizontal: 20, marginTop: 10, marginBottom: 10 }}>
 
                         <MultiSelect
-
+                            hideTags
                             items={this.data}
                             uniqueKey='id'
                             ref={(component) => { this.multiSelect = component }}
@@ -90,6 +90,14 @@ class AssociateTager extends Component {
                             submitButtonColor='#1c92c4'
                             submitButtonText='Submit'
                         />
+                        {this.props.isShowingKeyboard ?
+                            null
+                            :
+                            <View>
+                                {this.multiSelect && this.multiSelect.getSelectedItemsExt(selectedItems)}
+                            </View>
+                        }
+
                     </View>
                 }
             </View>
