@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, StyleSheet,TextInput } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Icon } from 'native-base'
 
 class Endorsement extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            showTemplates: false
+            showTemplates: true,
+            text: ''
         }
         this.endorsementData = [
             `I just wanted to say ThankYou`,
@@ -30,18 +31,22 @@ class Endorsement extends Component {
         this.endorsementTemplate = []
         this.endorsementData.map((item, index) => {
             this.endorsementTemplate.push(
-                <View style={styles.template} key={index}>
-                    <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 10, justifyContent: 'center' }}>
-                        <Text style={styles.templateText}>
-                            {item}
-                        </Text>
+                <View style={styles.template} key={index} >
+                    <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 10, justifyContent: 'center' }} >
+                        <TouchableOpacity onPress={() => {
+                            this.setState({ text: item, showTemplates: false })
+                        }}>
+                            <Text style={styles.templateText}>
+                                {item}
+                            </Text>
+                        </TouchableOpacity>
                     </ScrollView>
                 </View>
             )
         })
         this.setState({ showTemplates: true })
     }
-    suggestionSection = ()=>(
+    suggestionSection = () => (
         <View style={{ height: 120, width: '100%' }}>
             <Text style={{ marginHorizontal: 10, marginTop: 10 }}>
                 Suggestions:
@@ -63,7 +68,8 @@ class Endorsement extends Component {
                 shadowColor: 'black',
                 shadowOpacity: 0.2,
                 elevation: 2,
-                marginTop: 10
+                marginTop: 10,
+                minHeight: 200
             }}>
                 <View style={{ backgroundColor: '#1c92c4', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -72,7 +78,34 @@ class Endorsement extends Component {
                     </View>
                     <Icon name='md-close' style={{ fontSize: 18, color: '#fff' }} onPress={() => this.setState({ selectedItems: [] })} />
                 </View>
-                <this.suggestionSection/>
+                <TextInput
+                    multiline={true}
+                    maxLength={255}
+                    placeholder='Write something here'
+                    scrollEnabled={true}
+                    style={{
+
+                        padding: 20,
+                        fontSize: 20,
+                        width: '100%',
+                        textAlignVertical: 'top'
+
+                    }}
+                    value={this.state.text}
+                    onChangeText={(text) => {
+                        if (text.length === 0)
+                            this.setState({ text: text, showTemplates: true })
+                        else
+                            this.setState({ text: text, showTemplates: false })
+
+                    }}
+                    ref={this.inputTextRef}
+                />
+
+                {this.state.showTemplates ?
+                    <this.suggestionSection />
+                    : null}
+
             </View>
         );
     }
