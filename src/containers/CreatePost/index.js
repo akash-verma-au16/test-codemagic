@@ -38,7 +38,7 @@ class CreatePost extends React.Component {
         }
         this.state = this.initialState
         this.inputTextRef = React.createRef();
-       
+
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -163,15 +163,16 @@ class CreatePost extends React.Component {
     }
 
     render() {
-        const fontSize = 15
+        const fontSize = 18
+        const iconSize = 50
         return (
 
-            <Container style={{flex:1}}>
+            <Container style={{ flex: 1 }}>
 
                 <View style={{
-                    
+
                     backgroundColor: '#eee',
-                    flex:1,
+                    flex: 1,
                     borderRadius: 5,
                     alignItems: 'center'
                 }}>
@@ -185,7 +186,7 @@ class CreatePost extends React.Component {
                             paddingHorizontal: 10,
                             paddingVertical: 5,
                             marginHorizontal: 10,
-                            marginVertical:10,
+                            marginVertical: 10,
                             borderRadius: 5
                         }}
                         onPress={() => this.setState({ visibilityModal: true })}
@@ -193,42 +194,44 @@ class CreatePost extends React.Component {
                         <Icon name='md-eye' style={{ fontSize: 12, paddingHorizontal: 5, color: 'white' }} />
                         <Text style={styles.buttonText}>{this.state.visibilitySelection}</Text>
                     </TouchableOpacity>
-                    
-                    <AssociateTager/>
-                    
-                    <View style={{ flex: 1 }}>
 
-                    </View>
+                    <AssociateTager />
+
                     <View style={{
-                        backgroundColor: '#333',
-                        height: 1,
-                        width: '90%',
-                        marginVertical: 10
-                    }} />
-
-                    <View name='buttonContainer' style={{
-                        marginHorizontal: 5,
-                        marginBottom: 10,
-                        flexDirection: 'row',
                         alignItems: 'center',
-                        justifyContent: 'center'
+                        width: '90%',
+                        borderRadius: 10,
+                        backgroundColor: '#fff',
+                        shadowOffset: { width: 5, height: 5 },
+                        shadowColor: 'black',
+                        shadowOpacity: 0.2,
+                        elevation: 2,
+                        marginTop:10,
+                        flexDirection:'row',
+                        height:200
                     }}>
                         <TouchableOpacity style={styles.button} onPress={() => Toast.show({
                             text: 'Coming Soon!',
                             type: 'success',
                             duration: 3000
                         })}>
-                            <Icon name='md-people' style={{ fontSize: fontSize, paddingHorizontal: 5, color: 'white' }} />
-                            <Text style={[styles.buttonText, { fontSize: fontSize }]}>Endorse</Text>
+                            <Icon name='md-people' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
+                            <Text style={[styles.buttonText, { fontSize: fontSize,color:'#1c92c4' }]}>Endorse</Text>
                         </TouchableOpacity>
+                        <View style={{
+                            height:150,
+                            backgroundColor:'#ccc',
+                            width:1
+                        }}/>
                         <TouchableOpacity style={styles.button} onPress={() => {
                             this.setState({ EndorseModalVisibility: true })
                         }}>
-                            <Icon name='md-thumbs-up' style={{ fontSize: fontSize, paddingHorizontal: 5, color: 'white' }} />
-                            <Text style={[styles.buttonText, { fontSize: fontSize }]}>Gratitude</Text>
+                            <Icon name='md-thumbs-up' style={{ fontSize: iconSize, paddingHorizontal: 5, color:'#1c92c4' }} />
+                            <Text style={[styles.buttonText, { fontSize: fontSize,color:'#1c92c4' }]}>Gratitude</Text>
                         </TouchableOpacity>
 
                     </View>
+
                 </View>
 
                 <VisibilityModal
@@ -258,18 +261,13 @@ class CreatePost extends React.Component {
 const styles = StyleSheet.create({
     button: {
         flex: 1,
-        backgroundColor: '#1c92c4',
-        flexDirection: 'row',
+        backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 10,
-        paddingVertical: 5,
+        paddingVertical: 10,
         margin: 5,
         borderRadius: 5
-    },
-
-    content: {
-        flex: 9
     },
 
     buttonText: {
