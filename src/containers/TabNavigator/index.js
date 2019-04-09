@@ -70,7 +70,8 @@ const TabNavigator = createBottomTabNavigator({
         activeTintColor: '#1c92c4',
         inactiveTintColor: 'black',
         showLabel: false
-    }
+    },
+    lazy: false
 }
 );
 

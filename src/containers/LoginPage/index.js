@@ -103,6 +103,7 @@ class LoginPage extends React.Component {
             email: this.state.email
         })
     }
+
     signinHandler = () => {
         /* Hiding the keyboard to prevent Toast overlap */
         Keyboard.dismiss()
@@ -111,113 +112,125 @@ class LoginPage extends React.Component {
         }, () => {
             try {
                 if (this.state.accountAlias && this.state.email && this.state.password) {
-                    login({
-                        accountAlias: this.state.accountAlias,
-                        email: this.state.email,
-                        password: this.state.password
-                    }).then((response) => {
-                        /* Restricting Super Admin Access as no Tenant Name is available to fetch */
-                        if (this.state.accountAlias.trim().toLowerCase() === 'default') {
-                            Toast.show({
-                                text: 'No Access for Super Admin',
-                                type: "danger"
-                            })
-                            this.setState({ isSignInLoading: false })
-                            return
-                        }
-
-                        read_member({
-                            tenant_id: this.state.accountAlias.toLowerCase().trim(),
-                            email: this.state.email.toLowerCase().trim()
-                        }).then(res => {
-                            let firstName = toSentenceCase(response.data.payload.idToken.payload.given_name);
-                            let lastName = toSentenceCase(response.data.payload.idToken.payload.family_name);
-                            const payload = {
-                                accountAlias: this.state.accountAlias.toLowerCase().trim(),
-                                tenant_name: this.state.accountAlias.toLowerCase().trim(),
-                                associate_id:res.data.data.associate_id,
-                                firstName: firstName,
-                                lastName: lastName,
-                                phoneNumber: response.data.payload.idToken.payload.phone_number,
-                                emailAddress: response.data.payload.idToken.payload.email.toLowerCase()
-                            };
-                            Toast.show({
-                                text: 'Welcome ' + response.data.payload.idToken.payload.given_name + '!',
-                                type: "success"
-                            })
-                            this.props.authenticate(payload);
-                            //configure firebase for push notification
-                            const email=this.state.email.toLowerCase().trim()
-                            configureFirebase({
-                                firstName,
-                                lastName,
-                                email
-                            })
-                            this.props.navigation.navigate('TabNavigator')
-                        }).catch((error) => {
-                            
-                            Toast.show({
-                                text: error.response.data.code,
-                                type: 'danger',
-                                duration:3000
-                            })
-                            this.setState({ isSignInLoading: false });
-                        })
-                    }).catch((error) => {
-                        try {
-                            switch (error.response.data.code) {
-                            case "ForceChangePassword":
-                                
+                    if(this.props.isConnected) {
+                        login({
+                            accountAlias: this.state.accountAlias,
+                            email: this.state.email,
+                            password: this.state.password
+                        }).then((response) => {
+                            /* Restricting Super Admin Access as no Tenant Name is available to fetch */
+                            if (this.state.accountAlias.trim().toLowerCase() === 'default') {
                                 Toast.show({
-                                    text: 'Please change the password to continue',
-                                    type: 'success',
-                                    duration: 3000
+                                    text: 'No Access for Super Admin',
+                                    type: "danger"
                                 })
-                                /* navigate to forceChangePassword */
-                                this.props.navigation.navigate('ForceChangePassword', {
-                                    accountAlias: this.state.accountAlias,
-                                    email: this.state.email,
-                                    password:this.state.password
-                                })
-                                break;
-                            case "ResourceNotFoundException":
-                                Toast.show({
-                                    text: 'Account not found please contact your administrator',
-                                    type: 'danger',
-                                    duration:3000
-                                })
-                                break;
-                            case "TenantDoesNotExist":
-                                Toast.show({
-                                    text: 'Account not found please contact your administrator',
-                                    type: 'danger',
-                                    duration:3000
-                                })
-                                break;
-                            case "UserNotFound":
-                                Toast.show({
-                                    text: 'Invalid username or password',
-                                    type: 'danger',
-                                    duration:3000
-                                })
-                                break;
-                            default:
-                                Toast.show({
-                                    text: error.response.data.message,
-                                    type: 'danger',
-                                    duration:3000
-                                })
+                                this.setState({ isSignInLoading: false })
+                                return
                             }
 
-                        } catch (error) {
-                            Toast.show({
-                                text: 'Please check your internet connection',
-                                type: 'danger',
-                                duration:3000
+                            read_member({
+                                tenant_id: this.state.accountAlias.toLowerCase().trim(),
+                                email: this.state.email.toLowerCase().trim()
+                            }).then(res => {
+                                let firstName = toSentenceCase(response.data.payload.idToken.payload.given_name);
+                                let lastName = toSentenceCase(response.data.payload.idToken.payload.family_name);
+                                const payload = {
+                                    accountAlias: this.state.accountAlias.toLowerCase().trim(),
+                                    tenant_name: this.state.accountAlias.toLowerCase().trim(),
+                                    associate_id: res.data.data.associate_id,
+                                    firstName: firstName,
+                                    lastName: lastName,
+                                    phoneNumber: response.data.payload.idToken.payload.phone_number,
+                                    emailAddress: response.data.payload.idToken.payload.email.toLowerCase()
+                                };
+                                Toast.show({
+                                    text: 'Welcome ' + response.data.payload.idToken.payload.given_name + '!',
+                                    type: "success"
+                                })
+                                this.props.authenticate(payload);
+                                //configure firebase for push notification
+                                const email = this.state.email.toLowerCase().trim()
+                                configureFirebase({
+                                    firstName,
+                                    lastName,
+                                    email
+                                })
+                                this.props.navigation.navigate('TabNavigator')
+                            }).catch((error) => {
+
+                                Toast.show({
+                                    text: error.response.data.code,
+                                    type: 'danger',
+                                    duration: 3000
+                                })
+                                this.setState({ isSignInLoading: false });
                             })
-                        }
+                        }).catch((error) => {
+                            try {
+                                switch (error.response.data.code) {
+                                case "ForceChangePassword":
+
+                                    Toast.show({
+                                        text: 'Please change the password to continue',
+                                        type: 'success',
+                                        duration: 3000
+                                    })
+                                    /* navigate to forceChangePassword */
+                                    this.props.navigation.navigate('ForceChangePassword', {
+                                        accountAlias: this.state.accountAlias,
+                                        email: this.state.email,
+                                        password: this.state.password
+                                    })
+                                    break;
+                                case "ResourceNotFoundException":
+                                    Toast.show({
+                                        text: 'Account not found please contact your administrator',
+                                        type: 'danger',
+                                        duration: 3000
+                                    })
+                                    break;
+                                case "TenantDoesNotExist":
+                                    Toast.show({
+                                        text: 'Account not found please contact your administrator',
+                                        type: 'danger',
+                                        duration: 3000
+                                    })
+                                    break;
+                                case "UserNotFound":
+                                    Toast.show({
+                                        text: 'Invalid username or password',
+                                        type: 'danger',
+                                        duration: 3000
+                                    })
+                                    break;
+                                default:
+                                    Toast.show({
+                                        text: error.response.data.message,
+                                        type: 'danger',
+                                        duration: 3000
+                                    })
+                                }
+
+                            } catch (error) {
+                                Toast.show({
+                                    text: 'Please check your internet connection',
+                                    type: 'danger',
+                                    duration: 3000
+                                })
+                            }
+                            this.setState({ isSignInLoading: false })
+                        })
+                    }
+                    else {
+
+                        Toast.show({
+                            text: 'Please connect to the internet.',
+                            type: 'danger',
+                            duration: 3000
+                        })
                         this.setState({ isSignInLoading: false })
-                    })
+                    }
+                    
                 } else {
                     Toast.show({
                         text: 'All fields are required',
@@ -227,7 +240,7 @@ class LoginPage extends React.Component {
                 }
             } catch (error) {
                 Toast.show({
-                    text: 'Please check your internet connection',
+                    text: error.text,
                     type: "danger"
                 })
                 this.setState({ isSignInLoading: false })
@@ -325,7 +338,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        isAuthenticate: state.isAuthenticate
+        isAuthenticate: state.isAuthenticate,
+        isConnected: state.system.isConnected
     };
 }
 
