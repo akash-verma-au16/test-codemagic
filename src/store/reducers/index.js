@@ -60,12 +60,12 @@ export default (state = initialState, action) => {
 
     // Setting Internet Connectivity flag
 
-    case system.CHECK_CONNECTIVITY: {
+    case system.NETWORK_STATUS: {
         return {
             ...state,
             system: {
                 ...state.system,
-                isConnected: state.isConnected
+                isConnected: action.payload
             }
         }
     }
