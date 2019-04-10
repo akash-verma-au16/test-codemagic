@@ -71,6 +71,7 @@ class ListMember extends React.Component {
                 <View style={{ flexDirection: 'row', backgroundColor: '#1c92c4', justifyContent: 'flex-start', alignItems: 'center' }}>
                     <Icon name='md-close' style={
                         {
+                            padding: 10,
                             color: 'white',
                             margin: 20
 

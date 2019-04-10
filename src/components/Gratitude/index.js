@@ -27,23 +27,21 @@ class Gratitude extends Component {
         this.endorsementData.map((item, index) => {
             this.endorsementTemplate.push(
 
-                <View style={styles.template} key={index} >
-                    <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 10, justifyContent: 'center' }} >
-                        <TouchableOpacity onPress={() => {
-                            this.setState({ text: item, showTemplates: false })
-                        }}>
-                            <Text style={styles.templateText}>
-                                {item}
-                            </Text>
-                        </TouchableOpacity>
-                    </ScrollView>
-                </View>
+                <TouchableOpacity style={styles.template} key={index} onPress={() => {
+                    this.setState({ text: item, showTemplates: false })
+                }}>
+                        
+                    <Text style={styles.templateText}>
+                        {item}
+                    </Text>
+                   
+                </TouchableOpacity>
             )
         })
         this.setState({ showTemplates: true })
     }
     suggestionSection = () => (
-        <View style={{ flex: 1, height: 120, width: '100%', alignItems: 'center' }}>
+        <View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
 
             <View style={{
                 height: 1,
@@ -79,7 +77,7 @@ class Gratitude extends Component {
                         <Icon name='md-people' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
                         <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Gratitude</Text>
                     </View>
-                    <Icon name='md-close' style={{ fontSize: 18, color: '#fff' }} onPress={() => {
+                    <Icon name='md-close' style={{padding: 10, fontSize: 18, color: '#fff' }} onPress={() => {
                         if (this.state.text === '') {
                             this.props.closeEndorseModal()
                         } else {
@@ -112,8 +110,8 @@ class Gratitude extends Component {
                         padding: 20,
                         fontSize: 20,
                         width: '100%',
-                        textAlignVertical: 'top'
-
+                        textAlignVertical: 'top',
+                        height:100
                     }}
                     value={this.state.text}
                     onChangeText={(text) => {

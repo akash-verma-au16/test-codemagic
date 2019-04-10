@@ -6,7 +6,8 @@ import {
     BackHandler,
     TouchableOpacity,
     Text,
-    Keyboard
+    Keyboard,
+    ScrollView
 } from 'react-native';
 
 /* Native Base */
@@ -231,12 +232,10 @@ class CreatePost extends React.Component {
 
         return (
 
-            <Container style={{ flex: 1 }}>
+            <Container style={{ flex: 1,backgroundColor: '#eee' }}>
 
-                <View style={{
+                <ScrollView contentContainerStyle={{
 
-                    backgroundColor: '#eee',
-                    flex: 1,
                     borderRadius: 5,
                     alignItems: 'center'
                 }}>
@@ -277,7 +276,7 @@ class CreatePost extends React.Component {
                             closeEndorseModal={this.closeGratitudeModal}
                         />
                         : null}
-                </View>
+                </ScrollView>
 
                 <VisibilityModal
                     enabled={this.state.visibilityModal}
