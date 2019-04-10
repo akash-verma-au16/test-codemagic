@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions, Image ,TextInput} from 'react-native';
 import { Icon, Content } from 'native-base'
 
 class Endorsement extends Component {
@@ -9,7 +9,8 @@ class Endorsement extends Component {
         this.initialState = {
             showTemplates: true,
             selectedStrength: '',
-            selectedSource: null
+            selectedSource: null,
+            text:''
         }
         this.state = this.initialState
         this.endorsementData = [
@@ -48,8 +49,9 @@ class Endorsement extends Component {
 
                 <TouchableOpacity style={styles.template} key={index}
                     onPress={() => {
-                        this.setState({ showTemplates: false, selectedStrength: item.name, selectedSource: item.source })
-                        this.props.endorsementHandler(item.name)
+                        const message = 'you are endorsing for #' + item.name
+                        this.setState({ showTemplates: false, selectedStrength: item.name, selectedSource: item.source ,text:message})
+                        this.props.endorsementHandler(item.name,message)
                     }}
                 >
 
@@ -110,20 +112,33 @@ class Endorsement extends Component {
 
                 {this.state.showTemplates ?
                     <this.suggestionSection />
-                    : <View style={{flex:1,alignItems:'center',justifyContent: 'center'}}>
+                    : <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                         <Image
                             source={this.state.selectedSource}
                             style={{ height: 100, margin: 10, aspectRatio: 1 / 1 }}
                         />
-                        <View style={{ flexDirection: 'row', margin: 10 }}>
+                        <Text style={{ fontSize: 18, marginBottom: 10 }}>
+                            {this.state.selectedStrength}
+                        </Text>
 
-                            <Text style={{ fontSize: 18 }}>
-                                You are endorsing for #
-                            </Text>
-                            <Text style={{ fontSize: 18, fontWeight: '500' }}>
-                                {this.state.selectedStrength}
-                            </Text>
-                        </View>
+                        <TextInput
+                            multiline={true}
+                            maxLength={255}
+                            placeholder='Write something here'
+                            scrollEnabled={true}
+                            style={{
+                                padding: 20,
+                                fontSize: 20,
+                                
+                                textAlignVertical: 'top'
+                            }}
+                            value={this.state.text}
+                            onChangeText={(text) => {
+                                this.setState({text})
+                                this.props.endorsementHandler(this.state.selectedStrength,text)
+                            }}
+                            ref={this.inputTextRef}
+                        />
                     </View>
                 }
 

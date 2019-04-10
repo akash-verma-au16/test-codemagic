@@ -290,8 +290,8 @@ class CreatePost extends React.Component {
         this.setState({ taggedAssociates })
     }
 
-    endorsementHandler = (endorsementStrength) => {
-        this.setState({ endorsementStrength })
+    endorsementHandler = (endorsementStrength,text) => {
+        this.setState({ endorsementStrength,text })
     }
 
     gratitudeHandler = (text) => {
