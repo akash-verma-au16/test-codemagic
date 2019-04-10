@@ -9,7 +9,7 @@ import SurveyIntro from '../SurveyIntro'
 import SurveyExit from '../SurveyExit'
 import QuestionContainer from '../QuestionContainer'
 import ForceChangePassword from '../ForceChangePassword'
-import TabNavigator from '../TabNavigator'
+import TabNavigator from '../CreatePost'
 import Settings from "../Settings"
 import Home from '../Home'
 /* This stack will contain list of all pages */

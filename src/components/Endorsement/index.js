@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity, Alert, Dimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity, Alert, Dimensions,Image } from 'react-native';
 import { Icon, Content } from 'native-base'
 
 class Endorsement extends Component {
@@ -12,10 +12,29 @@ class Endorsement extends Component {
         }
         this.state = this.initialState
         this.endorsementData = [
-            `I just wanted to say ThankYou`,
-            `I really appreciate you`,
-            `Thanks you for setting a great example`,
-            `Thanks for your support`
+            {name:'Creativity',source: require('../../assets/endorsements/creativity.png')},
+            {name:'Curiosity',source: require('../../assets/endorsements/curiosity.png')},
+            {name:'Judgment',source: require('../../assets/endorsements/judgement.png')},
+            {name:'Perspective',source: require('../../assets/endorsements/perspective.png')},
+            {name:'Bravery',source: require('../../assets/endorsements/bravery.png')},
+            {name:'Perseverance',source: require('../../assets/endorsements/perseverance.png')},
+            {name:'Zest',source: require('../../assets/endorsements/zest.png')},
+            {name:'Honesty',source: require('../../assets/endorsements/honesty.png')},
+            {name:'Social Intelligence',source: require('../../assets/endorsements/socialIntelligence.png')},
+            {name:'Kindness',source: require('../../assets/endorsements/kindness.png')},
+            {name:'Love',source: require('../../assets/endorsements/love.png')},
+            {name:'Leadership',source: require('../../assets/endorsements/leadership.png')},
+            {name:'Fairness',source: require('../../assets/endorsements/fairness.png')},
+            {name:'Teamwork',source: require('../../assets/endorsements/teamwork.png')},
+            {name:'Forgiveness',source: require('../../assets/endorsements/forgiveness.png')},
+            {name:'Love of Learning',source: require('../../assets/endorsements/loveOfLearning.png')},
+            {name:'Spirituality',source: require('../../assets/endorsements/spirituality.png')},
+            {name:'Self-Regulation',source: require('../../assets/endorsements/selfRegulation.png')},
+            {name:'Humility',source: require('../../assets/endorsements/humility.png')},
+            {name:'Appreciation',source: require('../../assets/endorsements/appreciation.png')},
+            {name:'Prudence',source: require('../../assets/endorsements/prudence.png')},
+            {name:'Hope',source: require('../../assets/endorsements/hope.png')},
+            {name:'Humor',source: require('../../assets/endorsements/humor.png')}
 
         ]
     }
@@ -27,29 +46,29 @@ class Endorsement extends Component {
         this.endorsementData.map((item, index) => {
             this.endorsementTemplate.push(
 
-                <View style={styles.template} key={index} >
-                    <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 10, justifyContent: 'center' }} >
-                        <TouchableOpacity onPress={() => {
-                            this.setState({ text: item, showTemplates: false })
-                        }}>
-                            <Text style={styles.templateText}>
-                                {item}
-                            </Text>
-                        </TouchableOpacity>
-                    </ScrollView>
-                </View>
+                <TouchableOpacity style={styles.template} key={index} >
+
+                    <Image
+                        source={item.source}
+                        style={{height:50,aspectRatio:1/1}}
+                    />
+                    <Text style={styles.templateText}>
+                        {item.name}
+                    </Text>
+                </TouchableOpacity>
+
             )
         })
         this.setState({ showTemplates: true })
     }
     suggestionSection = () => (
-        <View style={{ flex: 1, height: 120, width: '100%',alignItems:'center' }}>
+        <View style={{ flex: 1, height: 120, width: '100%', alignItems: 'center' }}>
 
             <View style={{
                 height: 1,
                 backgroundColor: '#ccc',
                 width: '90%'
-                
+
             }} />
             <Content contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
 
@@ -103,28 +122,6 @@ class Endorsement extends Component {
                         }
                     }} />
                 </View>
-                <TextInput
-                    multiline={true}
-                    maxLength={255}
-                    placeholder='Write something here'
-                    scrollEnabled={true}
-                    style={{
-                        padding: 20,
-                        fontSize: 20,
-                        width: '100%',
-                        textAlignVertical: 'top'
-
-                    }}
-                    value={this.state.text}
-                    onChangeText={(text) => {
-                        if (text.length === 0)
-                            this.setState({ text: text, showTemplates: true })
-                        else
-                            this.setState({ text: text, showTemplates: false })
-
-                    }}
-                    ref={this.inputTextRef}
-                />
 
                 {this.state.showTemplates ?
                     <this.suggestionSection />
@@ -149,7 +146,7 @@ const styles = StyleSheet.create({
     },
     templateText: {
 
-        color: '#1c92c4'
+        color: '#000'
     }
 })
 
