@@ -16,8 +16,6 @@ const StyledCheckBox = ({ color, value }) => (
         </Body>
     </Item>
 )
-
-
 const styles = StyleSheet.create({
     checkBox: {
         marginLeft: 15,

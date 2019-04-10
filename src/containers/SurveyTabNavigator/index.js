@@ -106,61 +106,20 @@ class Screen2 extends React.Component {
         )
     }
 }
-class Screen3 extends React.Component {
-    componentWillMount() {
-        this.itterator()
-    }
-    tiles = []
-
-    itterator = () => {
-        for (let i = 0; i < 9; i++) {
-            switch (i % 3) {
-            case 0:
-                this.image = nature3
-                break
-            case 1:
-                this.image = nature2
-                break
-            case 2:
-                this.image = nature1
-            }
-            this.tiles.push(
-                <TouchableOpacity
-                    onPress={() => Toast.show({
-                        text: 'coming soon.',
-                        type: 'success',
-                        duration: 3000
-                    })}
-                    key={i}
-                >
-                    <View>
-                        <ImageBackground style={styles.tile} resizeMode='cover' source={this.image} blurRadius={0.2} borderRadius={5}>
-                            <H3 style={styles.tileText}>Survey Name</H3>
-                        </ImageBackground>
-                    </View>
-                </TouchableOpacity>
-            )
-
-        }
-    }
-    render() {
-        return (
-
-            <Content contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
-
-                {this.tiles}
-
-            </Content>
-
-        )
-    }
-}
 const SurveyTabNavigator = createMaterialTopTabNavigator({
 
-    Screen1: { screen: Screen1 },
-    Screen2: { screen: Screen2 },
-    Screen3: { screen: Screen3 }
-
+    Screen1: { 
+        screen: Screen1,
+        navigationOptions: {
+            title: 'Daily Surveys'
+        } 
+    },
+    Screen2: { 
+        screen: Screen2,
+        navigationOptions: {
+            title: 'Weekly Surveys'
+        }
+    }
 },
 {
     tabBarOptions: {
