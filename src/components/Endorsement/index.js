@@ -47,7 +47,10 @@ class Endorsement extends Component {
             this.endorsementTemplate.push(
 
                 <TouchableOpacity style={styles.template} key={index}
-                    onPress={() => this.setState({ showTemplates: false, selectedStrength: item.name, selectedSource: item.source })}
+                    onPress={() => {
+                        this.setState({ showTemplates: false, selectedStrength: item.name, selectedSource: item.source })
+                        this.props.endorsementHandler(item.name)
+                    }}
                 >
 
                     <Image

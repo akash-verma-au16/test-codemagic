@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity, Alert, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Dimensions } from 'react-native';
 import { Icon, Content } from 'native-base'
 
 class Gratitude extends Component {
@@ -29,6 +29,7 @@ class Gratitude extends Component {
 
                 <TouchableOpacity style={styles.template} key={index} onPress={() => {
                     this.setState({ text: item, showTemplates: false })
+                    this.props.gratitudeHandler(item)
                 }}>
                         
                     <Text style={styles.templateText}>
@@ -79,7 +80,8 @@ class Gratitude extends Component {
                     </View>
                     <Icon name='md-close' style={{padding: 10, fontSize: 18, color: '#fff' }} onPress={() => {
                         if (this.state.text === '') {
-                            this.props.closeEndorseModal()
+                            this.props.closeGratitudeModal()
+                            this.props.gratitudeHandler('')
                         } else {
                             Alert.alert(
                                 'Are you sure?',
@@ -92,7 +94,8 @@ class Gratitude extends Component {
                                     {
                                         text: 'OK', onPress: () => {
                                             this.setState(this.initialState)
-                                            this.props.closeEndorseModal()
+                                            this.props.closeGratitudeModal()
+                                            this.props.gratitudeHandler('')
                                         }
                                     }
                                 ],
@@ -110,8 +113,7 @@ class Gratitude extends Component {
                         padding: 20,
                         fontSize: 20,
                         width: '100%',
-                        textAlignVertical: 'top',
-                        height:100
+                        textAlignVertical: 'top'
                     }}
                     value={this.state.text}
                     onChangeText={(text) => {
@@ -119,7 +121,7 @@ class Gratitude extends Component {
                             this.setState({ text: text, showTemplates: true })
                         else
                             this.setState({ text: text, showTemplates: false })
-
+                        this.props.gratitudeHandler(text)
                     }}
                     ref={this.inputTextRef}
                 />
@@ -146,7 +148,7 @@ const styles = StyleSheet.create({
         maxWidth: 200
     },
     templateText: {
-
+        paddingHorizontal:10,
         color: '#1c92c4'
     }
 })

@@ -16,6 +16,7 @@ class AssociateTager extends Component {
     }
     onSelectedItemsChange = selectedItems => {
         this.setState({ selectedItems });
+        this.props.associateTagHandler(selectedItems)
     }
     componentDidMount() {
         this.loadMembers()
@@ -60,7 +61,10 @@ class AssociateTager extends Component {
                     </View>
 
                     {this.state.selectedItems.length > 0 ?
-                        <Icon name='md-close' style={{padding: 10, fontSize: 18, color: '#fff' }} onPress={() => this.setState({ selectedItems: [] })} />
+                        <Icon name='md-close' style={{padding: 10, fontSize: 18, color: '#fff' }} onPress={() => {
+                            this.setState({ selectedItems: [] })
+                            this.props.associateTagHandler([])
+                        }} />
                         : null}
 
                 </View>
