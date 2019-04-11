@@ -190,6 +190,8 @@ class CreatePost extends React.Component {
         alert('validation successful')
         const fullName = toSentenceCase(this.props.firstName) + ' ' + toSentenceCase(this.props.lastName)
         const id = uuid.v4()
+        const dateTime = Date.now();
+        const timestamp = Math.floor(dateTime / 1000);
         const payload = {
             Data: {
                 post_id: id,
@@ -204,7 +206,7 @@ class CreatePost extends React.Component {
                     type: this.state.visibilityName,
                     id: "project_id"
                 },
-                time: 1554888889
+                time: timestamp
 
             }
 
