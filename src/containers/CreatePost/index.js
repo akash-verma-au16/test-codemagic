@@ -22,6 +22,8 @@ import { connect } from 'react-redux'
 /* Services */
 import { create_post } from '../../services/post'
 import toSentenceCase from '../../utilities/toSentenceCase'
+import uuid from 'uuid'
+
 /* Components */
 import VisibilityModal from '../VisibilityModal'
 import LoadingModal from '../LoadingModal'
@@ -187,9 +189,10 @@ class CreatePost extends React.Component {
         */
         alert('validation successful')
         const fullName = toSentenceCase(this.props.firstName) + ' ' + toSentenceCase(this.props.lastName)
+        const id = uuid.v4()
         const payload = {
             Data: {
-                post_id: "5a8c3c2e-4b2a-47f4-83ec-67cd80fd6f32",
+                post_id: id,
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id,
                 associate_name: fullName,
