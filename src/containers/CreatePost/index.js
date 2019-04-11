@@ -2,7 +2,6 @@ import React from 'react';
 import {
     StyleSheet,
     View,
-    Alert,
     BackHandler,
     TouchableOpacity,
     TouchableWithoutFeedback,
@@ -176,25 +175,6 @@ class CreatePost extends React.Component {
             }
         }
 
-        /* 
-            {
-        "Data":{
-            "post_id":"5a8c3c2e-4b2a-47f4-83ec-67cd80fd6f32",
-            "tenant_id": "1l3jtp3hn",
-            "associate_id": "fa9a8f60-4840-4c0a-b785-beebef4b1a24",
-            "message": "hello",
-            "type": "endorsement",
-            "sub_type": "typ1",
-            "tagged_associates": ["f5603da3-cb7b-4cd0-ba42-ceb728889779", "9c2f6191-9594-4c90-acf4-d708ee461fd1"],
-            "privacy": {
-            "type": "tenant",
-            "id":"1l3jtp3hn"
-            },
-            "time": 1554888889
-            }
-        }
-        */
-        alert('validation successful')
         /* formating name */
         const fullName = toSentenceCase(this.props.firstName) + ' ' + toSentenceCase(this.props.lastName)
         /* unique id generation */
@@ -227,8 +207,8 @@ class CreatePost extends React.Component {
                 sub_type: this.state.endorsementStrength,
                 tagged_associates: associateList,
                 privacy: {
-                    type: this.state.visibilityName,
-                    id: "project_id"
+                    type: "tenant",
+                    id: "1l3jtp3hn"
                 },
                 time: timestamp
 
@@ -236,11 +216,12 @@ class CreatePost extends React.Component {
 
         }
         console.log(payload)
-        /* this.setState({ isLoading: true })
+
+        this.setState({ isLoading: true })
         try {
-            create_post(payload).then(response => {
+            create_post(payload).then(() => {
                 Toast.show({
-                    text: response.data.message,
+                    text: 'Post created. This may take 1 minute to update',
                     type: 'success',
                     duration: 3000
                 })
@@ -250,8 +231,13 @@ class CreatePost extends React.Component {
                 })
                 this.props.navigation.navigate('Home')
 
-            }).catch((error) => {
+            }).catch(() => {
                 Keyboard.dismiss()
+                Toast.show({
+                    text: 'Error while creating the post',
+                    type: 'danger',
+                    duration: 3000
+                })
                 this.setState({ isLoading: false })
                 if(this.props.isConnected) {
                     Toast.show({
@@ -275,7 +261,7 @@ class CreatePost extends React.Component {
                 duration: 3000
             })
             this.setState({ isLoading: false })
-        } */
+        }
 
     }
 
@@ -284,7 +270,7 @@ class CreatePost extends React.Component {
     }
 
     closeGratitudeModal = () => {
-        this.setState({ GratitudeModalVisibility: false, postType: '', text: '' })
+        this.setState({ GratitudeModalVisibility: false, postType: '',endorsementStrength: '', text: '' })
     }
 
     toggleButton = () => {
@@ -335,7 +321,7 @@ class CreatePost extends React.Component {
     }
 
     gratitudeHandler = (text) => {
-        this.setState({ text })
+        this.setState({endorsementStrength:'Gratitude', text:text })
     }
     render() {
 

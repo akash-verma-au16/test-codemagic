@@ -157,7 +157,7 @@ class Endorsement extends Component {
                                 this.setState({text})
                                 this.props.endorsementHandler(this.state.selectedStrength,text)
                             }}
-                            ref={this.inputTextRef}
+                            autoFocus
                         />
                     </View>
                 }
