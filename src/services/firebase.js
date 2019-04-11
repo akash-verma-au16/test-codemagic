@@ -2,12 +2,18 @@ import firebase from 'react-native-firebase';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Platform } from 'react-native';
 import slackLogger from '../services/slackLogger'
+import {register_device} from '../services/pushNotification'
 let Name=''
 let Email=''
-export const configureFirebase = async ({firstName,lastName,email}) => {
+let associate_id=''
+let tenant_id=''
+export const configureFirebase = async ({firstName,lastName,email,payload}) => {
 
     Name= firstName + ' ' + lastName
     Email=email
+    associate_id=payload.associate_id
+    tenant_id=payload.accountAlias
+
     checkPermission();
     
 }
@@ -46,11 +52,18 @@ const getToken = async () => {
         }
     }
 
-    //console.log(fcmToken)
     slackLogger({
         name : Name,
         email:Email,
         platform : Platform.OS,
         token : fcmToken
     })
+
+    register_device({
+        tenant_id : tenant_id,
+        associate_id:associate_id,
+        platform : Platform.OS,
+        device_token : fcmToken
+    }).then((res)=>{console.log(res.data)})
+        .catch(error=>console.log(error.response))
 }
