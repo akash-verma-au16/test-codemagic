@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image ,TextInput} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image ,TextInput,Alert} from 'react-native';
 import { Icon, Content } from 'native-base'
 
 class Endorsement extends Component {
@@ -106,7 +106,27 @@ class Endorsement extends Component {
                         <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Endorse</Text>
                     </View>
                     <Icon name='md-close' style={{ padding: 10, fontSize: 18, color: '#fff' }} onPress={() => {
-                        this.props.closeEndorseModal()
+                        if (this.state.text === '') {
+                            this.props.closeEndorseModal()
+                        } else {
+                            Alert.alert(
+                                'Are you sure?',
+                                'Note will not be saved',
+                                [
+                                    {
+                                        text: 'Cancel',
+                                        style: 'cancel'
+                                    },
+                                    {
+                                        text: 'OK', onPress: () => {
+                                            this.setState(this.initialState)
+                                            this.props.closeEndorseModal()
+                                        }
+                                    }
+                                ],
+                                { cancelable: false },
+                            )
+                        }
                     }} />
                 </View>
 

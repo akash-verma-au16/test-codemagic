@@ -80,7 +80,6 @@ class Gratitude extends Component {
                     <Icon name='md-close' style={{ padding: 10, fontSize: 18, color: '#fff' }} onPress={() => {
                         if (this.state.text === '') {
                             this.props.closeGratitudeModal()
-                            this.props.gratitudeHandler('')
                         } else {
                             Alert.alert(
                                 'Are you sure?',
@@ -94,7 +93,6 @@ class Gratitude extends Component {
                                         text: 'OK', onPress: () => {
                                             this.setState(this.initialState)
                                             this.props.closeGratitudeModal()
-                                            this.props.gratitudeHandler('')
                                         }
                                     }
                                 ],

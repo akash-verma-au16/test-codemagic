@@ -22,6 +22,8 @@ import { connect } from 'react-redux'
 /* Services */
 import { create_post } from '../../services/post'
 import toSentenceCase from '../../utilities/toSentenceCase'
+import uuid from 'uuid'
+
 /* Components */
 import VisibilityModal from '../VisibilityModal'
 import LoadingModal from '../LoadingModal'
@@ -54,6 +56,7 @@ class CreatePost extends React.Component {
             { icon: 'md-people', text: 'Project', name: 'project' },
             { icon: 'md-person', text: 'Private', name: 'private' }
         ]
+        this.associateData = []
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -186,22 +189,42 @@ class CreatePost extends React.Component {
         }
         */
         alert('validation successful')
+        /* formating name */
         const fullName = toSentenceCase(this.props.firstName) + ' ' + toSentenceCase(this.props.lastName)
+        /* unique id generation */
+        const id = uuid.v4()
+        /* epoch time calculation */
+        const dateTime = Date.now();
+        const timestamp = Math.floor(dateTime / 1000);
+        /* creating name-id map for associates */
+        let associateList = []
+        /* selected collection of id */
+        this.state.taggedAssociates.map(id => {
+            /* complete collection of names and ids */
+            this.associateData.map(item=>{
+                if(id===item.id){
+                    associateList.push({ associate_id: item.id, associate_name: item.name })
+                    return
+                }    
+            })
+            
+        })
+
         const payload = {
             Data: {
-                post_id: "5a8c3c2e-4b2a-47f4-83ec-67cd80fd6f32",
+                post_id: id,
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id,
                 associate_name: fullName,
                 message: this.state.text,
                 type: this.state.postType,
                 sub_type: this.state.endorsementStrength,
-                tagged_associates: this.state.taggedAssociates,
+                tagged_associates: associateList,
                 privacy: {
                     type: this.state.visibilityName,
                     id: "project_id"
                 },
-                time: 1554888889
+                time: timestamp
 
             }
 
@@ -293,8 +316,8 @@ class CreatePost extends React.Component {
         this.setState({ taggedAssociates })
     }
 
-    endorsementHandler = (endorsementStrength,text) => {
-        this.setState({ endorsementStrength,text })
+    endorsementHandler = (endorsementStrength, text) => {
+        this.setState({ endorsementStrength, text })
     }
 
     gratitudeHandler = (text) => {
@@ -333,6 +356,7 @@ class CreatePost extends React.Component {
                     <AssociateTager
                         isShowingKeyboard={this.state.isShowingKeyboard}
                         associateTagHandler={this.associateTagHandler}
+                        associateData={this.associateData}
                     />
 
                     {!this.state.EndorseModalVisibility && !this.state.GratitudeModalVisibility ?
