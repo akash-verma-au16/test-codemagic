@@ -2,7 +2,6 @@ import React from 'react';
 import {
     Keyboard,
     ImageBackground,
-    Image,
     TouchableOpacity,
     Animated,
     BackHandler
@@ -71,7 +70,6 @@ class ForgotPassword extends React.Component {
                         accountAlias: this.state.accountAlias,
                         email: this.state.email
                     }).then(() => {
-
                         Toast.show({
                             text: 'OTP has been sent',
                             type: "success"
@@ -83,12 +81,18 @@ class ForgotPassword extends React.Component {
                         })
                         this.setState({ isButtonLoading: false })
                     }).catch((error) => {
-                        if (error.response.data.code) {
+                        this.setState({ isButtonLoading: false })
+                        if (this.props.isConnected && error.response.data.code) {
                             Toast.show({
                                 text: error.response.data.message,
                                 type: "danger"
                             })
-                        } else {
+                        } else if (!this.props.isConnected) {
+                            Toast.show({
+                                text: 'Please, connect to the internet',
+                                type: "danger"
+                            })
+                        }else {
                             Toast.show({
                                 text: 'Invalid Credentials',
                                 type: "danger"
@@ -96,7 +100,8 @@ class ForgotPassword extends React.Component {
                         }
 
                         this.setState({ isButtonLoading: false })
-                    })
+                    })  
+                    
                 } else {
                     Toast.show({
                         text: 'All fields are required',
@@ -107,7 +112,7 @@ class ForgotPassword extends React.Component {
 
             } catch (error) {
                 Toast.show({
-                    text: 'Please check your internet connection',
+                    text: error.response.data.code,
                     type: "danger"
                 })
                 this.setState({ isButtonLoading: false })
@@ -185,7 +190,8 @@ class ForgotPassword extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        isAuthenticate: state.isAuthenticate
+        isAuthenticate: state.isAuthenticate,
+        isConnected: state.system.isConnected
     };
 }
 

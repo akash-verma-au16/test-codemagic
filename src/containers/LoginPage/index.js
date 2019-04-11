@@ -26,6 +26,7 @@ import Logo from '../../components/Logo'
 import Slogan from '../../components/Slogan'
 import TextInput from '../../components/TextInput'
 import RoundButton from '../../components/RoundButton'
+
 /* Assets */
 import image from '../../assets/image.png'
 /* Services */
@@ -102,6 +103,7 @@ class LoginPage extends React.Component {
             email: this.state.email
         })
     }
+
     signinHandler = () => {
         /* Hiding the keyboard to prevent Toast overlap */
         Keyboard.dismiss()
@@ -110,6 +112,7 @@ class LoginPage extends React.Component {
         }, () => {
             try {
                 if (this.state.accountAlias && this.state.email && this.state.password) {
+                    
                     login({
                         accountAlias: this.state.accountAlias,
                         email: this.state.email,
@@ -134,7 +137,7 @@ class LoginPage extends React.Component {
                             const payload = {
                                 accountAlias: this.state.accountAlias.toLowerCase().trim(),
                                 tenant_name: this.state.accountAlias.toLowerCase().trim(),
-                                associate_id:res.data.data.associate_id,
+                                associate_id: res.data.data.associate_id,
                                 firstName: firstName,
                                 lastName: lastName,
                                 phoneNumber: response.data.payload.idToken.payload.phone_number,
@@ -146,7 +149,7 @@ class LoginPage extends React.Component {
                             })
                             this.props.authenticate(payload);
                             //configure firebase for push notification
-                            const email=this.state.email.toLowerCase().trim()
+                            const email = this.state.email.toLowerCase().trim()
                             configureFirebase({
                                 firstName,
                                 lastName,
@@ -155,19 +158,27 @@ class LoginPage extends React.Component {
                             })
                             this.props.navigation.navigate('TabNavigator')
                         }).catch((error) => {
-                            
-                            Toast.show({
-                                text: error.response.data.code,
-                                type: 'danger',
-                                duration:3000
-                            })
                             this.setState({ isSignInLoading: false });
+                            if(this.props.isConnected) {
+                                Toast.show({
+                                    text: error.response.data.code,
+                                    type: 'danger',
+                                    duration: 3000
+                                })
+                            }
+                            else {
+                                Toast.show({
+                                    text: 'Please connect to the internet.',
+                                    type: 'danger',
+                                    duration: 3000
+                                })
+                            }
                         })
                     }).catch((error) => {
                         try {
                             switch (error.response.data.code) {
                             case "ForceChangePassword":
-                                
+
                                 Toast.show({
                                     text: 'Please change the password to continue',
                                     type: 'success',
@@ -177,35 +188,35 @@ class LoginPage extends React.Component {
                                 this.props.navigation.navigate('ForceChangePassword', {
                                     accountAlias: this.state.accountAlias,
                                     email: this.state.email,
-                                    password:this.state.password
+                                    password: this.state.password
                                 })
                                 break;
                             case "ResourceNotFoundException":
                                 Toast.show({
                                     text: 'Account not found please contact your administrator',
                                     type: 'danger',
-                                    duration:3000
+                                    duration: 3000
                                 })
                                 break;
                             case "TenantDoesNotExist":
                                 Toast.show({
-                                    text: 'Account not found please contact your administrator',
+                                    text: 'Tenant does not exist',
                                     type: 'danger',
-                                    duration:3000
+                                    duration: 3000
                                 })
                                 break;
                             case "UserNotFound":
                                 Toast.show({
-                                    text: 'Invalid username or password',
+                                    text: 'Invalid username',
                                     type: 'danger',
-                                    duration:3000
+                                    duration: 3000
                                 })
                                 break;
                             default:
                                 Toast.show({
                                     text: error.response.data.message,
                                     type: 'danger',
-                                    duration:3000
+                                    duration: 3000
                                 })
                             }
 
@@ -213,11 +224,12 @@ class LoginPage extends React.Component {
                             Toast.show({
                                 text: 'Please check your internet connection',
                                 type: 'danger',
-                                duration:3000
+                                duration: 3000
                             })
                         }
                         this.setState({ isSignInLoading: false })
                     })
+                
                 } else {
                     Toast.show({
                         text: 'All fields are required',
@@ -227,7 +239,7 @@ class LoginPage extends React.Component {
                 }
             } catch (error) {
                 Toast.show({
-                    text: 'Please check your internet connection',
+                    text: error.text,
                     type: "danger"
                 })
                 this.setState({ isSignInLoading: false })
@@ -325,7 +337,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        isAuthenticate: state.isAuthenticate
+        isAuthenticate: state.isAuthenticate,
+        isConnected: state.system.isConnected
     };
 }
 

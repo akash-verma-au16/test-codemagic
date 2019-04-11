@@ -3,7 +3,8 @@ import {
     StyleSheet,
     View,
     TouchableOpacity,
-    FlatList
+    FlatList,
+    Alert
 } from 'react-native';
 /* Redux */
 import { connect } from 'react-redux'
@@ -71,7 +72,7 @@ class Settings extends React.Component {
         }
     ]
 
-    signOutHandler = () => {
+    signOut() {
         this.setState({ isLoading: true })
         logout({
             accountAlias: this.props.accountAlias,
@@ -90,12 +91,37 @@ class Settings extends React.Component {
             this.props.navigation.dispatch(resetAction);
             return
         }).catch(() => {
-            Toast.show({
-                text: 'Unable to communicate with server',
-                type: "danger"
-            })
-            this.setState({ isLoading: false })
+            if(!this.props.isConnected) {
+                this.setState({ isLoading: false })
+                Toast.show({
+                    text: 'Please, connect to the internet',
+                    type: "danger"
+                })
+            } else {
+                this.setState({ isLoading: false })
+                Toast.show({
+                    text: 'Unable to communicate with server',
+                    type: "danger"
+                })
+            }
         })
+    }
+
+    signOutHandler = () => {
+        Alert.alert(
+            'Logout?',
+            'Are you sure you want to logout?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Yes', onPress: () => {this.signOut()}
+                }
+            ],
+            { cancelable: false },
+        ) 
     }
     render() {
 
@@ -166,7 +192,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         accountAlias: state.user.accountAlias,
-        email: state.user.emailAddress
+        email: state.user.emailAddress,
+        isConnected: state.system.isConnected
 
     };
 }

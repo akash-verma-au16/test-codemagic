@@ -86,35 +86,43 @@ class ConfirmPassword extends React.Component {
                 const accountAlias = this.props.navigation.getParam('accountAlias')
 
                 if (this.state.otp && this.state.password && email && accountAlias) {
+                    if(this.props.isConnected) {
+                        confirmPassword({
+                            accountAlias: accountAlias,
+                            email: email,
+                            password: this.state.password,
+                            otp: this.state.otp
+                        }).then(() => {
 
-                    confirmPassword({
-                        accountAlias: accountAlias,
-                        email: email,
-                        password: this.state.password,
-                        otp: this.state.otp
-                    }).then(() => {
+                            Toast.show({
+                                text: 'Password Changed. Login to Continue...',
+                                type: "success"
+                            })
+                            this.setState({ isButtonLoading: false })
+                            this.props.navigation.navigate('LoginPage')
+                        }).catch((error) => {
 
+                            if (error.response.data.code) {
+                                Toast.show({
+                                    text: error.response.data.message,
+                                    type: "danger"
+                                })
+                            } else {
+                                Toast.show({
+                                    text: 'Invalid Credentials',
+                                    type: "danger"
+                                })
+                            }
+                            this.setState({ isButtonLoading: false })
+                        })
+                    } else {
                         Toast.show({
-                            text: 'Password Changed. Login to Continue...',
-                            type: "success"
+                            text: 'Please connect to the internet',
+                            type: "danger"
                         })
                         this.setState({ isButtonLoading: false })
-                        this.props.navigation.navigate('LoginPage')
-                    }).catch((error) => {
-
-                        if (error.response.data.code) {
-                            Toast.show({
-                                text: error.response.data.message,
-                                type: "danger"
-                            })
-                        } else {
-                            Toast.show({
-                                text: 'Invalid Credentials',
-                                type: "danger"
-                            })
-                        }
-                        this.setState({ isButtonLoading: false })
-                    })
+                    }
+                    
                 } else {
                     Toast.show({
                         text: 'All fields are required',
@@ -125,7 +133,7 @@ class ConfirmPassword extends React.Component {
 
             } catch (error) {
                 Toast.show({
-                    text: 'Please check your internet connection',
+                    text: 'Something went wrong.', // Please connect to the internet
                     type: "danger"
                 })
                 this.setState({ isButtonLoading: false })
@@ -205,7 +213,8 @@ class ConfirmPassword extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        isAuthenticate: state.isAuthenticate
+        isAuthenticate: state.isAuthenticate,
+        isConnected: state.system.isConnected
     };
 }
 

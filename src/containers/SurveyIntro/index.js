@@ -54,19 +54,26 @@ class SurveyIntro extends React.Component {
     readSurveyHandler = () => {
         if (this.surveyId) {
             this.setState({ isLoading: true }, () => {
-
-                read_survey(this.surveyId).then(response => {
-                    this.props.navigation.navigate('QuestionContainer', {
-                        questionData: response.data.data
+                if(this.props.isConnected) {
+                    read_survey(this.surveyId).then(response => {
+                        this.props.navigation.navigate('QuestionContainer', {
+                            questionData: response.data.data
+                        })
+                        this.setState({ isLoading: false })
+                    }).catch(() => {
+                        this.setState({ isLoading: false })
+                        Toast.show({
+                            text: "Something went wrong, please try again", //error.response.data.code
+                            type: "danger"
+                        })
                     })
-                    this.setState({ isLoading: false })
-                }).catch((error) => {
+                } else {
                     this.setState({ isLoading: false })
                     Toast.show({
-                        text: error.response.data.code,
+                        text: "Please connect to the internet.",
                         type: "danger"
                     })
-                })
+                }
 
             })
 
@@ -171,7 +178,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        isAuthenticate: state.isAuthenticate
+        isAuthenticate: state.isAuthenticate,
+        isConnected: state.system.isConnected
     };
 }
 

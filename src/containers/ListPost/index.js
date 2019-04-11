@@ -9,6 +9,7 @@ import {
     Dimensions,
     BackHandler
 } from 'react-native';
+import NetInfo from "@react-native-community/netinfo"
 /* Redux */
 import { connect } from 'react-redux'
 import {
@@ -23,13 +24,17 @@ import { list_posts } from '../../services/post'
 /* Components */
 import { NavigationEvents } from 'react-navigation';
 import thumbnail from '../../assets/thumbnail.jpg'
+
 class ListPost extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
             refreshing: true,
-            newPostVisibility: false
+            newPostVisibility: false,
+            isConnected: this.props.isConnected,
+            networkChanged: false
         }
+        this.loadPosts = this.loadPosts.bind(this);
         this.postList = []
         this.scrollViewRef = React.createRef();
         this.payloadBackup = []
@@ -76,14 +81,28 @@ class ListPost extends React.Component {
             return
         }
     }
-    componentDidMount(){
+
+    componentDidMount() {
+        //Detecting connectivity change
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             return true
         })
     }
+
     componentWillUnmount() {
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
         this.backHandler.remove()
     }
+
+    handleConnectivityChange = (isConnected) => {
+        if(isConnected) {
+            this.setState({
+                networkChanged: true
+            }, () => this.loadPosts())
+        }
+    }
+
     commingSoon = () => {
         Toast.show({
             text: 'Coming Soon!',
@@ -100,70 +119,90 @@ class ListPost extends React.Component {
         this.scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true })
 
     }
+
+    scrollHandler = (event) => {
+        this.scrollPosition = event.nativeEvent.contentOffset.y;
+        if(this.scrollPosition <= 0) {
+            this.setState({
+                newPostVisibility: false
+            });
+            return
+        }
+    }
+
     loadPosts = () => {
         const payload = {
             tenant_id: this.props.accountAlias,
             associate_id: this.props.associate_id
-
         }
-        try {
-            list_posts(payload).then(response => {
 
-                /* take payload backup to check for changes later */
-                if (this.payloadBackup.length === response.data.data.length) {
-                    /* No change in payload hence do nothing */
+        if (payload.tenant_id !== "" && payload.associate_id !=="") {
+            try {
+                list_posts(payload).then(response => {
 
-                    /* Checking if any data is available */
-                    if (response.data.data.length === 0) {
-                        /* Display warning on the screen */
-                        this.postList = []
-                        this.postList.push(<Text style={{margin:10}} key={0}>No post to display</Text>)
-                        this.postList.push(<Text style={{margin:10}} key={1}>Create a new post by clicking on + icon</Text>)
-                    }
-                    /* Update state to render warning */
-                    this.setState({ refreshing: false })
-                    return
-                } else {
-                    /* Change in payload */
+                    /* take payload backup to check for changes later */
+                    if (this.payloadBackup.length === response.data.data.length) {
+                        /* No change in payload hence do nothing */
 
-                    /* Take Backup */
-                    this.payloadBackup = response.data.data
-
-                    /* Skip for initial post load */
-                    if (this.postList.length !== 0) {
-
-                        if (this.scrollPosition > 150) {
-                            /* Show th new post button */ 
-                            this.setState({ newPostVisibility: true })
+                        /* Checking if any data is available */
+                        if (response.data.data.length === 0) {
+                            /* Display warning on the screen */
+                            this.postList = []
+                            this.postList.push(<Text style={{margin:10}} key={0}>No post to display</Text>)
+                            this.postList.push(<Text style={{margin:10}} key={1}>Create a new post by clicking on + icon</Text>)
                         }
+                        /* Update state to render warning */
+                        this.setState({ refreshing: false, networkChanged: false })
+                        return
+                    } else {
+                        /* Change in payload */
+
+                        /* Take Backup */
+                        this.payloadBackup = response.data.data
+
+                        /* Skip for initial post load */
+                        if (this.postList.length !== 0) {
+
+                            if (this.scrollPosition > 150) {
+                                /* Show th new post button */ 
+                                this.setState({ newPostVisibility: true })
+                            }
+
+                            /* reset the tiles */
+                            this.postList = []
+                        }
+
+                        /* Create UI tiles to display */
+                        this.createTiles(response.data.data)
+                        this.setState({ refreshing: false, networkChanged: false })
                     }
-
-                    /* reset the tiles */
-                    this.postList = []
-                }
-
-                /* Create UI tiles to display */
-                this.createTiles(response.data.data)
-                this.setState({ refreshing: false })
-            }).catch((error) => {
-
-                Toast.show({
-                    text: error.response.data.code,
-                    type: 'danger',
-                    duration: 3000
+                }).catch((error) => {
+                    this.setState({ refreshing: false, networkChanged: false })
+                    if (this.props.isConnected) {
+                        Toast.show({
+                            text: error.response.data.code,
+                            type: 'danger',
+                            duration: 3000
+                        })
+                    } else {
+                        Toast.show({
+                            text: "Please connect to the internet",
+                            type: 'danger',
+                            duration: 3000
+                        })
+                    }
                 })
-                this.setState({ refreshing: false })
-
-            })
-        } catch (error) {
-            Toast.show({
-                text: 'No internet connection',
-                type: 'danger',
-                duration: 3000
-            })
-            this.setState({ refreshing: false })
+            } 
+            catch (error) {
+                Toast.show({
+                    text: 'Something went wrong',
+                    type: 'danger',
+                    duration: 2000
+                })
+                this.setState({ refreshing: false, networkChanged: false })
+            }
         }
-    }
+    }   
     createTiles = (data) => {
         
         data.map((item, index) => {
@@ -211,7 +250,6 @@ class ListPost extends React.Component {
                     <View name='footer'
                         style={{
                             flex: 1,
-
                             flexDirection: 'row',
                             alignItems: 'center',
                             justifyContent: 'flex-end'
@@ -233,26 +271,46 @@ class ListPost extends React.Component {
                 <ScrollView
                     refreshControl={
                         <RefreshControl
-                            refreshing={this.state.refreshing}
+                            refreshing={this.state.refreshing || this.state.networkChanged} //this.props.isConnected
                             onRefresh={() => {
                                 /* Show loader when manual refresh is triggered */
-                                this.setState({ refreshing: true }, this.loadPosts())
+                                if(this.props.isConnected) {
+                                    this.setState({ refreshing: true }, this.loadPosts())
+                                }else {
+                                    this.setState({ refreshing: false, networkChanged: false }, () => {
+                                        Toast.show({
+                                            text: 'Please connect to the internet.',
+                                            type: 'danger',
+                                            duration: 2000
+                                        })
+                                        this.setState({ isSignInLoading: false })
+                                    })
+                                }
                             }}
                         />
                     }
                     contentContainerStyle={styles.container}
                     ref={this.scrollViewRef}
-                    onScroll={(event) => { this.scrollPosition = event.nativeEvent.contentOffset.y}}
+                    onScroll={(event) => { this.scrollHandler(event) }}
                 >
                     {this.postList}
                 </ScrollView>
 
                 <NavigationEvents
                     onWillFocus={() =>{
-                        if (!this.props.isFreshInstall) {
-                            if (this.props.isAuthenticate)
+                        if (this.props.isConnected) {
+                            if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.loadPosts()
+                            }
                         }
+                        else {
+                            Toast.show({
+                                text: 'Please, connect to the internet',
+                                type: 'danger',
+                                duration: 2000
+                            })
+                            this.setState({ refreshing: false })
+                        }   
                     }}
                 />
                 {this.state.newPostVisibility ?
@@ -311,7 +369,8 @@ const mapStateToProps = (state) => {
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         isAuthenticate: state.isAuthenticate,
-        isFreshInstall: state.system.isFreshInstall
+        isFreshInstall: state.system.isFreshInstall,
+        isConnected: state.system.isConnected
 
     };
 }

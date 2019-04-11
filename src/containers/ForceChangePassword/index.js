@@ -132,33 +132,42 @@ class ForceChangePassword extends React.Component {
                         this.setState({ isButtonLoading: false })
                         return
                     }
-                    forceChangePassword({
-                        accountAlias: accountAlias,
-                        email: email,
-                        password: oldPassword,
-                        new_password: this.state.password
-                    }).then(() => {
+                    if(this.props.isConnected) {
+                        forceChangePassword({
+                            accountAlias: accountAlias,
+                            email: email,
+                            password: oldPassword,
+                            new_password: this.state.password
+                        }).then(() => {
 
+                            Toast.show({
+                                text: 'Password Changed. Login to Continue...',
+                                type: "success"
+                            })
+                            this.setState({ isButtonLoading: false })
+                            this.props.navigation.navigate('LoginPage')
+                        }).catch((error) => {
+                            if (error.response.data.code) {
+                                Toast.show({
+                                    text: error.response.data.message,
+                                    type: "danger"
+                                })
+                            } else {
+                                Toast.show({
+                                    text: 'Invalid Credentials',
+                                    type: "danger"
+                                })
+                            }
+                            this.setState({ isButtonLoading: false })
+                        })
+                    } else {
                         Toast.show({
-                            text: 'Password Changed. Login to Continue...',
-                            type: "success"
+                            text: 'Please, connect to the internet',
+                            type: "danger"
                         })
                         this.setState({ isButtonLoading: false })
-                        this.props.navigation.navigate('LoginPage')
-                    }).catch((error) => {
-                        if (error.response.data.code) {
-                            Toast.show({
-                                text: error.response.data.message,
-                                type: "danger"
-                            })
-                        } else {
-                            Toast.show({
-                                text: 'Invalid Credentials',
-                                type: "danger"
-                            })
-                        }
-                        this.setState({ isButtonLoading: false })
-                    })
+                    }
+                    
                 } else {
                     Toast.show({
                         text: 'All fields are required',
@@ -169,7 +178,7 @@ class ForceChangePassword extends React.Component {
 
             } catch (error) {
                 Toast.show({
-                    text: 'Please check your internet connection',
+                    text: 'Something went wrong',
                     type: "danger"
                 })
                 this.setState({ isButtonLoading: false })
@@ -248,7 +257,8 @@ class ForceChangePassword extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        isAuthenticate: state.isAuthenticate
+        isAuthenticate: state.isAuthenticate,
+        isConnected: state.system.isConnected
     };
 }
 

@@ -4,6 +4,7 @@ import {
     View,
     BackHandler,
     TouchableOpacity,
+    TouchableWithoutFeedback,
     Text,
     Keyboard,
     ScrollView
@@ -57,6 +58,7 @@ class CreatePost extends React.Component {
         ]
         this.associateData = []
     }
+    // Navigation options
     static navigationOptions = ({ navigation }) => {
         return {
 
@@ -88,6 +90,8 @@ class CreatePost extends React.Component {
             )
         };
     };
+
+
     componentDidMount() {
         this.props.navigation.setParams({ postSubmitHandler: this.postSubmitHandler });
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -121,6 +125,8 @@ class CreatePost extends React.Component {
     goBack = () => {
         this.props.navigation.navigate('home')
     }
+
+    // Submitting post handler function
     postSubmitHandler = () => {
 
         /* Check if collegue is selected */
@@ -226,17 +232,31 @@ class CreatePost extends React.Component {
                 this.props.navigation.navigate('Home')
 
             }).catch(() => {
+                Keyboard.dismiss()
                 Toast.show({
                     text: 'Error while creating the post',
                     type: 'danger',
                     duration: 3000
                 })
                 this.setState({ isLoading: false })
-
+                if(this.props.isConnected) {
+                    Toast.show({
+                        text: error.response.data.code,
+                        type: 'danger',
+                        duration: 3000
+                    })
+                } else {
+                    Toast.show({
+                        text: 'Please, connect to the internet',
+                        type: 'danger',
+                        duration: 2000
+                    })
+                }
             })
         } catch (error) {
+            this.setState({ isLoading: false })
             Toast.show({
-                text: 'No internet connection',
+                text: error.text,
                 type: 'danger',
                 duration: 3000
             })

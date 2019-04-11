@@ -15,11 +15,12 @@
   "dependencies": {
     "@babel/runtime": "^7.4.3",
     "@react-native-community/async-storage": "^1.2.2",
+    "@react-native-community/netinfo": "^2.0.0",
     "axios": "^0.18.0",
     "bugsnag-react-native": "^2.15.0",
     "native-base": "^2.12.1",
     "react": "16.6.3",
-    "react-native": "^0.59.2",
+    "react-native": "^0.59.3",
     "react-native-charts-wrapper": "^0.5.1",
     "react-native-draggable-flatlist": "^1.1.7",
     "react-native-firebase": "^5.2.3",

@@ -4,7 +4,9 @@ export const auth = {
 }
 
 export const system ={
-    AGREE_POLICY : 'AGREE_POLICY'
+    AGREE_POLICY : 'AGREE_POLICY',
+    NETWORK_STATUS: 'NETWORK_STATUS'
+
 }
 export const dev = {
     CLEAR_DATA : 'CLEAR_DATA'

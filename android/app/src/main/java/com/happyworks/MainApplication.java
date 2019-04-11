@@ -3,6 +3,7 @@ package com.happyworks;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactnativecommunity.netinfo.NetInfoPackage;
 import com.github.wuxudong.rncharts.MPAndroidChartPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.bugsnag.BugsnagReactNative;
@@ -33,6 +34,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new NetInfoPackage(),
             new MPAndroidChartPackage(),
             new AsyncStoragePackage(),
             BugsnagReactNative.getPackage(),
