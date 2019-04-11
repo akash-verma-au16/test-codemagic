@@ -120,7 +120,7 @@ class Gratitude extends Component {
                             this.setState({ text: text, showTemplates: false })
                         this.props.gratitudeHandler(text)
                     }}
-                    ref={this.inputTextRef}
+                    autoFocus
                 />
 
                 {this.state.showTemplates ?

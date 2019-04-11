@@ -6,7 +6,8 @@ export default {
         dataApi: "https://950x8h6806.execute-api.ap-southeast-1.amazonaws.com",
         rewards: "https://lb3kbimo6b.execute-api.ap-south-1.amazonaws.com",
         post: "https://ueb6oyqxnf.execute-api.ap-southeast-1.amazonaws.com",
-        push:"https://mlm4pkkbc4.execute-api.ap-south-1.amazonaws.com"
+        push:"https://mlm4pkkbc4.execute-api.ap-south-1.amazonaws.com",
+        create_post:"https://bgi3nogyc8.execute-api.ap-southeast-1.amazonaws.com/dev/kinesis"
     },
     api: {
         signup: "signup",
