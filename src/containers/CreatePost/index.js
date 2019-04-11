@@ -21,6 +21,7 @@ import {
 import { connect } from 'react-redux'
 /* Services */
 import { create_post } from '../../services/post'
+import toSentenceCase from '../../utilities/toSentenceCase'
 /* Components */
 import VisibilityModal from '../VisibilityModal'
 import LoadingModal from '../LoadingModal'
@@ -185,18 +186,20 @@ class CreatePost extends React.Component {
         }
         */
         alert('validation successful')
+        const fullName = toSentenceCase(this.props.firstName) + ' ' + toSentenceCase(this.props.lastName)
         const payload = {
             Data: {
                 post_id: "5a8c3c2e-4b2a-47f4-83ec-67cd80fd6f32",
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id,
+                associate_name: fullName,
                 message: this.state.text,
                 type: this.state.postType,
                 sub_type: this.state.endorsementStrength,
                 tagged_associates: this.state.taggedAssociates,
                 privacy: {
                     type: this.state.visibilityName,
-                    id: ""
+                    id: "project_id"
                 },
                 time: 1554888889
 
@@ -240,7 +243,7 @@ class CreatePost extends React.Component {
     }
 
     closeEndorseModal = () => {
-        this.setState({ EndorseModalVisibility: false, postType: '', endorsementStrength: '' })
+        this.setState({ EndorseModalVisibility: false, postType: '', endorsementStrength: '', text: '' })
     }
 
     closeGratitudeModal = () => {
@@ -392,8 +395,9 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         accountAlias: state.user.accountAlias,
-        associate_id: state.user.associate_id
-
+        associate_id: state.user.associate_id,
+        firstName: state.user.firstName,
+        lastName: state.user.lastName
     };
 }
 

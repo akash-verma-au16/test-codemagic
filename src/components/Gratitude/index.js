@@ -31,11 +31,11 @@ class Gratitude extends Component {
                     this.setState({ text: item, showTemplates: false })
                     this.props.gratitudeHandler(item)
                 }}>
-                        
+
                     <Text style={styles.templateText}>
                         {item}
                     </Text>
-                   
+
                 </TouchableOpacity>
             )
         })
@@ -70,15 +70,14 @@ class Gratitude extends Component {
                 shadowOpacity: 0.2,
                 elevation: 2,
                 marginTop: 10,
-                marginBottom: 10,
-                flex: 1
+                marginBottom: 10
             }}>
                 <View style={{ backgroundColor: '#1c92c4', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Icon name='md-people' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
                         <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Gratitude</Text>
                     </View>
-                    <Icon name='md-close' style={{padding: 10, fontSize: 18, color: '#fff' }} onPress={() => {
+                    <Icon name='md-close' style={{ padding: 10, fontSize: 18, color: '#fff' }} onPress={() => {
                         if (this.state.text === '') {
                             this.props.closeGratitudeModal()
                             this.props.gratitudeHandler('')
@@ -148,7 +147,7 @@ const styles = StyleSheet.create({
         maxWidth: 200
     },
     templateText: {
-        paddingHorizontal:10,
+        paddingHorizontal: 10,
         color: '#1c92c4'
     }
 })
