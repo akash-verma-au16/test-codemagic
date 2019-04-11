@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
+import NetInfo from "@react-native-community/netinfo"
 import { Icon, Spinner } from 'native-base'
 import { list_associate } from '../../services/tenant'
 import MultiSelect from 'react-native-multiple-select';
@@ -20,31 +21,51 @@ class AssociateTager extends Component {
     }
     componentDidMount() {
         this.loadMembers()
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
     }
+
+    componentWillUnmount() {
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+    }
+
+    handleConnectivityChange = (isConnected) => {
+        if (isConnected) {
+            this.setState({
+                refreshing: true
+            }, () => this.loadMembers())
+        }
+    }
+
     loadMembers = () => {
-        list_associate({
-            tenant_id: this.props.accountAlias
-        })
-            .then(response => {
-                /* Clear Garbage */
-                this.data = []
-                response.data.data.map(item => {
-                    /* Create List items */
-                    const fullName = item.first_name + ' ' + item.last_name
+        console.log("Invoking")
+        console.log(this.props.accountAlias)
+        if (this.props.accountAlias) {
+            console.log("Loading colleagues");
+            list_associate({
+                tenant_id: this.props.accountAlias
+            })
+                .then(response => {
+                    /* Clear Garbage */
+                    this.data = []
+                    response.data.data.map(item => {
+                        /* Create List items */
+                        const fullName = item.first_name + ' ' + item.last_name
 
-                    /* preventing self endorsing */
-                    if (item.associate_id !== this.props.associate_id){
-                        this.data.push({ id: item.associate_id, name: fullName })
-                        this.props.associateData.push({ id: item.associate_id, name: fullName })
-                    }
-                        
+                        /* preventing self endorsing */
+                        if (item.associate_id !== this.props.associate_id) {
+                            this.data.push({ id: item.associate_id, name: fullName })
+                            this.props.associateData.push({ id: item.associate_id, name: fullName })
+                        }
+
+                    })
+
+                    this.setState({ refreshing: false })
                 })
-
-                this.setState({ refreshing: false })
-            })
-            .catch(() => {
-                this.setState({ refreshing: false })
-            })
+                .catch(() => {
+                    this.setState({ refreshing: false })
+                })
+        }
+        
     }
     render() {
 
