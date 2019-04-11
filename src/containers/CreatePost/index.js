@@ -32,13 +32,15 @@ class CreatePost extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = {
+
+        this.initialState = {
             visibilityModal: false,
-            visibilitySelection: '',
+            visibilitySelection: 'Organization',
             text: '',
             isLoading: false,
             EndorseModalVisibility: false
         }
+        this.state = this.initialState
         this.inputTextRef = React.createRef();
     }
     // Navigation options
@@ -56,6 +58,7 @@ class CreatePost extends React.Component {
             headerLeft: (
                 <TouchableOpacity
                     onPress={() => navigation.navigate('Profile')}
+                    disabled={true}
                 >
                     <Thumbnail
                         source={thumbnail}
@@ -88,7 +91,7 @@ class CreatePost extends React.Component {
 
     goBack = () => {
         if (this.state.text === '') {
-            this.props.navigation.navigate('TabNavigator')
+            this.props.navigation.navigate('home')
         } else {
             Alert.alert(
                 'Are you sure?',
@@ -100,7 +103,8 @@ class CreatePost extends React.Component {
                     },
                     {
                         text: 'OK', onPress: () => {
-                            this.props.navigation.navigate('TabNavigator')
+                            this.setState(this.initialState)
+                            this.props.navigation.navigate('home')
                         }
                     }
                 ],
@@ -173,7 +177,7 @@ class CreatePost extends React.Component {
     }
     listMemberListener = (name) => {
         let message = ''
-        if(this.state.text.trim()!==''){
+        if (this.state.text.trim() !== '') {
             message = `\n`
         }
         message += `@` + name + ` thanks for `

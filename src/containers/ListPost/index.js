@@ -7,7 +7,8 @@ import {
     RefreshControl,
     TouchableOpacity,
     Dimensions,
-    NetInfo
+    NetInfo,
+    BackHandler
 } from 'react-native';
 /* Redux */
 import { connect } from 'react-redux'
@@ -84,10 +85,14 @@ class ListPost extends React.Component {
     componentDidMount() {
         //Detecting connectivity change
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            return true
+        })
     }
 
     componentWillUnmount() {
         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+        this.backHandler.remove()
     }
 
     handleConnectivityChange = (isConnected) => {
@@ -97,18 +102,6 @@ class ListPost extends React.Component {
             }, () => this.loadPosts())
         }
     }
-
-    // componentWillUpdate(prevState) {
-    //     if (!this.props.isConnected && (this.props.isConnected !== prevState.isConnected)) {
-    //         this.loadPosts();
-    //         // this.setState({
-    //         //     networkChanged: true
-    //         // }, () => this.loadPosts())
-    //         // console.log("Detected")
-    //     }
-    //     return false
-
-    //}
 
     commingSoon = () => {
         Toast.show({
