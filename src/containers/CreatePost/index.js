@@ -129,49 +129,43 @@ class CreatePost extends React.Component {
         }
         this.setState({ isLoading: true })
         try {
-            if(this.props.isConnected) {
-                create_post(payload).then(response => {
-                    Toast.show({
-                        text: response.data.message,
-                        type: 'success',
-                        duration: 3000
-                    })
-                    this.setState({
-                        isLoading: false,
-                        text: ''
-                    })
-                    this.props.navigation.navigate('Home')
+            create_post(payload).then(response => {
+                Toast.show({
+                    text: response.data.message,
+                    type: 'success',
+                    duration: 3000
+                })
+                this.setState({
+                    isLoading: false,
+                    text: ''
+                })
+                this.props.navigation.navigate('Home')
 
-                }).catch((error) => {
-
+            }).catch((error) => {
+                Keyboard.dismiss()
+                this.setState({ isLoading: false })
+                if(this.props.isConnected) {
                     Toast.show({
                         text: error.response.data.code,
                         type: 'danger',
                         duration: 3000
                     })
-                    this.setState({ isLoading: false })
-
-                })
-            }
-            else {
-                Keyboard.dismiss()
-                Toast.show({
-                    text: 'Please, connect to the internet',
-                    type: 'danger',
-                    duration: 2000
-                })
-                this.setState({ isLoading: false })
-            }
-            
+                } else {
+                    Toast.show({
+                        text: 'Please, connect to the internet',
+                        type: 'danger',
+                        duration: 2000
+                    })
+                }
+            })
         } catch (error) {
+            this.setState({ isLoading: false })
             Toast.show({
                 text: error.text,
                 type: 'danger',
                 duration: 3000
             })
-            this.setState({ isLoading: false })
         }
-
     }
 
     closeEndorseModal = () => {

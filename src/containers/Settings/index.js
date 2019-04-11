@@ -74,38 +74,37 @@ class Settings extends React.Component {
 
     signOut() {
         this.setState({ isLoading: true })
-        if (this.props.isConnected) {
-            logout({
-                accountAlias: this.props.accountAlias,
-                email: this.props.email
-            }).then(() => {
-                this.props.deAuthenticate()
+        logout({
+            accountAlias: this.props.accountAlias,
+            email: this.props.email
+        }).then(() => {
+            this.props.deAuthenticate()
+            this.setState({ isLoading: false })
+            Toast.show({
+                text: 'Signed out Successfully',
+                type: "success"
+            })
+            const resetAction = StackActions.reset({
+                index: 0,
+                actions: [NavigationActions.navigate({ routeName: 'LoginPage' })]
+            });
+            this.props.navigation.dispatch(resetAction);
+            return
+        }).catch(() => {
+            if(!this.props.isConnected) {
                 this.setState({ isLoading: false })
                 Toast.show({
-                    text: 'Signed out Successfully',
-                    type: "success"
+                    text: 'Please, connect to the internet',
+                    type: "danger"
                 })
-                const resetAction = StackActions.reset({
-                    index: 0,
-                    actions: [NavigationActions.navigate({ routeName: 'LoginPage' })]
-                });
-                this.props.navigation.dispatch(resetAction);
-                return
-            }).catch(() => {
+            } else {
+                this.setState({ isLoading: false })
                 Toast.show({
                     text: 'Unable to communicate with server',
                     type: "danger"
                 })
-                this.setState({ isLoading: false })
-            })
-        }
-        else {
-            Toast.show({
-                text: 'Please, connect to the internet',
-                type: "danger"
-            })
-            this.setState({ isLoading: false })
-        }
+            }
+        })
     }
 
     signOutHandler = () => {

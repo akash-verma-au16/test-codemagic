@@ -6,7 +6,8 @@ import {
     ScrollView,
     RefreshControl,
     TouchableOpacity,
-    Dimensions
+    Dimensions,
+    NetInfo
 } from 'react-native';
 /* Redux */
 import { connect } from 'react-redux'
@@ -29,8 +30,10 @@ class ListPost extends React.Component {
         this.state = {
             refreshing: true,
             newPostVisibility: false,
+            isConnected: this.props.isConnected,
             networkChanged: false
         }
+        this.loadPosts = this.loadPosts.bind(this);
         this.postList = []
         this.scrollViewRef = React.createRef();
         this.payloadBackup = []
@@ -78,13 +81,34 @@ class ListPost extends React.Component {
         }
     }
 
-    componentWillReceiveProps(prevProps) {
-        if (!this.props.isConnected && this.props.isConnected !== prevProps.isConnected) {
+    componentDidMount() {
+        //Detecting connectivity change
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+    }
+
+    componentWillUnmount() {
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+    }
+
+    handleConnectivityChange = (isConnected) => {
+        if(isConnected) {
             this.setState({
                 networkChanged: true
             }, () => this.loadPosts())
         }
     }
+
+    // componentWillUpdate(prevState) {
+    //     if (!this.props.isConnected && (this.props.isConnected !== prevState.isConnected)) {
+    //         this.loadPosts();
+    //         // this.setState({
+    //         //     networkChanged: true
+    //         // }, () => this.loadPosts())
+    //         // console.log("Detected")
+    //     }
+    //     return false
+
+    //}
 
     commingSoon = () => {
         Toast.show({
@@ -118,9 +142,9 @@ class ListPost extends React.Component {
             tenant_id: this.props.accountAlias,
             associate_id: this.props.associate_id
         }
-
-        try {
-            if(this.props.isConnected) {
+        
+        if (payload.tenant_id !== "" && payload.associate_id !=="") {
+            try {
                 list_posts(payload).then(response => {
 
                     /* take payload backup to check for changes later */
@@ -151,32 +175,32 @@ class ListPost extends React.Component {
                     this.createTiles(response.data.data)
                     this.setState({ refreshing: false, networkChanged: false })
                 }).catch((error) => {
-
-                    Toast.show({
-                        text: error.response.data.code,
-                        type: 'warning',
-                        duration: 3000
-                    })
                     this.setState({ refreshing: false, networkChanged: false })
+                    if (this.props.isConnected) {
+                        Toast.show({
+                            text: error.response.data.code,
+                            type: 'danger',
+                            duration: 3000
+                        })
+                    } else {
+                        Toast.show({
+                            text: "Please connect to the internet",
+                            type: 'danger',
+                            duration: 3000
+                        })
+                    }
 
                 })
-            }
-            else {
+            } catch (error) {
                 Toast.show({
-                    text: 'Please connect to the Internet',
-                    type: 'warning',
+                    text: 'Something went wrong',
+                    type: 'danger',
                     duration: 2000
                 })
                 this.setState({ refreshing: false, networkChanged: false })
             }
-        } catch (error) {
-            Toast.show({
-                text: 'Something went wrong',
-                type: 'danger',
-                duration: 2000
-            })
-            this.setState({ refreshing: false, networkChanged: false })
         }
+        
     }
     createTiles = (data) => {
         if (data.length === 0) {
@@ -255,7 +279,7 @@ class ListPost extends React.Component {
                                 if(this.props.isConnected) {
                                     this.setState({ refreshing: true }, this.loadPosts())
                                 }else {
-                                    this.setState({ refreshing: false }, () => {
+                                    this.setState({ refreshing: false, networkChanged: false }, () => {
                                         Toast.show({
                                             text: 'Please connect to the internet.',
                                             type: 'danger',
@@ -276,10 +300,19 @@ class ListPost extends React.Component {
 
                 <NavigationEvents
                     onWillFocus={() =>{
-                        if (!this.props.isFreshInstall) {
-                            if (this.props.isAuthenticate && this.props.isConnected)
+                        if (this.props.isConnected) {
+                            if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.loadPosts()
+                            }
                         }
+                        else {
+                            Toast.show({
+                                text: 'Please, connect to the internet',
+                                type: 'danger',
+                                duration: 2000
+                            })
+                            this.setState({ refreshing: false })
+                        }   
                     }}
                 />
                 {this.state.newPostVisibility ?

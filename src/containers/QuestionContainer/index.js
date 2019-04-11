@@ -29,8 +29,9 @@ import { save_answers } from '../../services/dataApi'
 import {give_rewards} from '../../services/rewards'
 /* Utilities */
 import { IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
-class QuestionContainer extends React.Component {
 
+
+class QuestionContainer extends React.Component {
     constructor(props) {
         super(props)
         this.questionData = this.props.navigation.getParam('questionData')
@@ -125,35 +126,47 @@ class QuestionContainer extends React.Component {
     submitHandler = () => {
         this.setState({ isSubmitLoading: true })
         try {
-            if (this.answerSet) {
-                let payload= {
-                    tenant_id: this.props.tenant_id,
-                    associate_id: '3448cd7e-aef7-452f-a697-22d85114d6cf',
-                    survey_id: this.questionData.survey.id,
-                    answer_set: this.answerSet
-                }
-                save_answers(payload).then(()=>{
+            if(this.props.isConnected) {
+                if (this.answerSet) {
+                    let payload = {
+                        tenant_id: this.props.tenant_id,
+                        associate_id: '3448cd7e-aef7-452f-a697-22d85114d6cf',
+                        survey_id: this.questionData.survey.id,
+                        answer_set: this.answerSet
+                    }
+                    save_answers(payload).then(() => {
 
-                    /* Give rewards */
-                    give_rewards({
-                        tenant_id : this.props.tenant_id,
-                        uuid : '3448cd7e-aef7-452f-a697-22d85114d6cf',
-                        event_name : this.questionData.survey.type
-                    }).then((res)=>{
-                        this.props.navigation.navigate('SurveyExit',{
-                            rewardPoints: res.data.points
+                        /* Give rewards */
+                        give_rewards({
+                            tenant_id: this.props.tenant_id,
+                            uuid: '3448cd7e-aef7-452f-a697-22d85114d6cf',
+                            event_name: this.questionData.survey.type
+                        }).then((res) => {
+                            this.props.navigation.navigate('SurveyExit', {
+                                rewardPoints: res.data.points
+                            })
+                        }).catch(() => {
+                            this.props.navigation.navigate('SurveyExit', {
+                                rewardPoints: 0
+                            })
                         })
-                    }).catch(()=>{
-                        this.props.navigation.navigate('SurveyExit',{
-                            rewardPoints: 0
+                    }).catch(() => {
+                        Toast.show({
+                            text: "Something went wrong, please try again.",
+                            type: 'danger',
+                            duration: 2000
                         })
+                        this.setState({ isSubmitLoading: false })
                     })
-                }).catch(error=>{
-
-                    throw error.response
-                })
+                } else {
+                    throw 'answer questions first'
+                }
             } else {
-                throw 'answer questions first'
+                Toast.show({
+                    text: "Please, connect to the internet.",
+                    type: 'danger'
+                })
+                this.setState({ isSubmitLoading: false })
             }
         } catch (error) {
 
@@ -169,7 +182,7 @@ class QuestionContainer extends React.Component {
     goBack = () => {
         Alert.alert(
             'Are you sure?',
-            'Your answers are not saved until you submit',
+            'Your answers will not be saved untill you submit.',
             [
                 {
                     text: 'Cancel',
@@ -281,7 +294,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         isAuthenticate: state.isAuthenticate,
-        tenant_id:state.user.accountAlias
+        tenant_id:state.user.accountAlias,
+        isConnected: state.system.isConnected
     };
 }
 
