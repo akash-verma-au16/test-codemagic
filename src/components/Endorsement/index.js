@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions, Image ,TextInput} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image ,TextInput} from 'react-native';
 import { Icon, Content } from 'native-base'
 
 class Endorsement extends Component {
