@@ -96,7 +96,7 @@ class ListPost extends React.Component {
     }
 
     handleConnectivityChange = (isConnected) => {
-        if(isConnected) {
+        if (isConnected) {
             this.setState({
                 networkChanged: true
             }, () => this.loadPosts())
@@ -122,7 +122,7 @@ class ListPost extends React.Component {
 
     scrollHandler = (event) => {
         this.scrollPosition = event.nativeEvent.contentOffset.y;
-        if(this.scrollPosition <= 0) {
+        if (this.scrollPosition <= 0) {
             this.setState({
                 newPostVisibility: false
             });
@@ -136,45 +136,46 @@ class ListPost extends React.Component {
             associate_id: this.props.associate_id
         }
 
-        if (payload.tenant_id !== "" && payload.associate_id !=="") {
-        try {
-            list_posts(payload).then(response => {
+        if (payload.tenant_id !== "" && payload.associate_id !== "") {
+            try {
+                list_posts(payload).then(response => {
 
-                /* take payload backup to check for changes later */
-                if (this.payloadBackup.length === response.data.data.length) {
-                    /* No change in payload hence do nothing */
+                    /* take payload backup to check for changes later */
+                    if (this.payloadBackup.length === response.data.data.length) {
+                        /* No change in payload hence do nothing */
 
-                    /* Checking if any data is available */
-                    if (response.data.data.length === 0) {
-                        /* Display warning on the screen */
-                        this.postList = []
-                        this.postList.push(<Text style={{margin:10}} key={0}>No post to display</Text>)
-                        this.postList.push(<Text style={{margin:10}} key={1}>Create a new post by clicking on + icon</Text>)
-                    }
-                    /* Update state to render warning */
+                        /* Checking if any data is available */
+                        if (response.data.data.length === 0) {
+                            /* Display warning on the screen */
+                            this.postList = []
+                            this.postList.push(<Text style={{ margin: 10 }} key={0}>No post to display</Text>)
+                            this.postList.push(<Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon</Text>)
+                        }
+                        /* Update state to render warning */
                         this.setState({ refreshing: false, networkChanged: false })
-                    return
-                } else {
-                    /* Change in payload */
+                        return
+                    } else {
+                        /* Change in payload */
 
-                    /* Take Backup */
-                    this.payloadBackup = response.data.data
+                        /* Take Backup */
+                        this.payloadBackup = response.data.data
 
-                    /* Skip for initial post load */
-                    if (this.postList.length !== 0) {
+                        /* Skip for initial post load */
+                        if (this.postList.length !== 0) {
 
-                        if (this.scrollPosition > 150) {
-                            /* Show th new post button */ 
-                            this.setState({ newPostVisibility: true })
+                            if (this.scrollPosition > 150) {
+                                /* Show th new post button */
+                                this.setState({ newPostVisibility: true })
+                            }
+
+                            /* reset the tiles */
+                            this.postList = []
                         }
 
-                        /* reset the tiles */
-                        this.postList = []
+                        /* Create UI tiles to display */
+                        this.createTiles(response.data.data)
+                        this.setState({ refreshing: false, networkChanged: false })
                     }
-
-                    /* Create UI tiles to display */
-                    this.createTiles(response.data.data)
-                    this.setState({ refreshing: false, networkChanged: false })
                 }).catch((error) => {
                     this.setState({ refreshing: false, networkChanged: false })
                     if (this.props.isConnected) {
@@ -201,11 +202,9 @@ class ListPost extends React.Component {
                 this.setState({ refreshing: false, networkChanged: false })
             }
         }
-        }
-        
     }
     createTiles = (data) => {
-        
+
         data.map((item, index) => {
             this.postList.push(
                 <View style={styles.card} key={index}>
@@ -275,9 +274,9 @@ class ListPost extends React.Component {
                             refreshing={this.state.refreshing || this.state.networkChanged} //this.props.isConnected
                             onRefresh={() => {
                                 /* Show loader when manual refresh is triggered */
-                                if(this.props.isConnected) {
+                                if (this.props.isConnected) {
                                     this.setState({ refreshing: true }, this.loadPosts())
-                                }else {
+                                } else {
                                     this.setState({ refreshing: false, networkChanged: false }, () => {
                                         Toast.show({
                                             text: 'Please connect to the internet.',
@@ -298,7 +297,7 @@ class ListPost extends React.Component {
                 </ScrollView>
 
                 <NavigationEvents
-                    onWillFocus={() =>{
+                    onWillFocus={() => {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.loadPosts()
@@ -311,7 +310,7 @@ class ListPost extends React.Component {
                                 duration: 2000
                             })
                             this.setState({ refreshing: false })
-                        }   
+                        }
                     }}
                 />
                 {this.state.newPostVisibility ?
@@ -335,7 +334,7 @@ class ListPost extends React.Component {
                         onPress={this.newPostHandler}
 
                     >
-                        <Text style={{ fontWeight: '500',color:'#fff' }}>New Post</Text>
+                        <Text style={{ fontWeight: '500', color: '#fff' }}>New Post</Text>
                     </TouchableOpacity>
                     :
                     null
