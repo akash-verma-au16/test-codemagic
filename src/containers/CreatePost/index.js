@@ -21,6 +21,7 @@ import {
 import { connect } from 'react-redux'
 /* Services */
 import { create_post } from '../../services/post'
+import toSentenceCase from '../../utilities/toSentenceCase'
 /* Components */
 import VisibilityModal from '../VisibilityModal'
 import LoadingModal from '../LoadingModal'
@@ -36,15 +37,23 @@ class CreatePost extends React.Component {
         this.initialState = {
             visibilityModal: false,
             visibilitySelection: 'Organization',
+            visibilityName: 'tenant',
             text: '',
             isLoading: false,
             EndorseModalVisibility: false,
             GratitudeModalVisibility: false,
-            isShowingKeyboard: false
+            isShowingKeyboard: false,
+            taggedAssociates: [],
+            postType: '',
+            endorsementStrength: ''
         }
         this.state = this.initialState
         this.inputTextRef = React.createRef();
-
+        this.visibilityData = [
+            { icon: 'md-globe', text: 'Organization', name: 'tenant' },
+            { icon: 'md-people', text: 'Project', name: 'project' },
+            { icon: 'md-person', text: 'Private', name: 'private' }
+        ]
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -95,12 +104,10 @@ class CreatePost extends React.Component {
 
     _keyboardDidShow = () => {
         this.setState({ isShowingKeyboard: true })
-        console.log('show')
     }
 
     _keyboardDidHide = () => {
         this.setState({ isShowingKeyboard: false })
-        console.log('hide')
     }
 
     componentWillUnmount() {
@@ -110,46 +117,97 @@ class CreatePost extends React.Component {
     }
 
     goBack = () => {
-        if (this.state.text === '') {
-            this.props.navigation.navigate('home')
-        } else {
-            Alert.alert(
-                'Are you sure?',
-                'Note will not be saved',
-                [
-                    {
-                        text: 'Cancel',
-                        style: 'cancel'
-                    },
-                    {
-                        text: 'OK', onPress: () => {
-                            this.setState(this.initialState)
-                            this.props.navigation.navigate('home')
-                        }
-                    }
-                ],
-                { cancelable: false },
-            )
-        }
-
+        this.props.navigation.navigate('home')
     }
     postSubmitHandler = () => {
-        if (this.state.text.trim() === '') {
+
+        /* Check if collegue is selected */
+        if (this.state.taggedAssociates.length === 0) {
             Toast.show({
-                text: 'Please write someting',
+                text: 'Atleast tag a collegue',
                 type: 'danger',
                 duration: 3000
             })
             return
         }
-        const payload = {
-            tenant_id: this.props.accountAlias,
-            associate_id: this.props.associate_id,
-            type: "post",
-            message: this.state.text.trim(),
-            privacy: this.state.visibilitySelection
+
+        /* check if post type is selected */
+        if (this.state.postType === '') {
+            Toast.show({
+                text: 'Please select a post type',
+                type: 'danger',
+                duration: 3000
+            })
+            return
         }
-        this.setState({ isLoading: true })
+
+        /* if endorsement is selected */
+        if (this.state.postType === 'endorse') {
+
+            /* check if strength is selected */
+            if (this.state.endorsementStrength === '') {
+                Toast.show({
+                    text: 'Select a strength',
+                    type: 'danger',
+                    duration: 3000
+                })
+                return
+            }
+        } else {
+            /* if gratitude is selected */
+
+            /* check if text is present */
+            if (this.state.text.trim() === '') {
+                Toast.show({
+                    text: 'Please write someting',
+                    type: 'danger',
+                    duration: 3000
+                })
+                return
+            }
+        }
+
+        /* 
+            {
+        "Data":{
+            "post_id":"5a8c3c2e-4b2a-47f4-83ec-67cd80fd6f32",
+            "tenant_id": "1l3jtp3hn",
+            "associate_id": "fa9a8f60-4840-4c0a-b785-beebef4b1a24",
+            "message": "hello",
+            "type": "endorsement",
+            "sub_type": "typ1",
+            "tagged_associates": ["f5603da3-cb7b-4cd0-ba42-ceb728889779", "9c2f6191-9594-4c90-acf4-d708ee461fd1"],
+            "privacy": {
+            "type": "tenant",
+            "id":"1l3jtp3hn"
+            },
+            "time": 1554888889
+            }
+        }
+        */
+        alert('validation successful')
+        const fullName = toSentenceCase(this.props.firstName) + ' ' + toSentenceCase(this.props.lastName)
+        const payload = {
+            Data: {
+                post_id: "5a8c3c2e-4b2a-47f4-83ec-67cd80fd6f32",
+                tenant_id: this.props.accountAlias,
+                associate_id: this.props.associate_id,
+                associate_name: fullName,
+                message: this.state.text,
+                type: this.state.postType,
+                sub_type: this.state.endorsementStrength,
+                tagged_associates: this.state.taggedAssociates,
+                privacy: {
+                    type: this.state.visibilityName,
+                    id: "project_id"
+                },
+                time: 1554888889
+
+            }
+
+        }
+        console.log(payload)
+        /* this.setState({ isLoading: true })
         try {
             create_post(payload).then(response => {
                 Toast.show({
@@ -180,16 +238,18 @@ class CreatePost extends React.Component {
                 duration: 3000
             })
             this.setState({ isLoading: false })
-        }
+        } */
 
     }
 
     closeEndorseModal = () => {
-        this.setState({ EndorseModalVisibility: false })
+        this.setState({ EndorseModalVisibility: false, postType: '', endorsementStrength: '', text: '' })
     }
+
     closeGratitudeModal = () => {
-        this.setState({ GratitudeModalVisibility: false })
+        this.setState({ GratitudeModalVisibility: false, postType: '', text: '' })
     }
+
     toggleButton = () => {
         const fontSize = 18
         const iconSize = 50
@@ -208,7 +268,7 @@ class CreatePost extends React.Component {
                 height: 200
             }}>
                 <TouchableOpacity style={styles.button} onPress={() => {
-                    this.setState({ EndorseModalVisibility: true })
+                    this.setState({ EndorseModalVisibility: true, postType: 'endorse' })
                 }}>
                     <Icon name='md-people' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
                     <Text style={[styles.buttonText, { fontSize: fontSize, color: '#1c92c4' }]}>Endorse</Text>
@@ -219,7 +279,7 @@ class CreatePost extends React.Component {
                     width: 1
                 }} />
                 <TouchableOpacity style={styles.button} onPress={() => {
-                    this.setState({ GratitudeModalVisibility: true })
+                    this.setState({ GratitudeModalVisibility: true, postType: 'gratitude' })
                 }}>
                     <Icon name='md-thumbs-up' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
                     <Text style={[styles.buttonText, { fontSize: fontSize, color: '#1c92c4' }]}>Gratitude</Text>
@@ -228,11 +288,23 @@ class CreatePost extends React.Component {
             </View>
         )
     }
+
+    associateTagHandler = (taggedAssociates) => {
+        this.setState({ taggedAssociates })
+    }
+
+    endorsementHandler = (endorsementStrength,text) => {
+        this.setState({ endorsementStrength,text })
+    }
+
+    gratitudeHandler = (text) => {
+        this.setState({ text })
+    }
     render() {
 
         return (
 
-            <Container style={{ flex: 1,backgroundColor: '#eee' }}>
+            <Container style={{ flex: 1, backgroundColor: '#eee' }}>
 
                 <ScrollView contentContainerStyle={{
 
@@ -260,6 +332,7 @@ class CreatePost extends React.Component {
 
                     <AssociateTager
                         isShowingKeyboard={this.state.isShowingKeyboard}
+                        associateTagHandler={this.associateTagHandler}
                     />
 
                     {!this.state.EndorseModalVisibility && !this.state.GratitudeModalVisibility ?
@@ -269,24 +342,22 @@ class CreatePost extends React.Component {
                     {this.state.EndorseModalVisibility ?
                         <Endorsement
                             closeEndorseModal={this.closeEndorseModal}
+                            endorsementHandler={this.endorsementHandler}
                         />
                         : null}
                     {this.state.GratitudeModalVisibility ?
                         <Gratitude
-                            closeEndorseModal={this.closeGratitudeModal}
+                            closeGratitudeModal={this.closeGratitudeModal}
+                            gratitudeHandler={this.gratitudeHandler}
                         />
                         : null}
                 </ScrollView>
 
                 <VisibilityModal
                     enabled={this.state.visibilityModal}
-                    data={[
-                        { icon: 'md-globe', text: 'Organization' },
-                        { icon: 'md-people', text: 'Project' },
-                        { icon: 'md-person', text: 'Private' }
-                    ]}
-                    onChangeListener={(text) => {
-                        this.setState({ visibilitySelection: text })
+                    data={this.visibilityData}
+                    onChangeListener={(text, name) => {
+                        this.setState({ visibilitySelection: text, visibilityName: name })
                     }}
                     visibilityDisableHandler={() => {
                         this.setState({ visibilityModal: false })
@@ -324,8 +395,9 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         accountAlias: state.user.accountAlias,
-        associate_id: state.user.associate_id
-
+        associate_id: state.user.associate_id,
+        firstName: state.user.firstName,
+        lastName: state.user.lastName
     };
 }
 
