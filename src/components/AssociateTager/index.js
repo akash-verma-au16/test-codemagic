@@ -33,8 +33,11 @@ class AssociateTager extends Component {
                     const fullName = item.first_name + ' ' + item.last_name
 
                     /* preventing self endorsing */
-                    if (item.associate_id !== this.props.associate_id)
+                    if (item.associate_id !== this.props.associate_id){
                         this.data.push({ id: item.associate_id, name: fullName })
+                        this.props.associateData.push({ id: item.associate_id, name: fullName })
+                    }
+                        
                 })
 
                 this.setState({ refreshing: false })

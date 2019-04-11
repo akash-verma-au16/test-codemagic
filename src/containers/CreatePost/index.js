@@ -56,6 +56,7 @@ class CreatePost extends React.Component {
             { icon: 'md-people', text: 'Project', name: 'project' },
             { icon: 'md-person', text: 'Private', name: 'private' }
         ]
+        this.associateData = []
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -188,10 +189,27 @@ class CreatePost extends React.Component {
         }
         */
         alert('validation successful')
+        /* formating name */
         const fullName = toSentenceCase(this.props.firstName) + ' ' + toSentenceCase(this.props.lastName)
+        /* unique id generation */
         const id = uuid.v4()
+        /* epoch time calculation */
         const dateTime = Date.now();
         const timestamp = Math.floor(dateTime / 1000);
+        /* creating name-id map for associates */
+        let associateList = []
+        /* selected collection of id */
+        this.state.taggedAssociates.map(id => {
+            /* complete collection of names and ids */
+            this.associateData.map(item=>{
+                if(id===item.id){
+                    associateList.push({ associate_id: item.id, associate_name: item.name })
+                    return
+                }    
+            })
+            
+        })
+
         const payload = {
             Data: {
                 post_id: id,
@@ -201,7 +219,7 @@ class CreatePost extends React.Component {
                 message: this.state.text,
                 type: this.state.postType,
                 sub_type: this.state.endorsementStrength,
-                tagged_associates: this.state.taggedAssociates,
+                tagged_associates: associateList,
                 privacy: {
                     type: this.state.visibilityName,
                     id: "project_id"
@@ -298,8 +316,8 @@ class CreatePost extends React.Component {
         this.setState({ taggedAssociates })
     }
 
-    endorsementHandler = (endorsementStrength,text) => {
-        this.setState({ endorsementStrength,text })
+    endorsementHandler = (endorsementStrength, text) => {
+        this.setState({ endorsementStrength, text })
     }
 
     gratitudeHandler = (text) => {
@@ -338,6 +356,7 @@ class CreatePost extends React.Component {
                     <AssociateTager
                         isShowingKeyboard={this.state.isShowingKeyboard}
                         associateTagHandler={this.associateTagHandler}
+                        associateData={this.associateData}
                     />
 
                     {!this.state.EndorseModalVisibility && !this.state.GratitudeModalVisibility ?
