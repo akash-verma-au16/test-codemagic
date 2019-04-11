@@ -13,6 +13,7 @@
     "connect-wifi": "adb connect 192.168.1.10:5555"
   },
   "dependencies": {
+    "@babel/runtime": "^7.4.3",
     "@react-native-community/async-storage": "^1.2.2",
     "@react-native-community/netinfo": "^2.0.0",
     "axios": "^0.18.0",
@@ -20,16 +21,19 @@
     "native-base": "^2.12.1",
     "react": "16.6.3",
     "react-native": "^0.59.3",
+    "react-native-charts-wrapper": "^0.5.1",
     "react-native-draggable-flatlist": "^1.1.7",
     "react-native-firebase": "^5.2.3",
     "react-native-gesture-handler": "^1.0.15",
     "react-native-ionicons": "^4.5.5",
+    "react-native-multiple-select": "^0.4.4",
     "react-native-search-filter": "^0.1.4",
     "react-native-slider": "^0.11.0",
     "react-navigation": "^3.0.9",
     "react-redux": "^6.0.0",
     "redux": "^4.0.1",
-    "rn-viewpager": "^1.2.9"
+    "rn-viewpager": "^1.2.9",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "babel-core": "7.0.0-bridge.0",
