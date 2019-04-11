@@ -36,7 +36,7 @@ const requestPermission = async () => {
         this.getToken();
     } catch (error) {
         // User has rejected permissions
-        console.log('permission rejected');
+        
     }
 }
 
@@ -64,6 +64,5 @@ const getToken = async () => {
         associate_id:associate_id,
         platform : Platform.OS,
         device_token : fcmToken
-    }).then((res)=>{console.log(res.data)})
-        .catch(error=>console.log(error.response))
+    })
 }
