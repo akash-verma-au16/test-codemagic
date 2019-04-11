@@ -150,7 +150,8 @@ class LoginPage extends React.Component {
                             configureFirebase({
                                 firstName,
                                 lastName,
-                                email
+                                email,
+                                payload
                             })
                             this.props.navigation.navigate('TabNavigator')
                         }).catch((error) => {

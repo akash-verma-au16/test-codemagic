@@ -99,9 +99,12 @@ export default class App extends Component {
                 .android.setPriority(firebase.notifications.Android.Priority.High);
             firebase.notifications()
                 .displayNotification(localNotification)
-                .catch(err => console.error(err));
+                .catch();
         });
 
+        this.notificationOpenedListener = firebase.notifications().onNotificationOpened(() => {
+
+        });
     }
 
     //2
