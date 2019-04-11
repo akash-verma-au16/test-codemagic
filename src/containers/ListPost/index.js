@@ -7,9 +7,9 @@ import {
     RefreshControl,
     TouchableOpacity,
     Dimensions,
-    NetInfo,
     BackHandler
 } from 'react-native';
+import NetInfo from "@react-native-community/netinfo"
 /* Redux */
 import { connect } from 'react-redux'
 import {

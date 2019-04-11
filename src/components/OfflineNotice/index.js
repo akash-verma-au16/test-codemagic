@@ -1,5 +1,6 @@
 import React, { PureComponent } from "react";
-import { View, Text, Dimensions, StyleSheet, NetInfo} from 'react-native';
+import { View, Text, Dimensions, StyleSheet} from 'react-native';
+import NetInfo from "@react-native-community/netinfo"
 import { connect } from 'react-redux';
 import { system } from '../../store/actions'
 
