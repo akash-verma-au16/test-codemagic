@@ -13,7 +13,8 @@ import {
 export default class VisibilityModal extends Component {
 
     componentDidMount(){
-        this.onPressHandler(this.props.data[0].text,this.props.data[0].name)
+        if(this.props.data.text)
+            this.onPressHandler(this.props.data[0].text,this.props.data[0].name)
     }
     onPressHandler=(text,name,key)=>{
         this.props.onChangeListener({text,name,key})

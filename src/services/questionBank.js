@@ -16,3 +16,10 @@ export const read_survey = (
         })
     } 
 }
+
+export const list_survey = (
+    payload
+) => {
+    const endpoint = config.url.list_survey
+    return axios.post(endpoint,payload)
+}

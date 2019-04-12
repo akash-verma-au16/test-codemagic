@@ -24,3 +24,10 @@ export const get_visibility = (
     const endpoint = config.url.get_visibility
     return axios.post(endpoint,payload)
 }
+
+export const news_feed = (
+    payload
+) => {
+    const endpoint = config.url.news_feed
+    return axios.post(endpoint,payload)
+}
