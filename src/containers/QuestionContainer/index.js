@@ -30,7 +30,6 @@ import {give_rewards} from '../../services/rewards'
 /* Utilities */
 import { IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
 
-
 class QuestionContainer extends React.Component {
     constructor(props) {
         super(props)
