@@ -17,3 +17,10 @@ export const create_post = (
     const endpoint = config.url.create_post
     return axios.put(endpoint,payload)
 }
+
+export const get_visibility = (
+    payload
+) => {
+    const endpoint = config.url.get_visibility
+    return axios.post(endpoint,payload)
+}

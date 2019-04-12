@@ -4,31 +4,33 @@ import {
     View,
     BackHandler,
     TouchableOpacity,
-    TouchableWithoutFeedback,
     Text,
     Keyboard,
-    ScrollView
+    ScrollView,
+    Alert
 } from 'react-native';
 
+import NetInfo from "@react-native-community/netinfo"
 /* Native Base */
 import {
     Container,
     Icon,
     Toast,
-    Thumbnail
+    Thumbnail,
+    Spinner
 } from 'native-base';
 /* Redux */
 import { connect } from 'react-redux'
 /* Services */
-import { create_post } from '../../services/post'
+import { create_post, get_visibility } from '../../services/post'
 import toSentenceCase from '../../utilities/toSentenceCase'
 import uuid from 'uuid'
-
+import MultiSelect from 'react-native-multiple-select'
+import { list_associate } from '../../services/tenant'
 /* Components */
 import VisibilityModal from '../VisibilityModal'
 import LoadingModal from '../LoadingModal'
 import thumbnail from '../../assets/thumbnail.jpg'
-import AssociateTager from '../../components/AssociateTager'
 import Endorsement from '../../components/Endorsement'
 import Gratitude from '../../components/Gratitude'
 class CreatePost extends React.Component {
@@ -39,9 +41,11 @@ class CreatePost extends React.Component {
         this.initialState = {
             visibilityModal: false,
             visibilitySelection: 'Organization',
-            visibilityName: 'tenant',
+            visibilityName: props.accountAlias,
             text: '',
             isLoading: false,
+            isVisibilityLoading: false,
+            isTagerLoading: false,
             EndorseModalVisibility: false,
             GratitudeModalVisibility: false,
             isShowingKeyboard: false,
@@ -52,9 +56,7 @@ class CreatePost extends React.Component {
         this.state = this.initialState
         this.inputTextRef = React.createRef();
         this.visibilityData = [
-            { icon: 'md-globe', text: 'Organization', name: 'tenant' },
-            { icon: 'md-people', text: 'Project', name: 'project' },
-            { icon: 'md-person', text: 'Private', name: 'private' }
+            { icon: 'md-globe', text: 'Organization', name: props.accountAlias }
         ]
         this.associateData = []
     }
@@ -91,8 +93,9 @@ class CreatePost extends React.Component {
         };
     };
 
-
     componentDidMount() {
+        this.loadVisibility()
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
         this.props.navigation.setParams({ postSubmitHandler: this.postSubmitHandler });
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             this.goBack()
@@ -108,6 +111,34 @@ class CreatePost extends React.Component {
         );
     }
 
+    loadVisibility = () => {
+        const payload = {
+            email: this.props.emailAddress,
+            tenant_id: this.props.accountAlias
+        }
+        this.setState({ isVisibilityLoading: true })
+        try {
+            get_visibility(payload).then((response) => {
+                let iconName = 'md-filing'
+                response.data.data.map(item => {
+                    if (item.name === 'Organization') {
+                        return
+                    }
+
+                    if (item.name === 'Private') {
+                        iconName = 'md-person'
+                    }
+
+                    this.visibilityData.push({ icon: iconName, text: item.name, name: item.id })
+                })
+                this.setState({ isVisibilityLoading: false })
+            }).catch(() => {
+                this.setState({ isVisibilityLoading: false })
+            })
+        } catch (error) {
+            this.setState({ isVisibilityLoading: false })
+        }
+    }
     _keyboardDidShow = () => {
         this.setState({ isShowingKeyboard: true })
     }
@@ -120,10 +151,30 @@ class CreatePost extends React.Component {
         this.keyboardDidShowListener.remove();
         this.keyboardDidHideListener.remove();
         this.backHandler.remove()
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange)
     }
 
     goBack = () => {
-        this.props.navigation.navigate('home')
+        if (JSON.stringify(this.state) === JSON.stringify(this.initialState))
+            this.props.navigation.navigate('home')
+        else
+            Alert.alert(
+                'Are you sure?',
+                'Note will not be saved',
+                [
+                    {
+                        text: 'Cancel',
+                        style: 'cancel'
+                    },
+                    {
+                        text: 'OK', onPress: () => {
+                            this.setState(this.initialState)
+                            this.props.navigation.navigate('home')
+                        }
+                    }
+                ],
+                { cancelable: false },
+            )
     }
 
     // Submitting post handler function
@@ -187,13 +238,13 @@ class CreatePost extends React.Component {
         /* selected collection of id */
         this.state.taggedAssociates.map(id => {
             /* complete collection of names and ids */
-            this.associateData.map(item=>{
-                if(id===item.id){
+            this.associateData.map(item => {
+                if (id === item.id) {
                     associateList.push({ associate_id: item.id, associate_name: item.name })
                     return
-                }    
+                }
             })
-            
+
         })
 
         const payload = {
@@ -207,15 +258,14 @@ class CreatePost extends React.Component {
                 sub_type: this.state.endorsementStrength,
                 tagged_associates: associateList,
                 privacy: {
-                    type: "tenant",
-                    id: "1l3jtp3hn"
+                    type: this.state.visibilitySelection,
+                    id: this.state.visibilityName
                 },
                 time: timestamp
 
             }
 
         }
-        console.log(payload)
 
         this.setState({ isLoading: true })
         try {
@@ -229,7 +279,8 @@ class CreatePost extends React.Component {
                     isLoading: false,
                     text: ''
                 })
-                this.props.navigation.navigate('Home')
+                this.setState(this.initialState)
+                this.props.navigation.navigate('home')
 
             }).catch(() => {
                 Keyboard.dismiss()
@@ -239,13 +290,7 @@ class CreatePost extends React.Component {
                     duration: 3000
                 })
                 this.setState({ isLoading: false })
-                if(this.props.isConnected) {
-                    Toast.show({
-                        text: error.response.data.code,
-                        type: 'danger',
-                        duration: 3000
-                    })
-                } else {
+                if (!this.props.isConnected) {
                     Toast.show({
                         text: 'Please, connect to the internet',
                         type: 'danger',
@@ -270,7 +315,7 @@ class CreatePost extends React.Component {
     }
 
     closeGratitudeModal = () => {
-        this.setState({ GratitudeModalVisibility: false, postType: '',endorsementStrength: '', text: '' })
+        this.setState({ GratitudeModalVisibility: false, postType: '', endorsementStrength: '', text: '' })
     }
 
     toggleButton = () => {
@@ -312,6 +357,106 @@ class CreatePost extends React.Component {
         )
     }
 
+    associateTager = () => (
+        <View style={{
+            alignItems: 'center',
+            width: '90%',
+            borderRadius: 10,
+            backgroundColor: '#fff',
+            shadowOffset: { width: 5, height: 5 },
+            shadowColor: 'black',
+            shadowOpacity: 0.2,
+            elevation: 2
+        }}>
+            <View style={{ backgroundColor: '#1c92c4', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon name='md-person-add' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
+                    <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Tag your colleagues</Text>
+                </View>
+
+                {this.state.taggedAssociates.length > 0 ?
+                    <Icon name='md-close' style={{ padding: 10, fontSize: 18, color: '#fff' }} onPress={() => {
+                        this.setState({ taggedAssociates: [] })
+                        this.props.associateTagHandler([])
+                    }} />
+                    : null}
+
+            </View>
+            {this.state.isTagerLoading ?
+                <Spinner color='#1c92c4' />
+                :
+                <View style={{ width: '100%', paddingHorizontal: 20, marginTop: 10, marginBottom: 10 }}>
+
+                    <MultiSelect
+                        hideTags
+                        items={this.associateData}
+                        uniqueKey='id'
+                        ref={(component) => { this.multiSelect = component }}
+                        onSelectedItemsChange={this.onSelectedItemsChange}
+                        selectedItems={this.state.taggedAssociates}
+                        selectText='Select colleagues'
+                        searchInputPlaceholderText='Search colleagues...'
+                        tagRemoveIconColor='#1c92c4'
+                        tagBorderColor='#1c92c4'
+                        tagTextColor='#1c92c4'
+                        selectedItemTextColor='#1c92c4'
+                        selectedItemIconColor='#1c92c4'
+                        itemTextColor='#000'
+                        displayKey='name'
+                        searchInputStyle={{ color: '#1c92c4' }}
+                        submitButtonColor='#1c92c4'
+                        submitButtonText='Submit'
+                    />
+                    {this.state.isShowingKeyboard ?
+                        null
+                        :
+                        <View>
+                            {this.multiSelect && this.multiSelect.getSelectedItemsExt(this.state.taggedAssociates)}
+                        </View>
+                    }
+
+                </View>
+            }
+        </View>
+    )
+    onSelectedItemsChange = taggedAssociates => {
+        this.setState({ taggedAssociates });
+
+    }
+
+    loadMembers = () => {
+        if (this.props.accountAlias) {
+            list_associate({
+                tenant_id: this.props.accountAlias
+            })
+                .then(response => {
+                    /* Clear Garbage */
+                    this.associateData = []
+                    response.data.data.map(item => {
+                        /* Create List items */
+                        const fullName = item.first_name + ' ' + item.last_name
+
+                        /* preventing self endorsing */
+                        if (item.associate_id !== this.props.associate_id) {
+                            this.associateData.push({ id: item.associate_id, name: fullName })
+                        }
+
+                    })
+                    this.setState({ isTagerLoading: false })
+                })
+                .catch(() => {
+                    this.setState({ isTagerLoading: false })
+                })
+        }
+
+    }
+    handleConnectivityChange = (isConnected) => {
+        if (isConnected) {
+            this.setState({
+                isTagerLoading: true
+            }, () => this.loadMembers())
+        }
+    }
     associateTagHandler = (taggedAssociates) => {
         this.setState({ taggedAssociates })
     }
@@ -321,7 +466,7 @@ class CreatePost extends React.Component {
     }
 
     gratitudeHandler = (text) => {
-        this.setState({endorsementStrength:'Gratitude', text:text })
+        this.setState({ endorsementStrength: 'Gratitude', text: text })
     }
     render() {
 
@@ -348,16 +493,19 @@ class CreatePost extends React.Component {
                             borderRadius: 5
                         }}
                         onPress={() => this.setState({ visibilityModal: true })}
+                        disabled={this.state.isVisibilityLoading}
                     >
-                        <Icon name='md-eye' style={{ fontSize: 12, paddingHorizontal: 5, color: 'white' }} />
+
+                        {this.state.isVisibilityLoading ?
+                            <Spinner color='white' size={12} style={{ height: 10, paddingHorizontal: 5 }} />
+                            :
+                            <Icon name='md-eye' style={{ fontSize: 12, paddingHorizontal: 5, color: 'white' }} />
+                        }
                         <Text style={styles.buttonText}>{this.state.visibilitySelection}</Text>
+
                     </TouchableOpacity>
 
-                    <AssociateTager
-                        isShowingKeyboard={this.state.isShowingKeyboard}
-                        associateTagHandler={this.associateTagHandler}
-                        associateData={this.associateData}
-                    />
+                    <this.associateTager />
 
                     {!this.state.EndorseModalVisibility && !this.state.GratitudeModalVisibility ?
                         <this.toggleButton />
@@ -421,7 +569,8 @@ const mapStateToProps = (state) => {
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         firstName: state.user.firstName,
-        lastName: state.user.lastName
+        lastName: state.user.lastName,
+        emailAddress: state.user.emailAddress
     };
 }
 
