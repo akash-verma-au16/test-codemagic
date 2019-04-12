@@ -35,7 +35,8 @@ class ListPost extends React.Component {
             networkChanged: false
         }
         this.loadPosts = this.loadPosts.bind(this);
-        this.postList = []
+        this.postList = [],
+        this.taggedAssociate = [],
         this.scrollViewRef = React.createRef();
         this.payloadBackup = []
         this.windowWidth = Dimensions.get("window").width;
@@ -212,50 +213,52 @@ class ListPost extends React.Component {
                         style={{
                             flex: 1,
                             flexDirection: 'row',
-                            alignItems: 'center'
-                        }}
-                    >
-                        <View name='image' style={{
-                            borderRadius: 30,
-                            backgroundColor: '#1c92c4',
-                            height: 30,
-                            aspectRatio: 1 / 1,
                             alignItems: 'center',
-                            justifyContent: 'center'
-                        }}>
-                            <Icon name='person' style={{ fontSize: 20, color: 'white' }} />
-                        </View>
-                        <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500' }}>John Snow</Text>
-                    </View>
-                    <View style={{
-                        backgroundColor: '#ddd',
-                        height: 1,
-                        width: '100%',
-                        marginVertical: 10
-                    }} />
-                    <View name='content'
-                        style={{
-                            flex: 2,
-                            padding: 10
+                            justifyContent: 'space-between'
+                            // padding: 10
                         }}
                     >
-                        <H2 >{item.message}</H2>
+                        <View style={{flexDirection: 'row',alignItems: 'center'}}>
+                            <View name='image' style={{
+                                borderRadius: 30,
+                                backgroundColor: '#1c92c4',
+                                height: 35,
+                                aspectRatio: 1 / 1,
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}>
+                                <Icon name='person' style={{ fontSize: 25, color: 'white'}} />
+                            </View>
+                            <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>John Snow</Text>
+                        </View>
+                        <Text style={styles.timeStamp}>1h ago</Text>
                     </View>
-                    <View style={{
+                    {/* <View style={{
                         backgroundColor: '#ddd',
                         height: 1,
                         width: '100%',
                         marginVertical: 10
-                    }} />
+                    }} /> */}
+                    <View name='content' style={{ flex: 2, paddingVertical: 6 }}>
+                        <Text style= {styles.postText}>
+                            {
+                                <Text style={styles.associate}>@Aayush </Text>
+                            }
+                            {/* item.tagged_associates.map((associate) => {
+                                this.taggedAssociate.push((<Text>@{associate.associate_name + " "}</Text>))
+                            }) */}
+                            {item.message}
+                            {/* endorsement strength *future update*
+                            <Text style={styles.strength}> #Creativity</Text> */}
+                        </Text>
+                    </View>
                     <View name='footer'
                         style={{
                             flex: 1,
                             flexDirection: 'row',
                             alignItems: 'center',
                             justifyContent: 'flex-end'
-                        }}
-                    >
-
+                        }}>
                         <Icon name='md-thumbs-up' style={{ fontSize: 20, color: '#ddd' }} onPress={this.commingSoon} />
                     </View>
                 </View>
@@ -348,19 +351,40 @@ class ListPost extends React.Component {
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        backgroundColor: '#eee'
+        backgroundColor: '#eee',
+        padding: 3
     },
 
     card: {
-        marginBottom: 10,
+        // marginTop: 10,
+        marginBottom: 8,
         backgroundColor: 'white',
         width: '100%',
-        borderRadius: 10,
-        padding: 20,
+        borderRadius: 5,
+        padding: 15,
         shadowOffset: { width: 5, height: 5 },
         shadowColor: 'black',
         shadowOpacity: 0.2,
         elevation: 2
+    },
+    postText: {
+        fontFamily: "OpenSans-Regular",
+        fontWeight: '400',
+        color: '#000',
+        fontSize: 15
+    },
+    associate: {
+        color: '#1c92c4',
+        fontWeight: 'bold'
+    },
+    strength: {
+        fontWeight:'bold',
+        fontSize: 15
+    },
+    timeStamp: {
+        fontSize: 10,
+        fontWeight: 'bold',
+        color: '#b1b5bc'
     }
 });
 
