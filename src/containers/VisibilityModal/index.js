@@ -15,8 +15,8 @@ export default class VisibilityModal extends Component {
     componentDidMount(){
         this.onPressHandler(this.props.data[0].text,this.props.data[0].name)
     }
-    onPressHandler=(text,name)=>{
-        this.props.onChangeListener(text,name)
+    onPressHandler=(text,name,key)=>{
+        this.props.onChangeListener({text,name,key})
         this.props.visibilityDisableHandler()
     }
     render() {
@@ -35,7 +35,7 @@ export default class VisibilityModal extends Component {
                             padding: 10,
                             width: '100%'
                         }}
-                        onPress={()=>this.onPressHandler(item.text,item.name)}
+                        onPress={()=>this.onPressHandler(item.text,item.name,item.key)}
                     >
                         <Icon name={item.icon} style={[
                             styles.icon,

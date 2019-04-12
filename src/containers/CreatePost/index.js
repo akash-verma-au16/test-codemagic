@@ -41,6 +41,7 @@ class CreatePost extends React.Component {
         this.initialState = {
             visibilityModal: false,
             visibilitySelection: 'Organization',
+            visibilityKey:'tenant',
             visibilityName: props.accountAlias,
             text: '',
             isLoading: false,
@@ -119,16 +120,20 @@ class CreatePost extends React.Component {
             get_visibility(payload).then((response) => {
                 this.visibilityData = []
                 let iconName = ''
+                let text = ''
                 response.data.data.map(item => {
                     if (item.name === 'Organization') {
                         iconName = 'md-globe'
+                        text = 'tenant'
                     }else if (item.name === 'Private') {
                         iconName = 'md-person'
+                        text = 'private'
                     }else{
                         iconName = 'md-filing'
+                        text='project'
                     }
 
-                    this.visibilityData.push({ icon: iconName, text: item.name, name: item.id })
+                    this.visibilityData.push({ icon: iconName, text: item.name, name: item.id, key:text })
                 })
                 this.setState({ isVisibilityLoading: false })
             }).catch(() => {
@@ -257,7 +262,7 @@ class CreatePost extends React.Component {
                 sub_type: this.state.endorsementStrength,
                 tagged_associates: associateList,
                 privacy: {
-                    type: this.state.visibilitySelection,
+                    type: this.state.visibilityKey,
                     id: this.state.visibilityName
                 },
                 time: timestamp
@@ -265,7 +270,6 @@ class CreatePost extends React.Component {
             }
 
         }
-
         this.setState({ isLoading: true })
         try {
             create_post(payload).then(() => {
@@ -530,8 +534,9 @@ class CreatePost extends React.Component {
                     <VisibilityModal
                         enabled={this.state.visibilityModal}
                         data={this.visibilityData}
-                        onChangeListener={(text, name) => {
-                            this.setState({ visibilitySelection: text, visibilityName: name })
+                        onChangeListener={({text, name,key}) => {
+                            console.log(key)
+                            this.setState({ visibilitySelection: text, visibilityName: name ,visibilityKey:key })
                         }}
                         visibilityDisableHandler={() => {
                             this.setState({ visibilityModal: false })
