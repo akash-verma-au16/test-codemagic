@@ -15,12 +15,13 @@ import {
     Container,
     Icon,
     Toast,
-    Thumbnail
+    Thumbnail,
+    Spinner
 } from 'native-base';
 /* Redux */
 import { connect } from 'react-redux'
 /* Services */
-import { create_post } from '../../services/post'
+import { create_post, get_visibility } from '../../services/post'
 import toSentenceCase from '../../utilities/toSentenceCase'
 import uuid from 'uuid'
 
@@ -42,6 +43,7 @@ class CreatePost extends React.Component {
             visibilityName: 'tenant',
             text: '',
             isLoading: false,
+            isVisibilityLoading: true,
             EndorseModalVisibility: false,
             GratitudeModalVisibility: false,
             isShowingKeyboard: false,
@@ -52,9 +54,7 @@ class CreatePost extends React.Component {
         this.state = this.initialState
         this.inputTextRef = React.createRef();
         this.visibilityData = [
-            { icon: 'md-globe', text: 'Organization', name: 'tenant' },
-            { icon: 'md-people', text: 'Project', name: 'project' },
-            { icon: 'md-person', text: 'Private', name: 'private' }
+            { icon: 'md-globe', text: 'Organization', name: 'tenant' }
         ]
         this.associateData = []
     }
@@ -91,8 +91,8 @@ class CreatePost extends React.Component {
         };
     };
 
-
     componentDidMount() {
+        this.loadVisibility()
         this.props.navigation.setParams({ postSubmitHandler: this.postSubmitHandler });
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             this.goBack()
@@ -108,6 +108,37 @@ class CreatePost extends React.Component {
         );
     }
 
+    loadVisibility = () => {
+        const payload = {
+            email: this.props.emailAddress,
+            tenant_id: this.props.accountAlias
+        }
+        this.setState({ isVisibilityLoading: true })
+        try {
+            get_visibility(payload).then((response) => {
+                let iconName = 'md-filing'
+                response.data.data.map(item => {
+                    if (item.name === 'Organization'){
+                        return
+                    }
+
+                    if (item.name === 'Private'){
+                        iconName = 'md-person'
+                    }
+
+                    this.visibilityData.push({ icon: iconName, text: item.name, name: item.id })
+                })
+                console.log(this.visibilityData)
+                this.setState({ isVisibilityLoading: false })
+            }).catch((error) => {
+                console.log(error.response)
+                this.setState({ isVisibilityLoading: false })
+            })
+        } catch (error) {
+            console.log(error)
+            this.setState({ isVisibilityLoading: false })
+        }
+    }
     _keyboardDidShow = () => {
         this.setState({ isShowingKeyboard: true })
     }
@@ -187,13 +218,13 @@ class CreatePost extends React.Component {
         /* selected collection of id */
         this.state.taggedAssociates.map(id => {
             /* complete collection of names and ids */
-            this.associateData.map(item=>{
-                if(id===item.id){
+            this.associateData.map(item => {
+                if (id === item.id) {
                     associateList.push({ associate_id: item.id, associate_name: item.name })
                     return
-                }    
+                }
             })
-            
+
         })
 
         const payload = {
@@ -239,13 +270,7 @@ class CreatePost extends React.Component {
                     duration: 3000
                 })
                 this.setState({ isLoading: false })
-                if(this.props.isConnected) {
-                    Toast.show({
-                        text: error.response.data.code,
-                        type: 'danger',
-                        duration: 3000
-                    })
-                } else {
+                if (!this.props.isConnected) {
                     Toast.show({
                         text: 'Please, connect to the internet',
                         type: 'danger',
@@ -270,7 +295,7 @@ class CreatePost extends React.Component {
     }
 
     closeGratitudeModal = () => {
-        this.setState({ GratitudeModalVisibility: false, postType: '',endorsementStrength: '', text: '' })
+        this.setState({ GratitudeModalVisibility: false, postType: '', endorsementStrength: '', text: '' })
     }
 
     toggleButton = () => {
@@ -321,7 +346,7 @@ class CreatePost extends React.Component {
     }
 
     gratitudeHandler = (text) => {
-        this.setState({endorsementStrength:'Gratitude', text:text })
+        this.setState({ endorsementStrength: 'Gratitude', text: text })
     }
     render() {
 
@@ -348,9 +373,16 @@ class CreatePost extends React.Component {
                             borderRadius: 5
                         }}
                         onPress={() => this.setState({ visibilityModal: true })}
+                        disabled={this.state.isVisibilityLoading}
                     >
-                        <Icon name='md-eye' style={{ fontSize: 12, paddingHorizontal: 5, color: 'white' }} />
+
+                        {this.state.isVisibilityLoading ?
+                            <Spinner color='white' size={12} style={{height:10,paddingHorizontal:5}} />
+                            :
+                            <Icon name='md-eye' style={{ fontSize: 12, paddingHorizontal: 5, color: 'white' }} />
+                        }
                         <Text style={styles.buttonText}>{this.state.visibilitySelection}</Text>
+
                     </TouchableOpacity>
 
                     <AssociateTager
@@ -421,7 +453,8 @@ const mapStateToProps = (state) => {
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         firstName: state.user.firstName,
-        lastName: state.user.lastName
+        lastName: state.user.lastName,
+        emailAddress: state.user.emailAddress
     };
 }
 
