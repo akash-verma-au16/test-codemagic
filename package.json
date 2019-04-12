@@ -20,7 +20,7 @@
     "bugsnag-react-native": "^2.15.0",
     "native-base": "^2.12.1",
     "react": "16.6.3",
-    "react-native": "^0.59.3",
+    "react-native": "^0.59.4",
     "react-native-charts-wrapper": "^0.5.1",
     "react-native-draggable-flatlist": "^1.1.7",
     "react-native-firebase": "^5.2.3",
@@ -51,6 +51,11 @@
     "eslint-plugin-react": "^7.12.3",
     "eslint-plugin-react-native": "^3.5.0",
     "eslint-plugin-standard": "^4.0.0"
+  },
+  "rnpm": {
+    "assets": [
+      "./src/assets/fonts/"
+    ]
   },
   "jest": {
     "preset": "react-native"
