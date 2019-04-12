@@ -20,7 +20,7 @@ import {
     Thumbnail
 } from 'native-base';
 /* Services */
-import { list_posts } from '../../services/post'
+import { list_posts,news_feed } from '../../services/post'
 /* Components */
 import { NavigationEvents } from 'react-navigation';
 import thumbnail from '../../assets/thumbnail.jpg'
@@ -139,7 +139,7 @@ class ListPost extends React.Component {
 
         if (payload.tenant_id !== "" && payload.associate_id !=="") {
             try {
-                list_posts(payload).then(response => {
+                news_feed(payload).then(response => {
 
                     /* take payload backup to check for changes later */
                     if (this.payloadBackup.length === response.data.data.length) {
@@ -205,7 +205,7 @@ class ListPost extends React.Component {
         }
     }   
     createTiles = (data) => {
-        
+        console.log(data)
         data.map((item, index) => {
             this.postList.push(
                 <View style={styles.card} key={index}>
@@ -229,9 +229,9 @@ class ListPost extends React.Component {
                             }}>
                                 <Icon name='person' style={{ fontSize: 25, color: 'white'}} />
                             </View>
-                            <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>John Snow</Text>
+                            <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>{item.Item.associate_name}</Text>
                         </View>
-                        <Text style={styles.timeStamp}>1h ago</Text>
+                        <Text style={styles.timeStamp}>{item.Item.time}</Text>
                     </View>
                     {/* <View style={{
                         backgroundColor: '#ddd',
@@ -247,7 +247,7 @@ class ListPost extends React.Component {
                             {/* item.tagged_associates.map((associate) => {
                                 this.taggedAssociate.push((<Text>@{associate.associate_name + " "}</Text>))
                             }) */}
-                            {item.message}
+                            {item.Item.message}
                             {/* endorsement strength *future update*
                             <Text style={styles.strength}> #Creativity</Text> */}
                         </Text>

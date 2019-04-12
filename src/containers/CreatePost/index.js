@@ -250,7 +250,7 @@ class CreatePost extends React.Component {
             })
 
         })
-
+        console.log('state:',this.state)
         const payload = {
             Data: {
                 post_id: id,
@@ -270,6 +270,7 @@ class CreatePost extends React.Component {
             }
 
         }
+        console.log(payload)
         this.setState({ isLoading: true })
         try {
             create_post(payload).then(() => {
@@ -530,21 +531,18 @@ class CreatePost extends React.Component {
                         />
                         : null}
                 </ScrollView>
-                {this.visibilityData.length > 0 ?
-                    <VisibilityModal
-                        enabled={this.state.visibilityModal}
-                        data={this.visibilityData}
-                        onChangeListener={({text, name,key}) => {
-                            console.log(key)
-                            this.setState({ visibilitySelection: text, visibilityName: name ,visibilityKey:key })
-                        }}
-                        visibilityDisableHandler={() => {
-                            this.setState({ visibilityModal: false })
-                        }}
-                        state={this.state.visibilitySelection}
-                    />
-                    : null
-                }
+
+                <VisibilityModal
+                    enabled={this.state.visibilityModal}
+                    data={this.visibilityData}
+                    onChangeListener={({text, name,key}) => {
+                        this.setState({ visibilitySelection: text, visibilityName: name ,visibilityKey:key })
+                    }}
+                    visibilityDisableHandler={() => {
+                        this.setState({ visibilityModal: false })
+                    }}
+                    state={this.state.visibilitySelection}
+                />
 
                 <LoadingModal
                     enabled={this.state.isLoading}
