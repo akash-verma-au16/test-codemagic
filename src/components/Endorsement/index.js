@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image ,TextInput,Alert} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, TextInput, Alert } from 'react-native';
 import { Icon, Content } from 'native-base'
 
 class Endorsement extends Component {
@@ -10,7 +10,7 @@ class Endorsement extends Component {
             showTemplates: true,
             selectedStrength: '',
             selectedSource: null,
-            text:''
+            text: ''
         }
         this.state = this.initialState
         this.endorsementData = [
@@ -38,20 +38,35 @@ class Endorsement extends Component {
             { name: 'Hope', source: require('../../assets/endorsements/hope.png') },
             { name: 'Humor', source: require('../../assets/endorsements/humor.png') }
         ]
+        this.endorsementMessages = [
+            'For taking the big picture view',
+            'For providing wise and pertinent counsel',
+            'For showing wisdom beyond your years',
+            'For sharing a valued point-of-view',
+            'For not shrinking from fear or threat',
+            'For speaking up for what’s right',
+            'For displaying courage in adverse situations',
+            'For finishing despite obstacles',
+            'For showing persistence in achieving goals',
+            'For meeting tough deadlines by working hard',
+            'For being gritty and determined #perseverance'
+        ]
     }
     componentWillMount() {
         this.createEndorsementTemplate()
     }
     createEndorsementTemplate = () => {
+        /* Random 1~10 */
+        var rindex = Math.floor((Math.random() * 10) + 1);
         this.endorsementTemplate = []
         this.endorsementData.map((item, index) => {
             this.endorsementTemplate.push(
 
                 <TouchableOpacity style={styles.template} key={index}
                     onPress={() => {
-                        const message = 'you are endorsing for #' + item.name
-                        this.setState({ showTemplates: false, selectedStrength: item.name, selectedSource: item.source ,text:message})
-                        this.props.endorsementHandler(item.name,message)
+                        const message = this.endorsementMessages[rindex]
+                        this.setState({ showTemplates: false, selectedStrength: item.name, selectedSource: item.source, text: message })
+                        this.props.endorsementHandler(item.name, message)
                     }}
                 >
 
@@ -149,13 +164,13 @@ class Endorsement extends Component {
                             style={{
                                 padding: 20,
                                 fontSize: 20,
-                                
+
                                 textAlignVertical: 'top'
                             }}
                             value={this.state.text}
                             onChangeText={(text) => {
-                                this.setState({text})
-                                this.props.endorsementHandler(this.state.selectedStrength,text)
+                                this.setState({ text })
+                                this.props.endorsementHandler(this.state.selectedStrength, text)
                             }}
                             autoFocus
                         />

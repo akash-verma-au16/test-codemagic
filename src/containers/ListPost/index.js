@@ -20,7 +20,7 @@ import {
     Thumbnail
 } from 'native-base';
 /* Services */
-import { list_posts,news_feed } from '../../services/post'
+import { news_feed } from '../../services/post'
 /* Components */
 import { NavigationEvents } from 'react-navigation';
 import thumbnail from '../../assets/thumbnail.jpg'
@@ -73,6 +73,7 @@ class ListPost extends React.Component {
         };
     };
     componentWillMount() {
+
         this.props.navigation.setParams({ commingSoon: this.commingSoon });
         if (this.props.isFreshInstall) {
             this.props.navigation.navigate('TermsAndConditions')
@@ -84,6 +85,8 @@ class ListPost extends React.Component {
     }
 
     componentDidMount() {
+
+        this.interval = setInterval(() => {this.loadPosts()}, 10000);
         //Detecting connectivity change
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -92,6 +95,7 @@ class ListPost extends React.Component {
     }
 
     componentWillUnmount() {
+        clearInterval(this.interval)
         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
         this.backHandler.remove()
     }
@@ -206,7 +210,10 @@ class ListPost extends React.Component {
     }   
     createTiles = (data) => {
         console.log(data)
+        
         data.map((item, index) => {
+            let associateList = []
+            
             this.postList.push(
                 <View style={styles.card} key={index}>
                     <View name='header'
@@ -241,15 +248,14 @@ class ListPost extends React.Component {
                     }} /> */}
                     <View name='content' style={{ flex: 2, paddingVertical: 6 }}>
                         <Text style= {styles.postText}>
-                            {
-                                <Text style={styles.associate}>@Aayush </Text>
-                            }
-                            {/* item.tagged_associates.map((associate) => {
-                                this.taggedAssociate.push((<Text>@{associate.associate_name + " "}</Text>))
-                            }) */}
+
+                            { item.Item.tagged_associates.map((associate,index) => {
+                                associateList.push((<Text style={styles.associate} key={index}>@{associate.associate_name + " "}</Text>))
+                            }) }
+                            {associateList}
                             {item.Item.message}
-                            {/* endorsement strength *future update*
-                            <Text style={styles.strength}> #Creativity</Text> */}
+                            
+                            <Text style={styles.strength}> #{item.Item.sub_type}</Text>
                         </Text>
                     </View>
                     <View name='footer'
