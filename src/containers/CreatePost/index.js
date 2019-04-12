@@ -55,9 +55,8 @@ class CreatePost extends React.Component {
         }
         this.state = this.initialState
         this.inputTextRef = React.createRef();
-        this.visibilityData = [
-            { icon: 'md-globe', text: 'Organization', name: props.accountAlias }
-        ]
+
+        this.visibilityData = []
         this.associateData = []
     }
     // Navigation options
@@ -94,7 +93,6 @@ class CreatePost extends React.Component {
     };
 
     componentDidMount() {
-        this.loadVisibility()
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
         this.props.navigation.setParams({ postSubmitHandler: this.postSubmitHandler });
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -119,14 +117,15 @@ class CreatePost extends React.Component {
         this.setState({ isVisibilityLoading: true })
         try {
             get_visibility(payload).then((response) => {
-                let iconName = 'md-filing'
+                this.visibilityData = []
+                let iconName = ''
                 response.data.data.map(item => {
                     if (item.name === 'Organization') {
-                        return
-                    }
-
-                    if (item.name === 'Private') {
+                        iconName = 'md-globe'
+                    }else if (item.name === 'Private') {
                         iconName = 'md-person'
+                    }else{
+                        iconName = 'md-filing'
                     }
 
                     this.visibilityData.push({ icon: iconName, text: item.name, name: item.id })
@@ -454,7 +453,10 @@ class CreatePost extends React.Component {
         if (isConnected) {
             this.setState({
                 isTagerLoading: true
-            }, () => this.loadMembers())
+            }, () => {
+                this.loadMembers()
+                this.loadVisibility()
+            })
         }
     }
     associateTagHandler = (taggedAssociates) => {
@@ -524,18 +526,21 @@ class CreatePost extends React.Component {
                         />
                         : null}
                 </ScrollView>
+                {this.visibilityData.length > 0 ?
+                    <VisibilityModal
+                        enabled={this.state.visibilityModal}
+                        data={this.visibilityData}
+                        onChangeListener={(text, name) => {
+                            this.setState({ visibilitySelection: text, visibilityName: name })
+                        }}
+                        visibilityDisableHandler={() => {
+                            this.setState({ visibilityModal: false })
+                        }}
+                        state={this.state.visibilitySelection}
+                    />
+                    : null
+                }
 
-                <VisibilityModal
-                    enabled={this.state.visibilityModal}
-                    data={this.visibilityData}
-                    onChangeListener={(text, name) => {
-                        this.setState({ visibilitySelection: text, visibilityName: name })
-                    }}
-                    visibilityDisableHandler={() => {
-                        this.setState({ visibilityModal: false })
-                    }}
-                    state={this.state.visibilitySelection}
-                />
                 <LoadingModal
                     enabled={this.state.isLoading}
                 />
