@@ -65,6 +65,18 @@ class QuestionContainer extends React.Component {
 
         }
     }
+    // for MCQM
+    MCQMHandler = (questionId, answerObj) => {
+        console.log('linked',answerObj)
+        this.answerSet = {
+            ...this.answerSet,
+
+            [questionId]: {
+                answer: answerObj
+            }
+
+        }
+    }
     // for ROS
     ROSHandler = (questionId, answerObj) => {
         let ranks = {}
@@ -110,6 +122,7 @@ class QuestionContainer extends React.Component {
                             answerHandler={this.answerHandler}
                             ROSHandler={this.ROSHandler}
                             SCQHandler={this.SCQHandler}
+                            MCQMHandler={this.MCQMHandler}
                         />
                     </View>
                 )
@@ -133,6 +146,7 @@ class QuestionContainer extends React.Component {
                         survey_id: this.questionData.survey.id,
                         answer_set: this.answerSet
                     }
+                    console.log(payload)
                     save_answers(payload).then(() => {
 
                         /* Give rewards */

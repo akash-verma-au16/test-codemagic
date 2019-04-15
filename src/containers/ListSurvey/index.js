@@ -115,6 +115,18 @@ class ListSurvey extends React.Component {
          
                 >
                     <SurveyTabNavigator />
+                    <TouchableOpacity
+                        onPress={()=>this.props.navigation.navigate('SurveyIntro',{
+                            surveyId:'10',
+                            surveyName:'Daily-Questionnaire',
+                            surveyDescription:'Daily Survey',
+                            surveyNote:'note',
+                            surveyLevel:'beginner'
+                        })}
+                        style={{height:100,width:50,backgroundColor:'red'}}
+                    >
+
+                    </TouchableOpacity>
                 </Content>
                 <LoadingModal
                     enabled={this.state.isLoading}
