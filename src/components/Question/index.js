@@ -11,7 +11,7 @@ const Question = (props) => {
 
     switch (props.type) {
 
-    /* case 'MCQ':
+    case 'MCQ':
     case 'DSQ':
         helperText = '[choose any option]'
         option = (
@@ -23,9 +23,9 @@ const Question = (props) => {
                 answerHandler={props.answerHandler}
             />
         )
-        break */
-    case 'MCQ':
-    case 'DSQ':
+        break 
+
+    case 'MCQM':
         helperText = '[choose all that apply]'
         option = (
             <MultiSelectChoice

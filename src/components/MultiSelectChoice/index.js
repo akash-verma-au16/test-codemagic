@@ -39,10 +39,9 @@ class MultiSelectChoice extends React.Component {
             })
         }
         else{
-            console.log(this.state)
             /* check if the option is already selected */
             let isSelected=false
-            this.state.selectedOption.map((item,index)=>{
+            this.state.selectedOption.map((item)=>{
                 if(item.value===option.value){
                     /* already selected */
                     isSelected=true
@@ -60,12 +59,10 @@ class MultiSelectChoice extends React.Component {
                         return option
                     }
                 })
-                console.log('delete',finalArray)
                 this.setState({selectedOption:finalArray})
             }
             else{
                 /* add to array */
-                console.log('add')
                 this.setState((prevState)=>({selectedOption:[...prevState.selectedOption,option]}),
                     ()=>{
                         this.props.answerHandler(this.state.questionId,this.state.selectedOption)
@@ -83,7 +80,14 @@ class MultiSelectChoice extends React.Component {
             
             if(this.state.selectedOption.value===item.value)
                 status=true
-
+            
+            this.state.selectedOption.map((item2)=>{
+                if(item.value===item2.value){
+                    /* already selected */
+                    status=true
+                    return
+                }
+            })
             this.options.push(
                 <Option 
                     key={id}
