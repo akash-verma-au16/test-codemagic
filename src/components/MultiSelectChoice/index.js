@@ -27,10 +27,7 @@ class MultiSelectChoice extends React.Component {
         super(props);
         this.state={
             questionId:this.props.questionId,
-            selectedOption: {
-                value: '',
-                text: ''
-            }
+            selectedOption: []
         }
     }
     optionHandler=(option)=>{
@@ -42,11 +39,39 @@ class MultiSelectChoice extends React.Component {
             })
         }
         else{
-            this.setState({selectedOption:option},()=>{
-                this.props.answerHandler(this.state.questionId,this.state.selectedOption)
+            console.log(this.state)
+            /* check if the option is already selected */
+            let isSelected=false
+            this.state.selectedOption.map((item,index)=>{
+                if(item.value===option.value){
+                    /* already selected */
+                    isSelected=true
+                    return
+                }else{
+                    /* not selected */
+                }
             })
-            /* trigger page switch */
-            this.props.pageSwitchHandler()
+
+            if(isSelected){
+                /* delete from array */
+                
+                let finalArray = this.state.selectedOption.filter((item)=>{
+                    if(JSON.stringify(item)!==JSON.stringify(option)){
+                        return option
+                    }
+                })
+                console.log('delete',finalArray)
+                this.setState({selectedOption:finalArray})
+            }
+            else{
+                /* add to array */
+                console.log('add')
+                this.setState((prevState)=>({selectedOption:[...prevState.selectedOption,option]}),
+                    ()=>{
+                        this.props.answerHandler(this.state.questionId,this.state.selectedOption)
+                    })
+            }
+
         }
     }
 
