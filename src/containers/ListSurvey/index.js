@@ -125,6 +125,16 @@ class ListSurvey extends React.Component {
                         })}
                         style={{height:100,width:50,backgroundColor:'red'}}
                     >
+                        <TouchableOpacity
+                            onPress={()=>this.props.navigation.navigate('SurveyIntro',{
+                                surveyId:'5',
+                                surveyName:'Daily-Questionnaire',
+                                surveyDescription:'Daily Survey',
+                                surveyNote:'note',
+                                surveyLevel:'beginner'
+                            })}
+                            style={{height:100,width:50,backgroundColor:'green'}}
+                        ></TouchableOpacity>
 
                     </TouchableOpacity>
                 </Content>

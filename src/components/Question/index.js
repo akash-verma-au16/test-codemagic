@@ -5,6 +5,7 @@ import MultipleChoice from '../MultipleChoice'
 import MultiSelectChoice from '../MultiSelectChoice'
 import RankOrderScale from '../RankOrderScale'
 import RatingScale from '../RatingScale'
+import RangeScale from '../RangeScale'
 const Question = (props) => {
     let option = null
     let helperText = null
@@ -41,6 +42,18 @@ const Question = (props) => {
         helperText = '[Drag the Slider(s)]'
         option=(
             <RatingScale
+                questionId={props.questionId}
+                data={props.options}
+                pageSwitchHandler={''}
+                isSubmitLoading={props.isSubmitLoading}
+                answerHandler={props.SCQHandler}
+            /> 
+        )
+        break
+    case 'RSCQ':
+        helperText = '[Drag the Slider(s)]'
+        option=(
+            <RangeScale
                 questionId={props.questionId}
                 data={props.options}
                 pageSwitchHandler={''}

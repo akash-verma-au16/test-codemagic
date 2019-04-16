@@ -109,12 +109,69 @@ class QuestionContainer extends React.Component {
 
         if (this.questionData.questions.length) {
 
-            this.questionData.questions.map((question, index) => {
+            this.questionData.questions.map((question0, index) => {
+                const question = {
+                    category: "My Pulse",
+                    question_id: "738bb530-0322-4cd0-9dd3-f5610a87f339" + index,
+                    type: "RSCQ",
+                    author: "e9faff7b-def6-44e2-a711-e3979ac381ea",
+                    level: "Beginner",
+                    note: "Some Note",
+                    question: {
+                        options: [
+                            {
+                                title:"Exercise in Morning",
+                                start:{
+                                    "value": 0,
+                                    "text": "Not at all"
+                                },
+                                end:{
+                                    "value": 100,
+                                    "text": "Very much"
+                                },
+                                default_value: 0,
+                                step: 5
+                            },
+                            {
+                                title:"Exercise in Afternoon",
+                                start:{
+                                    "value": 0,
+                                    "text": "Not at all"
+                                },
+                                end:{
+                                    "value": 100,
+                                    "text": "Very much"
+                                },
+                                default_value: 0,
+                                step: 10
+                            },
+                            {
+                                title:"Exercise at night",
+                                start:{
+                                    "value": 0,
+                                    "text": "Not at all"
+                                },
+                                end:{
+                                    "value": 200,
+                                    "text": "Very much"
+                                },
+                                default_value: 0,
+                                step: 1
+                            }
+                        ]
+                    }
+                }
+                let title = ''
+                if(question.question.options.length===1){
+                    title=question.question.options[0].title
+                }else{
+                    title='Answer the following questions'
+                }
                 this.questions.push(
                     <View key={index}>
                         <Question
                             questionId={question.question_id}
-                            question={question.question.title}
+                            question={title}
                             type={question.type}
                             options={question.question.options}
                             pageSwitchHandler={this.switchToNextPage}
