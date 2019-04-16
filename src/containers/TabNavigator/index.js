@@ -57,7 +57,7 @@ const ListSurveyStack = createStackNavigator({
     }
 });
 const TabNavigator = createBottomTabNavigator({
-    Home: { screen: HomeStack },
+    Home: { screen: ListSurveyStack },
     CreatePost: { screen: CreatePostStack },
     ListSurvey: { screen: ListSurveyStack }
 },
