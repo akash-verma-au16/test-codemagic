@@ -156,22 +156,19 @@ class QuestionContainer extends React.Component {
                         survey_id: this.questionData.survey.id,
                         answer_set: this.answerSet
                     }
-                    console.log(payload)
                     save_answers(payload).then(() => {
 
                         /* Give rewards */
                         give_rewards(
                             {
-                                "tenant_id" : "1l3jtp3hn",
-                                "associate_id" : "fa9a8f60-4840-4c0a-b785-beebef4b1a24",
+                                "tenant_id" : this.props.tenant_id,
+                                "associate_id" : this.props.associate_id,
                                 "event_id" : "a675055e-2d11-42e1-8938-57a4f5fc037b"
                             }).then((res) => {
-                            console.log('res',res)
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: res.data.points
                             })
-                        }).catch((error) => {
-                            console.log(error)
+                        }).catch(() => {
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: 0
                             })

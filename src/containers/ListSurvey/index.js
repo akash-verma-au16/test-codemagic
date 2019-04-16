@@ -39,6 +39,7 @@ class ListSurvey extends React.Component {
         this.MyPulse = []
         this.OrgPulse = []
         this.FunQuiz = []
+        this.pager = React.createRef();
     }
     componentDidMount() {
         this.loadSurveys()
@@ -203,24 +204,28 @@ class ListSurvey extends React.Component {
                     <View style={{ flex: 1 }}>
 
                         <View style={{ flexDirection: 'row', width: '100%', backgroundColor: '#1c92c4', alignItems: 'center', justifyContent: 'space-evenly' }}>
-                            <TouchableOpacity onPress={() => this.setState({ selectedTab: 0 })}>
+                            <TouchableOpacity onPress={() => this.pager.setPage(0)}>
                                 <Text name='16/17' style={this.state.selectedTab === 0 ? styles.tabActive : styles.tabInactive}>
                                     My Pusle
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.setState({ selectedTab: 1 })}>
+                            <TouchableOpacity onPress={() => this.pager.setPage(1)}>
                                 <Text name='7~13' style={this.state.selectedTab === 1 ? styles.tabActive : styles.tabInactive}>
                                     Org Pulse
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.setState({ selectedTab: 2 })}>
+                            <TouchableOpacity onPress={() => this.pager.setPage(2)}>
                                 <Text style={this.state.selectedTab === 2 ? styles.tabActive : styles.tabInactive}>
                                     Fun Quiz
                                 </Text>
                             </TouchableOpacity>
 
                         </View>
-                        <IndicatorViewPager style={{ flex: 1 }}>
+                        <IndicatorViewPager 
+                            ref={ref => this.pager = ref}
+                            style={{ flex: 1 }}
+                            onPageSelected={(page) => this.setState({ selectedTab: page.position })}
+                        >
                             <View>
                                 <ScrollView
                                     contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
