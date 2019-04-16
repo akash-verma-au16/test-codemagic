@@ -299,7 +299,8 @@ const styles = StyleSheet.create({
     },
     header: {
         color: 'white',
-        width: 50
+        width: 50,
+        padding:10
     },
     submitButton: {
         alignItems: 'center',
