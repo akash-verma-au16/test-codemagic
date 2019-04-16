@@ -6,7 +6,8 @@ import {
     Dimensions,
     BackHandler,
     Image,
-    Animated
+    Animated,
+    Text
 } from 'react-native';
 
 /* Native Base */
@@ -113,7 +114,7 @@ class SurveyExit extends React.Component {
                                     {this.rewardPoints === 0 ?
                                         <React.Fragment>
                                             <H1 style={styles.text}>Better luck next time</H1>
-                                            <H3 style={styles.text}>Looks like no rewards are configured with this survey</H3>
+                                            
                                         </React.Fragment>
                                         :
                                         <React.Fragment>

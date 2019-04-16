@@ -250,7 +250,6 @@ class CreatePost extends React.Component {
             })
 
         })
-        console.log('state:',this.state)
         const payload = {
             Data: {
                 post_id: id,
@@ -270,7 +269,6 @@ class CreatePost extends React.Component {
             }
 
         }
-        console.log(payload)
         this.setState({ isLoading: true })
         try {
             create_post(payload).then(() => {

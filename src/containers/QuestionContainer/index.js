@@ -65,6 +65,18 @@ class QuestionContainer extends React.Component {
 
         }
     }
+    // for MCQM
+    MCQMHandler = (questionId, answerObj) => {
+        console.log('linked',answerObj)
+        this.answerSet = {
+            ...this.answerSet,
+
+            [questionId]: {
+                answer: answerObj
+            }
+
+        }
+    }
     // for ROS
     ROSHandler = (questionId, answerObj) => {
         let ranks = {}
@@ -98,11 +110,21 @@ class QuestionContainer extends React.Component {
         if (this.questionData.questions.length) {
 
             this.questionData.questions.map((question, index) => {
+
+                let title = question.question.title
+                if(question.type==='RSCQ'){
+                    if(question.question.options.length===1){
+                        title=question.question.options[0].title
+                    }else{
+                        title='Answer the following questions'
+                    }
+                }
+                
                 this.questions.push(
                     <View key={index}>
                         <Question
                             questionId={question.question_id}
-                            question={question.question.title}
+                            question={title}
                             type={question.type}
                             options={question.question.options}
                             pageSwitchHandler={this.switchToNextPage}
@@ -110,6 +132,7 @@ class QuestionContainer extends React.Component {
                             answerHandler={this.answerHandler}
                             ROSHandler={this.ROSHandler}
                             SCQHandler={this.SCQHandler}
+                            MCQMHandler={this.MCQMHandler}
                         />
                     </View>
                 )
@@ -129,18 +152,19 @@ class QuestionContainer extends React.Component {
                 if (this.answerSet) {
                     let payload = {
                         tenant_id: this.props.tenant_id,
-                        associate_id: '3448cd7e-aef7-452f-a697-22d85114d6cf',
+                        associate_id: this.props.associate_id,
                         survey_id: this.questionData.survey.id,
                         answer_set: this.answerSet
                     }
                     save_answers(payload).then(() => {
 
                         /* Give rewards */
-                        give_rewards({
-                            tenant_id: this.props.tenant_id,
-                            uuid: '3448cd7e-aef7-452f-a697-22d85114d6cf',
-                            event_name: this.questionData.survey.type
-                        }).then((res) => {
+                        give_rewards(
+                            {
+                                "tenant_id" : this.props.tenant_id,
+                                "associate_id" : this.props.associate_id,
+                                "event_id" : "a675055e-2d11-42e1-8938-57a4f5fc037b"
+                            }).then((res) => {
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: res.data.points
                             })
@@ -294,7 +318,8 @@ const mapStateToProps = (state) => {
     return {
         isAuthenticate: state.isAuthenticate,
         tenant_id:state.user.accountAlias,
-        isConnected: state.system.isConnected
+        isConnected: state.system.isConnected,
+        associate_id: state.user.associate_id
     };
 }
 

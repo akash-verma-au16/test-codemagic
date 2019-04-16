@@ -14,7 +14,6 @@ import NetInfo from "@react-native-community/netinfo"
 import { connect } from 'react-redux'
 import {
     Container,
-    H2,
     Icon,
     Toast,
     Thumbnail
@@ -209,7 +208,6 @@ class ListPost extends React.Component {
         }
     }   
     createTiles = (data) => {
-        console.log(data)
         
         data.map((item, index) => {
             let associateList = []

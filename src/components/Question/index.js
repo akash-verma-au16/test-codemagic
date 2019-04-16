@@ -2,8 +2,10 @@ import React from 'react';
 import { StyleSheet, View, ScrollView,Text } from 'react-native'
 import { H3 } from 'native-base';
 import MultipleChoice from '../MultipleChoice'
+import MultiSelectChoice from '../MultiSelectChoice'
 import RankOrderScale from '../RankOrderScale'
 import RatingScale from '../RatingScale'
+import RangeScale from '../RangeScale'
 const Question = (props) => {
     let option = null
     let helperText = null
@@ -22,12 +24,36 @@ const Question = (props) => {
                 answerHandler={props.answerHandler}
             />
         )
-        break
+        break 
 
+    case 'MCQM':
+        helperText = '[choose all that apply]'
+        option = (
+            <MultiSelectChoice
+                questionId={props.questionId}
+                data={props.options}
+                pageSwitchHandler={props.pageSwitchHandler}
+                isSubmitLoading={props.isSubmitLoading}
+                answerHandler={props.MCQMHandler}
+            />
+        )
+        break
     case 'SCQ':
         helperText = '[Drag the Slider(s)]'
         option=(
             <RatingScale
+                questionId={props.questionId}
+                data={props.options}
+                pageSwitchHandler={''}
+                isSubmitLoading={props.isSubmitLoading}
+                answerHandler={props.SCQHandler}
+            /> 
+        )
+        break
+    case 'RSCQ':
+        helperText = '[Drag the Slider(s)]'
+        option=(
+            <RangeScale
                 questionId={props.questionId}
                 data={props.options}
                 pageSwitchHandler={''}
