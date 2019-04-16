@@ -152,7 +152,7 @@ class QuestionContainer extends React.Component {
                 if (this.answerSet) {
                     let payload = {
                         tenant_id: this.props.tenant_id,
-                        associate_id: '3448cd7e-aef7-452f-a697-22d85114d6cf',
+                        associate_id: this.props.associate_id,
                         survey_id: this.questionData.survey.id,
                         answer_set: this.answerSet
                     }
@@ -162,11 +162,11 @@ class QuestionContainer extends React.Component {
                         /* Give rewards */
                         give_rewards(
                             {
-                                tenant_id : "default",
-                                associate_id : this.props.associate_id,
-                                event_id : "EVENT2"
+                                "tenant_id" : "1l3jtp3hn",
+                                "associate_id" : "fa9a8f60-4840-4c0a-b785-beebef4b1a24",
+                                "event_id" : "a675055e-2d11-42e1-8938-57a4f5fc037b"
                             }).then((res) => {
-                            console.log(res)
+                            console.log('res',res)
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: res.data.points
                             })

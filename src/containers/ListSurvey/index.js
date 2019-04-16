@@ -28,6 +28,7 @@ import nature3 from '../../assets/tileBackgrounds/nature3.jpeg'
 import { list_survey } from '../../services/questionBank'
 /* Custom Components */
 import thumbnail from '../../assets/thumbnail.jpg'
+import { IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
 class ListSurvey extends React.Component {
     constructor(props) {
         super(props)
@@ -91,17 +92,17 @@ class ListSurvey extends React.Component {
                 })
                 if (this.MyPulse.length == 0) {
                     this.MyPulse.push(
-                        <Text key={0} style={{ padding: 10}}>No Surveys Available</Text>
+                        <Text key={0} style={{ padding: 10 }}>No Surveys Available</Text>
                     )
                 }
                 if (this.OrgPulse.length == 0) {
                     this.OrgPulse.push(
-                        <Text key={0} style={{ padding: 10}}>No Surveys Available</Text>
+                        <Text key={0} style={{ padding: 10 }}>No Surveys Available</Text>
                     )
                 }
                 if (this.FunQuiz.length == 0) {
                     this.FunQuiz.push(
-                        <Text key={0} style={{ padding: 10}}>No Surveys Available</Text>
+                        <Text key={0} style={{ padding: 10 }}>No Surveys Available</Text>
                     )
                 }
                 this.setState({ isLoading: false })
@@ -219,54 +220,53 @@ class ListSurvey extends React.Component {
                             </TouchableOpacity>
 
                         </View>
-                        {this.state.selectedTab === 0 ?
-                            <ScrollView
-                                contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
-                                refreshControl={
-                                    <RefreshControl
-                                        refreshing={this.state.isLoading}
-                                        onRefresh={() => {
-                                            this.loadSurveys()
-                                        }}
-                                    />
-                                }
-                            >
-                                {this.MyPulse}
-                            </ScrollView>
-
-                            : null}
-                        {this.state.selectedTab === 1 ?
-                            <ScrollView
-                                contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
-                                refreshControl={
-                                    <RefreshControl
-                                        refreshing={this.state.isLoading}
-                                        onRefresh={() => {
-                                            this.loadSurveys()
-                                        }}
-                                    />
-                                }
-                            >
-                                {this.OrgPulse}
-                            </ScrollView>
-
-                            : null}
-                        {this.state.selectedTab === 2 ?
-                            <ScrollView
-                                contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
-                                refreshControl={
-                                    <RefreshControl
-                                        refreshing={this.state.isLoading}
-                                        onRefresh={() => {
-                                            this.loadSurveys()
-                                        }}
-                                    />
-                                }
-                            >
-                                {this.FunQuiz}
-                            </ScrollView>
-
-                            : null}
+                        <IndicatorViewPager style={{ flex: 1 }}>
+                            <View>
+                                <ScrollView
+                                    contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
+                                    refreshControl={
+                                        <RefreshControl
+                                            refreshing={this.state.isLoading}
+                                            onRefresh={() => {
+                                                this.loadSurveys()
+                                            }}
+                                        />
+                                    }
+                                >
+                                    {this.MyPulse}
+                                </ScrollView>
+                            </View>
+                            <View>
+                                <ScrollView
+                                    contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
+                                    refreshControl={
+                                        <RefreshControl
+                                            refreshing={this.state.isLoading}
+                                            onRefresh={() => {
+                                                this.loadSurveys()
+                                            }}
+                                        />
+                                    }
+                                >
+                                    {this.OrgPulse}
+                                </ScrollView>
+                            </View>
+                            <View>
+                                <ScrollView
+                                    contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
+                                    refreshControl={
+                                        <RefreshControl
+                                            refreshing={this.state.isLoading}
+                                            onRefresh={() => {
+                                                this.loadSurveys()
+                                            }}
+                                        />
+                                    }
+                                >
+                                    {this.FunQuiz}
+                                </ScrollView>
+                            </View>
+                        </IndicatorViewPager>
 
                     </View>
 
