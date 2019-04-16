@@ -160,15 +160,18 @@ class QuestionContainer extends React.Component {
                     save_answers(payload).then(() => {
 
                         /* Give rewards */
-                        give_rewards({
-                            tenant_id: this.props.tenant_id,
-                            uuid: '3448cd7e-aef7-452f-a697-22d85114d6cf',
-                            event_name: this.questionData.survey.type
-                        }).then((res) => {
+                        give_rewards(
+                            {
+                                tenant_id : "default",
+                                associate_id : this.props.associate_id,
+                                event_id : "EVENT2"
+                            }).then((res) => {
+                            console.log(res)
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: res.data.points
                             })
-                        }).catch(() => {
+                        }).catch((error) => {
+                            console.log(error)
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: 0
                             })
@@ -318,7 +321,8 @@ const mapStateToProps = (state) => {
     return {
         isAuthenticate: state.isAuthenticate,
         tenant_id:state.user.accountAlias,
-        isConnected: state.system.isConnected
+        isConnected: state.system.isConnected,
+        associate_id: state.user.associate_id
     };
 }
 
