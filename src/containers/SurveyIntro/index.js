@@ -152,7 +152,8 @@ const styles = StyleSheet.create({
     },
     header: {
         color: 'white',
-        width:50
+        width:50,
+        padding:10
     },
     semiSphere: {
         backgroundColor: '#fff',
@@ -172,7 +173,8 @@ const styles = StyleSheet.create({
     },
     text:{
         marginVertical: 15,
-        color:'#1c92c4'
+        color:'#1c92c4',
+        textAlign: 'center'
     }
 });
 

@@ -9,7 +9,7 @@ import {
     RefreshControl,
     ScrollView
 } from 'react-native';
-import { H2, H3 } from 'native-base'
+import { H2 } from 'native-base'
 /* Redux */
 import { connect } from 'react-redux'
 import { auth, dev } from '../../store/actions'
@@ -28,7 +28,7 @@ import nature3 from '../../assets/tileBackgrounds/nature3.jpeg'
 import { list_survey } from '../../services/questionBank'
 /* Custom Components */
 import thumbnail from '../../assets/thumbnail.jpg'
-import { IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
+import { IndicatorViewPager } from 'rn-viewpager';
 class ListSurvey extends React.Component {
     constructor(props) {
         super(props)
@@ -206,7 +206,7 @@ class ListSurvey extends React.Component {
                         <View style={{ flexDirection: 'row', width: '100%', backgroundColor: '#1c92c4', alignItems: 'center', justifyContent: 'space-evenly' }}>
                             <TouchableOpacity onPress={() => this.pager.setPage(0)}>
                                 <Text name='16/17' style={this.state.selectedTab === 0 ? styles.tabActive : styles.tabInactive}>
-                                    My Pusle
+                                    My Pulse
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => this.pager.setPage(1)}>
@@ -299,8 +299,9 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         margin: 10
     },
-    tileText: {
-        color: '#fff'
+    tileText: { 
+        textAlign: 'center',
+        color: '#fff' 
     }
 })
 
