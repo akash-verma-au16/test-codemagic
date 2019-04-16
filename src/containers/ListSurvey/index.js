@@ -5,9 +5,11 @@ import {
     Text,
     StyleSheet,
     ImageBackground,
-    Dimensions
+    Dimensions,
+    RefreshControl,
+    ScrollView
 } from 'react-native';
-import { H2,H3 } from 'native-base'
+import { H2, H3 } from 'native-base'
 /* Redux */
 import { connect } from 'react-redux'
 import { auth, dev } from '../../store/actions'
@@ -23,8 +25,8 @@ import {
 import nature1 from '../../assets/tileBackgrounds/nature1.jpg'
 import nature2 from '../../assets/tileBackgrounds/nature2.jpg'
 import nature3 from '../../assets/tileBackgrounds/nature3.jpeg'
+import { list_survey } from '../../services/questionBank'
 /* Custom Components */
-import LoadingModal from '../LoadingModal'
 import thumbnail from '../../assets/thumbnail.jpg'
 class ListSurvey extends React.Component {
     constructor(props) {
@@ -33,6 +35,81 @@ class ListSurvey extends React.Component {
             isLoading: false,
             selectedTab: 0
         }
+        this.MyPulse = []
+        this.OrgPulse = []
+        this.FunQuiz = []
+    }
+    componentDidMount() {
+        this.loadSurveys()
+    }
+    loadSurveys = () => {
+        this.MyPulse = []
+        this.OrgPulse = []
+        this.FunQuiz = []
+        this.setState({ isLoading: true })
+        list_survey({
+            tenant_id: this.props.accountAlias
+        })
+            .then(response => {
+                response.data.data.tenant_specific.map((item, index) => {
+                    switch (index % 3) {
+                    case 0:
+                        this.image = nature1
+                        break
+                    case 1:
+                        this.image = nature2
+                        break
+                    case 2:
+                        this.image = nature3
+                    }
+                    const card = (
+                        <TouchableOpacity
+                            onPress={() => this.props.navigation.navigate('SurveyIntro', {
+                                surveyId: item.id,
+                                surveyName: item.name,
+                                surveyDescription: '',
+                                surveyNote: '',
+                                surveyLevel: item.level
+                            })}
+                            key={index}
+                        >
+                            <View>
+                                <ImageBackground style={styles.tile} resizeMode='cover' source={this.image} blurRadius={0.2} borderRadius={5}>
+                                    <Text style={styles.tileText}>{item.name}</Text>
+                                </ImageBackground>
+                            </View>
+                        </TouchableOpacity>
+                    )
+                    if (item.type === "Daily-Questionnaire") {
+                        this.MyPulse.push(card)
+                    } else if (item.type === "Weekly-Questionnaire") {
+                        this.OrgPulse.push(card)
+                    } else {
+                        this.FunQuiz.push(card)
+                    }
+
+                })
+                if (this.MyPulse.length == 0) {
+                    this.MyPulse.push(
+                        <Text key={0} style={{ padding: 10}}>No Surveys Available</Text>
+                    )
+                }
+                if (this.OrgPulse.length == 0) {
+                    this.OrgPulse.push(
+                        <Text key={0} style={{ padding: 10}}>No Surveys Available</Text>
+                    )
+                }
+                if (this.FunQuiz.length == 0) {
+                    this.FunQuiz.push(
+                        <Text key={0} style={{ padding: 10}}>No Surveys Available</Text>
+                    )
+                }
+                this.setState({ isLoading: false })
+            })
+            .catch(() => {
+                this.setState({ isLoading: false })
+            })
+
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -143,114 +220,58 @@ class ListSurvey extends React.Component {
 
                         </View>
                         {this.state.selectedTab === 0 ?
-                            <Content contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
-                                <TouchableOpacity
-                                    onPress={()=>this.props.navigation.navigate('SurveyIntro',{
-                                        surveyId:'17',
-                                        surveyName:'Daily-Questionnaire',
-                                        surveyDescription:'Daily Survey',
-                                        surveyNote:'note',
-                                        surveyLevel:'beginner'
-                                    })}
-                                    key={0}
-                                >
-                                    <View>
-                                        <ImageBackground style={styles.tile} resizeMode='cover' source={nature1} blurRadius={0.2} borderRadius={5}>
-                                            <H3 style={styles.tileText}>Survey Name</H3>
-                                        </ImageBackground>
-                                    </View>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    onPress={()=>this.props.navigation.navigate('SurveyIntro',{
-                                        surveyId:'16',
-                                        surveyName:'Daily-Questionnaire',
-                                        surveyDescription:'Daily Survey',
-                                        surveyNote:'note',
-                                        surveyLevel:'beginner'
-                                    })}
-                                    key={0}
-                                >
-                                    <View>
-                                        <ImageBackground style={styles.tile} resizeMode='cover' source={nature1} blurRadius={0.2} borderRadius={5}>
-                                            <H3 style={styles.tileText}>Survey Name</H3>
-                                        </ImageBackground>
-                                    </View>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    onPress={() => Toast.show({
-                                        text: 'coming soon.',
-                                        type: 'success',
-                                        duration: 3000
-                                    })}
-                                    key={0}
-                                >
-                                    <View>
-                                        <ImageBackground style={styles.tile} resizeMode='cover' source={nature1} blurRadius={0.2} borderRadius={5}>
-                                            <H3 style={styles.tileText}>Survey Name</H3>
-                                        </ImageBackground>
-                                    </View>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => Toast.show({
-                                        text: 'coming soon.',
-                                        type: 'success',
-                                        duration: 3000
-                                    })}
-                                    key={0}
-                                >
-                                    <View>
-                                        <ImageBackground style={styles.tile} resizeMode='cover' source={nature1} blurRadius={0.2} borderRadius={5}>
-                                            <H3 style={styles.tileText}>Survey Name</H3>
-                                        </ImageBackground>
-                                    </View>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => Toast.show({
-                                        text: 'coming soon.',
-                                        type: 'success',
-                                        duration: 3000
-                                    })}
-                                    key={0}
-                                >
-                                    <View>
-                                        <ImageBackground style={styles.tile} resizeMode='cover' source={nature1} blurRadius={0.2} borderRadius={5}>
-                                            <H3 style={styles.tileText}>Survey Name</H3>
-                                        </ImageBackground>
-                                    </View>
-                                </TouchableOpacity>
-                            </Content>
+                            <ScrollView
+                                contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
+                                refreshControl={
+                                    <RefreshControl
+                                        refreshing={this.state.isLoading}
+                                        onRefresh={() => {
+                                            this.loadSurveys()
+                                        }}
+                                    />
+                                }
+                            >
+                                {this.MyPulse}
+                            </ScrollView>
 
                             : null}
                         {this.state.selectedTab === 1 ?
-                            <View name='screen1' style={{ flex: 1, backgroundColor: 'green' }}>
+                            <ScrollView
+                                contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
+                                refreshControl={
+                                    <RefreshControl
+                                        refreshing={this.state.isLoading}
+                                        onRefresh={() => {
+                                            this.loadSurveys()
+                                        }}
+                                    />
+                                }
+                            >
+                                {this.OrgPulse}
+                            </ScrollView>
 
-                            </View>
                             : null}
                         {this.state.selectedTab === 2 ?
-                            <View name='screen1' style={{ flex: 1, backgroundColor: 'blue' }}>
+                            <ScrollView
+                                contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
+                                refreshControl={
+                                    <RefreshControl
+                                        refreshing={this.state.isLoading}
+                                        onRefresh={() => {
+                                            this.loadSurveys()
+                                        }}
+                                    />
+                                }
+                            >
+                                {this.FunQuiz}
+                            </ScrollView>
 
-                            </View>
                             : null}
 
                     </View>
 
-                    {/* <TouchableOpacity
-                        onPress={()=>this.props.navigation.navigate('SurveyIntro',{
-                            surveyId:'17',
-                            surveyName:'Daily-Questionnaire',
-                            surveyDescription:'Daily Survey',
-                            surveyNote:'note',
-                            surveyLevel:'beginner'
-                        })}
-                        style={{height:100,width:50,backgroundColor:'green'}}
-                    ></TouchableOpacity> */}
-
                 </Content>
-                <LoadingModal
-                    enabled={this.state.isLoading}
-                />
+
             </Container>
 
         );
