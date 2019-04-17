@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, TextInput, Alert } from 'react-native';
 import { Icon, Content } from 'native-base'
+import EndorsementMessage from './EndorsementMessage'
+
 
 class Endorsement extends Component {
     constructor(props) {
@@ -16,7 +18,7 @@ class Endorsement extends Component {
         this.endorsementData = [
             { name: 'Creativity', source: require('../../assets/endorsements/creativity.png') },
             { name: 'Curiosity', source: require('../../assets/endorsements/curiosity.png') },
-            { name: 'Judgment', source: require('../../assets/endorsements/judgement.png') },
+            { name: 'Judgement', source: require('../../assets/endorsements/judgement.png') },
             { name: 'Perspective', source: require('../../assets/endorsements/perspective.png') },
             { name: 'Bravery', source: require('../../assets/endorsements/bravery.png') },
             { name: 'Perseverance', source: require('../../assets/endorsements/perseverance.png') },
@@ -36,38 +38,38 @@ class Endorsement extends Component {
             { name: 'Appreciation', source: require('../../assets/endorsements/appreciation.png') },
             { name: 'Prudence', source: require('../../assets/endorsements/prudence.png') },
             { name: 'Hope', source: require('../../assets/endorsements/hope.png') },
-            { name: 'Humor', source: require('../../assets/endorsements/humor.png') }
+            { name: 'Humor', source: require('../../assets/endorsements/humor.png') },
+            { name: 'Gratitude', source: require('../../assets/endorsements/gratitude.png') }
+
         ]
-        this.endorsementMessages = [
-            'For taking the big picture view',
-            'For providing wise and pertinent counsel',
-            'For showing wisdom beyond your years',
-            'For sharing a valued point-of-view',
-            'For not shrinking from fear or threat',
-            'For speaking up for what’s right',
-            'For displaying courage in adverse situations',
-            'For finishing despite obstacles',
-            'For showing persistence in achieving goals',
-            'For meeting tough deadlines by working hard',
-            'For being gritty and determined #perseverance'
-        ]
+        this.endorsementMessages = EndorsementMessage,
+        this.endorsedMessages = []
+        
     }
     componentWillMount() {
         this.createEndorsementTemplate()
     }
+
+    endorsementQuoteHandler = (name, source) => {
+        const endorse = this.endorsementMessages.filter( item => item.name == name)
+        const responseMessages = endorse[0].messages
+        var rindex = Math.floor((Math.random() * responseMessages.length));
+        const message = responseMessages[rindex]
+        this.setState({ showTemplates: false, selectedStrength: name, selectedSource: source, text: message })
+        this.props.endorsementHandler(name, message)
+    }
+
     createEndorsementTemplate = () => {
         /* Random 1~10 */
-        var rindex = Math.floor((Math.random() * 10) + 1);
+        // var rindex = Math.floor((Math.random() * 10) + 1);
+        
         this.endorsementTemplate = []
         this.endorsementData.map((item, index) => {
+        
             this.endorsementTemplate.push(
 
                 <TouchableOpacity style={styles.template} key={index}
-                    onPress={() => {
-                        const message = this.endorsementMessages[rindex]
-                        this.setState({ showTemplates: false, selectedStrength: item.name, selectedSource: item.source, text: message })
-                        this.props.endorsementHandler(item.name, message)
-                    }}
+                    onPress={() =>  this.endorsementQuoteHandler(item.name, item.source)}
                 >
 
                     <Image

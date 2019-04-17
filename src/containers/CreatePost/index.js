@@ -352,7 +352,7 @@ class CreatePost extends React.Component {
                     this.setState({ GratitudeModalVisibility: true, postType: 'gratitude' })
                 }}>
                     <Icon name='md-thumbs-up' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
-                    <Text style={[styles.buttonText, { fontSize: fontSize, color: '#1c92c4' }]}>Gratitude</Text>
+                    <Text style={[styles.buttonText, { fontSize: fontSize, color: '#1c92c4' }]}>Thanks</Text>
                 </TouchableOpacity>
 
             </View>
@@ -379,7 +379,7 @@ class CreatePost extends React.Component {
                 {this.state.taggedAssociates.length > 0 ?
                     <Icon name='md-close' style={{ padding: 10, fontSize: 18, color: '#fff' }} onPress={() => {
                         this.setState({ taggedAssociates: [] })
-                        this.props.associateTagHandler([])
+                        // this.props.associateTagHandler([])
                     }} />
                     : null}
 
@@ -471,7 +471,7 @@ class CreatePost extends React.Component {
     }
 
     gratitudeHandler = (text) => {
-        this.setState({ endorsementStrength: 'Gratitude', text: text })
+        this.setState({ endorsementStrength: 'kudos', text: text })
     }
     render() {
 
