@@ -50,6 +50,7 @@ class Endorsement extends Component {
         this.createEndorsementTemplate()
     }
 
+    // handles populating random quote for selected strength 
     endorsementQuoteHandler = (name, source) => {
         const endorse = this.endorsementMessages.filter( item => item.name == name)
         const responseMessages = endorse[0].messages
@@ -60,18 +61,14 @@ class Endorsement extends Component {
     }
 
     createEndorsementTemplate = () => {
-        /* Random 1~10 */
-        // var rindex = Math.floor((Math.random() * 10) + 1);
-        
         this.endorsementTemplate = []
         this.endorsementData.map((item, index) => {
         
             this.endorsementTemplate.push(
 
                 <TouchableOpacity style={styles.template} key={index}
-                    onPress={() =>  this.endorsementQuoteHandler(item.name, item.source)}
+                    onPress={() => this.endorsementQuoteHandler(item.name, item.source)}
                 >
-
                     <Image
                         source={item.source}
                         style={{ height: 50, aspectRatio: 1 / 1 }}

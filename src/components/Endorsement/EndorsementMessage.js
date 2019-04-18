@@ -2,10 +2,10 @@ export default EndorsementMessage = [
     {
         'name':'Perspective',
         'messages': [
-        "For taking the big picture view",
-        "For providing wise and pertinent counsel",
-        "For showing wisdom beyond your years",
-        "For sharing a valued point-of-view"
+            "For taking the big picture view",
+            "For providing wise and pertinent counsel",
+            "For showing wisdom beyond your years",
+            "For sharing a valued point-of-view"
         ]
     },
     {

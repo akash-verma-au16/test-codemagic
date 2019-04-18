@@ -3,7 +3,8 @@ import {
     StyleSheet,
     View,
     Dimensions,
-    Image
+    Image,
+    BackHandler
 } from 'react-native';
 import {
 
@@ -43,6 +44,20 @@ class Home extends React.Component {
         };
     };
 
+    async goBack() {
+        await this.props.navigation.goBack()
+    }
+
+    componentDidMount() {
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            this.goBack();
+            return true;
+        });
+    }
+
+    componentWillUnmount() {
+        this.backHandler.remove();
+    }
     render() {
 
         return (

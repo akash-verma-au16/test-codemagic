@@ -21,6 +21,8 @@ import {
 } from 'native-base';
 /* Redux */
 import { connect } from 'react-redux'
+// React Navigation
+import { NavigationEvents } from 'react-navigation';
 /* Services */
 import { create_post, get_visibility } from '../../services/post'
 import toSentenceCase from '../../utilities/toSentenceCase'
@@ -33,6 +35,7 @@ import LoadingModal from '../LoadingModal'
 import thumbnail from '../../assets/thumbnail.jpg'
 import Endorsement from '../../components/Endorsement'
 import Gratitude from '../../components/Gratitude'
+
 class CreatePost extends React.Component {
 
     constructor(props) {
@@ -92,6 +95,9 @@ class CreatePost extends React.Component {
             )
         };
     };
+    componentWillMount() {
+        this.loadVisibility()
+    }
 
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
@@ -111,37 +117,44 @@ class CreatePost extends React.Component {
     }
 
     loadVisibility = () => {
+        console.log('Calling loadVisibility')
         const payload = {
             email: this.props.emailAddress,
             tenant_id: this.props.accountAlias
         }
         this.setState({ isVisibilityLoading: true })
-        try {
-            get_visibility(payload).then((response) => {
-                this.visibilityData = []
-                let iconName = ''
-                let text = ''
-                response.data.data.map(item => {
-                    if (item.name === 'Organization') {
-                        iconName = 'md-globe'
-                        text = 'tenant'
-                    }else if (item.name === 'Private') {
-                        iconName = 'md-person'
-                        text = 'private'
-                    }else{
-                        iconName = 'md-filing'
-                        text='project'
-                    }
+        if(this.props.accountAlias !== undefined) {
+            try {
+                get_visibility(payload).then((response) => {
+                    console.log("Calling get_visibility API")
+                    this.visibilityData = []
+                    let iconName = ''
+                    let text = ''
+                    response.data.data.map(item => {
+                        if (item.name === 'Organization') {
+                            iconName = 'md-globe'
+                            text = 'tenant'
+                        } else if (item.name === 'Private') {
+                            iconName = 'md-person'
+                            text = 'private'
+                        } else {
+                            iconName = 'md-filing'
+                            text = 'project'
+                        }
 
-                    this.visibilityData.push({ icon: iconName, text: item.name, name: item.id, key:text })
+                        this.visibilityData.push({ icon: iconName, text: item.name, name: item.id, key: text })
+                    })
+                    this.setState({ isVisibilityLoading: false })
+                }).catch(() => {
+                    this.setState({ isVisibilityLoading: false })
                 })
+            } catch (error) {
                 this.setState({ isVisibilityLoading: false })
-            }).catch(() => {
-                this.setState({ isVisibilityLoading: false })
-            })
-        } catch (error) {
-            this.setState({ isVisibilityLoading: false })
+            }
+        } else {
+            console.log('get_visibility didnt call')
         }
+        
     }
     _keyboardDidShow = () => {
         this.setState({ isShowingKeyboard: true })
@@ -427,12 +440,14 @@ class CreatePost extends React.Component {
     }
 
     loadMembers = () => {
-        if (this.props.accountAlias) {
+        console.log('Calling loadMembers')
+        if (this.props.accountAlias !== undefined) {
             list_associate({
                 tenant_id: this.props.accountAlias
             })
                 .then(response => {
                     /* Clear Garbage */
+                    console.log('calling list_associate API')
                     this.associateData = []
                     response.data.data.map(item => {
                         /* Create List items */
@@ -449,6 +464,8 @@ class CreatePost extends React.Component {
                 .catch(() => {
                     this.setState({ isTagerLoading: false })
                 })
+        } else {
+            console.log('loadmembers didnt call')
         }
 
     }
@@ -545,6 +562,18 @@ class CreatePost extends React.Component {
                 <LoadingModal
                     enabled={this.state.isLoading}
                 />
+
+                <NavigationEvents
+                        onWillFocus={() => {
+                            if (this.props.isConnected) {
+                                if (!this.props.isFreshInstall && this.props.isAuthenticate) {
+                                    this.loadVisibility()
+                                    this.loadMembers()
+                                }
+                            }
+                        }}
+                    />
+
             </Container>
 
         );
@@ -576,7 +605,10 @@ const mapStateToProps = (state) => {
         associate_id: state.user.associate_id,
         firstName: state.user.firstName,
         lastName: state.user.lastName,
-        emailAddress: state.user.emailAddress
+        emailAddress: state.user.emailAddress,
+        isAuthenticate: state.isAuthenticate,
+        isFreshInstall: state.system.isFreshInstall,
+        isConnected: state.system.isConnected
     };
 }
 

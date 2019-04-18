@@ -50,7 +50,7 @@ class ListPost extends React.Component {
                         color: 'white',
                         margin: 20
                     }
-                } onPress={navigation.getParam('commingSoon')} />
+                } onPress={() => navigation.navigate('InAppNotifier')} />
             ),
             headerLeft: (
                 <TouchableOpacity
@@ -107,13 +107,14 @@ class ListPost extends React.Component {
         }
     }
 
-    commingSoon = () => {
-        Toast.show({
-            text: 'Coming Soon!',
-            type: 'success',
-            duration: 3000
-        })
-    }
+    // commingSoon = () => {
+    //     Toast.show({
+    //         text: 'Coming Soon!',
+    //         type: 'success',
+    //         duration: 3000
+    //     })
+    // }
+    
     newPostHandler = () => {
 
         /* Hide the Button */
@@ -313,7 +314,7 @@ class ListPost extends React.Component {
                         else {
                             Toast.show({
                                 text: 'Please, connect to the internet',
-                                type: 'danger',
+                                type: 'warning',
                                 duration: 2000
                             })
                             this.setState({ refreshing: false })
