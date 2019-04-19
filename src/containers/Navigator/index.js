@@ -86,11 +86,12 @@ const RootStack = createStackNavigator(
                 headerStyle: {
                     backgroundColor: '#1c92c4'
                 },
-                title: 'Your Notifications',
+                title: 'YOUR NOTIFICATIONS',
                 headerTintColor: '#fff',
                 headerTitleStyle: {
                     fontWeight: 'bold',
-                    fontSize: 22
+                    fontSize: 19,
+                    fontFamily: 'OpenSans-Regular'
                 }
             }
         },

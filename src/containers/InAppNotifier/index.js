@@ -57,39 +57,37 @@ class InAppNotifier extends React.Component {
             associate_id: this.props.associate_id,
             tenant_id: this.props.accountAlias
         }
-        if (payload.tenant_id !== "" && payload.associate_id !=="") {
-            try {
+        try {
+            if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 inapp_notification(payload).then(response => {
                     if (this.payloadBackup.length === response.data.in_app_data.length) {
                         if (response.data.in_app_data.length == 0) {
                             this.notificationList = []
                             this.notificationList.push(
-                                <Text style={{flex: 1, alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingTop: 20}} key={0}>No new notifications</Text>
+                                <Text style={{ flex: 1, alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingTop: 20 }} key={0}>No new notifications</Text>
                             )
                         }
                         this.setState({ refreshing: false })
                     } else {
                         //Change in Payload
                         this.payloadBackup = response.data.in_app_data
-                        if(this.notificationList.length !== 0) {
+                        if (this.notificationList.length !== 0) {
                             this.notificationList = []
                         }
                         this.createNotificationTile(response.data.in_app_data)
                         this.setState({ refreshing: false })
                     }
                 }).catch((error) => {
-                    this.setState({refreshing: 'false'})
+                    this.setState({ refreshing: false })
                     console.log(error)
                 })
             }
-            catch (error) {
-                this.setState({ refreshing: 'false' })
-                console.log("Error")
-            }
         }
-        
+        catch (error) {
+            this.setState({ refreshing: false })
+            console.log("Error")
+        }
         this.setState({refreshing: true})
-        
     }
 
     createNotificationTile = (data) => {
@@ -172,7 +170,7 @@ class InAppNotifier extends React.Component {
                 <ScrollView
                     refreshControl = {
                         <RefreshControl
-                            refreshing={this.state.refreshing} //this.props.isConnected
+                            refreshing={this.state.refreshing} 
                             onRefresh={this.onRefresh}
                         />
                     }
@@ -204,19 +202,20 @@ const styles = StyleSheet.create({
     notificationContainer: { 
         backgroundColor: 'white',
         width: Dimensions.get('window').width,
-        height: 90,
+        // height: 90,
         paddingTop: 10
         // width: '100%'
     },
     notificationView : {
         flex: 1,
         flexDirection: 'row',
+        padding: 5,
         // width: Dimensions.get('window').width,
         alignItems: 'center',
         justifyContent: 'space-between'
     },
     iconView: {
-        height: 70,
+        height: 65,
         alignItems: 'center',
         justifyContent: 'flex-start',
         width: Dimensions.get('window').width * 0.20

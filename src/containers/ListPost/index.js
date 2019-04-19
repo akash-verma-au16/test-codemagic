@@ -334,7 +334,7 @@ class ListPost extends React.Component {
                         onPress={this.newPostHandler}
 
                     >
-                        <Text style={{ fontWeight: '500',color:'#fff' }}>New Post</Text>
+                        <Text style={{ fontWeight: '500',color:'#fff', textAlign: 'center' }}>New Post</Text>
                     </TouchableOpacity>
                     :
                     null
