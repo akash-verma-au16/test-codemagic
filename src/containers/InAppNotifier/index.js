@@ -18,6 +18,7 @@ class InAppNotifier extends React.Component {
         this.state = {
             refreshing: false
         }
+
         this.endorsementData = [
             { name: 'Creativity', source: require('../../assets/endorsements/creativity.png') },
             { name: 'Curiosity', source: require('../../assets/endorsements/curiosity.png') },
@@ -93,22 +94,30 @@ class InAppNotifier extends React.Component {
 
     createNotificationTile = (data) => {
         data.map((item, index) => {
-            // const imageData = this.endorsementData.filter((endorse) => {
-            //     if(item.type_details.type == 'endorse') {
-            //         return item.type_details.sub_type == endorse.name
-            //     }
-            // })
-            // console.log(imageData)
+            const imageData = this.endorsementData.filter((endorse) => {
+                if(item.type_details.type == 'endorse'){
+                    return item.type_details.sub_type == endorse.name
+                }else {
+                    return item.type_details.type == endorse.name.toLowerCase()
+                }
+            })
             this.notificationList.push(
                 <View style={styles.notificationContainer} key={index}>
                     <View style={styles.notificationView}>
                         <View style = {styles.iconView}>
                             <Image 
-                                style={{ height: 25, aspectRatio: 1 / 1 }}
+                                source= {imageData[0].source}
+                                style={{ height: 40, aspectRatio: 1 / 1 }}
                             />
                         </View>
                         <View style={styles.notificationMsgView}>
-                            <Text style={[styles.notificationText, {fontSize: 15}]}>{item.body}</Text>
+                            {
+                                (item.type_details.type === 'endorse' 
+                                    ? <Text style={[styles.notificationText, { fontSize: 15 }]}>{item.body} by {item.taggie_associate_name} for {item.type_details.sub_type}</Text>
+                                    : <Text style={[styles.notificationText, { fontSize: 15 }]}>{item.taggie_associate_name} {item.body}</Text>
+                                )
+                                
+                            }
                             <Text style={[styles.notificationText, {paddingTop: 5}]}>{item.date_created}</Text>
                         </View>
                     </View>
@@ -207,8 +216,9 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     iconView: {
+        height: 70,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         width: Dimensions.get('window').width * 0.20
     },
     notificationMsgView: {
