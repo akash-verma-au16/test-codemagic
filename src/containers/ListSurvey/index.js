@@ -46,7 +46,7 @@ class ListSurvey extends React.Component {
     //     this.loadSurveys()
     // }
     loadSurveys = () => {
-        this.MyPulse = []
+        this.MyPulse = []                                                                           
         this.OrgPulse = []
         this.FunQuiz = []
         this.setState({ isLoading: true })

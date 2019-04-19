@@ -183,19 +183,19 @@ class ListPost extends React.Component {
                     }
                 }).catch((error) => {
                     this.setState({ refreshing: false, networkChanged: false })
-                    if (this.props.isConnected) {
-                        Toast.show({
-                            text: error.response.data.code,
-                            type: 'danger',
-                            duration: 3000
-                        })
-                    } else {
-                        // Toast.show({
-                        //     text: "Please connect to the internet",
-                        //     type: 'danger',
-                        //     duration: 3000
-                        // })
-                    }
+                    // if (this.props.isConnected) {
+                    //     Toast.show({
+                    //         text: error.response.data.code,
+                    //         type: 'danger',
+                    //         duration: 3000
+                    //     })
+                    // } else {
+                    //     Toast.show({
+                    //         text: "Please connect to the internet",
+                    //         type: 'danger',
+                    //         duration: 3000
+                    //     })
+                    // }
                 })
             } 
             catch (error) {
@@ -310,15 +310,7 @@ class ListPost extends React.Component {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.loadPosts()
                             }
-                        }
-                        else {
-                            // Toast.show({
-                            //     text: 'Please, connect to the internet',
-                            //     type: 'warning',
-                            //     duration: 2000
-                            // })
-                            // this.setState({ refreshing: false })
-                        }   
+                        }     
                     }}
                 />
                 {this.state.newPostVisibility ?

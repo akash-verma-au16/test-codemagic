@@ -42,9 +42,16 @@ class RangeScale extends React.Component {
     }
     scaleComponent = (props) => {
         const title =props.title?props.title:''
-        const start=props.start.value
+        let start=props.start.value
+        let end = props.end.value
+        let startUnit = ''
+        let endUnit= ''
+        if(props.unit !=='NA'){
+            startUnit=' ' + props.unit
+            endUnit = ' ' + props.unit + 's'
+        }
         const startText=props.start.text?props.start.text:''
-        const end=props.end.value
+        
         const endText=props.end.text?props.end.text:''
         const index=props.index
         const step =props.step
@@ -72,7 +79,7 @@ class RangeScale extends React.Component {
                 >
 
                     <Text>
-                        {start}
+                        {start + startUnit}
                     </Text>
                     
                     <Text>
@@ -80,7 +87,7 @@ class RangeScale extends React.Component {
                     </Text>
                     
                     <Text>
-                        {end}
+                        {end + endUnit}
                     </Text>
                 </View>
                 <Slider
