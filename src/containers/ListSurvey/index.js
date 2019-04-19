@@ -14,6 +14,7 @@ import { H2 } from 'native-base'
 import { connect } from 'react-redux'
 import { auth, dev } from '../../store/actions'
 import { BarChart } from 'react-native-charts-wrapper';
+import { NavigationEvents } from 'react-navigation';
 /* Native Base */
 import {
     Container,
@@ -41,9 +42,9 @@ class ListSurvey extends React.Component {
         this.FunQuiz = []
         this.pager = React.createRef();
     }
-    componentDidMount() {
-        this.loadSurveys()
-    }
+    // componentDidMount() {
+    //     this.loadSurveys()
+    // }
     loadSurveys = () => {
         this.MyPulse = []
         this.OrgPulse = []
@@ -274,6 +275,15 @@ class ListSurvey extends React.Component {
                         </IndicatorViewPager>
 
                     </View>
+                    <NavigationEvents
+                        onWillFocus={() => {
+                            if (this.props.isConnected) {
+                                if (!this.props.isFreshInstall && this.props.isAuthenticate) {
+                                    this.loadSurveys()
+                                }
+                            }
+                        }}
+                    />
 
                 </Content>
 
@@ -308,7 +318,10 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         accountAlias: state.user.accountAlias,
-        email: state.user.emailAddress
+        email: state.user.emailAddress,
+        isAuthenticate: state.isAuthenticate,
+        isFreshInstall: state.system.isFreshInstall,
+        isConnected: state.system.isConnected
 
     };
 }

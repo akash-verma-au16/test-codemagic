@@ -12,6 +12,7 @@ import ForceChangePassword from '../ForceChangePassword'
 import TabNavigator from '../TabNavigator'
 import Settings from "../Settings"
 import Home from '../Home'
+import InAppNotifier from '../InAppNotifier/index'
 /* This stack will contain list of all pages */
 const RootStack = createStackNavigator(
     {
@@ -77,6 +78,20 @@ const RootStack = createStackNavigator(
             screen: QuestionContainer,
             navigationOptions: {
                 header:null
+            }
+        },
+        'InAppNotifier': {
+            screen: InAppNotifier,
+            navigationOptions: {
+                headerStyle: {
+                    backgroundColor: '#1c92c4'
+                },
+                title: 'Your Notifications',
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: 22
+                }
             }
         },
         

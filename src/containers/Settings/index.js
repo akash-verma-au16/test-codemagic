@@ -4,7 +4,8 @@ import {
     View,
     TouchableOpacity,
     FlatList,
-    Alert
+    Alert,
+    BackHandler
 } from 'react-native';
 /* Redux */
 import { connect } from 'react-redux'
@@ -29,6 +30,22 @@ class Settings extends React.Component {
             isLoading: false
         }
     }
+
+    async goBack() {
+        await this.props.navigation.goBack()
+    }
+
+    componentDidMount() {
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            this.goBack();
+            return true;
+        });
+    }
+
+    componentWillUnmount() {
+        this.backHandler.remove();
+    }
+
     static navigationOptions = () => {
         return {
 
