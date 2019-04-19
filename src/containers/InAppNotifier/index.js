@@ -1,7 +1,8 @@
 import React from 'react'
 import { View, BackHandler, ScrollView, RefreshControl, StyleSheet, Image, Text, Dimensions } from 'react-native'
 import {
-    Container
+    Container,
+    Toast
 } from 'native-base';
 import NetInfo from "@react-native-community/netinfo"
 
@@ -57,31 +58,31 @@ class InAppNotifier extends React.Component {
         }
         if (payload.tenant_id !== "" && payload.associate_id !=="") {
             try {
-            inapp_notification(payload).then(response => {
-                console.log(response.data.in_app_data)
-                if (this.payloadBackup.length === response.data.in_app_data.length) {
-                    if (response.data.in_app_data.length == 0) {
-                        this.notificationList = []
-                        this.notificationList.push(
-                            <Text style={{alignItems: 'center', justifyContent: 'center', textAlign: 'center'}}>No new notifications</Text>
-                        )
+                inapp_notification(payload).then(response => {
+                    if (this.payloadBackup.length === response.data.in_app_data.length) {
+                        if (response.data.in_app_data.length == 0) {
+                            this.notificationList = []
+                            this.notificationList.push(
+                                <Text style={{flex: 1, alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingTop: 20}} key={0}>No new notifications</Text>
+                            )
+                        }
+                        this.setState({ refreshing: false })
+                    } else {
+                        //Change in Payload
+                        this.payloadBackup = response.data.in_app_data
+                        if(this.notificationList.length !== 0) {
+                            this.notificationList = []
+                        }
+                        this.createNotificationTile(response.data.in_app_data)
+                        this.setState({ refreshing: false })
                     }
-                    this.setState({ refreshing: false })
-                } else {
-                    //Change in Payload
-                    this.payloadBackup = response.data.in_app_data
-                    if(this.notificationList.length !== 0) {
-                        this.notificationList = []
-                    }
-                    this.createNotificationTile(response.data.in_app_data)
-                    this.setState({ refreshing: false })
-                }
-            }).catch((error) => {
-                this.setState({refreshing: 'false'})
-                console.log(error)
-            })
+                }).catch((error) => {
+                    this.setState({refreshing: 'false'})
+                    console.log(error)
+                })
             }
             catch (error) {
+                this.setState({ refreshing: 'false' })
                 console.log("Error")
             }
         }
@@ -143,8 +144,17 @@ class InAppNotifier extends React.Component {
     }
 
     onRefresh() {
-        this.setState({refreshing:  true})
-        this.loadNotifications();
+        if(this.props.isConnected) {
+            this.setState({ refreshing: true }, this.loadNotifications())
+        } else {
+            this.setState({ refreshing: false }, () => {
+                Toast.show({
+                    text: 'Please connect to the internet.',
+                    type: 'danger',
+                    duration: 2000
+                })
+            })
+        }
     }
 
     render() {

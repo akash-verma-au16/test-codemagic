@@ -95,9 +95,9 @@ class CreatePost extends React.Component {
             )
         };
     };
-    componentWillMount() {
-        this.loadVisibility()
-    }
+    // componentWillMount() {
+    //     this.loadVisibility()
+    // }
 
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
@@ -564,15 +564,15 @@ class CreatePost extends React.Component {
                 />
 
                 <NavigationEvents
-                        onWillFocus={() => {
-                            if (this.props.isConnected) {
-                                if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                    this.loadVisibility()
-                                    this.loadMembers()
-                                }
+                    onWillFocus={() => {
+                        if (this.props.isConnected) {
+                            if (!this.props.isFreshInstall && this.props.isAuthenticate) {
+                                this.loadVisibility()
+                                this.loadMembers()
                             }
-                        }}
-                    />
+                        }
+                    }}
+                />
 
             </Container>
 

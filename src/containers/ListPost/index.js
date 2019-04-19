@@ -190,11 +190,11 @@ class ListPost extends React.Component {
                             duration: 3000
                         })
                     } else {
-                        Toast.show({
-                            text: "Please connect to the internet",
-                            type: 'danger',
-                            duration: 3000
-                        })
+                        // Toast.show({
+                        //     text: "Please connect to the internet",
+                        //     type: 'danger',
+                        //     duration: 3000
+                        // })
                     }
                 })
             } 
@@ -312,12 +312,12 @@ class ListPost extends React.Component {
                             }
                         }
                         else {
-                            Toast.show({
-                                text: 'Please, connect to the internet',
-                                type: 'warning',
-                                duration: 2000
-                            })
-                            this.setState({ refreshing: false })
+                            // Toast.show({
+                            //     text: 'Please, connect to the internet',
+                            //     type: 'warning',
+                            //     duration: 2000
+                            // })
+                            // this.setState({ refreshing: false })
                         }   
                     }}
                 />
