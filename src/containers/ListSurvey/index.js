@@ -70,7 +70,7 @@ class ListSurvey extends React.Component {
                             onPress={() => this.props.navigation.navigate('SurveyIntro', {
                                 surveyId: item.id,
                                 surveyName: item.name,
-                                surveyDescription: '',
+                                surveyDescription: item.description,
                                 surveyNote: '',
                                 surveyLevel: item.level
                             })}

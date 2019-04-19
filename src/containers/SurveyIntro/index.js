@@ -108,7 +108,7 @@ class SurveyIntro extends React.Component {
                                 <View style={{ flex: 3, alignItems: 'center', justifyContent: 'flex-start', margin: 15 }}>
 
                                     <H1 style={styles.text}>{this.surveyName}</H1>
-                                    <H3 style={styles.text}>{this.surveyDescription}</H3>
+                                    <H3 style={styles.surveyDescription}>{this.surveyDescription}</H3>
                                     
                                 </View>
                                 <RoundButton
@@ -175,6 +175,11 @@ const styles = StyleSheet.create({
         marginVertical: 15,
         color:'#1c92c4',
         textAlign: 'center'
+    },
+    surveyDescription: {
+        textAlign: 'center',
+        color: '#1c92c4',
+        fontSize: 20
     }
 });
 

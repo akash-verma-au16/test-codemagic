@@ -287,6 +287,7 @@ class LoginPage extends React.Component {
                                     onChangeText={(text) => this.setState({ email: text })}
                                     inputRef={input => this.textInputEmail = input}
                                     onSubmitEditing={() => this.textInputPassword._root.focus()}
+                                    keyboardType={'email-address'}
                                 />
                                 <TextInput
                                     placeholder='Password'

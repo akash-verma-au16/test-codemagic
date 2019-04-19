@@ -181,7 +181,7 @@ class ListPost extends React.Component {
                         this.createTiles(response.data.data)
                         this.setState({ refreshing: false, networkChanged: false })
                     }
-                }).catch((error) => {
+                }).catch(() => {
                     this.setState({ refreshing: false, networkChanged: false })
                     // if (this.props.isConnected) {
                     //     Toast.show({
