@@ -10,6 +10,8 @@ import {
     BackHandler
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
+import Moment from 'react-moment'
+import moment from 'moment/min/moment-with-locales'
 /* Redux */
 import { connect } from 'react-redux'
 import {
@@ -40,6 +42,7 @@ class ListPost extends React.Component {
         this.payloadBackup = []
         this.windowWidth = Dimensions.get("window").width;
         this.scrollPosition = 0
+        // console.log('Moment', Moment.updateLocale )
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -81,6 +84,31 @@ class ListPost extends React.Component {
             this.props.navigation.navigate('LoginPage')
             return
         }
+
+        //formatting update locale
+        Moment.globalMoment = moment;
+        moment.updateLocale('en', {
+            relativeTime: {
+                past: function (input) {
+                    return input === 'just now'
+                        ? input
+                        : input + ' ago'
+                },
+                s: 'just now',
+                future: "in %s",
+                ss: '%ds',
+                m: "%dm",
+                mm: "%dm",
+                h: "%dh",
+                hh: "%dh",
+                d: "%dd",
+                dd: "%dd",
+                M: "%dm",
+                MM: "%dm",
+                y: "%dy",
+                yy: "%dy"
+            }
+        });
     }
 
     componentDidMount() {
@@ -140,11 +168,13 @@ class ListPost extends React.Component {
             tenant_id: this.props.accountAlias,
             associate_id: this.props.associate_id
         }
-
+        console.log(payload)
         if (payload.tenant_id !== "" && payload.associate_id !=="") {
+            console.log('calling ListPost')
             try {
+                console.log('Calling NEWS_FEED API')
                 news_feed(payload).then(response => {
-
+                    console.log("Data", response.data.data)
                     /* take payload backup to check for changes later */
                     if (this.payloadBackup.length === response.data.data.length) {
                         /* No change in payload hence do nothing */
@@ -164,6 +194,7 @@ class ListPost extends React.Component {
 
                         /* Take Backup */
                         this.payloadBackup = response.data.data
+                        console.log("Backup", this.payloadBackup)
 
                         /* Skip for initial post load */
                         if (this.postList.length !== 0) {
@@ -176,16 +207,17 @@ class ListPost extends React.Component {
                             /* reset the tiles */
                             this.postList = []
                         }
-
+                        
                         /* Create UI tiles to display */
                         this.createTiles(response.data.data)
                         this.setState({ refreshing: false, networkChanged: false })
                     }
-                }).catch(() => {
+                }).catch((error) => {
                     this.setState({ refreshing: false, networkChanged: false })
-                    // if (this.props.isConnected) {
+                    console.log(error.response.data.code)
+                    // if (!this.props.isConnected) {
                     //     Toast.show({
-                    //         text: error.response.data.code,
+                    //         text: error.response.data.code, 
                     //         type: 'danger',
                     //         duration: 3000
                     //     })
@@ -237,7 +269,8 @@ class ListPost extends React.Component {
                             </View>
                             <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>{item.Item.associate_name}</Text>
                         </View>
-                        <Text style={styles.timeStamp}>{item.Item.time}</Text>
+                        {/* <Text style={styles.timeStamp}>{item.Item.time}</Text> */}
+                        <Moment element={Text} fromNow>{item.Item.time * 1000}</Moment>
                     </View>
                     {/* <View style={{
                         backgroundColor: '#ddd',
@@ -301,7 +334,9 @@ class ListPost extends React.Component {
                     ref={this.scrollViewRef}
                     onScroll={(event) => { this.scrollHandler(event) }}
                 >
-                    {this.postList}
+                    {this.postList.length == 0 ?
+                        this.payloadBackup : 
+                        this.postList}
                 </ScrollView>
 
                 <NavigationEvents
@@ -379,8 +414,9 @@ const styles = StyleSheet.create({
         fontSize: 15
     },
     timeStamp: {
-        fontSize: 10,
-        fontWeight: 'bold',
+        fontSize: 13,
+        fontFamily: "OpenSans-Regular",
+        fontWeight: '500',
         color: '#b1b5bc'
     }
 });
