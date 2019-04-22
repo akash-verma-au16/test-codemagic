@@ -62,6 +62,7 @@ class CreatePost extends React.Component {
 
         this.visibilityData = []
         this.associateData = []
+        console.log(this.state)
     }
     // Navigation options
     static navigationOptions = ({ navigation }) => {
@@ -275,7 +276,7 @@ class CreatePost extends React.Component {
                 tagged_associates: associateList,
                 privacy: {
                     type: this.state.visibilityKey,
-                    id: this.state.visibilityName
+                    id: this.props.accountAlias
                 },
                 time: timestamp
 
@@ -439,6 +440,10 @@ class CreatePost extends React.Component {
 
     }
 
+    // visibilityChangeListener = (text, name, key) => {
+    //     if(text == '')
+    // }
+
     loadMembers = () => {
         console.log('Calling loadMembers')
         if (this.props.accountAlias !== undefined) {
@@ -551,7 +556,7 @@ class CreatePost extends React.Component {
                     enabled={this.state.visibilityModal}
                     data={this.visibilityData}
                     onChangeListener={({text, name,key}) => {
-                        this.setState({ visibilitySelection: text, visibilityName: name ,visibilityKey:key })
+                        this.setState({ visibilitySelection: text, visibilityName: name , visibilityKey:key })
                     }}
                     visibilityDisableHandler={() => {
                         this.setState({ visibilityModal: false })

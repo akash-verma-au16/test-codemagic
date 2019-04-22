@@ -196,8 +196,9 @@ const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         backgroundColor: '#eee',
-        padding: 3,
-        paddingHorizontal: 5
+        paddingTop: 3,
+        paddingHorizontal: 5, 
+        paddingBottom: 0
     },
     notificationContainer: { 
         backgroundColor: 'white',

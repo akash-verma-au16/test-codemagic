@@ -239,7 +239,7 @@ class LoginPage extends React.Component {
                 }
             } catch (error) {
                 Toast.show({
-                    text: error.text,
+                    text: "Something went wrong, please try again later.",
                     type: "danger"
                 })
                 this.setState({ isSignInLoading: false })
