@@ -276,13 +276,14 @@ class CreatePost extends React.Component {
                 tagged_associates: associateList,
                 privacy: {
                     type: this.state.visibilityKey,
-                    id: this.props.accountAlias
+                    id: this.state.visibilityName == "" ? this.props.accountAlias : this.state.visibilityName //this.state.visibilityName
                 },
                 time: timestamp
 
             }
 
         }
+        // console.log(payload)
         this.setState({ isLoading: true })
         try {
             create_post(payload).then(() => {
