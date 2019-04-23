@@ -42,7 +42,31 @@ class ListPost extends React.Component {
         this.payloadBackup = []
         this.windowWidth = Dimensions.get("window").width;
         this.scrollPosition = 0
-        // console.log('Moment', Moment.updateLocale )
+
+        //formatting update locale
+        Moment.globalMoment = moment;
+        moment.updateLocale('en', {
+            relativeTime: {
+                past: function (input) {
+                    return input === 'just now'
+                        ? input
+                        : input + ' ago'
+                },
+                s: 'just now',
+                future: "in %s",
+                ss: '%ds',
+                m: "%dm",
+                mm: "%dm",
+                h: "%dh",
+                hh: "%dh",
+                d: "%dd",
+                dd: "%dd",
+                M: "%dm",
+                MM: "%dm",
+                y: "%dy",
+                yy: "%dy"
+            }
+        });
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -84,31 +108,6 @@ class ListPost extends React.Component {
             this.props.navigation.navigate('LoginPage')
             return
         }
-
-        //formatting update locale
-        Moment.globalMoment = moment;
-        moment.updateLocale('en', {
-            relativeTime: {
-                past: function (input) {
-                    return input === 'just now'
-                        ? input
-                        : input + ' ago'
-                },
-                s: 'just now',
-                future: "in %s",
-                ss: '%ds',
-                m: "%dm",
-                mm: "%dm",
-                h: "%dh",
-                hh: "%dh",
-                d: "%dd",
-                dd: "%dd",
-                M: "%dm",
-                MM: "%dm",
-                y: "%dy",
-                yy: "%dy"
-            }
-        });
     }
 
     componentDidMount() {
@@ -134,14 +133,6 @@ class ListPost extends React.Component {
             }, () => this.loadPosts())
         }
     }
-
-    // commingSoon = () => {
-    //     Toast.show({
-    //         text: 'Coming Soon!',
-    //         type: 'success',
-    //         duration: 3000
-    //     })
-    // }
     
     newPostHandler = () => {
 
@@ -168,7 +159,6 @@ class ListPost extends React.Component {
             tenant_id: this.props.accountAlias,
             associate_id: this.props.associate_id
         }
-        console.log(payload)
         if (payload.tenant_id !== "" && payload.associate_id !=="") {
             console.log('calling ListPost')
             try {
@@ -194,7 +184,6 @@ class ListPost extends React.Component {
 
                         /* Take Backup */
                         this.payloadBackup = response.data.data
-                        console.log("Backup", this.payloadBackup)
 
                         /* Skip for initial post load */
                         if (this.postList.length !== 0) {
@@ -214,7 +203,6 @@ class ListPost extends React.Component {
                     }
                 }).catch((error) => {
                     this.setState({ refreshing: false, networkChanged: false })
-                    console.log(error.response.data.code)
                     // if (!this.props.isConnected) {
                     //     Toast.show({
                     //         text: error.response.data.code, 

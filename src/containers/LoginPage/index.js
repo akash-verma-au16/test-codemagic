@@ -253,9 +253,7 @@ class LoginPage extends React.Component {
 
             <Container>
                 <Content
-                    contentContainerStyle={styles.container}
-                    
-                >
+                    contentContainerStyle={styles.container} >
                     <ImageBackground
                         source={image}
                         style={styles.image}

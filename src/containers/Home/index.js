@@ -9,6 +9,7 @@ import {
     Image,
     BackHandler
 } from 'react-native';
+
 import {
 
     Container,
@@ -27,14 +28,17 @@ import { connect } from 'react-redux'
 
 /* Assets */
 import thumbnail from '../../assets/thumbnail.jpg'
+
 class Home extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            isLoading: true,
-            isSignInLoading: false
+            isLoading: false,
+            isSignInLoading: false,
+            selectedTab: 0
         }
         this.pager = React.createRef();
+
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -59,17 +63,20 @@ class Home extends React.Component {
             this.goBack();
             return true;
         });
+        console.log("Pager", this.pager)
+
     }
 
     componentWillUnmount() {
         this.backHandler.remove();
     }
+
     render() {
 
         return (
 
             <Container>
-                <Content style={{flex:1}} contentContainerStyle={{alignItems:'center'}} scrollEnabled={true}>
+                <Content contentContainerStyle={{flex: 1, alignItems:'center', padding:10}} scrollEnabled={true}>
                     
                     <Image 
                         style={{ borderRadius: Dimensions.get('window').width/2, width:100,height:100, aspectRatio:1/1 , margin:10}}
@@ -81,85 +88,92 @@ class Home extends React.Component {
 
                     <Text style={styles.coloredText}>{this.props.email}</Text>
                     {/* <View style={{flex: 1, alignItems: 'center'}}> */}
-                    <View style={{ borderColor: 'black', borderTopWidth: 1, borderBottomWidth: 1, flexDirection: 'row',margin:10,width:'90%',alignItems: 'center',justifyContent: 'space-between'}}>
+                    <View style={{ flx: 1, alignItems: 'center', justifyContent: 'center', width: '100%'}}>
+                        <View style={styles.tabHeader}>
+                            <TouchableOpacity onPress={() => this.pager.setPage(0)}>
+                                <Icon name='md-thumbs-up' style={this.state.selectedTab === 0 ? styles.iconActive : styles.iconInactive} />
+                                {/* <H3 style={{ textAlign: 'center' }}>9</H3>
+                                <Text style={styles.coloredText} >Thanks</Text> */}
+                            </TouchableOpacity>
+                            
+                            {/* <View style={{ backgroundColor:'#000',width:1,height:'50%'}}/> */}
 
-                        <TouchableOpacity style={styles.detailsTile} onPress={() => this.pager.setPage(0)}>
-                            <H3>9</H3>
-                            <Text style={styles.coloredText} >Thanks</Text>
-                        </TouchableOpacity>
-                        
-                        <View style={{backgroundColor:'black',width:1,height:'50%'}}/>
+                            <TouchableOpacity onPress={() => this.pager.setPage(1)}>
+                                <Icon name='wallet' type={'Entypo'} style={this.state.selectedTab === 1 ? styles.iconActive : styles.iconInactive} />
+                                {/* <Icon1 name="wallet" size={30} color="#900" /> */}
+                                {/* <H3 style={{ textAlign: 'center' }}>100</H3>
+                                <Text style={styles.coloredText} >Points</Text> */}
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.detailsTile} onPress={() => this.pager.setPage(1)}>
-                            <H3>100</H3>
-                            <Text style={styles.coloredText} >Points</Text>
-                        </TouchableOpacity>
+                            {/* <View style={{backgroundColor:'#000',width:1,height:'50%'}}/> */}
 
-                        <View style={{backgroundColor:'black',width:1,height:'50%'}}/>
-
-                        <TouchableOpacity style={styles.detailsTile} onPress={() => this.pager.setPage(2)}>
-                            <H3>5</H3>
-                            <Text style={styles.coloredText} >Endorses</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity onPress={() => this.pager.setPage(2)}>
+                                <Icon name='md-people' style={this.state.selectedTab === 2 ? styles.iconActive : styles.iconInactive} />
+                                
+                                {/* <H3 style={{textAlign:'center'}}>5</H3>
+                                <Text style={styles.coloredText} >Endorses</Text> */}
+                            </TouchableOpacity>
+                        </View>
+                        <IndicatorViewPager
+                            ref={ref => this.pager = ref}
+                            style={styles.viewPager}
+                            onPageSelected={(page) => this.setState({ selectedTab: page.position })}
+                        >
+                            <View>
+                                <ScrollView
+                                    contentContainerStyle={{ backgroundColor: '#eee',flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
+                                    refreshControl={
+                                        <RefreshControl
+                                            refreshing={this.state.isLoading}
+                                            onRefresh={() => {}}
+                                        />
+                                    }
+                                    
+                                >
+                                    <Text style={{ height: 25, width: '100%', textAlign: 'center', color: '#1c92c4' }}>Thanks</Text>
+                                    <Text style={{ height: 25, width: '100%', textAlign: 'center', color: '#1c92c4' }}>Thanks</Text>
+                                    <Text style={{ height: 25, width: '100%', textAlign: 'center', color: '#1c92c4' }}>Thanks</Text>
+                                    <Text style={{ height: 25, width: '100%', textAlign: 'center', color: '#1c92c4' }}>Thanks</Text>
+                                    <Text style={{ height: 25, width: '100%', textAlign: 'center', color: '#1c92c4' }}>Thanks</Text>
+                                </ScrollView>
+                            </View>
+                            <View>
+                                <ScrollView
+                                    contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
+                                    refreshControl={
+                                        <RefreshControl
+                                            refreshing={this.state.isLoading}
+                                            onRefresh={() => {}}
+                                        />
+                                    }
+                                >
+                                    <Text style={{ height: 25, width: '100%', textAlign: 'center', color: '#1c92c4' }}>Transactions</Text>
+                                    <Text style={{ height: 25, width: '100%', textAlign: 'center', color: '#1c92c4' }}>Transactions</Text>
+                                    <Text style={{ height: 25, width: '100%', textAlign: 'center', color: '#1c92c4' }}>Transactions</Text>
+                                    <Text style={{ height: 25, width: '100%', textAlign: 'center', color: '#1c92c4' }}>Transactions</Text>
+                                    <Text style={{ height: 25, width: '100%', textAlign: 'center', color: '#1c92c4' }}>Transactions</Text>
+                                    
+                                </ScrollView>
+                            </View>
+                            <View>
+                                <ScrollView
+                                    contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
+                                    refreshControl={
+                                        <RefreshControl
+                                            refreshing={this.state.isLoading}
+                                            onRefresh={() => {}}
+                                        />
+                                    }
+                                >
+                                    <Text style={{ height: 25, width: '100%', textAlign: 'center', color: '#1c92c4' }}>Endorsements</Text>
+                                    <Text style={{ height: 25, width: '100%', textAlign: 'center', color: '#1c92c4' }}>Endorsements</Text>
+                                    <Text style={{ height: 25, width: '100%', textAlign: 'center', color: '#1c92c4' }}>Endorsements</Text>
+                                    <Text style={{ height: 25, width: '100%', textAlign: 'center', color: '#1c92c4' }}>Endorsements</Text>
+                                    <Text style={{ height: 25, width: '100%', textAlign: 'center', color: '#1c92c4' }}>Endorsements</Text>
+                                </ScrollView>
+                            </View>
+                        </IndicatorViewPager>
                     </View>
-                    <IndicatorViewPager
-                        ref={ref => this.pager = ref}
-                        style={{ backgroundColor: 'blue', height: 200}}
-                        onPageSelected={(page) => this.setState({ selectedTab: page.position })}
-                    >
-                        <View style={{height: 50, backgroundColor: 'blue'}}>
-                            <ScrollView
-                                contentContainerStyle={{ backgroundColor: '#000', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
-                                refreshControl={
-                                    <RefreshControl
-                                        refreshing={this.state.isLoading}
-                                        onRefresh={() => {}}
-                                    />
-                                }
-                            >
-                                <Text>Anything</Text>
-                                <Text>Anything</Text>
-                                <Text>Anything</Text>
-                                <Text>Anything</Text>
-                                <Text>Anything</Text>
-                            </ScrollView>
-                        </View>
-                        <View>
-                            <ScrollView
-                                contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
-                                refreshControl={
-                                    <RefreshControl
-                                        refreshing={this.state.isLoading}
-                                        onRefresh={() => {}}
-                                    />
-                                }
-                            >
-                                <Text>Anything</Text>
-                                <Text>Anything</Text>
-                                <Text>Anything</Text>
-                                <Text>Anything</Text>
-                                <Text>Anything</Text>
-                            </ScrollView>
-                        </View>
-                        <View>
-                            <ScrollView
-                                contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
-                                refreshControl={
-                                    <RefreshControl
-                                        refreshing={this.state.isLoading}
-                                        onRefresh={() => {}}
-                                    />
-                                }
-                            >
-                                <Text>Anything</Text>
-                                <Text>Anything</Text>
-                                <Text>Anything</Text>
-                                <Text>Anything</Text>
-                                <Text>Anything</Text>
-                            </ScrollView>
-                        </View>
-                    </IndicatorViewPager>
-
                 </Content>
             </Container>
 
@@ -168,14 +182,36 @@ class Home extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    
-    detailsTile:{
-        alignItems: 'center',
-        margin:10
-    },
     coloredText:{
-        color:'#1c92c4'
+        color:'#1c92c4',
+        textAlign:'center'
+    },
+
+    iconActive: {
+        fontSize: 26,
+        color: '#1c92c4'
+    },
+    iconInactive: {
+        fontSize: 26,
+        color: '#8a8b8c'
+    },
+    tabHeader: {
+        borderTopWidth: 1 / 5,
+        borderBottomWidth: 1 / 5,
+        flexDirection: 'row',
+        margin: 10,
+        marginTop: 25,
+        height: 35,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-around'
+    },  
+    viewPager: {
+        width: '100%',
+        height: 400,
+        padding: 20
     }
+  
 });
 
 const mapStateToProps = (state) => {

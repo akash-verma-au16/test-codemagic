@@ -32,7 +32,7 @@ export default {
         create_post:"create_post",
         list_posts:"list_posts",
         list_associate:"list_associate",
-        register_device:"register_device",
+        register_device:"register_device"
     },
     type:{
         survey:"survey",
