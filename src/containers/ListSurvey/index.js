@@ -30,6 +30,7 @@ import { list_survey } from '../../services/questionBank'
 /* Custom Components */
 import thumbnail from '../../assets/thumbnail.jpg'
 import { IndicatorViewPager } from 'rn-viewpager';
+
 class ListSurvey extends React.Component {
     constructor(props) {
         super(props)

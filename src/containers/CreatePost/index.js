@@ -62,7 +62,6 @@ class CreatePost extends React.Component {
 
         this.visibilityData = []
         this.associateData = []
-        console.log(this.state)
     }
     // Navigation options
     static navigationOptions = ({ navigation }) => {
