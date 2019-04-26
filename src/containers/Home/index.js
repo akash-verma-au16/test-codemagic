@@ -239,7 +239,7 @@ class Home extends React.Component {
                     contentContainerStyle={{ flex: 1, alignItems: 'center' }} 
                     scrollEnabled={true}
                 >
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: "100%", padding: 20 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: "100%", padding: 15 }}>
                         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '35%' }}>
                             <Image
                                 style={{ borderRadius: 90, width: 90, height: 90, aspectRatio: 1 / 1, margin: 10 }}
@@ -250,13 +250,13 @@ class Home extends React.Component {
                                 <Text style={styles.editText}>Edit profile</Text>
                             </TouchableOpacity>
                         </View>
-                        <View style={{ alignItems: 'flex-start', width: '65%', padding: 15 }}>
+                        <View style={{ alignItems: 'flex-start', width: '65%', paddingLeft: 5}}>
                             {/* <H2>{this.props.firstName + ' ' + this.props.lastName}</H2> */}
-                            <Text style={[styles.textLeft, styles.userName]} allowFontScaling numberOfLines={1}>{this.userData.username}</Text> 
+                            <Text style={[styles.textLeft, styles.userName]} allowFontScaling numberOfLines={2}>{this.userData.username}</Text> 
                             {/* {this.userData.username} */}
-                            <Text style={[styles.coloredText, styles.textLeft]} allowFontScaling numberOfLines={1}>{this.userData.email}</Text>
+                            <Text style={[styles.coloredText, styles.textLeft]} allowFontScaling numberOfLines={2}>{this.userData.email}</Text>
                             <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={1}>Mobile: <Text style={styles.mobilNo}>{this.userData.moblie_no}</Text></Text>
-                            <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={1}>Working At, <Text style={styles.companyName}>{this.userData.company_name}</Text></Text>
+                            <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={2}>Working At, <Text style={styles.companyName}>{this.userData.company_name}</Text></Text>
                         </View>
                     </View>
 
