@@ -68,6 +68,7 @@ class ListPost extends React.Component {
             }
         });
     }
+    
     static navigationOptions = ({ navigation }) => {
         return {
 
@@ -401,12 +402,12 @@ const styles = StyleSheet.create({
         fontWeight:'bold',
         fontSize: 15
     },
-    timeStamp: {
-        fontSize: 13,
-        fontFamily: "OpenSans-Regular",
-        fontWeight: '500',
-        color: '#b1b5bc'
-    }
+    // timeStamp: {
+    //     fontSize: 13,
+    //     fontFamily: "OpenSans-Regular",
+    //     fontWeight: '500',
+    //     color: '#b1b5bc'
+    // }
 });
 
 const mapStateToProps = (state) => {

@@ -145,7 +145,6 @@ class InAppNotifier extends React.Component {
 
     handleConnectivityChange = (isConnected) => {
         if(isConnected) {
-            console.log("loadNotifications")
             this.loadNotifications()
         }
     }
