@@ -17,7 +17,8 @@ import {
     Text,
     Icon,
     H2,
-    H3
+    H3,
+    Toast
 
 } from 'native-base';
 
@@ -51,7 +52,8 @@ class Home extends React.Component {
         this.transactionList = []
         this.payloadBackup = []
         this.userData = []
-        this.totalPonts = ""
+        this.totalPoints = this.loadBalance()
+        this.totalPontsBackup = ""
         this.loadTransactions = this.loadTransactions.bind(this)
 
     }
@@ -73,12 +75,11 @@ class Home extends React.Component {
         await this.props.navigation.goBack()
     }
 
-    componentWillMount() {
-        this.loadBalance()
+    async componentWillMount() {
+        await this.loadBalance()
         this.loadProfile()
         this.loadTransactions()
         // this.setState({loading: false})
-        console.log("Calling from Home.js WillMount")
     }
 
     componentDidMount() {
@@ -86,11 +87,21 @@ class Home extends React.Component {
             this.goBack();
             return true;
         });
+
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
     }
 
     componentWillUnmount() {
         this.backHandler.remove();
-        console.log("Calling from Home.js Unmount")
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+    }
+
+    handleConnectivityChange = (isConnected) => {
+        if (isConnected) {
+            this.loadBalance()
+            this.loadProfile()
+            this.loadTransactions()
+        }
     }
 
     //Load user profile API Handler
@@ -126,14 +137,18 @@ class Home extends React.Component {
                 console.log("Calling get_balance API")
                 get_balance(payload).then((response) => {
                     this.setState({ totalPonts: response.data.data.total_points})
-                    // this.totalPonts = response.data.data.total_points
-                    console.log("Balance", this.state.totalPonts)
+                    this.totalPontsBackup = response.data.data.total_points
+                    return response.data.data.total_points
                 })
+                this.setState({ loading: false })
             }
         }
         catch(error) {
+            this.setState({ loading: false })
             console.log(error)
         }
+        this.setState({ loading: true })
+
     }
 
     loadTransactions = () => {
@@ -145,7 +160,7 @@ class Home extends React.Component {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 console.log("Calling read_transaction API")
                 read_transaction(payload).then(response => {
-                    // console.log("Response", response.data.data.transaction_data)
+                    console.log("Response", response.data.data.transaction_data)
                     if (this.payloadBackup.length === response.data.data.transaction_data) {
                         if (response.data.data.transaction_data.length == 0) {
                             this.transactionList = []
@@ -189,7 +204,7 @@ class Home extends React.Component {
                         <View style={styles.transactionView}>
                             <View style={styles.textView}>
                                 <Text style={styles.tText}>
-                                    Your wallet was {item.t_type == 'credit' ? "credited by " : "debited by "} {item.points} points.
+                                    Your wallet was {item.t_type == 'credit' ? "credited with " : "debited with "} {item.points} points.
                                 </Text>
                                 <View style={{flexDirection: 'row', flexWrap: 'nowrap', width: "100%", alignItems: 'center', justifyContent: "space-between"}}>
                                     <Text style={styles.timeStamp}>{item.created_at.date}</Text>
@@ -209,7 +224,7 @@ class Home extends React.Component {
     }
 
     render() {
-        if(this.state.loading && this.state.totalPonts === "") {
+        if(this.state.loading || !this.props.isConnected) {
             return (
                 <View style={{alignItems: 'center', justifyContent: 'flex-start', marginTop: 25}}>
                     <ActivityIndicator size="large" color="#1c92c4" />
@@ -222,22 +237,12 @@ class Home extends React.Component {
                 {/* { this.state.loading ? */}
                 <ScrollView
                     contentContainerStyle={{ flex: 1, alignItems: 'center' }} 
-                    // refreshControl={
-                    //     <RefreshControl
-                    //         refreshing={this.state.loading}
-                    //         onRefresh={() => {
-                    //             this.loadProfile()
-                    //             this.loadTransactions()
-                    //             this.loadBalance()
-                    //         }}
-                    //     />
-                    // }
                     scrollEnabled={true}
                 >
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: "100%", padding: 20 }}>
                         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '35%' }}>
                             <Image
-                                style={{ borderRadius: 70, width: 70, height: 70, aspectRatio: 1 / 1, margin: 10 }}
+                                style={{ borderRadius: 90, width: 90, height: 90, aspectRatio: 1 / 1, margin: 10 }}
                                 source={thumbnail}
                                 resizeMode='stretch'
                             />
@@ -247,10 +252,11 @@ class Home extends React.Component {
                         </View>
                         <View style={{ alignItems: 'flex-start', width: '65%', padding: 15 }}>
                             {/* <H2>{this.props.firstName + ' ' + this.props.lastName}</H2> */}
-                            <H2 style={styles.textLeft}>{this.userData.username}</H2>
-                            <Text style={[styles.coloredText, styles.textLeft]}>{this.userData.email}</Text>
-                            <Text style={[styles.textLeft, styles.helperText]}>Mobile: <Text style={styles.mobilNo}>{this.userData.moblie_no}</Text></Text>
-                            <Text style={[styles.textLeft, styles.helperText]}>Working At, <Text style={styles.companyName}>{this.userData.company_name}</Text></Text>
+                            <Text style={[styles.textLeft, styles.userName]} allowFontScaling numberOfLines={1}>{this.userData.username}</Text> 
+                            {/* {this.userData.username} */}
+                            <Text style={[styles.coloredText, styles.textLeft]} allowFontScaling numberOfLines={1}>{this.userData.email}</Text>
+                            <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={1}>Mobile: <Text style={styles.mobilNo}>{this.userData.moblie_no}</Text></Text>
+                            <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={1}>Working At, <Text style={styles.companyName}>{this.userData.company_name}</Text></Text>
                         </View>
                     </View>
 
@@ -262,7 +268,8 @@ class Home extends React.Component {
                         <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                         <View style={{ alignItems: 'center', justifyContent: 'space-around', width: '33%' }}>
                             <Text style={styles.text}>Rewards</Text>
-                            <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.state.totalPonts}</H3>
+                            <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.state.totalPonts == "" ? this.totalPontsBackup : this.state.totalPonts}</H3>
+                            
                         </View>
                         <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                         <View style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
@@ -324,8 +331,19 @@ class Home extends React.Component {
                                         <RefreshControl
                                             refreshing={this.state.refreshing}
                                             onRefresh={() => {
-                                                this.loadTransactions()
-                                                this.loadBalance()
+                                                if(this.props.isConnected) {
+                                                    if (!this.props.isFreshInstall && this.props.isAuthenticate) {
+                                                        this.loadTransactions()
+                                                        this.loadBalance()
+                                                    }
+                                                }
+                                                else {
+                                                    Toast.show({
+                                                        text: 'Please, connect to the internet',
+                                                        type: 'danger',
+                                                        duration: 3000
+                                                    })
+                                                }
                                             }}
                                         />
                                     }>
@@ -381,6 +399,12 @@ const styles = StyleSheet.create({
         fontFamily: "OpenSans-Regular",
         flexWrap: 'wrap'
     },
+    userName: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        fontFamily: "OpenSans-Regular",
+        color: '#333'      
+    },
     companyName: {
         color: '#1c92c4',
         fontWeight: 'bold',
@@ -389,6 +413,7 @@ const styles = StyleSheet.create({
         fontFamily: "OpenSans-Regular"
     },
     mobilNo: {
+        fontSize: 14,
         fontFamily: 'Roboto-Medium'
     },
     text: {
@@ -406,7 +431,8 @@ const styles = StyleSheet.create({
         // backgroundColor: "blue"
     }, 
     textLeft : {
-        textAlign: 'left'
+        textAlign: 'left',
+        width: "100%"
     },
     helperText: {
         fontFamily: 'OpenSans-Regular', 
@@ -467,7 +493,7 @@ const styles = StyleSheet.create({
         flexWrap: 'nowrap',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 5
+        padding: 10
     },
     iconView: {
         width: '20%',
