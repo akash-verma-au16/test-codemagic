@@ -44,15 +44,17 @@ class Home extends React.Component {
             loading: true,
             isSignInLoading: false,
             selectedTab: 1,
-            totalPonts: ""
+            totalPoints: ""
         }
         this.loadProfile = this.loadProfile.bind(this)
         this.loadBalance = this.loadBalance.bind(this)
+        this.loadTransactions = this.loadTransactions.bind(this)
+        this.loadData = this.loadData.bind(this)
         this.pager = React.createRef();
         this.transactionList = []
         this.payloadBackup = []
         this.userData = []
-        this.totalPoints = this.loadBalance()
+        // this.totalPoints = this.loadBalance()
         this.totalPontsBackup = ""
         this.loadTransactions = this.loadTransactions.bind(this)
 
@@ -75,11 +77,8 @@ class Home extends React.Component {
         await this.props.navigation.goBack()
     }
 
-    async componentWillMount() {
-        await this.loadBalance()
-        this.loadProfile()
-        this.loadTransactions()
-        // this.setState({loading: false})
+    componentWillMount() {
+        this.loadData()
     }
 
     componentDidMount() {
@@ -89,6 +88,14 @@ class Home extends React.Component {
         });
 
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+
+        // console.log(this.state.loading)
+        // if (this.transactionList.length !== 0 && this.state.totalPoints !== "" && this.userData.length !== 0) {
+        //     this.setState({
+        //         loading: false
+        //     })
+        // }
+        // this.loadData()
     }
 
     componentWillUnmount() {
@@ -104,63 +111,70 @@ class Home extends React.Component {
         }
     }
 
+    async loadData() {
+        await this.loadBalance()
+        await this.loadProfile()
+        await this.loadTransactions()
+        this.setState({loading: false})
+    }
+
     //Load user profile API Handler
-    loadProfile = () => {
+    async loadProfile() {
         const payload = {
             "tenant_id": this.props.accountAlias,
             "associate_id": this.props.associate_id
         }
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
-                console.log("Calling user_profile")
-                user_profile(payload).then((response) => {
+                // console.log("Calling user_profile")
+                await user_profile(payload).then((response) => {
                     this.userData = response.data.data
-                    console.log("user",this.userData)
+                }).catch((error) => {
+                    console.log(error)
                 })
-                this.setState({loading: false})
             }
         }
         catch(error) {
-            this.setState({ loading: false })
+            // this.setState({ loading: false })
             console.log("error", error.code)
         }
-        this.setState({loading: true})
+        // this.setState({loading: true})
     }
 
     // Get wallet balance API Handler
-    loadBalance = () => {
+    async loadBalance() {
         const payload = {
             associate_id: this.props.associate_id
         }
         try {
             if (payload.associate_id !== "") {
                 console.log("Calling get_balance API")
-                get_balance(payload).then((response) => {
+                await get_balance(payload).then((response) => {
                     this.setState({ totalPonts: response.data.data.total_points})
                     this.totalPontsBackup = response.data.data.total_points
-                    return response.data.data.total_points
+                }).catch((error) => {
+                    console.log(error)
                 })
-                this.setState({ loading: false })
+                // this.setState({ loading: false })
             }
         }
         catch(error) {
-            this.setState({ loading: false })
+            // this.setState({ loading: false })
             console.log(error)
         }
-        this.setState({ loading: true })
-
+        // this.setState({ loading: true })
     }
 
-    loadTransactions = () => {
+    async loadTransactions() {
         const payload = {
             "tenant_id": this.props.accountAlias,
             "associate_id": this.props.associate_id
         }
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
-                console.log("Calling read_transaction API")
-                read_transaction(payload).then(response => {
-                    console.log("Response", response.data.data.transaction_data)
+                this.setState({ refreshing: true })
+                // console.log("Calling read_transaction API")
+                await read_transaction(payload).then(response => {
                     if (this.payloadBackup.length === response.data.data.transaction_data) {
                         if (response.data.data.transaction_data.length == 0) {
                             this.transactionList = []
@@ -168,7 +182,7 @@ class Home extends React.Component {
                                 <Text style={{ flex: 1, alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingTop: 20 }} key={0}>No recent transactios found.</Text>
                             )
                         }
-                        this.setState({ refreshing: false, loading: false })
+                        this.setState({ refreshing: false })
                     } else {
                         //Change in Payload
                         this.payloadBackup = response.data.data.transaction_data
@@ -176,19 +190,18 @@ class Home extends React.Component {
                             this.transactionList = []
                         }
                         this.createTransactionTile(response.data.data.transaction_data)
-                        this.setState({ refreshing: false, loading: false })
+                        this.setState({ refreshing: false })
                     }
                 }).catch((error) => {
-                    this.setState({ refreshing: false, loading: false })
+                    this.setState({ refreshing: false })
                     console.log(error)
                 })
             }
         }
         catch(error) {
-            this.setState({ refreshing: false, loading: false })
+            this.setState({ refreshing: false })
             console.log(error)
         }
-        this.setState({ refreshing: true })
     }
 
     createTransactionTile = (data) => {
@@ -224,7 +237,7 @@ class Home extends React.Component {
     }
 
     render() {
-        if(this.state.loading || !this.props.isConnected) {
+        if(this.state.loading) {
             return (
                 <View style={{alignItems: 'center', justifyContent: 'flex-start', marginTop: 25}}>
                     <ActivityIndicator size="large" color="#1c92c4" />
@@ -268,7 +281,7 @@ class Home extends React.Component {
                         <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                         <View style={{ alignItems: 'center', justifyContent: 'space-around', width: '33%' }}>
                             <Text style={styles.text}>Rewards</Text>
-                            <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.state.totalPonts == "" ? this.totalPontsBackup : this.state.totalPonts}</H3>
+                            <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.state.totalPoints == "" ? this.totalPontsBackup : this.state.totalPoints}</H3>
                             
                         </View>
                         <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
