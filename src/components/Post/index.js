@@ -11,8 +11,32 @@ import moment from 'moment/min/moment-with-locales'
 class Post extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-        };
+        this.state = {}
+
+        //formatting update locale
+        Moment.globalMoment = moment;
+        moment.updateLocale('en', {
+            relativeTime: {
+                past: function (input) {
+                    return input === 'just now'
+                        ? input
+                        : input + ' ago'
+                },
+                s: 'just now',
+                future: "in %s",
+                ss: '%ds',
+                m: "%dm",
+                mm: "%dm",
+                h: "%dh",
+                hh: "%dh",
+                d: "%dd",
+                dd: "%dd",
+                M: "%dm",
+                MM: "%dm",
+                y: "%dy",
+                yy: "%dy"
+            }
+        });
     }
     commingSoon = () => {
         Toast.show({
@@ -22,6 +46,7 @@ class Post extends Component {
         })
     }
     render() {
+        this.associateList = []
         return (
             <View style={styles.card} key={this.props.key}>
                 <View name='header'
@@ -44,10 +69,10 @@ class Post extends Component {
                         }}>
                             <Icon name='person' style={{ fontSize: 25, color: 'white' }} />
                         </View>
-                        <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>{item.Item.associate_name}</Text>
+                        <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>{this.props.postCreator}</Text>
                     </View>
                     {/* <Text style={styles.timeStamp}>{item.Item.time}</Text> */}
-                    <Moment element={Text} fromNow>{item.Item.time * 1000}</Moment>
+                    <Moment element={Text} fromNow>{this.props.time * 1000}</Moment>
                 </View>
                 {/* <View style={{
                         backgroundColor: '#ddd',
@@ -58,13 +83,13 @@ class Post extends Component {
                 <View name='content' style={{ flex: 2, paddingVertical: 6 }}>
                     <Text style={styles.postText}>
 
-                        {item.Item.tagged_associates.map((associate, index) => {
-                            associateList.push((<Text style={styles.associate} key={index}>@{associate.associate_name + " "}</Text>))
+                        {this.props.taggedAssociates.map((associate, index) => {
+                            this.associateList.push((<Text style={styles.associate} key={index}>@{associate.associate_name + " "}</Text>))
                         })}
-                        {associateList}
-                        {item.Item.message}
+                        {this.associateList}
+                        {this.props.postMessage}
 
-                        <Text style={styles.strength}> #{item.Item.sub_type}</Text>
+                        <Text style={styles.strength}> #{this.props.strength}</Text>
                     </Text>
                 </View>
                 <View name='footer'
@@ -80,7 +105,6 @@ class Post extends Component {
         );
     }
 }
-
 
 const styles= StyleSheet.create({
     card: {
