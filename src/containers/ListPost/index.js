@@ -161,11 +161,11 @@ class ListPost extends React.Component {
             associate_id: this.props.associate_id
         }
         if (payload.tenant_id !== "" && payload.associate_id !=="") {
-            console.log('calling ListPost')
+            // console.log('calling ListPost')
             try {
                 console.log('Calling NEWS_FEED API')
                 news_feed(payload).then(response => {
-                    console.log("Data", response.data.data)
+                    // console.log("Data", response.data.data)
                     /* take payload backup to check for changes later */
                     if (this.payloadBackup.length === response.data.data.length) {
                         /* No change in payload hence do nothing */
