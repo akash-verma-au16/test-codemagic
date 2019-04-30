@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { Platform } from 'react-native';
 import slackLogger from '../services/slackLogger'
 import {register_device} from '../services/pushNotification'
+import DeviceInfo from 'react-native-device-info'
 let Name=''
 let Email=''
 let associate_id=''
@@ -56,7 +57,8 @@ const getToken = async () => {
         name : Name,
         email:Email,
         platform : Platform.OS,
-        token : fcmToken
+        token : fcmToken,
+        device_uid: DeviceInfo.getUniqueID()
     })
 
     register_device({
