@@ -83,6 +83,10 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
+        // Calling transaction list API after render method
+        this.loadTransactions()
+
+        // Hardware backpress handle
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             this.goBack();
             return true;
@@ -107,7 +111,7 @@ class Home extends React.Component {
     async loadData() {
         await this.loadBalance()
         await this.loadProfile()
-        await this.loadTransactions()
+        // await this.loadTransactions()
         this.setState({loading: false})
     }
 
@@ -158,6 +162,7 @@ class Home extends React.Component {
         // this.setState({ loading: true })
     }
 
+    // Get Transaction list API Handler
     async loadTransactions() {
         const payload = {
             "tenant_id": this.props.accountAlias,
@@ -268,14 +273,13 @@ class Home extends React.Component {
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', width: "100%", padding: 3 }}>
                         <View style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
-                            <Text style={styles.text}>Kudos</Text>
+                            <Text style={styles.text}>Home</Text>
                             <H3 style={this.state.selectedTab == 0 ? styles.textActive : styles.textInactive}>9</H3>
                         </View>
                         <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                         <View style={{ alignItems: 'center', justifyContent: 'space-around', width: '33%' }}>
                             <Text style={styles.text}>Rewards</Text>
                             <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.state.totalPoints == "" ? this.totalPontsBackup : this.state.totalPoints}</H3>
-                            
                         </View>
                         <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                         <View style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
@@ -353,13 +357,6 @@ class Home extends React.Component {
                                             }}
                                         />
                                     }>
-                                    {/* <View style={styles.card}>
-                                        <Text style={{fontSize: 40, color: '#eee'}}>
-                                            1123
-                                        </Text>
-                                        <Text style={{color: '#eee'}}>Total points</Text>
-                                    </View>
-                                    <View style={{ height: 1 / 3, width: '100%', backgroundColor: '#c9cacc' }}></View> */}
                                     {this.transactionList}
                                 </ScrollView>
                             </View>
@@ -372,8 +369,9 @@ class Home extends React.Component {
                                             onRefresh={() => { this.setState({ refreshing: false }) }}
                                         />
                                     }>
-                                    <Icon name='worker' type={'MaterialCommunityIcons'} style={{ fontSize: 22, color: '#8a8b8c' }} />
-                                    <Text style={{ color: '#8a8b8c', textAlign: 'center', marginTop: 15, width: '80%' }}>This page is under Development for Future Releases.</Text>
+
+                                    {/* <Icon name='worker' type={'MaterialCommunityIcons'} style={{ fontSize: 22, color: '#8a8b8c' }} />
+                                    <Text style={{ color: '#8a8b8c', textAlign: 'center', marginTop: 15, width: '80%' }}>This page is under Development for Future Releases.</Text> */}
                                 </ScrollView>
                             </View>
                         </IndicatorViewPager>
@@ -459,7 +457,7 @@ const styles = StyleSheet.create({
         color: '#1c92c4'
     },
     iconInactive: {
-        fontSize: 26,
+        fontSize: 25,
         color: '#8a8b8c'
     },
     tabHeader: {
@@ -470,7 +468,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginBottom: 0,
         padding: 3,
-        // height: 35,
+        height: 34,
         width: '100%',
         alignItems: 'center',
         justifyContent: 'space-around'

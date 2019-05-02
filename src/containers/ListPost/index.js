@@ -91,8 +91,9 @@ class ListPost extends React.Component {
     componentDidMount() {
 
         this.interval = setInterval(() => {this.loadPosts()}, 10000);
-        //Detecting connectivity change
+        //Detecting network connectivity change
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+        //Handling hardware backpress event
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             return true
         })
