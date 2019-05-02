@@ -102,7 +102,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.8"
+        versionName "1.9"
     }
     
     splits {
@@ -136,6 +136,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-device-info')
     implementation project(':@react-native-community_netinfo')
     implementation project(':react-native-charts-wrapper')
     implementation project(':@react-native-community_async-storage')
