@@ -93,6 +93,14 @@ class Home extends React.Component {
         });
 
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+
+        // console.log(this.state.loading)
+        // if (this.transactionList.length !== 0 && this.state.totalPoints !== "" && this.userData.length !== 0) {
+        //     this.setState({
+        //         loading: false
+        //     })
+        // }
+        // this.loadData()
     }
 
     componentWillUnmount() {
