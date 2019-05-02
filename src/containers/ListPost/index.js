@@ -304,41 +304,8 @@ const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         backgroundColor: '#eee',
-        padding: 3
-    },
-
-    card: {
-        // marginTop: 10,
-        marginBottom: 8,
-        backgroundColor: 'white',
-        width: '100%',
-        borderRadius: 5,
-        padding: 15,
-        shadowOffset: { width: 5, height: 5 },
-        shadowColor: 'black',
-        shadowOpacity: 0.2,
-        elevation: 2
-    },
-    postText: {
-        fontFamily: "OpenSans-Regular",
-        fontWeight: '400',
-        color: '#000',
-        fontSize: 15
-    },
-    associate: {
-        color: '#1c92c4',
-        fontWeight: 'bold'
-    },
-    strength: {
-        fontWeight:'bold',
-        fontSize: 15
-    },
-    // timeStamp: {
-    //     fontSize: 13,
-    //     fontFamily: "OpenSans-Regular",
-    //     fontWeight: '500',
-    //     color: '#b1b5bc'
-    // }
+        paddingTop: 8
+    }
 });
 
 const mapStateToProps = (state) => {

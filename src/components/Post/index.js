@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // Components from React-Native
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 // Components from Native Base
 import { Icon, Toast } from 'native-base'
 
@@ -12,7 +12,8 @@ class Post extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            like: false
+            like: false,
+            likes: 0
         }
 
         //formatting update locale
@@ -42,9 +43,11 @@ class Post extends Component {
     }
     onLikeHnadler = () => {
         this.setState({
-            like: !this.state.like
+            like: !this.state.like,
+            likes: this.state.like ? this.state.likes - 1 : this.state.likes + 1
         })
     }
+
     render() {
         this.associateList = []
         return (
@@ -75,11 +78,11 @@ class Post extends Component {
                     <Moment element={Text} fromNow>{this.props.time * 1000}</Moment>
                 </View>
                 {/* <View style={{
-                        backgroundColor: '#ddd',
-                        height: 1,
-                        width: '100%',
-                        marginVertical: 10
-                    }} /> */}
+                    backgroundColor: '#ddd',
+                    height: 1,
+                    width: '100%',
+                    marginVertical: 2
+                }} /> */}
                 <View name='content' style={{ flex: 2, paddingVertical: 10 }}>
                     <Text style={styles.postText}>
 
@@ -92,16 +95,33 @@ class Post extends Component {
                         <Text style={styles.strength}> #{this.props.strength}</Text>
                     </Text>
                 </View>
+                <View style={styles.infoTab}>
+                    <View style={{ flexDirection: 'row', marginRight: 20 }}>
+                        <Text style={styles.infoNo}>{this.state.likes}</Text>
+                        <Text style={styles.infoText}>Likes</Text>
+                    </View>
+                    <View style={{flexDirection: 'row'}}>
+                        <Text style={styles.infoNo}>0</Text>
+                        <Text style={styles.infoText}>Comments</Text>
+                    </View>
+                </View>
                 <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5}}></View>
                 <View name='footer'
                     style={{
-                        flex: 1,
+                        width: "100%",
                         flexDirection: 'row',
                         alignItems: 'center',
-                        justifyContent: 'flex-start',
+                        justifyContent: 'space-around',
                         padding: 3
                     }}>
-                    <Icon name='md-thumbs-up' style={ this.state.like ? styles.like : styles.unlike } onPress={this.onLikeHnadler} />
+                    <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView} onPress={this.onLikeHnadler}>
+                        <Icon name='md-thumbs-up' style={ this.state.like ? styles.like : styles.unlike }/>
+                        <Text style={this.state.like ? styles.footerTextActive : styles.footerTextInactive}>Likes</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView}>
+                        <Icon name='comment' type={'MaterialIcons'} style={styles.comment} />
+                        <Text style={styles.footerText}>Comment</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         );
@@ -114,12 +134,12 @@ const styles= StyleSheet.create({
         marginBottom: 8,
         backgroundColor: 'white',
         width: '100%',
-        borderRadius: 5,
-        paddingHorizontal: 15,
-        paddingVertical: 5,
+        // borderRadius: 5,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
         shadowOffset: { width: 5, height: 5 },
-        shadowColor: 'black',
-        shadowOpacity: 0.2,
+        shadowColor: '#111',
+        shadowOpacity: 0.8,
         elevation: 2
     },
     postText: {
@@ -142,7 +162,49 @@ const styles= StyleSheet.create({
     },
     unlike: {
         fontSize: 20, 
-        color: '#ddd'
+        color: '#ccc'
+    },
+    comment: {
+        fontSize: 19,
+        color: '#ccc'
+    },
+    infoTab: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        padding: 5,
+        width: "100%"
+    },
+    infoText: {
+        fontFamily: 'OpenSans-Regular',
+        fontSize: 12
+    },
+    infoNo: {
+        fontSize: 13,
+        fontFamily: "Roboto-Medium",
+        paddingRight: 5
+    },
+    footerText: {
+        fontFamily: "OpenSans-Regular",
+        fontSize: 13,
+        marginLeft: 11
+    },
+    footerTextActive: {
+        fontFamily: "OpenSans-Regular",
+        fontSize: 13,
+        marginLeft: 11,
+        color: '#1c92c4'
+    },
+    footerTextInactive: {
+        fontFamily: "OpenSans-Regular",
+        fontSize: 13,
+        marginLeft: 11
+    },
+    footerConetntView: {
+        width: '35%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 })
 
