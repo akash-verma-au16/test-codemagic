@@ -90,13 +90,13 @@ class Post extends Component {
                     </Text>
                 </View>
                 <View style={styles.infoTab}>
-                    <View style={{ flexDirection: 'row', marginRight: 20 }}>
+                    <View style={{ flexDirection: 'row', width: "20%" }}>
                         <Text style={styles.infoNo}>{this.state.likes}</Text>
-                        <Text style={styles.infoText}>Likes</Text>
+                        <Text style={styles.infoText}>{this.state.likes > 1 ? "Likes" : "Like"}</Text>
                     </View>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row', width: "20%"}}>
                         <Text style={styles.infoNo}>0</Text>
-                        <Text style={styles.infoText}>Comments</Text>
+                        <Text style={styles.infoText}>Comment</Text>
                     </View>
                 </View>
                 <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5}}></View>
@@ -110,7 +110,7 @@ class Post extends Component {
                     }}>
                     <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView} onPress={this.onLikeHnadler}>
                         <Icon name='md-thumbs-up' style={ this.state.like ? styles.like : styles.unlike }/>
-                        <Text style={this.state.like ? styles.footerTextActive : styles.footerTextInactive}>Likes</Text>
+                        <Text style={this.state.like ? styles.footerTextActive : styles.footerTextInactive}>Like</Text>
                     </TouchableOpacity>
                     <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView}>
                         <Icon name='comment' type={'MaterialIcons'} style={styles.comment} />

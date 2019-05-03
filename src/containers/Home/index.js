@@ -318,6 +318,7 @@ class Home extends React.Component {
             <Container style={{flex:1}}>
                 {/* { this.state.loading ? */}
                 <ScrollView
+                    showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ flex: 1, alignItems: 'center' }} 
                     // scrollEnabled={true}
                 >
@@ -393,7 +394,8 @@ class Home extends React.Component {
                             onPageSelected={(page) => this.setState({ selectedTab: page.position })}
                         >
                             <View>
-                                <ScrollView
+                                <ScrollView 
+                                    showsVerticalScrollIndicator={false}
                                     contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingTop: 3, backgroundColor: '#eee'}}
                                     refreshControl={
                                         <RefreshControl
@@ -418,7 +420,8 @@ class Home extends React.Component {
                                 </ScrollView>
                             </View>
                             <View>
-                                <ScrollView
+                                <ScrollView 
+                                    showsVerticalScrollIndicator={false}
                                     contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', backgroundColor: '#eee' }}
                                     refreshControl={
                                         <RefreshControl
@@ -444,7 +447,8 @@ class Home extends React.Component {
                                 </ScrollView>
                             </View>
                             <View>
-                                <ScrollView
+                                <ScrollView 
+                                    showsVerticalScrollIndicator={false}
                                     contentContainerStyle={styles.cardContainer}
                                     scrollEnabled={true}
                                     refreshControl={

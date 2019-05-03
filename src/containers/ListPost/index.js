@@ -229,7 +229,8 @@ class ListPost extends React.Component {
 
             <Container style={{ backgroundColor: '#eee' }}>
 
-                <ScrollView
+                <ScrollView 
+                    showsVerticalScrollIndicator = {false}
                     refreshControl={
                         <RefreshControl
                             refreshing={this.state.refreshing || this.state.networkChanged} //this.props.isConnected
