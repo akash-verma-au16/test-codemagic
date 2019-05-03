@@ -39,9 +39,6 @@ import { dummyData, strngthIcon } from '../../components/Card/data'
 // API methods
 import { read_transaction, get_balance, user_profile } from '../../services/profile'
 
-//React navigation
-import { NavigationEvents } from 'react-navigation';
-
 /* Assets */
 import thumbnail from '../../assets/thumbnail.jpg'
 
@@ -62,6 +59,7 @@ class Home extends React.Component {
         this.loadTransactions = this.loadTransactions.bind(this)
         this.loadData = this.loadData.bind(this)
         this.loadHome = this.loadHome.bind(this)
+        this.loadSummary.bind(this)
         this.pager = React.createRef();
         this.homeDataList = []
         this.projectList = []
@@ -122,6 +120,8 @@ class Home extends React.Component {
             this.loadBalance()
             this.loadProfile()
             this.loadTransactions()
+            this.loadHome()
+            this.loadSummary()
         }
     }
 
@@ -508,6 +508,7 @@ const styles = StyleSheet.create({
     },
     companyName: {
         color: '#1c92c4',
+        fontSize: 15,
         fontWeight: 'bold',
         flexWrap: 'wrap',
         // fontStyle: 'italic',
