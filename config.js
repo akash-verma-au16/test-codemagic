@@ -7,15 +7,16 @@ export default {
         rewards: "https://lb3kbimo6b.execute-api.ap-south-1.amazonaws.com",
         post: "https://ueb6oyqxnf.execute-api.ap-southeast-1.amazonaws.com",
         push:"https://flnuddep8j.execute-api.ap-southeast-1.amazonaws.com",
-        create_post:"https://bgi3nogyc8.execute-api.ap-southeast-1.amazonaws.com/dev/kinesis",
-        get_visibility : "https://wzis5oap66.execute-api.ap-southeast-1.amazonaws.com/dev/post/get_visibility",
-        news_feed:"https://wzis5oap66.execute-api.ap-southeast-1.amazonaws.com/dev/post/news_feed",
+        create_post:"https://ipbi7go0f8.execute-api.ap-southeast-1.amazonaws.com/dev/posts/create-post",
+        get_visibility: "https://uhj5dficb2.execute-api.ap-southeast-1.amazonaws.com/dev/post/get_visibility",
+        news_feed:"https://uhj5dficb2.execute-api.ap-southeast-1.amazonaws.com/dev/post/news_feed",
         list_survey:"https://mjangpdi2k.execute-api.ap-southeast-1.amazonaws.com/dev/survey/list_survey",
         give_reward:"https://lb3kbimo6b.execute-api.ap-south-1.amazonaws.com/api/give_reward",
         inapp_notification: "https://flnuddep8j.execute-api.ap-southeast-1.amazonaws.com/api/list_inapp_notif",
         read_transaction: "https://0xso4c76y7.execute-api.ap-southeast-1.amazonaws.com/api/read_transaction",
         get_balance: "https://lb3kbimo6b.execute-api.ap-south-1.amazonaws.com/api/get_balance",
-        user_profile: "https://0xso4c76y7.execute-api.ap-southeast-1.amazonaws.com/api/user_profile"
+        user_profile: "https://0xso4c76y7.execute-api.ap-southeast-1.amazonaws.com/api/user_profile",
+        list_posts: "https://uhj5dficb2.execute-api.ap-southeast-1.amazonaws.com/dev/post/list_posts"
     },
     api: {
         signup: "signup",
@@ -53,3 +54,10 @@ export default {
         admin: "admin"
     }
 }
+
+// Previously used URLs (Release 1.8)
+// create_post: "https://bgi3nogyc8.execute-api.ap-southeast-1.amazonaws.com/dev/kinesis"
+// news_feed: "https://wzis5oap66.execute-api.ap-southeast-1.amazonaws.com/dev/post/news_feed"
+// get_visibility: "https://wzis5oap66.execute-api.ap-southeast-1.amazonaws.com/dev/post/get_visibility"
+// post: "https://ueb6oyqxnf.execute-api.ap-southeast-1.amazonaws.com
+

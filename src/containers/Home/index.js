@@ -24,9 +24,17 @@ import {
 } from 'native-base';
 
 import { IndicatorViewPager } from 'rn-viewpager';
+//Post Component
+import Post from '../../components/Post/index'
+//Card component
+import Card from '../../components/Card/index'
 
 /* Redux */
 import { connect } from 'react-redux'
+
+//Row data for Home & Summary tab
+import { homeData } from './data'
+import { dummyData, strngthIcon } from '../../components/Card/data'
 
 // API methods
 import { read_transaction, get_balance, user_profile } from '../../services/profile'
@@ -41,18 +49,24 @@ class Home extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            homeRefreshing: false,
             refreshing: false,
+            summaryRefreshing: false,
             loading: true,
             isSignInLoading: false,
-            selectedTab: 1,
+            selectedTab: 0,
             totalPoints: ""
         }
         this.loadProfile = this.loadProfile.bind(this)
         this.loadBalance = this.loadBalance.bind(this)
         this.loadTransactions = this.loadTransactions.bind(this)
         this.loadData = this.loadData.bind(this)
+        this.loadHome = this.loadHome.bind(this)
         this.pager = React.createRef();
+        this.homeDataList = []
+        this.projectList = []
         this.transactionList = []
+        this.summeryList = []
         this.payloadBackup = []
         this.userData = []
         // this.totalPoints = this.loadBalance()
@@ -94,13 +108,8 @@ class Home extends React.Component {
 
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
 
-        // console.log(this.state.loading)
-        // if (this.transactionList.length !== 0 && this.state.totalPoints !== "" && this.userData.length !== 0) {
-        //     this.setState({
-        //         loading: false
-        //     })
-        // }
-        // this.loadData()
+        this.loadHome()
+        this.loadSummary()
     }
 
     componentWillUnmount() {
@@ -125,6 +134,7 @@ class Home extends React.Component {
 
     //Load user profile API Handler
     async loadProfile() {
+        this.projectList = []
         const payload = {
             "tenant_id": this.props.accountAlias,
             "associate_id": this.props.associate_id
@@ -134,6 +144,10 @@ class Home extends React.Component {
                 // console.log("Calling user_profile")
                 await user_profile(payload).then((response) => {
                     this.userData = response.data.data
+                    this.userData.project_name.map((item) => {
+                        this.projectList.push(item.name)
+                    })
+
                 }).catch((error) => {
                     console.log(error)
                 })
@@ -144,6 +158,55 @@ class Home extends React.Component {
             console.log("error", error.code)
         }
         // this.setState({loading: true})
+    }
+
+    loadHome = () => {
+        this.homeDataList = []
+        this.setState({
+            homeRefreshing: true
+        })
+        // console.log("user", this.userData.username)
+        homeData.map((item,index) => {
+            this.homeDataList.push(
+                // Post Component
+                <Post
+                    key={index}
+                    postCreator={item.associate_name}
+                    time={item.time}
+                    postMessage={item.message}
+                    taggedAssociates={item.tagged_associates}
+                    strength={item.sub_type}
+                />
+            )
+        })
+
+        this.setState({
+            homeRefreshing: false
+        })
+    }
+
+    loadSummary = () => {
+        this.summeryList = []
+        this.setState({summaryRefreshing: true})
+        dummyData.map((item, index) => {
+            const imageURI = strngthIcon.filter((endorse) => {
+                if (item.type == 'endorsement') {
+                    return item.sub_type == endorse.name
+                } else {
+                    return item.type == endorse.name.toLowerCase()
+                }
+            })
+            this.summeryList.push(
+                <Card 
+                    key ={index}
+                    image={imageURI[0].source}
+                    count ={item.count}
+                    strength={item.sub_type}
+                />
+            )
+        })
+        this.setState({ summaryRefreshing: false })
+
     }
 
     // Get wallet balance API Handler
@@ -256,7 +319,7 @@ class Home extends React.Component {
                 {/* { this.state.loading ? */}
                 <ScrollView
                     contentContainerStyle={{ flex: 1, alignItems: 'center' }} 
-                    scrollEnabled={true}
+                    // scrollEnabled={true}
                 >
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: "100%", padding: 15 }}>
                         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '35%' }}>
@@ -275,14 +338,14 @@ class Home extends React.Component {
                             {/* {this.userData.username} */}
                             <Text style={[styles.coloredText, styles.textLeft]} allowFontScaling numberOfLines={2}>{this.userData.email}</Text>
                             <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={1}>Mobile: <Text style={styles.mobilNo}>{this.userData.moblie_no}</Text></Text>
-                            <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={2}>Working At, <Text style={styles.companyName}>{this.userData.company_name}</Text></Text>
+                            <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={2}>Projects: <Text style={styles.companyName}>{this.projectList.toString()}</Text></Text>
                         </View>
                     </View>
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', width: "100%", padding: 3 }}>
                         <View style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
                             <Text style={styles.text}>Home</Text>
-                            <H3 style={this.state.selectedTab == 0 ? styles.textActive : styles.textInactive}>9</H3>
+                            <H3 style={this.state.selectedTab == 0 ? styles.textActive : styles.textInactive}>5</H3>
                         </View>
                         <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                         <View style={{ alignItems: 'center', justifyContent: 'space-around', width: '33%' }}>
@@ -291,8 +354,8 @@ class Home extends React.Component {
                         </View>
                         <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                         <View style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
-                            <Text style={styles.text}>Endorses</Text>
-                            <H3 style={this.state.selectedTab == 2 ? styles.textActive : styles.textInactive}>25</H3>
+                            <Text style={styles.text}>Activity</Text>
+                            <H3 style={this.state.selectedTab == 2 ? styles.textActive : styles.textInactive}>14</H3>
                         </View>
                     </View>
 
@@ -317,34 +380,46 @@ class Home extends React.Component {
                             {/* <View style={{backgroundColor:'#000',width:1,height:'50%'}}/> */}
 
                             <TouchableOpacity onPress={() => this.pager.setPage(2)} style={styles.iconTouch}>
-                                <Icon name='md-people' style={this.state.selectedTab === 2 ? styles.iconActive : styles.iconInactive} />
+                                <Icon name='list-alt' type={'FontAwesome'} style={this.state.selectedTab === 2 ? [styles.iconActive, {fontSize: 24}] : [styles.iconInactive, {fontSize: 23}] } />
 
                                 {/* <H3 style={{textAlign:'center'}}>5</H3>
                             <Text style={styles.coloredText} >Endorses</Text> */}
                             </TouchableOpacity>
                         </View>
                         <IndicatorViewPager
-                            initialPage={1}
+                            initialPage={0}
                             ref={ref => this.pager = ref}
                             style={styles.viewPager}
                             onPageSelected={(page) => this.setState({ selectedTab: page.position })}
                         >
                             <View>
                                 <ScrollView
-                                    contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', padding: 20 }}
+                                    contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingTop: 3, backgroundColor: '#eee'}}
                                     refreshControl={
                                         <RefreshControl
-                                            refreshing={this.state.refreshing}
-                                            onRefresh={() => { this.setState({ refreshing: false }) }}
+                                            refreshing={this.state.homeRefreshing}
+                                            onRefresh={() => {
+                                                if (this.props.isConnected) {
+                                                    if (!this.props.isFreshInstall && this.props.isAuthenticate) {
+                                                        this.loadHome()
+                                                    }
+                                                }
+                                                else {
+                                                    Toast.show({
+                                                        text: 'Please, connect to the internet',
+                                                        type: 'danger',
+                                                        duration: 3000
+                                                    })
+                                                }
+                                            }}
                                         />
                                     }>
-                                    <Icon name='home' type={'Entypo'} style={{ fontSize: 22, color: '#8a8b8c' }} />
-                                    <Text style={{ color: '#8a8b8c', textAlign: 'center', marginTop: 15, width: '80%' }}>This page is under Development for Future Releases.</Text>
+                                    {this.homeDataList}
                                 </ScrollView>
                             </View>
                             <View>
                                 <ScrollView
-                                    contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start' }}
+                                    contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', backgroundColor: '#eee' }}
                                     refreshControl={
                                         <RefreshControl
                                             refreshing={this.state.refreshing}
@@ -370,14 +445,28 @@ class Home extends React.Component {
                             </View>
                             <View>
                                 <ScrollView
-                                    contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', padding: 20 }}
+                                    contentContainerStyle={styles.cardContainer}
+                                    scrollEnabled={true}
                                     refreshControl={
                                         <RefreshControl
-                                            refreshing={this.state.refreshing}
-                                            onRefresh={() => { this.setState({ refreshing: false }) }}
+                                            refreshing={this.state.summaryRefreshing}
+                                            onRefresh={() => {
+                                                if (this.props.isConnected) {
+                                                    if (!this.props.isFreshInstall && this.props.isAuthenticate) {
+                                                        this.loadSummary()
+                                                    }
+                                                }
+                                                else {
+                                                    Toast.show({
+                                                        text: 'Please, connect to the internet',
+                                                        type: 'danger',
+                                                        duration: 3000
+                                                    })
+                                                }
+                                            }}
                                         />
                                     }>
-
+                                    {this.summeryList}
                                     {/* <Icon name='worker' type={'MaterialCommunityIcons'} style={{ fontSize: 22, color: '#8a8b8c' }} />
                                     <Text style={{ color: '#8a8b8c', textAlign: 'center', marginTop: 15, width: '80%' }}>This page is under Development for Future Releases.</Text> */}
                                 </ScrollView>
@@ -387,7 +476,7 @@ class Home extends React.Component {
                 </ScrollView>
                 
                 {/* <ActivityIndicator size="small" color="#1c92c4" /> */}
-                <NavigationEvents
+                {/* <NavigationEvents
                     onWillFocus={() => {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
@@ -397,7 +486,7 @@ class Home extends React.Component {
                             }
                         }
                     }}
-                />
+                /> */}
             </Container>
 
         );
@@ -567,6 +656,17 @@ const styles = StyleSheet.create({
         borderRadius: 3,
         paddingHorizontal: 10,
         paddingVertical: 3
+    },
+    cardContainer: {
+        // flex: 1,
+        // width: "100%", 
+        flexDirection: 'row', 
+        flexWrap: 'wrap', 
+        alignItems: 'flex-start', 
+        justifyContent: 'space-between', 
+        paddingHorizontal: 15,
+        paddingTop: 15,
+        backgroundColor: '#efefef'
     }
   
 });

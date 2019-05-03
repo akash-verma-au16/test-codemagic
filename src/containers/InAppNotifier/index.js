@@ -10,6 +10,9 @@ import { NavigationEvents } from 'react-navigation';
 import { connect } from 'react-redux'
 import { inapp_notification } from '../../services/inAppNotification'
 
+// Import Strnegth Icon
+import { strngthIcon } from '../../components/Card/data'
+
 // import thumbnail from '../../assets/thumbnail.jpg'
 
 class InAppNotifier extends React.Component {
@@ -18,34 +21,6 @@ class InAppNotifier extends React.Component {
         this.state = {
             refreshing: false
         }
-
-        this.endorsementData = [
-            { name: 'Creativity', source: require('../../assets/endorsements/creativity.png') },
-            { name: 'Curiosity', source: require('../../assets/endorsements/curiosity.png') },
-            { name: 'Judgement', source: require('../../assets/endorsements/judgement.png') },
-            { name: 'Perspective', source: require('../../assets/endorsements/perspective.png') },
-            { name: 'Bravery', source: require('../../assets/endorsements/bravery.png') },
-            { name: 'Perseverance', source: require('../../assets/endorsements/perseverance.png') },
-            { name: 'Zest', source: require('../../assets/endorsements/zest.png') },
-            { name: 'Honesty', source: require('../../assets/endorsements/honesty.png') },
-            { name: 'Social Intelligence', source: require('../../assets/endorsements/socialIntelligence.png') },
-            { name: 'Kindness', source: require('../../assets/endorsements/kindness.png') },
-            { name: 'Love', source: require('../../assets/endorsements/love.png') },
-            { name: 'Leadership', source: require('../../assets/endorsements/leadership.png') },
-            { name: 'Fairness', source: require('../../assets/endorsements/fairness.png') },
-            { name: 'Teamwork', source: require('../../assets/endorsements/teamwork.png') },
-            { name: 'Forgiveness', source: require('../../assets/endorsements/forgiveness.png') },
-            { name: 'Love of Learning', source: require('../../assets/endorsements/loveOfLearning.png') },
-            { name: 'Spirituality', source: require('../../assets/endorsements/spirituality.png') },
-            { name: 'Self-Regulation', source: require('../../assets/endorsements/selfRegulation.png') },
-            { name: 'Humility', source: require('../../assets/endorsements/humility.png') },
-            { name: 'Appreciation', source: require('../../assets/endorsements/appreciation.png') },
-            { name: 'Prudence', source: require('../../assets/endorsements/prudence.png') },
-            { name: 'Hope', source: require('../../assets/endorsements/hope.png') },
-            { name: 'Humor', source: require('../../assets/endorsements/humor.png') },
-            { name: 'Gratitude', source: require('../../assets/endorsements/gratitude.png') }
-
-        ]
         this.onRefresh = this.onRefresh.bind(this)
         this.loadNotifications = this.loadNotifications.bind(this)
         this.payloadBackup = []
@@ -92,7 +67,7 @@ class InAppNotifier extends React.Component {
 
     createNotificationTile = (data) => {
         data.map((item, index) => {
-            const imageData = this.endorsementData.filter((endorse) => {
+            const imageData = strngthIcon.filter((endorse) => {
                 if(item.type_details.type == 'endorse'){
                     return item.type_details.sub_type == endorse.name
                 }else {
