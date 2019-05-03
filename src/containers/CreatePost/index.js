@@ -286,11 +286,11 @@ class CreatePost extends React.Component {
         this.setState({ isLoading: true })
         try {
             create_post(payload).then(() => {
-                Toast.show({
-                    text: 'Post created. This may take 1 minute to update',
-                    type: 'success',
-                    duration: 3000
-                })
+                // Toast.show({
+                //     text: 'Post created. This may take 1 minute to update',
+                //     type: 'success',
+                //     duration: 3000
+                // })
                 this.setState({
                     isLoading: false,
                     text: ''
