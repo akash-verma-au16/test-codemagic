@@ -53,13 +53,7 @@ class Post extends Component {
         return (
             <View style={styles.card} key={this.props.key}>
                 <View name='header'
-                    style={{
-                        flex: 1,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between'
-                        // padding: 10
-                    }}
+                    style={styles.container}
                 >
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <View name='image' style={{
@@ -129,6 +123,13 @@ class Post extends Component {
 }
 
 const styles= StyleSheet.create({
+    container: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+        // padding: 10
+    },
     card: {
         // marginTop: 10,
         marginBottom: 8,

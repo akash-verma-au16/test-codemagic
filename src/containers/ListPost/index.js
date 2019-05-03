@@ -143,7 +143,7 @@ class ListPost extends React.Component {
             try {
                 console.log('Calling NEWS_FEED API')
                 news_feed(payload).then(response => {
-                    // console.log("Data", response.data.data)
+                    console.log("Data", response.data.data)
                     /* take payload backup to check for changes later */
                     if (this.payloadBackup.length === response.data.data.length) {
                         /* No change in payload hence do nothing */
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         backgroundColor: '#eee',
-        paddingTop: 8
+        paddingTop: 3
     }
 });
 
