@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 // Components from React-Native
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 // Components from Native Base
-import { Icon, Toast } from 'native-base'
+import { Icon } from 'native-base'
 
 // Components from Moment.js
 import Moment from 'react-moment'
@@ -90,13 +90,13 @@ class Post extends Component {
                     </Text>
                 </View>
                 <View style={styles.infoTab}>
-                    <View style={{ flexDirection: 'row', marginRight: 20 }}>
+                    <View style={{ flexDirection: 'row', width: "20%", alignItems: 'center' }}>
                         <Text style={styles.infoNo}>{this.state.likes}</Text>
-                        <Text style={styles.infoText}>Likes</Text>
+                        <Text style={styles.infoText}>{this.state.likes > 1 ? "Likes" : "Like"}</Text>
                     </View>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row', width: "20%", alignItems: 'center'}}>
                         <Text style={styles.infoNo}>0</Text>
-                        <Text style={styles.infoText}>Comments</Text>
+                        <Text style={styles.infoText}>Comment</Text>
                     </View>
                 </View>
                 <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5}}></View>
@@ -110,7 +110,7 @@ class Post extends Component {
                     }}>
                     <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView} onPress={this.onLikeHnadler}>
                         <Icon name='md-thumbs-up' style={ this.state.like ? styles.like : styles.unlike }/>
-                        <Text style={this.state.like ? styles.footerTextActive : styles.footerTextInactive}>Likes</Text>
+                        <Text style={this.state.like ? styles.footerTextActive : styles.footerTextInactive}>Like</Text>
                     </TouchableOpacity>
                     <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView}>
                         <Icon name='comment' type={'MaterialIcons'} style={styles.comment} />

@@ -2,7 +2,6 @@ import React from 'react';
 import {
     StyleSheet,
     Text,
-    View,
     ScrollView,
     RefreshControl,
     TouchableOpacity,
@@ -10,8 +9,6 @@ import {
     BackHandler
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
-import Moment from 'react-moment'
-import moment from 'moment/min/moment-with-locales'
 
 import Post from '../../components/Post/index'
 /* Redux */
@@ -143,7 +140,7 @@ class ListPost extends React.Component {
             try {
                 console.log('Calling NEWS_FEED API')
                 news_feed(payload).then(response => {
-                    console.log("Data", response.data.data)
+                    // console.log("Data", response.data.data)
                     /* take payload backup to check for changes later */
                     if (this.payloadBackup.length === response.data.data.length) {
                         /* No change in payload hence do nothing */
@@ -229,7 +226,8 @@ class ListPost extends React.Component {
 
             <Container style={{ backgroundColor: '#eee' }}>
 
-                <ScrollView
+                <ScrollView 
+                    showsVerticalScrollIndicator = {false}
                     refreshControl={
                         <RefreshControl
                             refreshing={this.state.refreshing || this.state.networkChanged} //this.props.isConnected
