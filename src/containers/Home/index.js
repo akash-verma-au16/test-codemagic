@@ -3,15 +3,14 @@ import {
     StyleSheet,
     View,
     Dimensions,
-    ScrollView,
     TouchableOpacity,
     RefreshControl,
     Image,
     BackHandler,
     ActivityIndicator,
     Modal,
-    Alert,
-    TouchableHighlight
+    ScrollView,
+    TextInput
 } from 'react-native';
 
 import NetInfo from "@react-native-community/netinfo"
@@ -63,6 +62,7 @@ class Home extends React.Component {
         this.loadData = this.loadData.bind(this)
         this.loadHome = this.loadHome.bind(this)
         this.loadSummary.bind(this)
+        this.showToast = this.showToast.bind(this)
         this.pager = React.createRef();
         this.homeDataList = []
         this.projectList = []
@@ -72,7 +72,6 @@ class Home extends React.Component {
         this.homeDataBackup = []
         this.userData = []
         // this.totalPoints = this.loadBalance()
-        this.totalPontsBackup = ""
         this.loadTransactions = this.loadTransactions.bind(this)
 
     }
@@ -247,6 +246,15 @@ class Home extends React.Component {
         this.setModalVisible(true);
     }
 
+    //Helper functions
+    showToast = () => {
+        Toast.show({
+            text: 'Please, connect to the internet',
+            type: 'danger',
+            duration: 2000
+        })
+    }
+
     setModalVisible(visible) {
         this.setState({ modalVisible: visible });
     }
@@ -347,7 +355,7 @@ class Home extends React.Component {
                                 source={thumbnail}
                                 resizeMode='stretch'
                             />
-                            <TouchableOpacity style={styles.editBtn} onPress={this.handleModal}>
+                            <TouchableOpacity style={styles.editBtn} onPress={() => this.setModalVisible(true)} activeOpacity={0.9}>
                                 <Text style={styles.editText}>Edit profile</Text>
                             </TouchableOpacity>
                         </View>
@@ -425,11 +433,7 @@ class Home extends React.Component {
                                                     }
                                                 }
                                                 else {
-                                                    Toast.show({
-                                                        text: 'Please, connect to the internet',
-                                                        type: 'danger',
-                                                        duration: 3000
-                                                    })
+                                                    this.showToast()
                                                 }
                                             }}
                                         />
@@ -451,11 +455,7 @@ class Home extends React.Component {
                                                     }
                                                 }
                                                 else {
-                                                    Toast.show({
-                                                        text: 'Please, connect to the internet',
-                                                        type: 'danger',
-                                                        duration: 3000
-                                                    })
+                                                    this.showToast()
                                                 }
                                             }}
                                         />
@@ -478,11 +478,7 @@ class Home extends React.Component {
                                                     }
                                                 }
                                                 else {
-                                                    Toast.show({
-                                                        text: 'Please, connect to the internet',
-                                                        type: 'danger',
-                                                        duration: 3000
-                                                    })
+                                                    this.showToast()
                                                 }
                                             }}
                                         />
@@ -501,18 +497,80 @@ class Home extends React.Component {
                     transparent={false}
                     visible={this.state.modalVisible}
                     onRequestClose={() => {
-                        Alert.alert('Modal has been closed.');
+                        this.setModalVisible(!this.state.modalVisible);
                     }}>
-                    <View style={{ marginTop: 22 }}>
-                        <View>
-                            <Text>Hello World!</Text>
+                    <View style={[styles.modalCaontainer, { borderWidth: 1, borderColor: 'green'}]}>
+                        <View style={styles.headerContainer}>
+                            <View style={{width: '15%', alignItems: 'center', justifyContent: 'center'}}>
+                                <Icon name='close' type={'AntDesign'}
+                                    style={{ color: '#000', padding: 5, fontSize: 26 }}
+                                    onPress={() => { this.setModalVisible(!this.state.modalVisible) }}
+                                />
+                            </View>
 
-                            <TouchableHighlight
-                                onPress={() => {
-                                    this.setModalVisible(!this.state.modalVisible);
-                                }}>
-                                <Text>Hide Modal</Text>
-                            </TouchableHighlight>
+                            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 10, width: "85%"}}>
+                                <Text style={styles.headerText}>Edit Profile</Text>
+                                <Icon name='check' type={'MaterialIcons'} 
+                                    style={{ color: '#1c92c4', padding: 5, fontSize: 27 }}
+                                    onPress={() => { this.setModalVisible(!this.state.modalVisible) }}
+                                />
+                            </View>
+                        </View>
+                        <View style={{flex: 1, width: "100%"}}>
+                            <ScrollView
+                                contentContainerStyle={{ flex: 1, padding: 20, width:"100%"}} 
+                                showsVerticalScrollIndicator={false}
+                                scrollEnabled={true}
+                            >
+                                <View style={{alignItems: 'center', justifyContent: 'center', padding: 20}}>
+                                    <View style={styles.imageWrapper}>
+                                        <Image 
+                                            source={thumbnail} 
+                                            style={styles.profilePic}
+                                        />
+                                    </View>
+                                </View>
+                                <View style={styles.textInputWraper}>
+                                    <Text style={styles.fieldText}>First Name <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold'}}>*</Text></Text>
+                                    <TextInput
+                                        style={styles.textInput}
+                                        value={this.props.firstName} 
+                                        placeholder='First Name' 
+                                        underlineColorAndroid= '#1c92c4'
+                                        placeholderTextColor= '#ccc'
+                                    />
+                                </View>
+                                <View style={styles.textInputWraper}>
+                                    <Text style={styles.fieldText}>Last Name <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
+                                    <TextInput
+                                        style={styles.textInput}
+                                        value={this.props.lastName} 
+                                        placeholder='Last Name' 
+                                        underlineColorAndroid= '#1c92c4'
+                                        placeholderTextColor= '#ccc'
+                                    />
+                                </View>
+                                <View style={styles.textInputWraper}>
+                                    <Text style={styles.fieldText}>Email <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
+                                    <TextInput
+                                        style={styles.textInput}
+                                        value={this.userData.email}
+                                        placeholder='Email'
+                                        underlineColorAndroid='#1c92c4' 
+                                        placeholderTextColor= '#ccc'
+                                    />
+                                </View>
+                                <View style={styles.textInputWraper}>
+                                    <Text style={styles.fieldText}>Phone Number</Text>
+                                    <TextInput
+                                        style={styles.textInput}
+                                        value={this.userData.moblie_no}
+                                        placeholder='Phone Number' 
+                                        underlineColorAndroid= '#1c92c4'
+                                        placeholderTextColor= '#ccc'
+                                    />
+                                </View>
+                            </ScrollView>
                         </View>
                     </View>
                 </Modal>
@@ -562,7 +620,6 @@ const styles = StyleSheet.create({
         // backgroundColor: "blue"
     }, 
     textLeft : {
-        textAlign: 'left',
         width: "100%"
     },
     helperText: {
@@ -605,18 +662,6 @@ const styles = StyleSheet.create({
         width: '100%'
         // padding: 5
     },
-    // card: {
-    //     width: '98%',
-    //     alignItems: 'center', 
-    //     justifyContent: 'center', 
-    //     height: 120, 
-    //     backgroundColor: 'rgba(28, 146, 196,0.9)', 
-    //     marginTop: 5,
-    //     shadowOffset: { width: 5, height: 5 },
-    //     shadowColor: 'black',
-    //     shadowOpacity: 0.2,
-    //     elevation: 2
-    // },
     transactionContainer: {
         flex:1,
         width: '100%',
@@ -688,8 +733,6 @@ const styles = StyleSheet.create({
         paddingVertical: 3
     },
     cardContainer: {
-        // flex: 1,
-        // width: "100%", 
         flexDirection: 'row', 
         flexWrap: 'wrap', 
         alignItems: 'flex-start', 
@@ -697,8 +740,73 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingTop: 15,
         backgroundColor: '#efefef'
+    },
+    modalCaontainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: Dimensions.get('window').width
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        width: Dimensions.get('window').width,
+        backgroundColor: '#fff',
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderWidth:0,
+        shadowOffset: { width: 5, height: 0 },
+        shadowColor: '#666',
+        shadowRadius: 2,
+        shadowOpacity: 0.2,
+        elevation: 2
+    },
+    headerText: {
+        textAlign: 'left',
+        fontSize: 19,
+        fontFamily: "OpenSans-Regular",
+        fontWeight: '300'
+    },
+    fieldText: {
+        textAlign: 'left',
+        paddingBottom: 0,
+        fontSize: 16,
+        color: '#444',
+        fontFamily: 'OpenSans-Regular'
+    },
+    textInputWraper: {
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        width: "100%",
+        paddingVertical: 5
+    }, 
+    textInput: {
+        width: "100%", 
+        // padding: 0,
+        paddingBottom: 15, 
+        height: 45,
+        fontSize: 15
+    },
+    profilePic: {
+        height: 130,
+        aspectRatio: 1 / 1,
+        borderRadius: 130,
+        
+    },
+    imageWrapper: {
+        height: 137, 
+        width: 137, 
+        borderRadius: 137, 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        borderWidth: 7,
+        borderColor: '#FFF',
+        shadowOffset: { width: 7, height: 7 },
+        shadowColor: '#333',
+        shadowRadius: 2,
+        shadowOpacity: 0.4,
+        elevation: 5
     }
-  
 });
 
 const mapStateToProps = (state) => {
