@@ -8,7 +8,10 @@ import {
     RefreshControl,
     Image,
     BackHandler,
-    ActivityIndicator
+    ActivityIndicator,
+    Modal,
+    Alert,
+    TouchableHighlight
 } from 'react-native';
 
 import NetInfo from "@react-native-community/netinfo"
@@ -17,7 +20,6 @@ import {
     Container,
     Text,
     Icon,
-    H2,
     H3,
     Toast
 
@@ -33,11 +35,12 @@ import Card from '../../components/Card/index'
 import { connect } from 'react-redux'
 
 //Row data for Home & Summary tab
-import { homeData } from './data'
+// import { homeData } from './data'
 import { dummyData, strngthIcon } from '../../components/Card/data'
 
 // API methods
-import { read_transaction, get_balance, user_profile } from '../../services/profile'
+import { read_transaction, user_profile } from '../../services/profile'
+import { list_posts } from '../../services/post'
 
 /* Assets */
 import thumbnail from '../../assets/thumbnail.jpg'
@@ -52,10 +55,10 @@ class Home extends React.Component {
             loading: true,
             isSignInLoading: false,
             selectedTab: 0,
-            totalPoints: ""
+            modalVisible: false
         }
         this.loadProfile = this.loadProfile.bind(this)
-        this.loadBalance = this.loadBalance.bind(this)
+        // this.loadBalance = this.loadBalance.bind(this)
         this.loadTransactions = this.loadTransactions.bind(this)
         this.loadData = this.loadData.bind(this)
         this.loadHome = this.loadHome.bind(this)
@@ -65,7 +68,8 @@ class Home extends React.Component {
         this.projectList = []
         this.transactionList = []
         this.summeryList = []
-        this.payloadBackup = []
+        this.transactionDataBackup = []
+        this.homeDataBackup = []
         this.userData = []
         // this.totalPoints = this.loadBalance()
         this.totalPontsBackup = ""
@@ -117,7 +121,7 @@ class Home extends React.Component {
 
     handleConnectivityChange = (isConnected) => {
         if (isConnected) {
-            this.loadBalance()
+            // this.loadBalance()
             this.loadProfile()
             this.loadTransactions()
             this.loadHome()
@@ -126,7 +130,7 @@ class Home extends React.Component {
     }
 
     async loadData() {
-        await this.loadBalance()
+        // await this.loadBalance()
         await this.loadProfile()
         // await this.loadTransactions()
         this.setState({loading: false})
@@ -145,7 +149,10 @@ class Home extends React.Component {
                 await user_profile(payload).then((response) => {
                     this.userData = response.data.data
                     this.userData.project_name.map((item) => {
-                        this.projectList.push(item.name)
+                        if (!this.projectList.includes(item.name)) {
+                            this.projectList.push(item.name)
+                            console.log(this.projectList)
+                        }
                     })
 
                 }).catch((error) => {
@@ -160,29 +167,56 @@ class Home extends React.Component {
         // this.setState({loading: true})
     }
 
-    loadHome = () => {
-        this.homeDataList = []
+    loadHome() {
+        // this.homeDataList = []
         this.setState({
             homeRefreshing: true
         })
         // console.log("user", this.userData.username)
-        homeData.map((item,index) => {
-            this.homeDataList.push(
-                // Post Component
-                <Post
-                    key={index}
-                    postCreator={item.associate_name}
-                    time={item.time}
-                    postMessage={item.message}
-                    taggedAssociates={item.tagged_associates}
-                    strength={item.sub_type}
-                />
-            )
-        })
-
-        this.setState({
-            homeRefreshing: false
-        })
+        const payload = {
+            "tenant_id": this.props.accountAlias,
+            "associate_id": this.props.associate_id
+        }
+        try {
+            if (payload.tenant_id !== "" && payload.associate_id !== "") {
+                
+                list_posts(payload).then((response) => {
+                    if(this.homeDataBackup.length === response.data.data.length) {
+                        if(response.data.data.length === 0) {
+                            this.homeDataList = []
+                            this.homeDataList.push(<Text style={{ margin: 10 }} key={0}>No post to display</Text>)
+                            this.homeDataList.push(<Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon on <Text style={{fontWeight: 'bold', fontStyle: 'italic'}}>Home</Text></Text>)
+                        }
+                        this.setState({ homeRefreshing: false })
+                        return
+                    } else {
+                        this.homeDataBackup = response.data.data
+                        this.homeDataList = []
+                        response.data.data.map((item, index) => {
+                            this.homeDataList.push(
+                                // Post Component
+                                <Post
+                                    key={index}
+                                    postCreator={item.Item.associate_name}
+                                    time={item.Item.time}
+                                    postMessage={item.Item.message}
+                                    taggedAssociates={item.Item.tagged_associates}
+                                    strength={item.Item.sub_type}
+                                />
+                            )
+                        })
+                        this.setState({ homeRefreshing: false })
+                    }
+                }).catch((e) => {
+                    this.setState({ homeRefreshing: false })
+                    console.log(e)
+                })
+            }
+        }
+        catch(error) {
+            this.setState({ homeRefreshing: false })
+            console.log(error)
+        }
     }
 
     loadSummary = () => {
@@ -209,28 +243,12 @@ class Home extends React.Component {
 
     }
 
-    // Get wallet balance API Handler
-    async loadBalance() {
-        const payload = {
-            associate_id: this.props.associate_id
-        }
-        try {
-            if (payload.associate_id !== "") {
-                console.log("Calling get_balance API")
-                await get_balance(payload).then((response) => {
-                    this.setState({ totalPonts: response.data.data.total_points})
-                    this.totalPontsBackup = response.data.data.total_points
-                }).catch((error) => {
-                    console.log(error)
-                })
-                // this.setState({ loading: false })
-            }
-        }
-        catch(error) {
-            // this.setState({ loading: false })
-            console.log(error)
-        }
-        // this.setState({ loading: true })
+    handleModal = () => {
+        this.setModalVisible(true);
+    }
+
+    setModalVisible(visible) {
+        this.setState({ modalVisible: visible });
     }
 
     // Get Transaction list API Handler
@@ -244,7 +262,7 @@ class Home extends React.Component {
                 this.setState({ refreshing: true })
                 // console.log("Calling read_transaction API")
                 await read_transaction(payload).then(response => {
-                    if (this.payloadBackup.length === response.data.data.transaction_data) {
+                    if (this.transactionDataBackup.length === response.data.data.transaction_data) {
                         if (response.data.data.transaction_data.length == 0) {
                             this.transactionList = []
                             this.transactionList.push(
@@ -254,7 +272,7 @@ class Home extends React.Component {
                         this.setState({ refreshing: false })
                     } else {
                         //Change in Payload
-                        this.payloadBackup = response.data.data.transaction_data
+                        this.transactionDataBackup = response.data.data.transaction_data
                         if (this.transactionList.length !== 0) {
                             this.transactionList = []
                         }
@@ -329,7 +347,7 @@ class Home extends React.Component {
                                 source={thumbnail}
                                 resizeMode='stretch'
                             />
-                            <TouchableOpacity style={styles.editBtn}>
+                            <TouchableOpacity style={styles.editBtn} onPress={this.handleModal}>
                                 <Text style={styles.editText}>Edit profile</Text>
                             </TouchableOpacity>
                         </View>
@@ -346,12 +364,12 @@ class Home extends React.Component {
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', width: "100%", padding: 3 }}>
                         <View style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
                             <Text style={styles.text}>Home</Text>
-                            <H3 style={this.state.selectedTab == 0 ? styles.textActive : styles.textInactive}>5</H3>
+                            <H3 style={this.state.selectedTab == 0 ? styles.textActive : styles.textInactive}>{this.homeDataList.length}</H3>
                         </View>
                         <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                         <View style={{ alignItems: 'center', justifyContent: 'space-around', width: '33%' }}>
                             <Text style={styles.text}>Rewards</Text>
-                            <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.state.totalPoints == "" ? this.totalPontsBackup : this.state.totalPoints}</H3>
+                            <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.userData.balance}</H3>
                         </View>
                         <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                         <View style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
@@ -416,7 +434,7 @@ class Home extends React.Component {
                                             }}
                                         />
                                     }>
-                                    {this.homeDataList}
+                                    {this.homeDataList.length === 0 ? this.homeDataBackup : this.homeDataList}
                                 </ScrollView>
                             </View>
                             <View>
@@ -430,7 +448,6 @@ class Home extends React.Component {
                                                 if(this.props.isConnected) {
                                                     if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                                         this.loadTransactions()
-                                                        this.loadBalance()
                                                     }
                                                 }
                                                 else {
@@ -479,18 +496,26 @@ class Home extends React.Component {
                     </View>
                 </ScrollView>
                 
-                {/* <ActivityIndicator size="small" color="#1c92c4" /> */}
-                {/* <NavigationEvents
-                    onWillFocus={() => {
-                        if (this.props.isConnected) {
-                            if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                this.loadBalance()
-                                this.loadTransactions()
-                                this.loadProfile()
-                            }
-                        }
-                    }}
-                /> */}
+                <Modal
+                    animationType="slide"
+                    transparent={false}
+                    visible={this.state.modalVisible}
+                    onRequestClose={() => {
+                        Alert.alert('Modal has been closed.');
+                    }}>
+                    <View style={{ marginTop: 22 }}>
+                        <View>
+                            <Text>Hello World!</Text>
+
+                            <TouchableHighlight
+                                onPress={() => {
+                                    this.setModalVisible(!this.state.modalVisible);
+                                }}>
+                                <Text>Hide Modal</Text>
+                            </TouchableHighlight>
+                        </View>
+                    </View>
+                </Modal>
             </Container>
 
         );

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 // Components from React-Native
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 // Components from Native Base
-import { Icon, Toast } from 'native-base'
+import { Icon } from 'native-base'
 
 // Components from Moment.js
 import Moment from 'react-moment'
@@ -90,11 +90,11 @@ class Post extends Component {
                     </Text>
                 </View>
                 <View style={styles.infoTab}>
-                    <View style={{ flexDirection: 'row', width: "20%" }}>
+                    <View style={{ flexDirection: 'row', width: "20%", alignItems: 'center' }}>
                         <Text style={styles.infoNo}>{this.state.likes}</Text>
                         <Text style={styles.infoText}>{this.state.likes > 1 ? "Likes" : "Like"}</Text>
                     </View>
-                    <View style={{ flexDirection: 'row', width: "20%"}}>
+                    <View style={{ flexDirection: 'row', width: "20%", alignItems: 'center'}}>
                         <Text style={styles.infoNo}>0</Text>
                         <Text style={styles.infoText}>Comment</Text>
                     </View>

@@ -61,3 +61,5 @@ export default {
 // get_visibility: "https://wzis5oap66.execute-api.ap-southeast-1.amazonaws.com/dev/post/get_visibility"
 // post: "https://ueb6oyqxnf.execute-api.ap-southeast-1.amazonaws.com
 
+// Added
+// list_posts: "https://uhj5dficb2.execute-api.ap-southeast-1.amazonaws.com/dev/post/list_posts"
