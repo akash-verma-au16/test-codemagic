@@ -5,7 +5,8 @@ import {
     TouchableOpacity,
     FlatList,
     Alert,
-    BackHandler
+    BackHandler,
+    ToastAndroid
 } from 'react-native';
 /* Redux */
 import { connect } from 'react-redux'
@@ -29,6 +30,7 @@ class Settings extends React.Component {
         this.state = {
             isLoading: false
         }
+        this.signOut = this.signOut.bind(this)
     }
 
     async goBack() {
@@ -79,7 +81,7 @@ class Settings extends React.Component {
             onPress: () => this.toast()
         },
         {
-            key: 'App Version : 1.9',
+            key: 'App Version : 1.10',
             icon: 'md-phone-portrait'
         },
         {
@@ -97,10 +99,17 @@ class Settings extends React.Component {
         }).then(() => {
             this.props.deAuthenticate()
             this.setState({ isLoading: false })
-            Toast.show({
-                text: 'Signed out Successfully',
-                type: "success"
-            })
+            // Toast.show({
+            //     text: 'Signed out Successfully',
+            //     type: "success"
+            // })
+            ToastAndroid.showWithGravityAndOffset(
+                'Signed out Successfully',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+                25,
+                100,
+            );
             const resetAction = StackActions.reset({
                 index: 0,
                 actions: [NavigationActions.navigate({ routeName: 'LoginPage' })]
@@ -110,16 +119,32 @@ class Settings extends React.Component {
         }).catch(() => {
             if(!this.props.isConnected) {
                 this.setState({ isLoading: false })
-                Toast.show({
-                    text: 'Please, connect to the internet',
-                    type: "danger"
-                })
+                // Toast.show({
+                //     text: 'Please, connect to the internet',
+                //     type: "danger"
+                // })
+                ToastAndroid.showWithGravityAndOffset(
+                    'Please, connect to the internet',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                    25,
+                    100,
+                );
+            
             } else {
                 this.setState({ isLoading: false })
-                Toast.show({
-                    text: 'Unable to communicate with server',
-                    type: "danger"
-                })
+                // Toast.show({
+                //     text: 'Unable to communicate with server',
+                //     type: "danger"
+                // })
+                ToastAndroid.showWithGravityAndOffset(
+                    'Unable to communicate with server',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                    25,
+                    100,
+                );
+                
             }
         })
     }
