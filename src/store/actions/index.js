@@ -9,5 +9,6 @@ export const system ={
 
 }
 export const dev = {
-    CLEAR_DATA : 'CLEAR_DATA'
+    CLEAR_DATA : 'CLEAR_DATA',
+    UPDATE_USER: 'UPDATE_USER'
 }

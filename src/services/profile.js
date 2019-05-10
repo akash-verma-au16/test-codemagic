@@ -21,3 +21,17 @@ export const user_profile = (
     const endpoint = config.url.user_profile
     return axios.post(endpoint, payload)
 }
+
+export const strength_counts = (
+    payload
+) => {
+    const endpoint = config.url.strength_counts
+    return axios.post(endpoint, payload)
+}
+
+export const update_profile = (
+    payload
+) => {
+    const endpoint = config.url.update_profile
+    return axios.post(endpoint, payload)
+}

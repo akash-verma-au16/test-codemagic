@@ -16,7 +16,9 @@ export default {
         read_transaction: "https://0xso4c76y7.execute-api.ap-southeast-1.amazonaws.com/api/read_transaction",
         get_balance: "https://lb3kbimo6b.execute-api.ap-south-1.amazonaws.com/api/get_balance",
         user_profile: "https://0xso4c76y7.execute-api.ap-southeast-1.amazonaws.com/api/user_profile",
-        list_posts: "https://uhj5dficb2.execute-api.ap-southeast-1.amazonaws.com/dev/post/list_posts"
+        list_posts: "https://uhj5dficb2.execute-api.ap-southeast-1.amazonaws.com/dev/post/list_posts",
+        strength_counts: "https://0xso4c76y7.execute-api.ap-southeast-1.amazonaws.com/api/strength_counts",
+        update_profile: "https://0xso4c76y7.execute-api.ap-southeast-1.amazonaws.com/api/update_profile"
     },
     api: {
         signup: "signup",
