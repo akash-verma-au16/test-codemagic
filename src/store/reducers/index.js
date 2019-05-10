@@ -77,6 +77,19 @@ export default (state = initialState, action) => {
         }
     }
 
+    case dev.UPDATE_USER: {
+        return {
+            ...state,
+            user: {
+                ...state.user,
+                firstName: action.payload.firstName,
+                lastName: action.payload.lastName,
+                phoneNumber: action.payload.phoneNumber,
+                emailAddress: action.payload.emailAddress
+            }
+        }
+    }
+
     default: {
         return state;
     }

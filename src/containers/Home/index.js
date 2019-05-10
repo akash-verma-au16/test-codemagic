@@ -10,7 +10,11 @@ import {
     ActivityIndicator,
     Modal,
     ScrollView,
-    TextInput
+    TextInput,
+    KeyboardAvoidingView,
+    Alert,
+    Keyboard,
+    ToastAndroid
 } from 'react-native';
 
 import NetInfo from "@react-native-community/netinfo"
@@ -20,7 +24,8 @@ import {
     Text,
     Icon,
     H3,
-    Toast
+    Toast,
+    Root
 
 } from 'native-base';
 
@@ -32,6 +37,7 @@ import Card from '../../components/Card/index'
 
 /* Redux */
 import { connect } from 'react-redux'
+import { dev } from '../../store/actions'
 
 //Row data for Home & Summary tab
 // import { homeData } from './data'
@@ -40,6 +46,7 @@ import { dummyData, strngthIcon } from '../../components/Card/data'
 // API methods
 import { read_transaction, user_profile } from '../../services/profile'
 import { list_posts } from '../../services/post'
+import { strength_counts, update_profile } from '../../services/profile'
 
 /* Assets */
 import thumbnail from '../../assets/thumbnail.jpg'
@@ -54,7 +61,21 @@ class Home extends React.Component {
             loading: true,
             isSignInLoading: false,
             selectedTab: 0,
-            modalVisible: false
+            modalVisible: false,
+            firstName: "",
+            lastName: "",
+            email: "",
+            phoneNo: "",
+            isSaved: false,
+            isEdit: false
+            // editProfile: {
+            //     firstName: "",
+            //     lastName: "",
+            //     email: "",
+            //     phoneNo: "",
+            //     isSaved: false,
+            //     isEdit: false
+            // }
         }
         this.loadProfile = this.loadProfile.bind(this)
         // this.loadBalance = this.loadBalance.bind(this)
@@ -63,6 +84,7 @@ class Home extends React.Component {
         this.loadHome = this.loadHome.bind(this)
         this.loadSummary.bind(this)
         this.showToast = this.showToast.bind(this)
+        this.handleEditProfile = this.handleEditProfile.bind(this)
         this.pager = React.createRef();
         this.homeDataList = []
         this.projectList = []
@@ -126,6 +148,13 @@ class Home extends React.Component {
             this.loadHome()
             this.loadSummary()
         }
+    }
+    comingSoon() {
+        Toast.show({
+            text: 'Coming soon',
+            type: 'success',
+            duration: 3000
+        })
     }
 
     async loadData() {
@@ -221,6 +250,20 @@ class Home extends React.Component {
     loadSummary = () => {
         this.summeryList = []
         this.setState({summaryRefreshing: true})
+        // const payload = {
+        //     "tenant_id": this.props.accountAlias,
+        //     "associate_id": this.props.associate_id
+        // }
+        // try {
+        //     strength_counts(payload).then((response) => {
+        //         console.log("Strengths", response)
+        //     }).catch((e) => {
+        //         this.setState({ summaryRefreshing: true })
+        //     })
+        // }
+        // catch(e){
+        //     this.setState({ summaryRefreshing: true })
+        // }
         dummyData.map((item, index) => {
             const imageURI = strngthIcon.filter((endorse) => {
                 if (item.type == 'endorsement') {
@@ -242,8 +285,114 @@ class Home extends React.Component {
 
     }
 
-    handleModal = () => {
-        this.setModalVisible(true);
+    async handleEditProfile(){
+        Keyboard.dismiss()
+        this.comingSoon()
+        // if(this.state.isEdit) {
+        //     if(this.state.firstName == "") {
+        //         Toast.show({
+        //             text: 'Please enter First Name',
+        //             type: 'danger',
+        //             duration: 2000
+        //         })
+        //     }
+        //     else if(this.state.lastName == "") {
+        //         Toast.show({
+        //             text: 'Please enter Last Name',
+        //             type: 'danger',
+        //             duration: 2000
+        //         })
+        //     }
+        //     else if(this.state.email == "" || /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.state.email) == false) {
+        //         Toast.show({
+        //             text: 'Please enter valid Email',
+        //             type: 'danger',
+        //             duration: 2000
+        //         })
+        //     }
+        //     else if (this.state.phoneNo == "" || /^\d{10}$/.test(this.state.phoneNo) === false) {
+        //         Toast.show({
+        //             text: 'Please enter valid Phone Number',
+        //             type: 'danger',
+        //             duration: 2000
+        //         })
+        //     }
+        //     else {
+        //         try {
+        //             const payload = {
+        //                 "tenant_id": this.props.accountAlias,
+        //                 "associate_id": this.props.associate_id,
+        //                 "first_name": this.state.firstName,
+        //                 "last_name": this.state.lastName,
+        //                 "email": this.state.email,
+        //                 "phone_number": this.state.phoneNo
+        //             }
+        //             console.log(payload)
+        //             await update_profile(payload).then((res) => {
+        //                 console.log(res)
+        //                 ToastAndroid.showWithGravityAndOffset(
+        //                     'Updating',
+        //                     ToastAndroid.LONG,
+        //                     ToastAndroid.BOTTOM,
+        //                     25,
+        //                     100,
+        //                 );
+        //             }).catch((e) => {
+        //                 console.log(e)
+        //             })
+        //         }
+        //         catch(e) {
+        //             console.log(e)
+        //         }
+        //         await this.loadProfile()
+        //         const payload = {
+        //             firstName: this.state.firstName,
+        //             lastName: this.state.lastName,
+        //             phoneNumber: this.state.phoneNo,
+        //             emailAddress: this.state.email
+        //         }
+        //         this.props.updateUser(payload)
+        //         this.setState({ submit: false, isEdit: false })
+        //         this.setModalVisible(false)
+        //     }
+        // }
+    }
+
+    openModal = () => {
+        this.setState({
+            modalVisible: true,
+            firstName: this.props.firstName,
+            lastName: this.props.lastName,
+            email: this.userData.email,
+            phoneNo: this.userData.moblie_no.slice(3).toString()
+
+        })
+    }
+
+    requestCloseModal = () => {
+        if(this.state.isEdit) {
+            Alert.alert(
+                'Unsaved changes',
+                'You have not saved changes. Are you sure that you want to cancel?',
+                [
+                    {
+                        text: 'No',
+                        style: 'cancel'
+                    },
+                    {
+                        text: 'Yes', onPress: () => {
+                            this.setModalVisible(false)
+                            this.setState({isEdit: false})
+                        }
+                    }
+                ],
+                { cancelable: false },
+            )
+        }
+        else {
+            this.setModalVisible(false)
+        }
+        // this.setModalVisible(false)
     }
 
     //Helper functions
@@ -355,7 +504,7 @@ class Home extends React.Component {
                                 source={thumbnail}
                                 resizeMode='stretch'
                             />
-                            <TouchableOpacity style={styles.editBtn} onPress={() => this.setModalVisible(true)} activeOpacity={0.9}>
+                            <TouchableOpacity style={styles.editBtn} onPress={this.openModal} activeOpacity={0.9}>
                                 <Text style={styles.editText}>Edit profile</Text>
                             </TouchableOpacity>
                         </View>
@@ -386,7 +535,7 @@ class Home extends React.Component {
                         </View>
                     </View>
 
-                    {/* <View style={{flex: 1, alignItems: 'center'}}> */}
+                    {/* <ScrollView style={{flex: 1, alignItems: 'center'}}> */}
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
                         <View style={styles.tabHeader}>
                             <TouchableOpacity onPress={() => this.pager.setPage(0)} style={styles.iconTouch}>
@@ -496,83 +645,120 @@ class Home extends React.Component {
                     animationType="slide"
                     transparent={false}
                     visible={this.state.modalVisible}
-                    onRequestClose={() => {
-                        this.setModalVisible(!this.state.modalVisible);
-                    }}>
-                    <View style={[styles.modalCaontainer, { borderWidth: 1, borderColor: 'green'}]}>
-                        <View style={styles.headerContainer}>
-                            <View style={{width: '15%', alignItems: 'center', justifyContent: 'center'}}>
-                                <Icon name='close' type={'AntDesign'}
-                                    style={{ color: '#000', padding: 5, fontSize: 26 }}
-                                    onPress={() => { this.setModalVisible(!this.state.modalVisible) }}
-                                />
-                            </View>
-
-                            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 10, width: "85%"}}>
-                                <Text style={styles.headerText}>Edit Profile</Text>
-                                <Icon name='check' type={'MaterialIcons'} 
-                                    style={{ color: '#1c92c4', padding: 5, fontSize: 27 }}
-                                    onPress={() => { this.setModalVisible(!this.state.modalVisible) }}
-                                />
-                            </View>
-                        </View>
-                        <View style={{flex: 1, width: "100%"}}>
-                            <ScrollView
-                                contentContainerStyle={{ flex: 1, padding: 20, width:"100%"}} 
-                                showsVerticalScrollIndicator={false}
-                                scrollEnabled={true}
-                            >
-                                <View style={{alignItems: 'center', justifyContent: 'center', padding: 20}}>
-                                    <View style={styles.imageWrapper}>
-                                        <Image 
-                                            source={thumbnail} 
-                                            style={styles.profilePic}
+                    onRequestClose={this.requestCloseModal}>
+                    <KeyboardAvoidingView style={{ flex: 1 }} 
+                        keyboardVerticalOffset={-290}
+                        behavior="padding"
+                        enabled
+                    >
+                        <Root>
+                            <View style={[styles.modalCaontainer]}>
+                                <View style={styles.headerContainer}>
+                                    <View style={{width: '15%', alignItems: 'center', justifyContent: 'center'}}>
+                                        <Icon name='close' type={'AntDesign'}
+                                            style={{ color: '#000', padding: 5, fontSize: 26 }}
+                                            onPress={this.requestCloseModal}
                                         />
                                     </View>
+
+                                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 10, width: "85%"}}>
+                                        <Text style={styles.headerText}>Edit Profile</Text>
+                                        
+                                        <Icon name='check' type={'MaterialIcons'} 
+                                            style={this.state.isEdit ? { color: '#1c92c4', padding: 5, fontSize: 27 } : { color: '#ccc', padding: 5, fontSize: 27 }}
+                                            onPress={this.handleEditProfile}
+                                        />
+        
+                                    </View>
                                 </View>
-                                <View style={styles.textInputWraper}>
-                                    <Text style={styles.fieldText}>First Name <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold'}}>*</Text></Text>
-                                    <TextInput
-                                        style={styles.textInput}
-                                        value={this.props.firstName} 
-                                        placeholder='First Name' 
-                                        underlineColorAndroid= '#1c92c4'
-                                        placeholderTextColor= '#ccc'
-                                    />
+                                <View style={{flex: 1, width: "100%"}}>
+                                    <ScrollView
+                                        contentContainerStyle={{ padding: 20, width:"100%"}} 
+                                        showsVerticalScrollIndicator={false}
+                                        scrollEnabled={true}
+                                    >
+                                        <View style={{alignItems: 'center', justifyContent: 'center', padding: 20}}>
+                                            <View style={styles.imageWrapper}>
+                                                <Image 
+                                                    source={thumbnail} 
+                                                    style={styles.profilePic}
+                                                />
+                                            </View>
+                                            <TouchableOpacity>
+                                                <Text style={styles.changePicText}>Change Profile Photo</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <View style={styles.textInputWraper}>
+                                            <Text style={styles.fieldText}>First Name <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold'}}>*</Text></Text>
+                                            <TextInput
+                                                style={styles.textInput}
+                                                value={this.state.firstName} 
+                                                placeholder='First Name' 
+                                                underlineColorAndroid= '#1c92c4'
+                                                placeholderTextColor= '#ccc'
+                                                onChangeText = {(text) => {
+                                                    this.setState({
+                                                        firstName: text,
+                                                        isEdit: true
+                                                    })
+                                                }}
+                                            />
+                                        </View>
+                                        <View style={styles.textInputWraper}>
+                                            <Text style={styles.fieldText}>Last Name <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
+                                            <TextInput
+                                                style={styles.textInput}
+                                                value={this.state.lastName} 
+                                                placeholder='Last Name' 
+                                                underlineColorAndroid= '#1c92c4'
+                                                placeholderTextColor= '#ccc' 
+                                                onChangeText={(text) => {
+                                                    this.setState({
+                                                        lastName: text,
+                                                        isEdit: true
+                                                    })
+                                                }}
+                                            />
+                                        </View>
+                                        <View style={styles.textInputWraper}>
+                                            <Text style={styles.fieldText}>Email <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
+                                            <TextInput
+                                                style={styles.textInput}
+                                                value={this.state.email}
+                                                placeholder='Email'
+                                                underlineColorAndroid='#1c92c4' 
+                                                keyboardType='email-address'
+                                                placeholderTextColor= '#ccc' 
+                                                onChangeText={(text) => {
+                                                    this.setState({
+                                                        email: text,
+                                                        isEdit: true
+                                                    })
+                                                }}
+                                            />
+                                        </View>
+                                        <View style={styles.textInputWraper}>
+                                            <Text style={styles.fieldText}>Phone Number</Text>
+                                            <TextInput
+                                                style={styles.textInput}
+                                                value={this.state.phoneNo}
+                                                placeholder='Phone Number' 
+                                                keyboardType='phone-pad'
+                                                underlineColorAndroid= '#1c92c4'
+                                                placeholderTextColor= '#ccc' 
+                                                onChangeText={(text) => {
+                                                    this.setState({
+                                                        phoneNo: text,
+                                                        isEdit: true
+                                                    })
+                                                }}
+                                            />
+                                        </View>
+                                    </ScrollView>
                                 </View>
-                                <View style={styles.textInputWraper}>
-                                    <Text style={styles.fieldText}>Last Name <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
-                                    <TextInput
-                                        style={styles.textInput}
-                                        value={this.props.lastName} 
-                                        placeholder='Last Name' 
-                                        underlineColorAndroid= '#1c92c4'
-                                        placeholderTextColor= '#ccc'
-                                    />
-                                </View>
-                                <View style={styles.textInputWraper}>
-                                    <Text style={styles.fieldText}>Email <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
-                                    <TextInput
-                                        style={styles.textInput}
-                                        value={this.userData.email}
-                                        placeholder='Email'
-                                        underlineColorAndroid='#1c92c4' 
-                                        placeholderTextColor= '#ccc'
-                                    />
-                                </View>
-                                <View style={styles.textInputWraper}>
-                                    <Text style={styles.fieldText}>Phone Number</Text>
-                                    <TextInput
-                                        style={styles.textInput}
-                                        value={this.userData.moblie_no}
-                                        placeholder='Phone Number' 
-                                        underlineColorAndroid= '#1c92c4'
-                                        placeholderTextColor= '#ccc'
-                                    />
-                                </View>
-                            </ScrollView>
-                        </View>
-                    </View>
+                            </View>
+                        </Root>
+                    </KeyboardAvoidingView>
                 </Modal>
             </Container>
 
@@ -751,7 +937,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: Dimensions.get('window').width,
         backgroundColor: '#fff',
-        height: 50,
+        // height: 50,
         alignItems: 'center',
         justifyContent: 'space-between',
         borderWidth:0,
@@ -790,8 +976,7 @@ const styles = StyleSheet.create({
     profilePic: {
         height: 130,
         aspectRatio: 1 / 1,
-        borderRadius: 130,
-        
+        borderRadius: 130
     },
     imageWrapper: {
         height: 137, 
@@ -806,6 +991,14 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
         shadowOpacity: 0.4,
         elevation: 5
+    },
+    changePicText: {
+        fontSize: 18,
+        fontFamily: 'OpenSans-Regular',
+        fontWeight: "400",
+        color: '#1c92c4',
+        textAlign: 'center',
+        padding: 20
     }
 });
 
@@ -822,4 +1015,9 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(Home)
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateUser: (props) => dispatch({ type: dev.UPDATE_USER, payload: props })
+    };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Home)
