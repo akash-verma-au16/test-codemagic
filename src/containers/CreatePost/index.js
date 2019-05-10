@@ -7,7 +7,8 @@ import {
     Text,
     Keyboard,
     ScrollView,
-    Alert
+    Alert,
+    ToastAndroid
 } from 'react-native';
 
 import NetInfo from "@react-native-community/netinfo"
@@ -199,21 +200,38 @@ class CreatePost extends React.Component {
 
         /* Check if collegue is selected */
         if (this.state.taggedAssociates.length === 0) {
-            Toast.show({
-                text: 'Atleast tag a collegue',
-                type: 'danger',
-                duration: 3000
-            })
+            // Toast.show({
+            //     text: 'Atleast tag a collegue',
+            //     type: 'danger',
+            //     duration: 3000
+            // })
+            // return
+
+            ToastAndroid.showWithGravityAndOffset(
+                'Atleast tag a collegue',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+                25,
+                100,
+            );
             return
         }
 
         /* check if post type is selected */
         if (this.state.postType === '') {
-            Toast.show({
-                text: 'Please select a post type',
-                type: 'danger',
-                duration: 3000
-            })
+            // Toast.show({
+            //     text: 'Please select a post type',
+            //     type: 'danger',
+            //     duration: 3000
+            // })
+            // return
+            ToastAndroid.showWithGravityAndOffset(
+                'Please select a post type',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+                25,
+                100,
+            );
             return
         }
 
@@ -222,11 +240,20 @@ class CreatePost extends React.Component {
 
             /* check if strength is selected */
             if (this.state.endorsementStrength === '') {
-                Toast.show({
-                    text: 'Select a strength',
-                    type: 'danger',
-                    duration: 3000
-                })
+                // Toast.show({
+                //     text: 'Select a strength',
+                //     type: 'danger',
+                //     duration: 3000
+                // })
+                // return
+
+                ToastAndroid.showWithGravityAndOffset(
+                    'Select a strength',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                    25,
+                    100,
+                );
                 return
             }
         } else {
@@ -234,11 +261,19 @@ class CreatePost extends React.Component {
 
             /* check if text is present */
             if (this.state.text.trim() === '') {
-                Toast.show({
-                    text: 'Please write someting',
-                    type: 'danger',
-                    duration: 3000
-                })
+                // Toast.show({
+                //     text: 'Please write someting',
+                //     type: 'danger',
+                //     duration: 3000
+                // })
+                // return
+                ToastAndroid.showWithGravityAndOffset(
+                    'Please write someting',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                    25,
+                    100,
+                );
                 return
             }
         }
@@ -461,12 +496,14 @@ class CreatePost extends React.Component {
                         /* preventing self endorsing */
                         if (item.associate_id !== this.props.associate_id) {
                             this.associateData.push({ id: item.associate_id, name: fullName })
+                            console.log("Associate data",this.associateData)
                         }
 
                     })
                     this.setState({ isTagerLoading: false })
                 })
-                .catch(() => {
+                .catch((e) => {
+                    console.log(e)
                     this.setState({ isTagerLoading: false })
                 })
         } else {

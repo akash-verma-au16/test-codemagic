@@ -61,12 +61,7 @@ class ListPost extends React.Component {
                     <Thumbnail
                         source={thumbnail}
 
-                        style={
-                            {
-                                height: '70%',
-                                borderRadius: 50,
-                                margin: 10
-                            }}
+                        style={styles.thumbnail}
                         resizeMode='contain'
                     />
                 </TouchableOpacity>
@@ -303,6 +298,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#eee',
         paddingTop: 3
+    },
+    thumbnail : {
+        height: '70%',
+        borderRadius: 50,
+        margin: 10
     }
 });
 
