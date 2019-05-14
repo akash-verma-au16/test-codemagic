@@ -230,6 +230,7 @@ class Home extends React.Component {
                                     postMessage={item.Item.message}
                                     taggedAssociates={item.Item.tagged_associates}
                                     strength={item.Item.sub_type}
+                                    associate={item.Item.associate_id}
                                 />
                             )
                         })
@@ -643,7 +644,8 @@ class Home extends React.Component {
                 
                 <Modal
                     animationType="slide"
-                    transparent={false}
+                    transparent={false} 
+                    hardwareAccelerated={true}
                     visible={this.state.modalVisible}
                     onRequestClose={this.requestCloseModal}>
                     <KeyboardAvoidingView style={{ flex: 1 }} 

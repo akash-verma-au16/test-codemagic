@@ -65,3 +65,4 @@ export default {
 
 // Added
 // list_posts: "https://uhj5dficb2.execute-api.ap-southeast-1.amazonaws.com/dev/post/list_posts"
+

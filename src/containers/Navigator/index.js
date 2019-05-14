@@ -13,6 +13,8 @@ import TabNavigator from '../TabNavigator'
 import Settings from "../Settings"
 import Home from '../Home'
 import InAppNotifier from '../InAppNotifier/index'
+import Likes from '../Likes/index'
+import Comments from '../Comments/index'
 /* This stack will contain list of all pages */
 const RootStack = createStackNavigator(
     {
@@ -87,6 +89,36 @@ const RootStack = createStackNavigator(
                     backgroundColor: '#1c92c4'
                 },
                 title: 'YOUR NOTIFICATIONS',
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: 19,
+                    fontFamily: 'OpenSans-Regular'
+                }
+            }
+        },
+        'Likes': {
+            screen: Likes,
+            navigationOptions: {
+                headerStyle: {
+                    backgroundColor: '#1c92c4'
+                },
+                title: 'Likes',
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: 19,
+                    fontFamily: 'OpenSans-Regular'
+                }
+            }
+        },
+        'Comments': {
+            screen: Comments,
+            navigationOptions: {
+                headerStyle: {
+                    backgroundColor: '#1c92c4'
+                },
+                title: 'Comments',
                 headerTintColor: '#fff',
                 headerTitleStyle: {
                     fontWeight: 'bold',

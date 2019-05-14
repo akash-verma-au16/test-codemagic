@@ -135,7 +135,7 @@ class ListPost extends React.Component {
             try {
                 console.log('Calling NEWS_FEED API')
                 news_feed(payload).then(response => {
-                    // console.log("Data", response.data.data)
+                    console.log("Data", response.data.data)
                     /* take payload backup to check for changes later */
                     if (this.payloadBackup.length === response.data.data.length) {
                         /* No change in payload hence do nothing */
@@ -211,6 +211,7 @@ class ListPost extends React.Component {
                     postMessage={item.Item.message} 
                     taggedAssociates={item.Item.tagged_associates} 
                     strength={item.Item.sub_type} 
+                    associate={item.Item.associate_id}
                 />
             )
         })

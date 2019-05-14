@@ -93,10 +93,13 @@ class Settings extends React.Component {
 
     signOut() {
         this.setState({ isLoading: true })
-        logout({
+        const payload = {
             accountAlias: this.props.accountAlias,
             email: this.props.email
-        }).then(() => {
+        }
+        console.log(payload)
+        logout(payload).then((res) => {
+            console.log(res)
             this.props.deAuthenticate()
             this.setState({ isLoading: false })
             // Toast.show({
