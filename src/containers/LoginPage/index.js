@@ -2,7 +2,7 @@ import React from 'react';
 import {
     StyleSheet,
     Keyboard,
-    ImageBackground,
+    Image,
     TouchableOpacity,
     Animated,
     BackHandler
@@ -22,13 +22,14 @@ import {
 import { connect } from 'react-redux'
 import { auth } from '../../store/actions'
 /* Custom components */
-import Logo from '../../components/Logo'
-import Slogan from '../../components/Slogan'
+// import Logo from '../../components/Logo'
+// import Slogan from '../../components/Slogan'
 import TextInput from '../../components/TextInput'
 import RoundButton from '../../components/RoundButton'
 
 /* Assets */
-import image from '../../assets/image.png'
+// import image from '../../assets/image.png'
+import logo from '../../assets/Logo_High_black.png'
 /* Services */
 import { login } from '../../services/bAuth'
 import { read_member } from '../../services/tenant'
@@ -66,27 +67,18 @@ class LoginPage extends React.Component {
         this.backHandler.remove()
     }
     loadComponents = () => {
-        Animated.sequence([
-            Animated.parallel([
-                Animated.timing(
-                    this.state.logoShift,
-                    {
-                        toValue: 0,
-                        duration: 500,
-                        useNativeDriver: true
-                    }
-                ),
-                Animated.timing(
-                    this.state.logoFade,
-                    {
-                        toValue: 1,
-                        duration: 500,
-                        useNativeDriver: true
-                    }
-                )
-            ]),
+        // Animated.sequence([
+        Animated.parallel([
             Animated.timing(
-                this.state.sloganFade,
+                this.state.logoShift,
+                {
+                    toValue: 0,
+                    duration: 500,
+                    useNativeDriver: true
+                }
+            ),
+            Animated.timing(
+                this.state.logoFade,
                 {
                     toValue: 1,
                     duration: 500,
@@ -94,6 +86,15 @@ class LoginPage extends React.Component {
                 }
             )
         ]).start()
+        // Animated.timing(
+        //     this.state.sloganFade,
+        //     {
+        //         toValue: 1,
+        //         duration: 500,
+        //         useNativeDriver: true
+        //     }
+        // )
+        // ]).start()
     }
 
     forgotPasswordHandler=()=>{
@@ -118,6 +119,7 @@ class LoginPage extends React.Component {
                         email: this.state.email,
                         password: this.state.password
                     }).then((response) => {
+                        console.log("Response", response)
                         /* Restricting Super Admin Access as no Tenant Name is available to fetch */
                         if (this.state.accountAlias.trim().toLowerCase() === 'default') {
                             Toast.show({
@@ -132,6 +134,7 @@ class LoginPage extends React.Component {
                             tenant_id: this.state.accountAlias.toLowerCase().trim(),
                             email: this.state.email.toLowerCase().trim()
                         }).then(res => {
+                            console.log("Login",res.data)
                             let firstName = toSentenceCase(response.data.payload.idToken.payload.given_name);
                             let lastName = toSentenceCase(response.data.payload.idToken.payload.family_name);
                             const payload = {
@@ -143,10 +146,11 @@ class LoginPage extends React.Component {
                                 phoneNumber: response.data.payload.idToken.payload.phone_number,
                                 emailAddress: response.data.payload.idToken.payload.email.toLowerCase()
                             };
-                            Toast.show({
-                                text: 'Welcome ' + response.data.payload.idToken.payload.given_name + '!',
-                                type: "success"
-                            })
+                            console.log("Payload", payload)
+                            // Toast.show({
+                            //     text: 'Welcome ' + response.data.payload.idToken.payload.given_name + '!',
+                            //     type: "success"
+                            // })
                             this.props.authenticate(payload);
                             //configure firebase for push notification
                             const email = this.state.email.toLowerCase().trim()
@@ -158,8 +162,10 @@ class LoginPage extends React.Component {
                             })
                             this.props.navigation.navigate('TabNavigator')
                         }).catch((error) => {
+                            console.log("Logged in catch")
                             this.setState({ isSignInLoading: false });
                             if(this.props.isConnected) {
+                                console.log("Error", error)
                                 Toast.show({
                                     text: error.response.data.code,
                                     type: 'danger',
@@ -176,6 +182,8 @@ class LoginPage extends React.Component {
                         })
                     }).catch((error) => {
                         try {
+                            console.log("Logged in catch2")
+
                             switch (error.response.data.code) {
                             case "ForceChangePassword":
 
@@ -248,24 +256,29 @@ class LoginPage extends React.Component {
     }
 
     render() {
-        const { logoFade, logoShift, sloganFade } = this.state
+        const { logoFade, logoShift } = this.state //sloganFade removed
         return (
 
             <Container>
                 <Content
                     contentContainerStyle={styles.container} >
-                    <ImageBackground
-                        source={image}
+                    <View
                         style={styles.image}
-                        onLoadEnd={this.loadComponents}
+                        onLayout={this.loadComponents}
                     >
 
                         <Form style={styles.form}>
                             <Animated.View style={[{ transform: [{ translateY: logoShift }], opacity: logoFade, alignItems: 'center' }]}>
-                                <Logo />
+                                {/* <Logo />
                                 <Animated.View style={{ opacity: sloganFade }}>
                                     <Slogan style={{ marginBottom: 15 }} />
-                                </Animated.View>
+                                </Animated.View> */}
+                                <Image 
+                                    // source={require('../../assets/Logo_High_black.png')} 
+                                    source={logo}
+                                    resizeMode= {'cover'}
+                                    style = {{height: 250, aspectRatio: 1 / 1}}
+                                />
 
                             </Animated.View>
                             <View style={styles.container} ></View>
@@ -276,7 +289,8 @@ class LoginPage extends React.Component {
                                     value={this.state.accountAlias}
                                     onChangeText={(text) => this.setState({ accountAlias: text })}
                                     inputRef={input => this.textInputAccountAlias = input}
-                                    onSubmitEditing={() => this.textInputEmail._root.focus()}
+                                    onSubmitEditing={() => this.textInputEmail._root.focus()} 
+                                    style={{color: '#111'}}
                                 />
 
                                 <TextInput
@@ -285,21 +299,23 @@ class LoginPage extends React.Component {
                                     onChangeText={(text) => this.setState({ email: text })}
                                     inputRef={input => this.textInputEmail = input}
                                     onSubmitEditing={() => this.textInputPassword._root.focus()}
-                                    keyboardType={'email-address'}
+                                    keyboardType={'email-address'} 
+                                    style={{color: '#111'}}
                                 />
                                 <TextInput
                                     placeholder='Password'
                                     value={this.state.password}
                                     onChangeText={(text) => this.setState({ password: text })}
                                     inputRef={input => this.textInputPassword = input}
-                                    onSubmitEditing={this.signinHandler}
+                                    onSubmitEditing={this.signinHandler} 
+                                    style={{ color: '#111' }}
                                     secureTextEntry
                                 />
                                 <RoundButton
                                     onPress={this.signinHandler}
                                     value='Sign In Now!'
                                     isLoading={this.state.isSignInLoading}
-                                    isLight={true}
+                                    // isLight={true}
                                 />
                                 <TouchableOpacity onPress={this.forgotPasswordHandler}>
                                     <Text style={styles.navigationLink}>Forgot Password?</Text>
@@ -307,7 +323,7 @@ class LoginPage extends React.Component {
                             </Animated.View>
                         </Form>
 
-                    </ImageBackground>
+                    </View>
                 </Content>
             </Container>
         );
@@ -322,15 +338,16 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         flexDirection: "column",
-        paddingTop: 70
+        paddingTop: 0
     },
     image: {
         width: '100%',
         height: '100%'
     },
     navigationLink: {
-        color: '#fff',
-        marginBottom: 15
+        color: '#000',
+        marginBottom: 15,
+        fontWeight: 'bold'
     }
 });
 

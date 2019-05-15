@@ -5,6 +5,7 @@ import {
     Modal,
     TouchableHighlight,
     TouchableOpacity,
+    TouchableWithoutFeedback,
     StyleSheet
 } from 'react-native';
 import {
@@ -25,7 +26,7 @@ export default class VisibilityModal extends Component {
         const lastTile = this.props.data.length -1
         this.props.data.map((item, index) => {
             
-            const color = this.props.state===item.text? '#1c92c4' : '#555'
+            const color = this.props.state && this.props.state===item.text? '#1c92c4' : '#555'
             tiles.push(
                 <React.Fragment key={index}>
                     <TouchableOpacity
@@ -38,10 +39,12 @@ export default class VisibilityModal extends Component {
                         }}
                         onPress={()=>this.onPressHandler(item.text,item.name,item.key)}
                     >
-                        <Icon name={item.icon} style={[
-                            styles.icon,
-                            {color:color}
-                        ]} />
+                        <Icon name={item.icon} 
+                            type={item.type ? item.type : 'Ionicons'}
+                            style={[
+                                styles.icon,
+                                {color:color} 
+                            ]} />
                         
                         <Text style={{
                             color: color,
@@ -70,9 +73,7 @@ export default class VisibilityModal extends Component {
                 transparent={true}
                 visible={this.props.enabled}
                 hardwareAccelerated={true}
-                onRequestClose={() => {
-
-                }}
+                onRequestClose={this.props.onRequestClose}
                 style={{
                     height: 500,
                     width: 500,
@@ -86,7 +87,9 @@ export default class VisibilityModal extends Component {
                         justifyContent: 'center',
                         backgroundColor: '#00000055'
                     }}
-                    onPress={this.props.visibilityDisableHandler}
+                    onPress={this.props.visibilityDisableHandler} 
+                    underlayColor='#00000055'
+                    // activeOpacity={1}
                 >
                     <View
                         style={{
@@ -98,31 +101,43 @@ export default class VisibilityModal extends Component {
                             padding: 10
                         }}
                     >
-                        <View
-                            name='header'
-                            style={{
-                                flexDirection: 'row',
+                        {
+                            this.props.header ? 
+                                <View 
+                                    style={{
+                                        width: '100%',
+                                        backgroundColor: 'transparebt',
+                                        alignItems: 'center'
+                                    }}>
+                                    <View
+                                        name='header'
+                                        style={{
+                                            flexDirection: 'row',
 
-                                justifyContent: 'center',
-                                alignItems: 'center'
-                            }}
-                        >
-                            <Icon name='md-eye' style={{ fontSize: 20, paddingHorizontal: 5, color: 'black' }} />
-                            <Text style={{
-                                color: 'black',
-                                textAlign: 'center'
+                                            justifyContent: 'center',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+                                        <Icon name='md-eye' style={{ fontSize: 20, paddingHorizontal: 5, color: 'black' }} />
+                                        <Text style={{
+                                            color: 'black',
+                                            textAlign: 'center'
 
-                            }}
-                            >Visibility</Text>
-                        </View>
+                                        }}
+                                        >{this.props.header}</Text>
+                                    </View>
 
-                        <View style={{
-                            backgroundColor: '#333',
-                            height: 1,
-                            width: '100%',
-                            marginVertical: 10
-                        }} />
-
+                                    <View style={{
+                                        backgroundColor: '#333',
+                                        height: 1,
+                                        width: '100%',
+                                        marginVertical: 10
+                                    }} />
+                                </View>
+                                :
+                                <View></View>
+                        } 
+                        
                         {tiles}
                     </View>
                 </TouchableHighlight>

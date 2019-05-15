@@ -589,7 +589,8 @@ class CreatePost extends React.Component {
                         : null}
                 </ScrollView>
 
-                <VisibilityModal
+                <VisibilityModal 
+                    header = 'Visibility'
                     enabled={this.state.visibilityModal}
                     data={this.visibilityData}
                     onChangeListener={({text, name,key}) => {
