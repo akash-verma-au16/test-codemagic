@@ -70,7 +70,7 @@ class Post extends Component {
                 <View name='header'
                     style={styles.container}
                 >
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 3 }}>
                         <View name='image' style={{
                             borderRadius: 30,
                             backgroundColor: '#1c92c4',
@@ -84,12 +84,13 @@ class Post extends Component {
                         <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>{this.props.postCreator}</Text>
                     </View>
                     {/* <Text style={styles.timeStamp}>{item.Item.time}</Text> */}
-                    <Icon
-                        name='dots-three-vertical'
-                        type='Entypo'
-                        style={{ fontSize: 15, color: '#333' }} 
-                        onPress={() => this.setState({ modalVisible: true})}
-                    />
+                    <TouchableOpacity style={{height: 30, width: 30, borderRadius:30, alignItems: 'flex-end', justifyContent:'center'}} onPress={() => this.setState({ modalVisible: true })} underlayColor='#fff'>
+                        <Icon
+                            name='dots-three-vertical'
+                            type='Entypo'
+                            style={{ fontSize: 14, color: '#333' }} 
+                        />
+                    </TouchableOpacity>
                 </View>
                 {/* <View style={{
                     backgroundColor: '#ddd',
@@ -121,7 +122,7 @@ class Post extends Component {
                         </View>
                     </View>
                     
-                    <Moment element={Text} fromNow>{this.props.time * 1000}</Moment>
+                    <Moment style={{fontSize: 12}} element={Text} fromNow>{this.props.time * 1000}</Moment>
                     
                 </View>
                 <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5}}></View>
@@ -141,10 +142,10 @@ class Post extends Component {
                         <Icon name='comment' type={'MaterialIcons'} style={styles.comment} />
                         <Text style={styles.footerText}>Comment</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView}>
+                    {/* <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView}>
                         <Icon name='comment' type={'MaterialIcons'} style={styles.comment} />
                         <Text style={styles.footerText}>Comment</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
                 <VisibilityModal 
                     enabled={this.state.modalVisible}
@@ -250,7 +251,7 @@ const styles= StyleSheet.create({
         marginLeft: 11
     },
     footerConetntView: {
-        width: '35%',
+        // width: '35%',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center'

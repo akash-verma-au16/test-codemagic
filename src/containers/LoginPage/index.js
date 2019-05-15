@@ -290,7 +290,7 @@ class LoginPage extends React.Component {
                                     onChangeText={(text) => this.setState({ accountAlias: text })}
                                     inputRef={input => this.textInputAccountAlias = input}
                                     onSubmitEditing={() => this.textInputEmail._root.focus()} 
-                                    style={{color: '#111'}}
+                                    style={styles.color111}
                                 />
 
                                 <TextInput
@@ -300,7 +300,7 @@ class LoginPage extends React.Component {
                                     inputRef={input => this.textInputEmail = input}
                                     onSubmitEditing={() => this.textInputPassword._root.focus()}
                                     keyboardType={'email-address'} 
-                                    style={{color: '#111'}}
+                                    style={styles.color111}
                                 />
                                 <TextInput
                                     placeholder='Password'
@@ -308,7 +308,7 @@ class LoginPage extends React.Component {
                                     onChangeText={(text) => this.setState({ password: text })}
                                     inputRef={input => this.textInputPassword = input}
                                     onSubmitEditing={this.signinHandler} 
-                                    style={{ color: '#111' }}
+                                    style={styles.color111}
                                     secureTextEntry
                                 />
                                 <RoundButton
@@ -348,6 +348,9 @@ const styles = StyleSheet.create({
         color: '#000',
         marginBottom: 15,
         fontWeight: 'bold'
+    },
+    color111: {
+        color: '#111'
     }
 });
 
