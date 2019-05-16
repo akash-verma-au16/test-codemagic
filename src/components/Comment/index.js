@@ -4,10 +4,16 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
-    Dimensions
+    ToastAndroid
 } from 'react-native';
 
 import { Icon } from 'native-base'
+
+//Cusotm component from VisibilityModal
+import VisibilityModal from '../../containers/VisibilityModal/index'
+
+//Redux
+import { connect } from 'react-redux'
 
 import Moment from 'react-moment'
 import moment from 'moment/min/moment-with-locales'
@@ -16,6 +22,7 @@ class Comment extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            modalVisible: false
         }
         //formatting update locale
         Moment.globalMoment = moment;
@@ -43,6 +50,16 @@ class Comment extends React.Component {
         });
     }
 
+    //Static data for Edit/Delete Comment content
+    data = [
+        { icon: 'edit', type: 'AntDesign', text: 'Edit Comment', name: 'edit', key: 'edit' },
+        { icon: 'delete', type: 'AntDesign', text: 'Delete Comment', name: 'delete', key: 'delete' }
+    ]
+
+    otherData = [
+        { icon: 'dingding', type: 'AntDesign', text: 'Others', name: 'others', key: 'others' }
+    ]
+
     render() {
         return (
             <View style={styles.container} key={this.props.key}>
@@ -55,7 +72,11 @@ class Comment extends React.Component {
                     <View style={[styles.commentWrapper, { width: '100%' }]}>
                         <View style={[styles.footer, { justifyContent: 'space-between', width: '100%' }]}>
                             <Text style={styles.commentor}>{this.props.associate}</Text>
-                            <TouchableOpacity style={{ height: 20, width: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }} underlayColor='#fff'>
+                            <TouchableOpacity 
+                                style={{ height: 20, width: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}
+                                underlayColor='#fff' 
+                                onPress={() => this.setState({ modalVisible : true})}
+                            >
                                 <Icon
                                     name='dots-three-horizontal'
                                     type='Entypo'
@@ -67,6 +88,25 @@ class Comment extends React.Component {
                     </View>
                     <Moment style={{ fontSize: 14, paddingVertical: 3, paddingLeft: 10 }} element={Text} fromNow>{this.props.time * 1000}</Moment>
                 </View>
+                <VisibilityModal
+                    enabled={this.state.modalVisible}
+                    data={this.props.associate_id === this.props.id ? this.data : this.otherData}
+                    onChangeListener={({ text, name, key }) => {
+                        ToastAndroid.showWithGravityAndOffset(
+                            'Coming soon',
+                            ToastAndroid.SHORT,
+                            ToastAndroid.BOTTOM,
+                            25,
+                            100,
+                        );
+                    }}
+                    visibilityDisableHandler={() => {
+                        this.setState({ modalVisible: false })
+                    }}
+                    onRequestClose={() => {
+                        this.setState({ modalVisible: false })
+                    }}
+                />
             </View>
         )
     }
@@ -132,4 +172,11 @@ const styles = StyleSheet.create({
     //     color: '#ccc'
     // }
 })
-export default Comment
+
+const mapStateToProps = (state) => {
+    return {
+        associate_id: state.user.associate_id
+    };
+}
+
+export default connect(mapStateToProps, null)(Comment)

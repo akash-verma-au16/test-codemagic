@@ -29,5 +29,34 @@ export const styles = StyleSheet.create({
         height: 1 / 3, 
         backgroundColor: '#c9cacc', 
         marginTop: 5 
+    },
+    addCommentView: {
+        flexDirection: 'row',
+        flexWrap: 'nowrap',
+        width: '100%',
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderTopWidth: 1/3,
+        borderTopColor: '#c9cacc',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    addComment: {
+        padding: 5,
+        paddingHorizontal: 10, 
+        width: '88%',
+        fontSize: 14,
+        borderRadius: 15,
+        backgroundColor: '#efefef'
+    },
+    iconInactive: {
+        color: '#d1d1d1',
+        fontSize: 26,
+        paddingVertical: 5
+    },
+    iconActive:{
+        color: '#1c92c4',
+        fontSize: 26,
+        paddingVertical: 5
     }
 })

@@ -21,7 +21,8 @@ class Post extends Component {
         super(props);
         this.state = {
             like: false,
-            likes: 0,
+            likes: 5,
+            comments: 10,
             modalVisible: false
         }
 
@@ -125,8 +126,8 @@ class Post extends Component {
                                     <Text style={styles.infoText}>{this.state.likes > 1 ? "Likes" : "Like"}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', width: "40%", alignItems: 'center' }}>
-                                    <Text style={styles.infoNo}>0</Text>
-                                    <Text style={styles.infoText}>Comment</Text>
+                                    <Text style={styles.infoNo}>{this.state.comments}</Text>
+                                    <Text style={styles.infoText}>{this.state.comments > 1 ? 'Comments' : 'Comment'}</Text>
                                 </View>
                             </View>
 
@@ -150,7 +151,7 @@ class Post extends Component {
                         <Icon name='md-thumbs-up' style={ this.state.like ? styles.like : styles.unlike }/>
                         <Text style={this.state.like ? styles.footerTextActive : styles.footerTextInactive}>Like</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView}>
+                    <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView} onPress={() => this.props.navigation.navigate('Comments',{isComment: true})}>
                         <Icon name='comment' type={'MaterialIcons'} style={styles.comment} />
                         <Text style={styles.footerText}>Comment</Text>
                     </TouchableOpacity>
