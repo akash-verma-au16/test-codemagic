@@ -4,13 +4,17 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
-    ToastAndroid
+    ToastAndroid,
+    Alert
 } from 'react-native';
 
 import { Icon } from 'native-base'
 
 //Cusotm component from VisibilityModal
 import VisibilityModal from '../../containers/VisibilityModal/index'
+
+//React navigation
+import { withNavigation } from 'react-navigation';
 
 //Redux
 import { connect } from 'react-redux'
@@ -24,6 +28,7 @@ class Comment extends React.Component {
         this.state = {
             modalVisible: false
         }
+        this.showToast = this.showToast.bind(this)
         //formatting update locale
         Moment.globalMoment = moment;
         moment.updateLocale('en', {
@@ -60,6 +65,16 @@ class Comment extends React.Component {
         { icon: 'dingding', type: 'AntDesign', text: 'Others', name: 'others', key: 'others' }
     ]
 
+    showToast() {
+        ToastAndroid.showWithGravityAndOffset(
+            'Coming soon',
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM,
+            25,
+            100,
+        );
+    }
+
     render() {
         return (
             <View style={styles.container} key={this.props.key}>
@@ -92,13 +107,32 @@ class Comment extends React.Component {
                     enabled={this.state.modalVisible}
                     data={this.props.associate_id === this.props.id ? this.data : this.otherData}
                     onChangeListener={({ text, name, key }) => {
-                        ToastAndroid.showWithGravityAndOffset(
-                            'Coming soon',
-                            ToastAndroid.SHORT,
-                            ToastAndroid.BOTTOM,
-                            25,
-                            100,
-                        );
+                        if (key == 'edit') {
+                            this.props.navigation.navigate('EditComment',{
+                                associate: this.props.associate,
+                                comment: this.props.message,
+                                time: this.props.time * 1000
+                            })
+                        }
+                        else if(key == 'delete') {
+                            Alert.alert(
+                                'Delete Comment?',
+                                'Are you sure you want to delete this comment ?',
+                                [
+                                    {
+                                        text: 'No',
+                                        style: 'cancel'
+                                    },
+                                    {
+                                        text: 'Yes', onPress: () => { this.showToast() }
+                                    }
+                                ],
+                                { cancelable: false },
+                            )
+                        }
+                        else {
+                            this.showToast()
+                        }
                     }}
                     visibilityDisableHandler={() => {
                         this.setState({ modalVisible: false })
@@ -179,4 +213,4 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(Comment)
+export default connect(mapStateToProps, null)(withNavigation(Comment))
