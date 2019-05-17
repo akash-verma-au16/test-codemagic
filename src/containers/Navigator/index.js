@@ -101,9 +101,10 @@ const RootStack = createStackNavigator(
             screen: Likes,
             navigationOptions: {
                 headerStyle: {
-                    backgroundColor: '#1c92c4'
+                    backgroundColor: '#1c92c4',
+                    height: 40
                 },
-                title: 'Likes',
+                title: 'People Who Liked',
                 headerTintColor: '#fff',
                 headerTitleStyle: {
                     fontWeight: 'bold',
@@ -115,16 +116,19 @@ const RootStack = createStackNavigator(
         'Comments': {
             screen: Comments,
             navigationOptions: {
-                headerStyle: {
-                    backgroundColor: '#1c92c4'
-                },
-                title: 'Comments',
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                    fontWeight: 'bold',
-                    fontSize: 19,
-                    fontFamily: 'OpenSans-Regular'
-                }
+                header: null
+                // headerVisible: false
+                // headerStyle: {
+                //     backgroundColor: '#1c92c4',
+                //     height: 30
+                // },
+                // title: 'Comments',
+                // headerTintColor: '#fff',
+                // headerTitleStyle: {
+                //     fontWeight: 'bold',
+                //     fontSize: 19,
+                //     fontFamily: 'OpenSans-Regular'
+                // }
             }
         },
         

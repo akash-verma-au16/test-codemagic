@@ -12,7 +12,7 @@ const RoundButton = (props) => (
             {props.isLoading ?
                 <Spinner color={props.isLight ?'#fff':'#fff'} />
                 :
-                <Text style={[{color: !props.isLight?'#111':'#fff'}, {fontSize: 15, fontWeight: '400'}]}>
+                <Text style={[{ color: props.isLight ? '#111' : '#fff' }, { fontSize: 15, fontWeight: '400' }, !props.isDisabled ? styles.textEnabled : styles.textDisabled]}>
                     {props.value}
                 </Text>
             }
@@ -39,6 +39,12 @@ const styles = StyleSheet.create({
     },
     buttonDisabled: {
         backgroundColor: '#d3d3d3'
+    },
+    textEnabled: {
+        color: '#FFF'
+    }, 
+    textDisabled: {
+        color: '#111'
     }
 })
 

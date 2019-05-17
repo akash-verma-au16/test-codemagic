@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 // Components from React-Native
-import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TouchableHighlight, ToastAndroid } from 'react-native';
 // Components from Native Base
 import { Icon } from 'native-base'
 //Cusotm component
 import VisibilityModal from '../../containers/VisibilityModal'
+
+//React navigation
+import { withNavigation } from 'react-navigation';
 
 //Redux
 import { connect } from 'react-redux'
@@ -18,7 +21,8 @@ class Post extends Component {
         super(props);
         this.state = {
             like: false,
-            likes: 0,
+            likes: 5,
+            comments: 10,
             modalVisible: false
         }
 
@@ -110,22 +114,31 @@ class Post extends Component {
                         <Text style={styles.strength}> #{this.props.strength}</Text>
                     </Text>
                 </View>
-                <View style={styles.infoTab}>
-                    <View style={{ flexDirection: 'row', width: "50%", alignItems: 'center' }}>
-                        <View style={{ flexDirection: 'row', width: "40%", alignItems: 'center' }}>
-                            <Text style={styles.infoNo}>{this.state.likes}</Text>
-                            <Text style={styles.infoText}>{this.state.likes > 1 ? "Likes" : "Like"}</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', width: "40%", alignItems: 'center' }}>
-                            <Text style={styles.infoNo}>0</Text>
-                            <Text style={styles.infoText}>Comment</Text>
+                <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>                    
+
+                <TouchableOpacity underlayColor= '#111' activeOpacity={0.5} onPress={() => this.props.navigation.navigate('Comments')}>
+                    <View style={{ width: "100%"}}>
+                        {/* <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>                     */}
+                        <View style={styles.infoTab}>
+                            <View style={{ flexDirection: 'row', width: "50%", alignItems: 'center' }}>
+                                <View style={{ flexDirection: 'row', width: "40%", alignItems: 'center' }}>
+                                    <Text style={styles.infoNo}>{this.state.likes}</Text>
+                                    <Text style={styles.infoText}>{this.state.likes > 1 ? "Likes" : "Like"}</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', width: "40%", alignItems: 'center' }}>
+                                    <Text style={styles.infoNo}>{this.state.comments}</Text>
+                                    <Text style={styles.infoText}>{this.state.comments > 1 ? 'Comments' : 'Comment'}</Text>
+                                </View>
+                            </View>
+
+                            <Moment style={{ fontSize: 12 }} element={Text} fromNow>{this.props.time * 1000}</Moment>
+
+                            {/* <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5}}></View> */}
                         </View>
                     </View>
-                    
-                    <Moment style={{fontSize: 12}} element={Text} fromNow>{this.props.time * 1000}</Moment>
-                    
-                </View>
-                <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5}}></View>
+                </TouchableOpacity>
+                <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>                    
+                
                 <View name='footer'
                     style={{
                         width: "100%",
@@ -138,7 +151,7 @@ class Post extends Component {
                         <Icon name='md-thumbs-up' style={ this.state.like ? styles.like : styles.unlike }/>
                         <Text style={this.state.like ? styles.footerTextActive : styles.footerTextInactive}>Like</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView}>
+                    <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView} onPress={() => this.props.navigation.navigate('Comments',{isComment: true})}>
                         <Icon name='comment' type={'MaterialIcons'} style={styles.comment} />
                         <Text style={styles.footerText}>Comment</Text>
                     </TouchableOpacity>
@@ -264,4 +277,4 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(Post)
+export default connect(mapStateToProps, null)(withNavigation(Post))

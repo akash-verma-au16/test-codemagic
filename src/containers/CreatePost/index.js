@@ -530,7 +530,7 @@ class CreatePost extends React.Component {
     }
 
     gratitudeHandler = (text) => {
-        this.setState({ endorsementStrength: 'kudos', text: text })
+        this.setState({ endorsementStrength: 'Kudos', text: text })
     }
     render() {
 
