@@ -60,6 +60,7 @@ export const strngthIcon = [
     { name: 'Prudence', source: require('../../assets/endorsements/prudence.png') },
     { name: 'Hope', source: require('../../assets/endorsements/hope.png') },
     { name: 'Humor', source: require('../../assets/endorsements/humor.png') },
-    { name: 'Gratitude', source: require('../../assets/endorsements/gratitude.png') }
+    { name: 'Gratitude', source: require('../../assets/endorsements/gratitude.png') },
+    { name: 'Kudos', source: require('../../assets/endorsements/gratitude.png') }
 
 ]

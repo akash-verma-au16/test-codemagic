@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // Components from React-Native
-import { View, Text, StyleSheet, TouchableOpacity, TouchableHighlight, ToastAndroid } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TouchableHighlight, ToastAndroid, Alert } from 'react-native';
 // Components from Native Base
 import { Icon } from 'native-base'
 //Cusotm component
@@ -58,13 +58,24 @@ class Post extends Component {
         })
     }
 
+    showToast() {
+        ToastAndroid.showWithGravityAndOffset(
+            'Coming soon',
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM,
+            25,
+            100,
+        );
+    }
+
+
     data = [
         { icon: 'edit', type: 'AntDesign', text: 'Edit Post', name:'edit' , key: 'edit'},
         { icon: 'delete', type: 'AntDesign', text: 'Delete Post', name:'delete' , key: 'delete'}
     ]
 
     otherData = [
-        { icon: 'dots-two-vertical', type: 'Entypo', text: 'Others', name: 'delete', key: 'others' }
+        { icon: 'dingding', type: 'AntDesign', text: 'Others', name: 'others', key: 'others' }
     ]
 
     render() {
@@ -163,14 +174,35 @@ class Post extends Component {
                 <VisibilityModal 
                     enabled={this.state.modalVisible}
                     data={this.props.associate_id === this.props.associate ? this.data : this.otherData}
-                    onChangeListener={({text, name,key}) => {
-                        ToastAndroid.showWithGravityAndOffset(
-                            'Coming soon',
-                            ToastAndroid.SHORT,
-                            ToastAndroid.BOTTOM,
-                            25,
-                            100,
-                        );
+                    onChangeListener={({text, name, key}) => {
+                        if(key == 'delete') {
+                            Alert.alert(
+                                'Delete Post?',
+                                'Are you sure you want to delete this post ?',
+                                [
+                                    {
+                                        text: 'No',
+                                        style: 'cancel'
+                                    },
+                                    {
+                                        text: 'Yes', onPress: () => { this.showToast() }
+                                    }
+                                ],
+                                { cancelable: false },
+                            )
+                        } 
+                        else if(key == 'edit') {
+                            this.props.navigation.navigate('EditPost',{
+                                associate: this.props.postCreator,
+                                postMessage: this.props.postMessage,
+                                taggedAssociates: this.props.taggedAssociates,
+                                strength: this.props.strength,
+                                time: this.props.time * 1000 
+                            })
+                        }
+                        else {
+                            this.showToast()
+                        }
                     }}
                     visibilityDisableHandler={() => {
                         this.setState({ modalVisible: false })

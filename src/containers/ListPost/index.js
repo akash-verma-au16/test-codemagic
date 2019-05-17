@@ -21,6 +21,9 @@ import {
 } from 'native-base';
 /* Services */
 import { news_feed } from '../../services/post'
+
+//Prefetch profile data
+import { loadProfile } from '../Home/apicalls' 
 /* Components */
 import { NavigationEvents } from 'react-navigation';
 import thumbnail from '../../assets/thumbnail.jpg'
@@ -80,28 +83,42 @@ class ListPost extends React.Component {
         }
     }
 
-    componentDidMount() {
-
-        this.interval = setInterval(() => {this.loadPosts()}, 10000);
-        //Detecting network connectivity change
-        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-        //Handling hardware backpress event
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            return true
-        })
+    goBack() {
+        return true
     }
+    //profile payload
+     payload = {
+         "tenant_id": this.props.accountAlias,
+         "associate_id": this.props.associate_id
+     }
+     componentDidMount() {
 
-    componentWillUnmount() {
-        clearInterval(this.interval)
-        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
-        this.backHandler.remove()
-    }
+         this.interval = setInterval(() => {this.loadPosts()}, 10000);
+         //Detecting network connectivity change
+         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+         //Handling hardware backpress event
+         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+             this.goBack()
+            //  return true
+         })
+         //Loading profile
+         //  loadProfile(this.payload, this.props.isConnected);
+     }
+
+     componentWillUnmount() {
+         clearInterval(this.interval)
+         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+         this.backHandler.remove()
+     } 
 
     handleConnectivityChange = (isConnected) => {
         if(isConnected) {
             this.setState({
                 networkChanged: true
-            }, () => this.loadPosts())
+            }, () => {
+                this.loadPosts()
+                // loadProfile(this.payload, this.props.isConnected)
+            })
         }
     }
     
@@ -125,11 +142,13 @@ class ListPost extends React.Component {
         }
     }
 
+    //Loads news feed
     loadPosts = () => {
         const payload = {
             tenant_id: this.props.accountAlias,
             associate_id: this.props.associate_id
         }
+        console.log(payload)
         if (payload.tenant_id !== "" && payload.associate_id !=="") {
             console.log('calling ListPost')
             try {
@@ -248,9 +267,8 @@ class ListPost extends React.Component {
                     ref={this.scrollViewRef}
                     onScroll={(event) => { this.scrollHandler(event) }}
                 >
-                    {this.postList.length == 0 ?
-                        this.payloadBackup : 
-                        this.postList}
+                    
+                    {this.postList}
                 </ScrollView>
 
                 <NavigationEvents

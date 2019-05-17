@@ -5,7 +5,9 @@ import {
     Image,
     TouchableOpacity,
     Animated,
-    BackHandler
+    BackHandler,
+    ScrollView,
+    Dimensions
 } from 'react-native';
 
 /* Native Base */
@@ -266,7 +268,6 @@ class LoginPage extends React.Component {
                         style={styles.image}
                         onLayout={this.loadComponents}
                     >
-
                         <Form style={styles.form}>
                             <Animated.View style={[{ transform: [{ translateY: logoShift }], opacity: logoFade, alignItems: 'center' }]}>
                                 {/* <Logo />
@@ -322,7 +323,6 @@ class LoginPage extends React.Component {
                                 </TouchableOpacity>
                             </Animated.View>
                         </Form>
-
                     </View>
                 </Content>
             </Container>

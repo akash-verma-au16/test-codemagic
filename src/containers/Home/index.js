@@ -41,7 +41,7 @@ import { dev } from '../../store/actions'
 
 //Row data for Home & Summary tab
 // import { homeData } from './data'
-import { dummyData, strngthIcon } from '../../components/Card/data'
+import { strngthIcon } from '../../components/Card/data'
 
 // API methods
 import { read_transaction, user_profile } from '../../services/profile'
@@ -68,17 +68,9 @@ class Home extends React.Component {
             phoneNo: "",
             isSaved: false,
             isEdit: false
-            // editProfile: {
-            //     firstName: "",
-            //     lastName: "",
-            //     email: "",
-            //     phoneNo: "",
-            //     isSaved: false,
-            //     isEdit: false
-            // }
+       
         }
         this.loadProfile = this.loadProfile.bind(this)
-        // this.loadBalance = this.loadBalance.bind(this)
         this.loadTransactions = this.loadTransactions.bind(this)
         this.loadData = this.loadData.bind(this)
         this.loadHome = this.loadHome.bind(this)
@@ -87,13 +79,14 @@ class Home extends React.Component {
         this.handleEditProfile = this.handleEditProfile.bind(this)
         this.pager = React.createRef();
         this.homeDataList = []
+        this.homeDataRowList = []
         this.projectList = []
         this.transactionList = []
-        this.summeryList = []
+        this.summeryList = [] 
+        this.summeryRawList = []
         this.transactionDataBackup = []
         this.homeDataBackup = []
         this.userData = []
-        // this.totalPoints = this.loadBalance()
         this.loadTransactions = this.loadTransactions.bind(this)
 
     }
@@ -166,23 +159,27 @@ class Home extends React.Component {
 
     //Load user profile API Handler
     async loadProfile() {
-        this.projectList = []
+        // this.projectList = []
         const payload = {
             "tenant_id": this.props.accountAlias,
             "associate_id": this.props.associate_id
         }
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
-                // console.log("Calling user_profile")
+                console.log("Calling user_profile")
                 await user_profile(payload).then((response) => {
+                    console.log(response)
                     this.userData = response.data.data
-                    this.userData.project_name.map((item) => {
-                        if (!this.projectList.includes(item.name)) {
-                            this.projectList.push(item.name)
+                    if (this.userData.length === 0) {
+                        this.projectList = []
+                        this.projectList.push('No Projects')
+                    } else {
+                        this.userData.project_details.map((item) => {
+                            this.projectList = []
+                            this.projectList.push(item.project_name)
                             console.log(this.projectList)
-                        }
-                    })
-
+                        })
+                    }
                 }).catch((error) => {
                     console.log(error)
                 })
@@ -211,9 +208,9 @@ class Home extends React.Component {
                 list_posts(payload).then((response) => {
                     if(this.homeDataBackup.length === response.data.data.length) {
                         if(response.data.data.length === 0) {
-                            this.homeDataList = []
-                            this.homeDataList.push(<Text style={{ margin: 10 }} key={0}>No post to display</Text>)
-                            this.homeDataList.push(<Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon on <Text style={{fontWeight: 'bold', fontStyle: 'italic'}}>Home</Text></Text>)
+                            this.homeDataRowList = []
+                            this.homeDataRowList.push(<Text style={{ margin: 10 }} key={0}>No post to display</Text>)
+                            this.homeDataRowList.push(<Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon on <Text style={{fontWeight: 'bold', fontStyle: 'italic'}}>Home</Text></Text>)
                         }
                         this.setState({ homeRefreshing: false })
                         return
@@ -249,114 +246,117 @@ class Home extends React.Component {
     }
 
     loadSummary = () => {
-        this.summeryList = []
+        // this.summeryList = []
         this.setState({summaryRefreshing: true})
-        // const payload = {
-        //     "tenant_id": this.props.accountAlias,
-        //     "associate_id": this.props.associate_id
-        // }
-        // try {
-        //     strength_counts(payload).then((response) => {
-        //         console.log("Strengths", response)
-        //     }).catch((e) => {
-        //         this.setState({ summaryRefreshing: true })
-        //     })
-        // }
-        // catch(e){
-        //     this.setState({ summaryRefreshing: true })
-        // }
-        dummyData.map((item, index) => {
-            const imageURI = strngthIcon.filter((endorse) => {
-                if (item.type == 'endorsement') {
-                    return item.sub_type == endorse.name
-                } else {
-                    return item.type == endorse.name.toLowerCase()
+        const payload = {
+            "tenant_id": this.props.accountAlias,
+            "associate_id": this.props.associate_id
+        }
+        try {
+            strength_counts(payload).then((response) => {
+                console.log("Strengths", response.data.data)
+                if(response.data.data.length == 0) {
+                    this.summeryRawList = []
+                    this.summeryRawList.push(<Text key={0} style={{textAlign: 'center', width: '100%', alignItems: 'center', justifyContent: 'center'}}>No strengths to display.</Text>)
                 }
+                else {
+                    this.summeryList = []
+                    response.data.data.map((item, index) => {
+                        const imageURI = strngthIcon.filter((endorse) => {
+                            return item.sub_type == endorse.name
+                        })
+                        this.summeryList.push(
+                            <Card
+                                key={index}
+                                image={imageURI[0].source}
+                                count={item.count}
+                                strength={item.sub_type}
+                            />
+                        )
+                    })
+                }
+            }).catch((e) => {
+                this.setState({ summaryRefreshing: true })
             })
-            this.summeryList.push(
-                <Card 
-                    key ={index}
-                    image={imageURI[0].source}
-                    count ={item.count}
-                    strength={item.sub_type}
-                />
-            )
-        })
+        }
+        catch(e){
+            this.setState({ summaryRefreshing: true })
+        }
+        
         this.setState({ summaryRefreshing: false })
 
     }
 
     async handleEditProfile(){
         Keyboard.dismiss()
-        this.comingSoon()
-        // if(this.state.isEdit) {
-        //     if(this.state.firstName == "") {
-        //         Toast.show({
-        //             text: 'Please enter First Name',
-        //             type: 'danger',
-        //             duration: 2000
-        //         })
-        //     }
-        //     else if(this.state.lastName == "") {
-        //         Toast.show({
-        //             text: 'Please enter Last Name',
-        //             type: 'danger',
-        //             duration: 2000
-        //         })
-        //     }
-        //     else if(this.state.email == "" || /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.state.email) == false) {
-        //         Toast.show({
-        //             text: 'Please enter valid Email',
-        //             type: 'danger',
-        //             duration: 2000
-        //         })
-        //     }
-        //     else if (this.state.phoneNo == "" || /^\d{10}$/.test(this.state.phoneNo) === false) {
-        //         Toast.show({
-        //             text: 'Please enter valid Phone Number',
-        //             type: 'danger',
-        //             duration: 2000
-        //         })
-        //     }
-        //     else {
-        //         try {
-        //             const payload = {
-        //                 "tenant_id": this.props.accountAlias,
-        //                 "associate_id": this.props.associate_id,
-        //                 "first_name": this.state.firstName,
-        //                 "last_name": this.state.lastName,
-        //                 "email": this.state.email,
-        //                 "phone_number": this.state.phoneNo
-        //             }
-        //             console.log(payload)
-        //             await update_profile(payload).then((res) => {
-        //                 console.log(res)
-        //                 ToastAndroid.showWithGravityAndOffset(
-        //                     'Updating',
-        //                     ToastAndroid.LONG,
-        //                     ToastAndroid.BOTTOM,
-        //                     25,
-        //                     100,
-        //                 );
-        //             }).catch((e) => {
-        //                 console.log(e)
-        //             })
-        //         }
-        //         catch(e) {
-        //             console.log(e)
-        //         }
-        //         await this.loadProfile()
-        //         const payload = {
-        //             firstName: this.state.firstName,
-        //             lastName: this.state.lastName,
-        //             phoneNumber: this.state.phoneNo,
-        //             emailAddress: this.state.email
-        //         }
-        //         this.props.updateUser(payload)
-        //         this.setState({ submit: false, isEdit: false })
-        //         this.setModalVisible(false)
-        //     }
-        // }
+        if(this.state.isEdit) {
+            if(this.state.firstName == "") {
+                Toast.show({
+                    text: 'Please enter First Name',
+                    type: 'danger',
+                    duration: 2000
+                })
+            }
+            else if(this.state.lastName == "") {
+                Toast.show({
+                    text: 'Please enter Last Name',
+                    type: 'danger',
+                    duration: 2000
+                })
+            }
+            else if(this.state.email == "" || /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.state.email) == false) {
+                Toast.show({
+                    text: 'Please enter valid Email',
+                    type: 'danger',
+                    duration: 2000
+                })
+            }
+            else if (this.state.phoneNo == "" || /^\d{10}$/.test(this.state.phoneNo) === false) {
+                Toast.show({
+                    text: 'Please enter valid Phone Number',
+                    type: 'danger',
+                    duration: 2000
+                })
+            }
+            else {
+                try {
+                    const payload = {
+                        "tenant_id": this.props.accountAlias,
+                        "associate_id": this.props.associate_id,
+                        "first_name": this.state.firstName,
+                        "last_name": this.state.lastName,
+                        "email": this.state.email,
+                        "phone_number": "+91"+this.state.phoneNo
+                    }
+                    console.log(payload)
+                    await update_profile(payload).then((res) => {
+                        console.log(res)
+                        ToastAndroid.showWithGravityAndOffset(
+                            'Updating',
+                            ToastAndroid.LONG,
+                            ToastAndroid.BOTTOM,
+                            25,
+                            100,
+                        );
+                    }).catch((e) => {
+                        console.log(e)
+                    })
+                }
+                catch(e) {
+                    console.log(e)
+                }
+                await this.loadProfile()
+                const payload = {
+                    firstName: this.state.firstName,
+                    lastName: this.state.lastName,
+                    phoneNumber: this.state.phoneNo,
+                    emailAddress: this.state.email
+                }
+                this.props.updateUser(payload)
+                this.setState({ submit: false, isEdit: false })
+                this.setModalVisible(false)
+            }
+        }
     }
 
     openModal = () => {
@@ -365,7 +365,7 @@ class Home extends React.Component {
             firstName: this.props.firstName,
             lastName: this.props.lastName,
             email: this.userData.email,
-            phoneNo: this.userData.moblie_no.slice(3).toString()
+            phoneNo: this.userData.phonenumber.slice(3).toString()
 
         })
     }
@@ -511,10 +511,10 @@ class Home extends React.Component {
                         </View>
                         <View style={{ alignItems: 'flex-start', width: '65%', paddingLeft: 5}}>
                             {/* <H2>{this.props.firstName + ' ' + this.props.lastName}</H2> */}
-                            <Text style={[styles.textLeft, styles.userName]} allowFontScaling numberOfLines={2}>{this.userData.username}</Text> 
+                            <Text style={[styles.textLeft, styles.userName]} allowFontScaling numberOfLines={2}>{this.props.firstName + " " + this.props.lastName}</Text> 
                             {/* {this.userData.username} */}
                             <Text style={[styles.coloredText, styles.textLeft]} allowFontScaling numberOfLines={2}>{this.userData.email}</Text>
-                            <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={1}>Mobile: <Text style={styles.mobilNo}>{this.userData.moblie_no}</Text></Text>
+                            <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={1}>Mobile: <Text style={styles.mobilNo}>{this.userData.phonenumber}</Text></Text>
                             <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={2}>Projects: <Text style={styles.companyName}>{this.projectList.toString()}</Text></Text>
                         </View>
                     </View>
@@ -527,12 +527,12 @@ class Home extends React.Component {
                         <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                         <View style={{ alignItems: 'center', justifyContent: 'space-around', width: '33%' }}>
                             <Text style={styles.text}>Rewards</Text>
-                            <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.userData.balance}</H3>
+                            <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.userData.wallet_balance}</H3>
                         </View>
                         <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                         <View style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
-                            <Text style={styles.text}>Activity</Text>
-                            <H3 style={this.state.selectedTab == 2 ? styles.textActive : styles.textInactive}>14</H3>
+                            <Text style={styles.text}>Strengths</Text>
+                            <H3 style={this.state.selectedTab == 2 ? styles.textActive : styles.textInactive}>{this.summeryList.length}</H3>
                         </View>
                     </View>
 
@@ -588,7 +588,7 @@ class Home extends React.Component {
                                             }}
                                         />
                                     }>
-                                    {this.homeDataList.length === 0 ? this.homeDataBackup : this.homeDataList}
+                                    {this.homeDataList.length === 0 ? this.homeDataRowList : this.homeDataList}
                                 </ScrollView>
                             </View>
                             <View>
@@ -633,7 +633,7 @@ class Home extends React.Component {
                                             }}
                                         />
                                     }>
-                                    {this.summeryList}
+                                    {this.summeryList.length > 0 ? this.summeryList : this.summeryRawList}
                                     {/* <Icon name='worker' type={'MaterialCommunityIcons'} style={{ fontSize: 22, color: '#8a8b8c' }} />
                                     <Text style={{ color: '#8a8b8c', textAlign: 'center', marginTop: 15, width: '80%' }}>This page is under Development for Future Releases.</Text> */}
                                 </ScrollView>
@@ -726,7 +726,8 @@ class Home extends React.Component {
                                             <Text style={styles.fieldText}>Email <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
                                             <TextInput
                                                 style={styles.textInput}
-                                                value={this.state.email}
+                                                value={this.state.email} 
+                                                editable={false}
                                                 placeholder='Email'
                                                 underlineColorAndroid='#1c92c4' 
                                                 keyboardType='email-address'

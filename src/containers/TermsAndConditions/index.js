@@ -2,6 +2,7 @@ import React from 'react';
 import {
     StyleSheet,
     ImageBackground,
+    BackHandler,
     ScrollView
 } from 'react-native';
 import {
@@ -32,6 +33,16 @@ class TermsAndConditions extends React.Component {
             isButtonEnabled: false
         }
 
+    }
+
+    componentDidMount() {
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            return true;
+        });
+    }
+
+    componentWillUnmount() {
+        this.backHandler.remove();
     }
 
     scrollHandler = (event) => {

@@ -58,11 +58,13 @@ class Settings extends React.Component {
         };
     };
     toast = () => {
-        Toast.show({
-            text: 'Coming Soon!',
-            type: 'success',
-            duration: 3000
-        })
+        ToastAndroid.showWithGravityAndOffset(
+            'Coming soon',
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM,
+            25,
+            100,
+        );
     }
     data = [
         {

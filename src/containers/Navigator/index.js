@@ -15,6 +15,8 @@ import Home from '../Home'
 import InAppNotifier from '../InAppNotifier/index'
 import Likes from '../Likes/index'
 import Comments from '../Comments/index'
+import EditPost from '../EditPost/index'
+import EditComment from '../EditComment/index'
 /* This stack will contain list of all pages */
 const RootStack = createStackNavigator(
     {
@@ -102,7 +104,7 @@ const RootStack = createStackNavigator(
             navigationOptions: {
                 headerStyle: {
                     backgroundColor: '#1c92c4',
-                    height: 40
+                    height: 41
                 },
                 title: 'People Who Liked',
                 headerTintColor: '#fff',
@@ -117,18 +119,38 @@ const RootStack = createStackNavigator(
             screen: Comments,
             navigationOptions: {
                 header: null
-                // headerVisible: false
-                // headerStyle: {
-                //     backgroundColor: '#1c92c4',
-                //     height: 30
-                // },
-                // title: 'Comments',
-                // headerTintColor: '#fff',
-                // headerTitleStyle: {
-                //     fontWeight: 'bold',
-                //     fontSize: 19,
-                //     fontFamily: 'OpenSans-Regular'
-                // }
+            }
+        },
+        'EditPost': {
+            screen: EditPost,
+            navigationOptions: {
+                headerStyle: {
+                    backgroundColor: '#1c92c4',
+                    height: 40
+                },
+                title: 'Edit Post',
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: 19,
+                    fontFamily: 'OpenSans-Regular'
+                }
+            }
+        },
+        'EditComment': {
+            screen: EditComment,
+            navigationOptions: {
+                headerStyle: {
+                    backgroundColor: '#1c92c4',
+                    height: 40
+                },
+                title: 'Edit Comment',
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: 19,
+                    fontFamily: 'OpenSans-Regular'
+                }
             }
         },
         
