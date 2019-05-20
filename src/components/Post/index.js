@@ -96,7 +96,9 @@ class Post extends Component {
                         }}>
                             <Icon name='person' style={{ fontSize: 25, color: 'white' }} />
                         </View>
-                        <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>{this.props.postCreator}</Text>
+                        <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>
+                            {this.props.postCreator_id === this.props.associate_id ? this.props.userName : this.props.postCreator}
+                        </Text>
                     </View>
                     {/* <Text style={styles.timeStamp}>{item.Item.time}</Text> */}
                     <TouchableOpacity style={{height: 30, width: 30, borderRadius:30, alignItems: 'flex-end', justifyContent:'center'}} onPress={() => this.setState({ modalVisible: true })} underlayColor='#fff'>
@@ -305,6 +307,7 @@ const styles= StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
+        userName: state.user.firstName + " " + state.user.lastName,
         associate_id: state.user.associate_id
     };
 }

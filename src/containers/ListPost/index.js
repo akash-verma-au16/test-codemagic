@@ -44,6 +44,8 @@ class ListPost extends React.Component {
         this.payloadBackup = []
         this.windowWidth = Dimensions.get("window").width;
         this.scrollPosition = 0
+        //Carry Profile Data
+        this.profileData = {}
     }
     
     static navigationOptions = ({ navigation }) => {
@@ -59,7 +61,12 @@ class ListPost extends React.Component {
             ),
             headerLeft: (
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('Profile')}
+                    onPress={() => {
+                        const profileObj = navigation.getParam('profileData')
+                        navigation.navigate('Profile', {
+                            profileData: profileObj 
+                        })
+                    }}
                 >
                     <Thumbnail
                         source={thumbnail}
@@ -91,7 +98,7 @@ class ListPost extends React.Component {
          "tenant_id": this.props.accountAlias,
          "associate_id": this.props.associate_id
      }
-     componentDidMount() {
+     async componentDidMount() {
 
          this.interval = setInterval(() => {this.loadPosts()}, 10000);
          //Detecting network connectivity change
@@ -99,10 +106,11 @@ class ListPost extends React.Component {
          //Handling hardware backpress event
          this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
              this.goBack()
-            //  return true
          })
-         //Loading profile
-         //  loadProfile(this.payload, this.props.isConnected);
+         //  Loading profile
+         this.profileData = await loadProfile(this.payload, this.props.isConnected);
+         this.props.navigation.setParams({'profileData': this.profileData})
+
      }
 
      componentWillUnmount() {
@@ -117,7 +125,7 @@ class ListPost extends React.Component {
                 networkChanged: true
             }, () => {
                 this.loadPosts()
-                // loadProfile(this.payload, this.props.isConnected)
+                loadProfile(this.payload, this.props.isConnected)
             })
         }
     }
@@ -225,7 +233,8 @@ class ListPost extends React.Component {
                 // Post Component
                 <Post 
                     key= {index}
-                    postCreator= {item.Item.associate_name} 
+                    postCreator={item.Item.associate_name} 
+                    postCreator_id = {item.Item.associate_id}
                     time= {item.Item.time} 
                     postMessage={item.Item.message} 
                     taggedAssociates={item.Item.tagged_associates} 

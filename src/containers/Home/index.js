@@ -70,6 +70,7 @@ class Home extends React.Component {
             isEdit: false
        
         }
+
         this.loadProfile = this.loadProfile.bind(this)
         this.loadTransactions = this.loadTransactions.bind(this)
         this.loadData = this.loadData.bind(this)
@@ -86,7 +87,7 @@ class Home extends React.Component {
         this.summeryRawList = []
         this.transactionDataBackup = []
         this.homeDataBackup = []
-        this.userData = []
+        this.userData = this.props.navigation.getParam('profileData')
         this.loadTransactions = this.loadTransactions.bind(this)
 
     }
@@ -124,7 +125,7 @@ class Home extends React.Component {
 
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
 
-        this.loadHome()
+        // this.loadHome()
         this.loadSummary()
     }
 
@@ -135,7 +136,6 @@ class Home extends React.Component {
 
     handleConnectivityChange = (isConnected) => {
         if (isConnected) {
-            // this.loadBalance()
             this.loadProfile()
             this.loadTransactions()
             this.loadHome()
@@ -151,14 +151,12 @@ class Home extends React.Component {
     }
 
     async loadData() {
-        // await this.loadBalance()
-        await this.loadProfile()
-        // await this.loadTransactions()
+        await this.loadHome()
         this.setState({loading: false})
     }
 
     //Load user profile API Handler
-    async loadProfile() {
+    loadProfile() {
         // this.projectList = []
         const payload = {
             "tenant_id": this.props.accountAlias,
@@ -167,7 +165,7 @@ class Home extends React.Component {
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 console.log("Calling user_profile")
-                await user_profile(payload).then((response) => {
+                user_profile(payload).then((response) => {
                     console.log(response)
                     this.userData = response.data.data
                     if (this.userData.length === 0) {
@@ -192,7 +190,7 @@ class Home extends React.Component {
         // this.setState({loading: true})
     }
 
-    loadHome() {
+    async loadHome() {
         // this.homeDataList = []
         this.setState({
             homeRefreshing: true
@@ -205,7 +203,7 @@ class Home extends React.Component {
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 
-                list_posts(payload).then((response) => {
+                await list_posts(payload).then((response) => {
                     if(this.homeDataBackup.length === response.data.data.length) {
                         if(response.data.data.length === 0) {
                             this.homeDataRowList = []
@@ -222,7 +220,8 @@ class Home extends React.Component {
                                 // Post Component
                                 <Post
                                     key={index}
-                                    postCreator={item.Item.associate_name}
+                                    postCreator={item.Item.associate_name} 
+                                    postCreator_id={item.Item.associate_id} 
                                     time={item.Item.time}
                                     postMessage={item.Item.message}
                                     taggedAssociates={item.Item.tagged_associates}
@@ -345,7 +344,7 @@ class Home extends React.Component {
                 catch(e) {
                     console.log(e)
                 }
-                await this.loadProfile()
+                //Updating redux state
                 const payload = {
                     firstName: this.state.firstName,
                     lastName: this.state.lastName,
@@ -353,6 +352,9 @@ class Home extends React.Component {
                     emailAddress: this.state.email
                 }
                 this.props.updateUser(payload)
+                await this.loadProfile()
+                await this.loadHome()
+                
                 this.setState({ submit: false, isEdit: false })
                 this.setModalVisible(false)
             }
@@ -520,20 +522,20 @@ class Home extends React.Component {
                     </View>
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', width: "100%", padding: 3 }}>
-                        <View style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
+                        <TouchableOpacity onPress={() => this.pager.setPage(0)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
                             <Text style={styles.text}>Home</Text>
                             <H3 style={this.state.selectedTab == 0 ? styles.textActive : styles.textInactive}>{this.homeDataList.length}</H3>
-                        </View>
+                        </TouchableOpacity>
                         <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
-                        <View style={{ alignItems: 'center', justifyContent: 'space-around', width: '33%' }}>
+                        <TouchableOpacity onPress={() => this.pager.setPage(1)} style={{ alignItems: 'center', justifyContent: 'space-around', width: '33%' }}>
                             <Text style={styles.text}>Rewards</Text>
                             <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.userData.wallet_balance}</H3>
-                        </View>
+                        </TouchableOpacity>
                         <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
-                        <View style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
+                        <TouchableOpacity onPress={() => this.pager.setPage(2)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
                             <Text style={styles.text}>Strengths</Text>
                             <H3 style={this.state.selectedTab == 2 ? styles.textActive : styles.textInactive}>{this.summeryList.length}</H3>
-                        </View>
+                        </TouchableOpacity>
                     </View>
 
                     {/* <ScrollView style={{flex: 1, alignItems: 'center'}}> */}
