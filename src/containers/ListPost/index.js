@@ -62,10 +62,14 @@ class ListPost extends React.Component {
             headerLeft: (
                 <TouchableOpacity
                     onPress={() => {
-                        const profileObj = navigation.getParam('profileData')
-                        navigation.navigate('Profile', {
-                            profileData: profileObj 
-                        })
+                        if (navigation.getParam('isConnected')) {
+                            const profileObj = navigation.getParam('profileData')
+                            navigation.navigate('Profile', {
+                                profileData: profileObj,
+                                associateId: navigation.getParam('associateId')
+                            })
+                        }
+
                     }}
                 >
                     <Thumbnail
@@ -99,7 +103,8 @@ class ListPost extends React.Component {
          "associate_id": this.props.associate_id
      }
      async componentDidMount() {
-
+         this.profileData = await loadProfile(this.payload, this.props.isConnected);
+         this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
          this.interval = setInterval(() => {this.loadPosts()}, 10000);
          //Detecting network connectivity change
          NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
@@ -108,7 +113,6 @@ class ListPost extends React.Component {
              this.goBack()
          })
          //  Loading profile
-         this.profileData = await loadProfile(this.payload, this.props.isConnected);
          this.props.navigation.setParams({'profileData': this.profileData})
 
      }
@@ -119,14 +123,19 @@ class ListPost extends React.Component {
          this.backHandler.remove()
      } 
 
-    handleConnectivityChange = (isConnected) => {
+    handleConnectivityChange =  (isConnected) => {
         if(isConnected) {
             this.setState({
                 networkChanged: true
-            }, () => {
+            }, async () => {
                 this.loadPosts()
-                loadProfile(this.payload, this.props.isConnected)
+                this.profileData = await loadProfile(this.payload, this.props.isConnected)
+                console.log('Data:', this.profileData)
+                this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': this.props.isConnected })
             })
+        }
+        else {
+            this.props.navigation.setParams({'isConnected': false })
         }
     }
     
@@ -226,15 +235,16 @@ class ListPost extends React.Component {
             }
         }
     }   
-    createTiles = (data) => {
-        
+    createTiles = async (data) => {
+        this.profileData = await loadProfile(this.payload, this.props.isConnected) 
         data.map((item, index) => {      
             this.postList.push(
                 // Post Component
                 <Post 
                     key= {index}
                     postCreator={item.Item.associate_name} 
-                    postCreator_id = {item.Item.associate_id}
+                    postCreator_id = {item.Item.associate_id} 
+                    profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time= {item.Item.time} 
                     postMessage={item.Item.message} 
                     taggedAssociates={item.Item.tagged_associates} 
