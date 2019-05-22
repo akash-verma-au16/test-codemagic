@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // Components from React-Native
-import { View, Text, StyleSheet, TouchableOpacity, TouchableHighlight, ToastAndroid, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Alert } from 'react-native';
 // Components from Native Base
 import { Icon } from 'native-base'
 //Cusotm component
@@ -58,6 +58,20 @@ class Post extends Component {
         })
     }
 
+    onIconPresshandler = () => {
+        console.log('PD', this.props.profileData)
+        this.props.navigation.navigate('Profile', {
+            associateId: this.props.postCreator_id,
+            profileData: this.props.postCreator_id === this.props.associate_id ? this.props.profileData : {}
+        })
+    }
+
+    onAssociateTaphandler = (associateId) => {
+        this.props.navigation.push('Profile', {
+            associateId: associateId
+        })
+    }
+
     showToast() {
         ToastAndroid.showWithGravityAndOffset(
             'Coming soon',
@@ -67,7 +81,6 @@ class Post extends Component {
             100,
         );
     }
-
 
     data = [
         { icon: 'edit', type: 'AntDesign', text: 'Edit Post', name:'edit' , key: 'edit'},
@@ -85,7 +98,7 @@ class Post extends Component {
                 <View name='header'
                     style={styles.container}
                 >
-                    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 3 }}>
+                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 3 }} onPress={this.onIconPresshandler}>
                         <View name='image' style={{
                             borderRadius: 30,
                             backgroundColor: '#1c92c4',
@@ -99,7 +112,7 @@ class Post extends Component {
                         <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>
                             {this.props.postCreator_id === this.props.associate_id ? this.props.userName : this.props.postCreator}
                         </Text>
-                    </View>
+                    </TouchableOpacity>
                     {/* <Text style={styles.timeStamp}>{item.Item.time}</Text> */}
                     <TouchableOpacity style={{height: 30, width: 30, borderRadius:30, alignItems: 'flex-end', justifyContent:'center'}} onPress={() => this.setState({ modalVisible: true })} underlayColor='#fff'>
                         <Icon
@@ -119,7 +132,15 @@ class Post extends Component {
                     <Text style={styles.postText}>
 
                         {this.props.taggedAssociates.map((associate, index) => {
-                            this.associateList.push((<Text style={styles.associate} key={index}>@{associate.associate_name + " "}</Text>))
+                            this.associateList.push((
+                                <Text 
+                                    style={styles.associate} 
+                                    key={index} 
+                                    onPress={() => this.onAssociateTaphandler(associate.associate_id)}
+                                >
+                                    @{associate.associate_name + " "}
+                                </Text>
+                            ))
                         })}
                         {this.associateList}
                         {this.props.postMessage}

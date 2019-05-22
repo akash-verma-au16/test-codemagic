@@ -7,8 +7,10 @@ import {
     ImageBackground,
     Dimensions,
     RefreshControl,
-    ScrollView
+    ScrollView, 
+    ToastAndroid
 } from 'react-native';
+import NetInfo from "@react-native-community/netinfo"
 import { H2 } from 'native-base'
 /* Redux */
 import { connect } from 'react-redux'
@@ -22,6 +24,8 @@ import {
     Toast,
     Thumbnail
 } from 'native-base';
+//Prefetch Profile Data
+import { loadProfile } from '../Home/apicalls'
 /* Assets */
 import nature1 from '../../assets/tileBackgrounds/nature1.jpg'
 import nature2 from '../../assets/tileBackgrounds/nature2.jpg'
@@ -42,19 +46,49 @@ class ListSurvey extends React.Component {
         this.OrgPulse = []
         this.FunQuiz = []
         this.pager = React.createRef();
+        //Profile Data
+        this.profileData = {}
     }
-    // componentDidMount() {
-    //     this.loadSurveys()
-    // }
+
+    //profile payload
+    payload = {
+        "tenant_id": this.props.accountAlias,
+        "associate_id": this.props.associate_id
+    }
+    async componentDidMount() {
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+        this.profileData = await loadProfile(this.payload, this.props.isConnected);
+        this.props.navigation.setParams({ 
+            'profileData': this.profileData, 
+            'isConnected': this.props.isConnected,
+            'associateId': this.props.associate_id 
+        })
+    }
+
+    componentWillUnmount() {
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+    }
+
+    handleConnectivityChange = async (isConnected) => {
+        if (isConnected) {
+            this.loadSurveys()
+            this.profileData = await loadProfile(this.payload, this.props.isConnected)
+            this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': true })
+        }
+        else {
+            this.props.navigation.setParams({ 'isConnected': false })
+        }
+    }
+
     loadSurveys = () => {
-        this.MyPulse = []                                                                           
-        this.OrgPulse = []
-        this.FunQuiz = []
         this.setState({ isLoading: true })
         list_survey({
             tenant_id: this.props.accountAlias
         })
             .then(response => {
+                this.MyPulse = []
+                this.OrgPulse = []
+                this.FunQuiz = []
                 response.data.data.tenant_specific.map((item, index) => {
                     switch (index % 3) {
                     case 0:
@@ -86,6 +120,8 @@ class ListSurvey extends React.Component {
                     )
                     if (item.type === "Daily-Questionnaire") {
                         this.MyPulse.push(card)
+                        console.log('MyPulse', this.MyPulse)
+
                     } else if (item.type === "Weekly-Questionnaire") {
                         this.OrgPulse.push(card)
                     } else {
@@ -109,12 +145,14 @@ class ListSurvey extends React.Component {
                     )
                 }
                 this.setState({ isLoading: false })
+
             })
             .catch(() => {
                 this.setState({ isLoading: false })
             })
 
     }
+
     static navigationOptions = ({ navigation }) => {
         return {
 
@@ -123,7 +161,15 @@ class ListSurvey extends React.Component {
             ),
             headerLeft: (
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('Profile')}
+                    onPress={() => {
+                        if (navigation.getParam('isConnected')) {
+                            const profileObj = navigation.getParam('profileData')
+                            navigation.navigate('Profile', {
+                                profileData: profileObj,
+                                'associateId': navigation.getParam('associateId')
+                            })
+                        }
+                    }}
                 >
                     <Thumbnail
                         source={thumbnail}
@@ -146,6 +192,17 @@ class ListSurvey extends React.Component {
             type: 'success',
             duration: 3000
         })
+    }
+
+    //Helper functions
+    showToast = () => {
+        ToastAndroid.showWithGravityAndOffset(
+            'Coming soon',
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM,
+            25,
+            100,
+        );
     }
 
     data = [
@@ -235,7 +292,14 @@ class ListSurvey extends React.Component {
                                         <RefreshControl
                                             refreshing={this.state.isLoading}
                                             onRefresh={() => {
-                                                this.loadSurveys()
+                                                if (this.props.isConnected) {
+                                                    if (!this.props.isFreshInstall && this.props.isAuthenticate) {
+                                                        this.loadSurveys()
+                                                    }
+                                                }
+                                                else {
+                                                    this.showToast()
+                                                }
                                             }}
                                         />
                                     }
@@ -250,7 +314,14 @@ class ListSurvey extends React.Component {
                                         <RefreshControl
                                             refreshing={this.state.isLoading}
                                             onRefresh={() => {
-                                                this.loadSurveys()
+                                                if (this.props.isConnected) {
+                                                    if (!this.props.isFreshInstall && this.props.isAuthenticate) {
+                                                        this.loadSurveys()
+                                                    }
+                                                }
+                                                else {
+                                                    this.showToast()
+                                                }
                                             }}
                                         />
                                     }
@@ -265,7 +336,14 @@ class ListSurvey extends React.Component {
                                         <RefreshControl
                                             refreshing={this.state.isLoading}
                                             onRefresh={() => {
-                                                this.loadSurveys()
+                                                if (this.props.isConnected) {
+                                                    if (!this.props.isFreshInstall && this.props.isAuthenticate) {
+                                                        this.loadSurveys()
+                                                    }
+                                                }
+                                                else {
+                                                    this.showToast()
+                                                }
                                             }}
                                         />
                                     }
@@ -280,6 +358,7 @@ class ListSurvey extends React.Component {
                         onWillFocus={() => {
                             if (this.props.isConnected) {
                                 if (!this.props.isFreshInstall && this.props.isAuthenticate) {
+                                    console.log('Calling from Navigation Event')
                                     this.loadSurveys()
                                 }
                             }
@@ -319,6 +398,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         accountAlias: state.user.accountAlias,
+        associate_id: state.user.associate_id,
         email: state.user.emailAddress,
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,

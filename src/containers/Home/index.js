@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-    StyleSheet,
     View,
     Dimensions,
     TouchableOpacity,
@@ -29,6 +28,9 @@ import {
 
 } from 'native-base';
 
+//styles
+import { styles } from './styles'
+
 import { IndicatorViewPager } from 'rn-viewpager';
 //Post Component
 import Post from '../../components/Post/index'
@@ -55,6 +57,7 @@ class Home extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            associate_id: this.props.navigation.getParam('associateId'),
             homeRefreshing: false,
             refreshing: false,
             summaryRefreshing: false,
@@ -68,16 +71,17 @@ class Home extends React.Component {
             phoneNo: "",
             isSaved: false,
             isEdit: false
-       
         }
-
+        this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id })
+        console.log('Associate ID:',this.state.associate_id)
         this.loadProfile = this.loadProfile.bind(this)
         this.loadTransactions = this.loadTransactions.bind(this)
         this.loadData = this.loadData.bind(this)
         this.loadHome = this.loadHome.bind(this)
-        this.loadSummary.bind(this)
+        this.loadSummary = this.loadSummary.bind(this)
         this.showToast = this.showToast.bind(this)
         this.handleEditProfile = this.handleEditProfile.bind(this)
+        this.loadTransactions = this.loadTransactions.bind(this)
         this.pager = React.createRef();
         this.homeDataList = []
         this.homeDataRowList = []
@@ -87,46 +91,53 @@ class Home extends React.Component {
         this.summeryRawList = []
         this.transactionDataBackup = []
         this.homeDataBackup = []
-        this.userData = this.props.navigation.getParam('profileData')
-        this.loadTransactions = this.loadTransactions.bind(this)
-
+        this.userData = this.state.associate_id == this.props.associate_id ? this.props.navigation.getParam('profileData') : {}
+        console.log('Rec Obj',this.userData)
+        this.dataList = []
     }
     static navigationOptions = ({ navigation }) => {
         return {
-
             headerRight: (
-                <Icon name='md-settings' style={
-                    {
-                        color: 'white',
-                        margin: 20
-                    }
-                } onPress={() => navigation.navigate('settings')} />
+                navigation.getParam('id') ? 
+                    <Icon name='md-settings' style={
+                        {
+                            color: 'white',
+                            margin: 20
+                        }
+                    } onPress={() => navigation.navigate('settings')} /> 
+                    : 
+                    <View style={{magin: 20}}></View>
             )
         };
     };
-
-    async goBack() {
-        await this.props.navigation.goBack()
-    }
-
-    componentWillMount() {
-        this.loadData()
+    
+    async componentWillMount() {
+        if (this.state.associate_id !== this.props.associate_id) {
+            console.log('Logged if')
+            await this.loadProfile()
+            // await this.setState({ loading: false })
+        }
+        else {
+            console.log('Logged else')
+            await this.loadData()
+            await this.setState({ loading: false })
+        }
     }
 
     componentDidMount() {
+        this.loadSummary()
+        if(this.state.associate_id === this.props.associate_id) {
         // Calling transaction list API after render method
-        this.loadTransactions()
+            this.loadTransactions()
+        }
 
         // Hardware backpress handle
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            this.goBack();
+            this.props.navigation.goBack()
             return true;
         });
 
-        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-
-        // this.loadHome()
-        this.loadSummary()
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange)
     }
 
     componentWillUnmount() {
@@ -152,7 +163,6 @@ class Home extends React.Component {
 
     async loadData() {
         await this.loadHome()
-        this.setState({loading: false})
     }
 
     //Load user profile API Handler
@@ -160,13 +170,13 @@ class Home extends React.Component {
         // this.projectList = []
         const payload = {
             "tenant_id": this.props.accountAlias,
-            "associate_id": this.props.associate_id
+            "associate_id": this.state.associate_id
         }
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 console.log("Calling user_profile")
                 user_profile(payload).then((response) => {
-                    console.log(response)
+                    // console.log(response)
                     this.userData = response.data.data
                     if (this.userData.length === 0) {
                         this.projectList = []
@@ -175,9 +185,9 @@ class Home extends React.Component {
                         this.userData.project_details.map((item) => {
                             this.projectList = []
                             this.projectList.push(item.project_name)
-                            console.log(this.projectList)
                         })
                     }
+                    this.setState({ loading: false })
                 }).catch((error) => {
                     console.log(error)
                 })
@@ -191,24 +201,30 @@ class Home extends React.Component {
     }
 
     async loadHome() {
-        // this.homeDataList = []
         this.setState({
             homeRefreshing: true
         })
         // console.log("user", this.userData.username)
         const payload = {
             "tenant_id": this.props.accountAlias,
-            "associate_id": this.props.associate_id
+            "associate_id": this.state.associate_id
         }
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 
                 await list_posts(payload).then((response) => {
+                    console.log('Calling Loadhome')
                     if(this.homeDataBackup.length === response.data.data.length) {
                         if(response.data.data.length === 0) {
                             this.homeDataRowList = []
-                            this.homeDataRowList.push(<Text style={{ margin: 10 }} key={0}>No post to display</Text>)
-                            this.homeDataRowList.push(<Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon on <Text style={{fontWeight: 'bold', fontStyle: 'italic'}}>Home</Text></Text>)
+                            if (this.state.associate_id !== this.props.associate_id) {
+                                this.homeDataRowList.push(<Text style={{ margin: 10 }} key={0}>No posts found for this User.</Text>)
+                            } 
+                            else {
+                                this.homeDataRowList.push(<Text style={{ margin: 10 }} key={0}>No post to display</Text>)
+                                this.homeDataRowList.push(<Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon on <Text style={{ fontWeight: 'bold', fontStyle: 'italic' }}>Home</Text></Text>)
+                            }
+                           
                         }
                         this.setState({ homeRefreshing: false })
                         return
@@ -249,7 +265,7 @@ class Home extends React.Component {
         this.setState({summaryRefreshing: true})
         const payload = {
             "tenant_id": this.props.accountAlias,
-            "associate_id": this.props.associate_id
+            "associate_id": this.state.associate_id
         }
         try {
             strength_counts(payload).then((response) => {
@@ -265,12 +281,13 @@ class Home extends React.Component {
                             return item.sub_type == endorse.name
                         })
                         this.summeryList.push(
-                            <Card
-                                key={index}
-                                image={imageURI[0].source}
-                                count={item.count}
-                                strength={item.sub_type}
-                            />
+                            <View key={index}>
+                                <Card
+                                    image={imageURI[0].source}
+                                    count={item.count}
+                                    strength={item.sub_type}
+                                />
+                            </View>
                         )
                     })
                 }
@@ -289,6 +306,7 @@ class Home extends React.Component {
     async handleEditProfile(){
         Keyboard.dismiss()
         if(this.state.isEdit) {
+            this.setState({isEdit: false})
             if(this.state.firstName == "") {
                 Toast.show({
                     text: 'Please enter First Name',
@@ -319,17 +337,15 @@ class Home extends React.Component {
             }
             else {
                 try {
-                    const payload = {
-                        "tenant_id": this.props.accountAlias,
-                        "associate_id": this.props.associate_id,
-                        "first_name": this.state.firstName,
-                        "last_name": this.state.lastName,
-                        "email": this.state.email,
-                        "phone_number": "+91"+this.state.phoneNo
-                    }
-                    console.log(payload)
-                    await update_profile(payload).then((res) => {
-                        console.log(res)
+                    if(this.props.isConnected) {
+                        const payload = {
+                            "tenant_id": this.props.accountAlias,
+                            "associate_id": this.props.associate_id,
+                            "first_name": this.state.firstName,
+                            "last_name": this.state.lastName,
+                            "email": this.state.email,
+                            "phone_number": "+91" + this.state.phoneNo
+                        }
                         ToastAndroid.showWithGravityAndOffset(
                             'Updating',
                             ToastAndroid.LONG,
@@ -337,10 +353,26 @@ class Home extends React.Component {
                             25,
                             100,
                         );
-                    }).catch((e) => {
-                        console.log(e)
-                    })
+                        await update_profile(payload).then((res) => {
+                            console.log(res)
+
+                        }).catch((e) => {
+                            console.log(e)
+                        })
+                    }
+                    else {
+                        ToastAndroid.showWithGravityAndOffset(
+                            'No Internet',
+                            ToastAndroid.LONG,
+                            ToastAndroid.BOTTOM,
+                            25,
+                            100,
+                        );
+                        this.setState({ isEdit: true })
+                        return
+                    }
                 }
+                    
                 catch(e) {
                     console.log(e)
                 }
@@ -507,64 +539,88 @@ class Home extends React.Component {
                                 source={thumbnail}
                                 resizeMode='stretch'
                             />
-                            <TouchableOpacity style={styles.editBtn} onPress={this.openModal} activeOpacity={0.9}>
-                                <Text style={styles.editText}>Edit profile</Text>
-                            </TouchableOpacity>
+                            {
+                                this.state.associate_id === this.props.associate_id ?
+                                    <TouchableOpacity style={styles.editBtn} onPress={this.openModal} activeOpacity={0.9}>
+                                        <Text style={styles.editText}>Edit profile</Text>
+                                    </TouchableOpacity>
+                                    :
+                                    null
+                            }
+                            
                         </View>
                         <View style={{ alignItems: 'flex-start', width: '65%', paddingLeft: 5}}>
-                            {/* <H2>{this.props.firstName + ' ' + this.props.lastName}</H2> */}
-                            <Text style={[styles.textLeft, styles.userName]} allowFontScaling numberOfLines={2}>{this.props.firstName + " " + this.props.lastName}</Text> 
-                            {/* {this.userData.username} */}
+                            {
+                                this.state.associate_id === this.props.associate_id ? 
+                                    <Text style={[styles.textLeft, styles.userName]} allowFontScaling numberOfLines={2}>{this.props.firstName + " " + this.props.lastName}</Text>
+                                    :
+                                    <Text style={[styles.textLeft, styles.userName]} allowFontScaling numberOfLines={2}>{this.userData.first_name + " " + this.userData.last_name}</Text> 
+
+                            }
                             <Text style={[styles.coloredText, styles.textLeft]} allowFontScaling numberOfLines={2}>{this.userData.email}</Text>
                             <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={1}>Mobile: <Text style={styles.mobilNo}>{this.userData.phonenumber}</Text></Text>
                             <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={2}>Projects: <Text style={styles.companyName}>{this.projectList.toString()}</Text></Text>
                         </View>
                     </View>
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', width: "100%", padding: 3 }}>
-                        <TouchableOpacity onPress={() => this.pager.setPage(0)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
-                            <Text style={styles.text}>Home</Text>
-                            <H3 style={this.state.selectedTab == 0 ? styles.textActive : styles.textInactive}>{this.homeDataList.length}</H3>
-                        </TouchableOpacity>
-                        <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
-                        <TouchableOpacity onPress={() => this.pager.setPage(1)} style={{ alignItems: 'center', justifyContent: 'space-around', width: '33%' }}>
-                            <Text style={styles.text}>Rewards</Text>
-                            <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.userData.wallet_balance}</H3>
-                        </TouchableOpacity>
-                        <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
-                        <TouchableOpacity onPress={() => this.pager.setPage(2)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
-                            <Text style={styles.text}>Strengths</Text>
-                            <H3 style={this.state.selectedTab == 2 ? styles.textActive : styles.textInactive}>{this.summeryList.length}</H3>
-                        </TouchableOpacity>
-                    </View>
-
-                    {/* <ScrollView style={{flex: 1, alignItems: 'center'}}> */}
+                    {
+                        this.state.associate_id === this.props.associate_id ? 
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', width: "100%", padding: 3 }}>
+                                <TouchableOpacity onPress={() => this.pager.setPage(0)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
+                                    <Text style={styles.text}>Home</Text>
+                                    <H3 style={this.state.selectedTab == 0 ? styles.textActive : styles.textInactive}>{this.homeDataList.length}</H3>
+                                </TouchableOpacity>
+                                <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
+                                <TouchableOpacity onPress={() => this.pager.setPage(1)} style={{ alignItems: 'center', justifyContent: 'space-around', width: '33%' }}>
+                                    <Text style={styles.text}>Rewards</Text>
+                                    <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.userData.wallet_balance}</H3>
+                                </TouchableOpacity>
+                                <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
+                                <TouchableOpacity onPress={() => this.pager.setPage(2)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
+                                    <Text style={styles.text}>Strengths</Text>
+                                    <H3 style={this.state.selectedTab == 2 ? styles.textActive : styles.textInactive}>{this.summeryList.length}</H3>
+                                </TouchableOpacity>
+                            </View>
+                            :
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', width: "100%", padding: 3 }}>
+                                <TouchableOpacity onPress={() => this.pager.setPage(0)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
+                                    <Text style={styles.text}>Home</Text>
+                                    <H3 style={this.state.selectedTab == 0 ? styles.textActive : styles.textInactive}>{this.homeDataList.length}</H3>
+                                </TouchableOpacity>
+                                <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
+                                <TouchableOpacity onPress={() => this.pager.setPage(1)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
+                                    <Text style={styles.text}>Strengths</Text>
+                                    <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.summeryList.length}</H3>
+                                </TouchableOpacity>
+                            </View>
+                    }
+                        
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-                        <View style={styles.tabHeader}>
-                            <TouchableOpacity onPress={() => this.pager.setPage(0)} style={styles.iconTouch}>
-                                <Icon name='md-home' type={'Ionicons'} style={this.state.selectedTab === 0 ? styles.iconActive : styles.iconInactive} />
-                                {/* <H3 style={{ textAlign: 'center' }}>9</H3>
-                            <Text style={styles.coloredText} >Thanks</Text> */}
-                            </TouchableOpacity>
-
-                            {/* <View style={{ backgroundColor:'#000',width:1,height:'50%'}}/> */}
-
-                            <TouchableOpacity onPress={() => this.pager.setPage(1)} style={styles.iconTouch}>
-                                <Icon name='wallet' type={'Entypo'} style={this.state.selectedTab === 1 ? styles.iconActive : styles.iconInactive} />
-                                {/* <Icon1 name="wallet" size={30} color="#900" /> */}
-                                {/* <H3 style={{ textAlign: 'center' }}>100</H3>
-                            <Text style={styles.coloredText} >Points</Text> */}
-                            </TouchableOpacity>
-
-                            {/* <View style={{backgroundColor:'#000',width:1,height:'50%'}}/> */}
-
-                            <TouchableOpacity onPress={() => this.pager.setPage(2)} style={styles.iconTouch}>
-                                <Icon name='list-alt' type={'FontAwesome'} style={this.state.selectedTab === 2 ? [styles.iconActive, {fontSize: 24}] : [styles.iconInactive, {fontSize: 23}] } />
-
-                                {/* <H3 style={{textAlign:'center'}}>5</H3>
-                            <Text style={styles.coloredText} >Endorses</Text> */}
-                            </TouchableOpacity>
-                        </View>
+                        {
+                            this.state.associate_id === this.props.associate_id ?
+                                <View style={styles.tabHeader}>
+                                    <TouchableOpacity onPress={() => this.pager.setPage(0)} style={styles.iconTouch}>
+                                        <Icon name='md-home' type={'Ionicons'} style={this.state.selectedTab === 0 ? styles.iconActive : styles.iconInactive} />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => this.pager.setPage(1)} style={styles.iconTouch}>
+                                        <Icon name='wallet' type={'Entypo'} style={this.state.selectedTab === 1 ? styles.iconActive : styles.iconInactive} />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => this.pager.setPage(2)} style={styles.iconTouch}>
+                                        <Icon name='list-alt' type={'FontAwesome'} style={this.state.selectedTab === 2 ? [styles.iconActive, { fontSize: 24 }] : [styles.iconInactive, { fontSize: 23 }]} />
+                                    </TouchableOpacity>
+                                </View>
+                                :
+                                <View style={styles.tabHeader}>
+                                    <TouchableOpacity onPress={() => this.pager.setPage(0)} style={styles.iconTouch}>
+                                        <Icon name='md-home' type={'Ionicons'} style={this.state.selectedTab === 0 ? styles.iconActive : styles.iconInactive} />
+                                    </TouchableOpacity>
+                                    <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
+                                    <TouchableOpacity onPress={() => this.pager.setPage(1)} style={styles.iconTouch}>
+                                        <Icon name='list-alt' type={'FontAwesome'} style={this.state.selectedTab === 1 ? [styles.iconActive, {fontSize: 24}] : [styles.iconInactive, {fontSize: 23}] } />
+                                    </TouchableOpacity>
+                                </View>
+                        }
+                        
                         <IndicatorViewPager
                             initialPage={0}
                             ref={ref => this.pager = ref}
@@ -572,9 +628,9 @@ class Home extends React.Component {
                             onPageSelected={(page) => this.setState({ selectedTab: page.position })}
                         >
                             <View>
-                                <ScrollView 
+                                <ScrollView
                                     showsVerticalScrollIndicator={false}
-                                    contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingTop: 3, backgroundColor: '#eee'}}
+                                    contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingTop: 3, backgroundColor: '#eee' }}
                                     refreshControl={
                                         <RefreshControl
                                             refreshing={this.state.homeRefreshing}
@@ -593,30 +649,36 @@ class Home extends React.Component {
                                     {this.homeDataList.length === 0 ? this.homeDataRowList : this.homeDataList}
                                 </ScrollView>
                             </View>
+                            {
+                                this.state.associate_id === this.props.associate_id ? 
+                                    <View style={{flex: 1}}>
+                                        <ScrollView
+                                            showsVerticalScrollIndicator={false}
+                                            contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', backgroundColor: '#eee' }}
+                                            refreshControl={
+                                                <RefreshControl
+                                                    refreshing={this.state.refreshing}
+                                                    onRefresh={() => {
+                                                        if (this.props.isConnected) {
+                                                            if (!this.props.isFreshInstall && this.props.isAuthenticate) {
+                                                                this.loadTransactions()
+                                                            }
+                                                        }
+                                                        else {
+                                                            this.showToast()
+                                                        }
+                                                    }}
+                                                />
+                                            }>
+                                            {this.transactionList}
+                                        </ScrollView>
+                                    </View>
+                                    :
+                                    null
+                            }
+                            
                             <View>
-                                <ScrollView 
-                                    showsVerticalScrollIndicator={false}
-                                    contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', backgroundColor: '#eee' }}
-                                    refreshControl={
-                                        <RefreshControl
-                                            refreshing={this.state.refreshing}
-                                            onRefresh={() => {
-                                                if(this.props.isConnected) {
-                                                    if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                                        this.loadTransactions()
-                                                    }
-                                                }
-                                                else {
-                                                    this.showToast()
-                                                }
-                                            }}
-                                        />
-                                    }>
-                                    {this.transactionList}
-                                </ScrollView>
-                            </View>
-                            <View>
-                                <ScrollView 
+                                <ScrollView
                                     showsVerticalScrollIndicator={false}
                                     contentContainerStyle={styles.cardContainer}
                                     scrollEnabled={true}
@@ -637,7 +699,7 @@ class Home extends React.Component {
                                     }>
                                     {this.summeryList.length > 0 ? this.summeryList : this.summeryRawList}
                                     {/* <Icon name='worker' type={'MaterialCommunityIcons'} style={{ fontSize: 22, color: '#8a8b8c' }} />
-                                    <Text style={{ color: '#8a8b8c', textAlign: 'center', marginTop: 15, width: '80%' }}>This page is under Development for Future Releases.</Text> */}
+                                                            <Text style={{ color: '#8a8b8c', textAlign: 'center', marginTop: 15, width: '80%' }}>This page is under Development for Future Releases.</Text> */}
                                 </ScrollView>
                             </View>
                         </IndicatorViewPager>
@@ -667,12 +729,11 @@ class Home extends React.Component {
 
                                     <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 10, width: "85%"}}>
                                         <Text style={styles.headerText}>Edit Profile</Text>
-                                        
-                                        <Icon name='check' type={'MaterialIcons'} 
-                                            style={this.state.isEdit ? { color: '#1c92c4', padding: 5, fontSize: 27 } : { color: '#ccc', padding: 5, fontSize: 27 }}
-                                            onPress={this.handleEditProfile}
-                                        />
-        
+                                        <TouchableOpacity style={{height: 35, borderRadius: 30, aspectRatio: 1/1}} onPress={this.handleEditProfile}>
+                                            <Icon name='check' type={'MaterialIcons'} 
+                                                style={this.state.isEdit ? { color: '#1c92c4', padding: 5, fontSize: 27 } : { color: '#ccc', padding: 5, fontSize: 27 }}
+                                            />
+                                        </TouchableOpacity>
                                     </View>
                                 </View>
                                 <View style={{flex: 1, width: "100%"}}>
@@ -770,242 +831,6 @@ class Home extends React.Component {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    coloredText:{
-        fontSize: 14,
-        color:'#1c92c4',
-        fontFamily: "OpenSans-Regular",
-        flexWrap: 'wrap'
-    },
-    userName: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        fontFamily: "OpenSans-Regular",
-        color: '#333'      
-    },
-    companyName: {
-        color: '#1c92c4',
-        fontSize: 15,
-        fontWeight: 'bold',
-        flexWrap: 'wrap',
-        // fontStyle: 'italic',
-        fontFamily: "OpenSans-Regular"
-    },
-    mobilNo: {
-        fontSize: 14,
-        fontFamily: 'Roboto-Medium'
-    },
-    text: {
-        fontSize: 13,
-        fontFamily: "OpenSans-Regular",
-        paddingBottom: 5
-    },
-    iconTouch: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        // height: 32,
-        width: '33%',
-        paddingHorizontal: 10
-        // borderRadius: 32,
-        // backgroundColor: "blue"
-    }, 
-    textLeft : {
-        width: "100%"
-    },
-    helperText: {
-        fontFamily: 'OpenSans-Regular', 
-        fontSize: 15
-    },  
-    textActive: {
-        color: '#1c92c4',
-        textAlign: 'center',
-        fontWeight :'bold',
-        fontSize: 22
-        // marginTop: 5
-    },
-    textInactive: {
-        textAlign : 'center'
-    },
-    iconActive: {
-        fontSize: 26,
-        color: '#1c92c4'
-    },
-    iconInactive: {
-        fontSize: 25,
-        color: '#8a8b8c'
-    },
-    tabHeader: {
-        borderTopWidth: 1 / 5,
-        borderBottomWidth: 1 / 5,
-        flexDirection: 'row',
-        // margin: 10,
-        marginTop: 5,
-        marginBottom: 0,
-        padding: 3,
-        height: 34,
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'space-around'
-    },  
-    viewPager: {
-        flex:1,
-        width: '100%'
-        // padding: 5
-    },
-    transactionContainer: {
-        flex:1,
-        width: '100%',
-        flexDirection: 'row',
-        flexWrap: 'nowrap',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 10
-    },
-    iconView: {
-        width: '20%',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    transactionView : {
-        width: '80%',
-        paddingLeft: 10,
-        flexDirection: 'row',
-        flexWrap: 'nowrap',
-        alignItems: 'center',
-        justifyContent: 'space-evenly'
-    },
-    textView: {
-        width: "80%",
-        alignItems: 'flex-start',
-        justifyContent: 'center'
-    },
-    debit: {
-        color: 'red',
-        fontSize: 17,
-        fontWeight: 'bold',
-        fontFamily: "OpenSans-Regular"
-    },
-    credit: {
-        color: 'green',
-        fontSize: 17,
-        fontWeight: 'bold',
-        fontFamily: "OpenSans-Regular"
-    },
-    tText: {
-        fontFamily: "OpenSans-Regular",
-        fontSize: 15
-    },
-    pointsView: {
-        height: 30,
-        width: "20%",
-        alignItems: 'center',
-        justifyContent: 'flex-start'
-    },
-    timeStamp: {
-        color: '#aaa',
-        fontSize: 12,
-        marginTop:7,
-        textAlign: 'left',
-        fontFamily: "OpenSans-Regular"
-    },
-    // Edit profile button style classes
-    editText: {
-        color: '#FFF',
-        fontFamily: "OpenSans-Regular",
-        fontSize: 14
-    },
-    editBtn: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#1c92c4',
-        borderRadius: 3,
-        paddingHorizontal: 10,
-        paddingVertical: 3
-    },
-    cardContainer: {
-        flexDirection: 'row', 
-        flexWrap: 'wrap', 
-        alignItems: 'flex-start', 
-        justifyContent: 'space-between', 
-        paddingHorizontal: 15,
-        paddingTop: 15,
-        backgroundColor: '#efefef'
-    },
-    modalCaontainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        width: Dimensions.get('window').width
-    },
-    headerContainer: {
-        flexDirection: 'row',
-        width: Dimensions.get('window').width,
-        backgroundColor: '#fff',
-        // height: 50,
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        borderWidth:0,
-        shadowOffset: { width: 5, height: 0 },
-        shadowColor: '#666',
-        shadowRadius: 2,
-        shadowOpacity: 0.2,
-        elevation: 2
-    },
-    headerText: {
-        textAlign: 'left',
-        fontSize: 19,
-        fontFamily: "OpenSans-Regular",
-        fontWeight: '300'
-    },
-    fieldText: {
-        textAlign: 'left',
-        paddingBottom: 0,
-        fontSize: 16,
-        color: '#444',
-        fontFamily: 'OpenSans-Regular'
-    },
-    textInputWraper: {
-        alignItems: 'flex-start',
-        justifyContent: 'space-between',
-        width: "100%",
-        paddingVertical: 5
-    }, 
-    textInput: {
-        width: "100%", 
-        // padding: 0,
-        paddingBottom: 15, 
-        height: 45,
-        fontSize: 15
-    },
-    profilePic: {
-        height: 130,
-        aspectRatio: 1 / 1,
-        borderRadius: 130
-    },
-    imageWrapper: {
-        height: 137, 
-        width: 137, 
-        borderRadius: 137, 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        borderWidth: 7,
-        borderColor: '#FFF',
-        shadowOffset: { width: 7, height: 7 },
-        shadowColor: '#333',
-        shadowRadius: 2,
-        shadowOpacity: 0.4,
-        elevation: 5
-    },
-    changePicText: {
-        fontSize: 18,
-        fontFamily: 'OpenSans-Regular',
-        fontWeight: "400",
-        color: '#1c92c4',
-        textAlign: 'center',
-        padding: 20
-    }
-});
 
 const mapStateToProps = (state) => {
     return {
