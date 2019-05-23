@@ -5,11 +5,11 @@ const url = config.url.dataApi
 const env = config.env.dev
 const type = config.type.data_apis
 export const save_answers = (
-    payload
+    payload, headers
 ) => {
     const endpoint = url + "/" + env + "/" + type + "/" + config.api.save_answers
     return axios.post(endpoint, 
-        payload
+        payload, headers
     )
 
 }

@@ -123,10 +123,15 @@ class CreatePost extends React.Component {
             email: this.props.emailAddress,
             tenant_id: this.props.accountAlias
         }
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
         this.setState({ isVisibilityLoading: true })
         if(this.props.accountAlias !== undefined) {
             try {
-                get_visibility(payload).then((response) => {
+                get_visibility(payload, headers).then((response) => {
                     console.log("Calling get_visibility API")
                     this.visibilityData = []
                     let iconName = ''
@@ -317,10 +322,15 @@ class CreatePost extends React.Component {
             }
 
         }
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
         // console.log(payload)
         this.setState({ isLoading: true })
         try {
-            create_post(payload).then(() => {
+            create_post(payload, headers).then(() => {
                 // Toast.show({
                 //     text: 'Post created. This may take 1 minute to update',
                 //     type: 'success',
@@ -481,10 +491,15 @@ class CreatePost extends React.Component {
 
     loadMembers = () => {
         console.log('Calling loadMembers')
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
         if (this.props.accountAlias !== undefined) {
             list_associate({
                 tenant_id: this.props.accountAlias
-            })
+            }, headers)
                 .then(response => {
                     /* Clear Garbage */
                     console.log('calling list_associate API')
@@ -651,7 +666,8 @@ const mapStateToProps = (state) => {
         emailAddress: state.user.emailAddress,
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
-        isConnected: state.system.isConnected
+        isConnected: state.system.isConnected,
+        idToken: state.user.idToken
     };
 }
 

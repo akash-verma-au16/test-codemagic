@@ -50,14 +50,22 @@ class ListSurvey extends React.Component {
         this.profileData = {}
     }
 
+    //Authorization headers
+    headers = {
+        headers: {
+            Authorization: this.props.idToken
+        }
+    }
+
     //profile payload
     payload = {
         "tenant_id": this.props.accountAlias,
         "associate_id": this.props.associate_id
     }
+    
     async componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-        this.profileData = await loadProfile(this.payload, this.props.isConnected);
+        this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
         this.props.navigation.setParams({ 
             'profileData': this.profileData, 
             'isConnected': this.props.isConnected,
@@ -72,7 +80,7 @@ class ListSurvey extends React.Component {
     handleConnectivityChange = async (isConnected) => {
         if (isConnected) {
             this.loadSurveys()
-            this.profileData = await loadProfile(this.payload, this.props.isConnected)
+            this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
             this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': true })
         }
         else {
@@ -84,7 +92,7 @@ class ListSurvey extends React.Component {
         this.setState({ isLoading: true })
         list_survey({
             tenant_id: this.props.accountAlias
-        })
+        }, this.headers)
             .then(response => {
                 this.MyPulse = []
                 this.OrgPulse = []
@@ -402,7 +410,8 @@ const mapStateToProps = (state) => {
         email: state.user.emailAddress,
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
-        isConnected: state.system.isConnected
+        isConnected: state.system.isConnected,
+        idToken: state.user.idToken
 
     };
 }

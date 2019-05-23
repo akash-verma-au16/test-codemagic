@@ -48,6 +48,13 @@ class SurveyIntro extends React.Component {
         })
     }
 
+    //Authorization headers
+    headers = {
+        headers: {
+            Authorization: this.props.idToken
+        }
+    }
+
     componentWillUnmount() {
         this.backHandler.remove()
     }
@@ -55,7 +62,7 @@ class SurveyIntro extends React.Component {
         if (this.surveyId) {
             this.setState({ isLoading: true }, () => {
                 if(this.props.isConnected) {
-                    read_survey(this.surveyId).then(response => {
+                    read_survey(this.surveyId, this.headers).then(response => {
                         this.props.navigation.navigate('QuestionContainer', {
                             questionData: response.data.data
                         })
@@ -186,7 +193,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         isAuthenticate: state.isAuthenticate,
-        isConnected: state.system.isConnected
+        isConnected: state.system.isConnected,
+        idToken: state.user.idToken
     };
 }
 

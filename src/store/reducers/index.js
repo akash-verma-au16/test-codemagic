@@ -11,7 +11,8 @@ const initialState = {
         phoneNumber: "",
         emailAddress: "",
         imageUrl: "",
-        tenantImageUrl: ""
+        tenantImageUrl: "",
+        idToken:""
     },
     system: {
         isFreshInstall: true,
@@ -34,7 +35,8 @@ export default (state = initialState, action) => {
                 firstName: action.payload.firstName,
                 lastName: action.payload.lastName,
                 phoneNumber: action.payload.phoneNumber,
-                emailAddress: action.payload.emailAddress
+                emailAddress: action.payload.emailAddress,
+                idToken: action.payload.idToken
             }
         }
     }

@@ -6,7 +6,6 @@ import {
 } from 'native-base';
 import NetInfo from "@react-native-community/netinfo"
 
-import { NavigationEvents } from 'react-navigation';
 import { connect } from 'react-redux'
 import { inapp_notification } from '../../services/inAppNotification'
 
@@ -27,14 +26,23 @@ class InAppNotifier extends React.Component {
         this.notificationList = []
     }
 
+    componentWillMount() {
+        this.loadNotifications()
+    }
+
     loadNotifications = () => {
         const payload = {
             associate_id: this.props.associate_id,
             tenant_id: this.props.accountAlias
         }
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
-                inapp_notification(payload).then(response => {
+                inapp_notification(payload, headers).then(response => {
                     if (this.payloadBackup.length === response.data.in_app_data.length) {
                         if (response.data.in_app_data.length == 0) {
                             this.notificationList = []
@@ -152,15 +160,6 @@ class InAppNotifier extends React.Component {
                 >
                     {this.notificationList}
                 </ScrollView>
-                <NavigationEvents
-                    onWillFocus={() => {
-                        if (this.props.isConnected) {
-                            if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                this.loadNotifications()
-                            }
-                        }
-                    }}
-                />
             </Container>
         )
     }
@@ -214,7 +213,8 @@ const mapStateToProps = (state) => {
         associate_id: state.user.associate_id,
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
-        isConnected: state.system.isConnected
+        isConnected: state.system.isConnected,
+        idToken: state.user.idToken
 
     };
 }
