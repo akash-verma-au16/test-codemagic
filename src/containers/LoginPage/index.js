@@ -121,7 +121,7 @@ class LoginPage extends React.Component {
                         email: this.state.email,
                         password: this.state.password
                     }).then((response) => {
-                        console.log("Response", response)
+                        console.log("Login Response:", response)
                         /* Restricting Super Admin Access as no Tenant Name is available to fetch */
                         if (this.state.accountAlias.trim().toLowerCase() === 'default') {
                             Toast.show({
@@ -135,6 +135,10 @@ class LoginPage extends React.Component {
                         read_member({
                             tenant_id: this.state.accountAlias.toLowerCase().trim(),
                             email: this.state.email.toLowerCase().trim()
+                        },{
+                            headers: {
+                                Authorization: response.data.payload.idToken.jwtToken
+                            }
                         }).then(res => {
                             console.log("Login",res.data)
                             let firstName = toSentenceCase(response.data.payload.idToken.payload.given_name);
@@ -146,7 +150,9 @@ class LoginPage extends React.Component {
                                 firstName: firstName,
                                 lastName: lastName,
                                 phoneNumber: response.data.payload.idToken.payload.phone_number,
-                                emailAddress: response.data.payload.idToken.payload.email.toLowerCase()
+                                emailAddress: response.data.payload.idToken.payload.email.toLowerCase(),
+                                idToken: response.data.payload.idToken.jwtToken
+                                
                             };
                             console.log("Payload", payload)
                             // Toast.show({

@@ -165,6 +165,11 @@ class Home extends React.Component {
         await this.loadHome()
     }
 
+    headers = {
+        headers: {
+            Authorization: this.props.idToken
+        }
+    }
     //Load user profile API Handler
     loadProfile() {
         // this.projectList = []
@@ -175,7 +180,7 @@ class Home extends React.Component {
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 console.log("Calling user_profile")
-                user_profile(payload).then((response) => {
+                user_profile(payload, this.headers).then((response) => {
                     // console.log(response)
                     this.userData = response.data.data
                     if (this.userData.length === 0) {
@@ -212,7 +217,7 @@ class Home extends React.Component {
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 
-                await list_posts(payload).then((response) => {
+                await list_posts(payload, this.headers).then((response) => {
                     console.log('Calling Loadhome')
                     if(this.homeDataBackup.length === response.data.data.length) {
                         if(response.data.data.length === 0) {
@@ -238,6 +243,7 @@ class Home extends React.Component {
                                     key={index}
                                     postCreator={item.Item.associate_name} 
                                     postCreator_id={item.Item.associate_id} 
+                                    profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                                     time={item.Item.time}
                                     postMessage={item.Item.message}
                                     taggedAssociates={item.Item.tagged_associates}
@@ -268,7 +274,7 @@ class Home extends React.Component {
             "associate_id": this.state.associate_id
         }
         try {
-            strength_counts(payload).then((response) => {
+            strength_counts(payload, this.headers).then((response) => {
                 console.log("Strengths", response.data.data)
                 if(response.data.data.length == 0) {
                     this.summeryRawList = []
@@ -353,7 +359,7 @@ class Home extends React.Component {
                             25,
                             100,
                         );
-                        await update_profile(payload).then((res) => {
+                        await update_profile(payload,this.headers).then((res) => {
                             console.log(res)
 
                         }).catch((e) => {
@@ -453,7 +459,7 @@ class Home extends React.Component {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 this.setState({ refreshing: true })
                 // console.log("Calling read_transaction API")
-                await read_transaction(payload).then(response => {
+                await read_transaction(payload, this.headers).then(response => {
                     if (this.transactionDataBackup.length === response.data.data.transaction_data) {
                         if (response.data.data.transaction_data.length == 0) {
                             this.transactionList = []
@@ -651,7 +657,7 @@ class Home extends React.Component {
                             </View>
                             {
                                 this.state.associate_id === this.props.associate_id ? 
-                                    <View style={{flex: 1}}>
+                                    <View>
                                         <ScrollView
                                             showsVerticalScrollIndicator={false}
                                             contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', backgroundColor: '#eee' }}
@@ -677,7 +683,7 @@ class Home extends React.Component {
                                     null
                             }
                             
-                            <View>
+                            <View style={{ flex: 1, backgroundColor: '#efefef'}}>
                                 <ScrollView
                                     showsVerticalScrollIndicator={false}
                                     contentContainerStyle={styles.cardContainer}
@@ -841,7 +847,8 @@ const mapStateToProps = (state) => {
         associate_id: state.user.associate_id,
         isConnected: state.system.isConnected,
         isAuthenticate: state.isAuthenticate,
-        isFreshInstall: state.system.isFreshInstall
+        isFreshInstall: state.system.isFreshInstall,
+        idToken: state.user.idToken
     };
 }
 

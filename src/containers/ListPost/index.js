@@ -97,13 +97,20 @@ class ListPost extends React.Component {
     goBack() {
         return true
     }
+
+    //Authorization headers
+    headers = {
+        headers: {
+            Authorization: this.props.idToken
+        }
+    }
     //profile payload
      payload = {
          "tenant_id": this.props.accountAlias,
          "associate_id": this.props.associate_id
      }
      async componentDidMount() {
-         this.profileData = await loadProfile(this.payload, this.props.isConnected);
+         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
          this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
          this.interval = setInterval(() => {this.loadPosts()}, 10000);
          //Detecting network connectivity change
@@ -129,7 +136,7 @@ class ListPost extends React.Component {
                 networkChanged: true
             }, async () => {
                 this.loadPosts()
-                this.profileData = await loadProfile(this.payload, this.props.isConnected)
+                this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
                 console.log('Data:', this.profileData)
                 this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': this.props.isConnected })
             })
@@ -165,13 +172,13 @@ class ListPost extends React.Component {
             tenant_id: this.props.accountAlias,
             associate_id: this.props.associate_id
         }
-        console.log(payload)
+        
         if (payload.tenant_id !== "" && payload.associate_id !=="") {
             console.log('calling ListPost')
             try {
                 console.log('Calling NEWS_FEED API')
-                news_feed(payload).then(response => {
-                    console.log("Data", response.data.data)
+                news_feed(payload, this.headers).then(async(response) => {
+                    // console.log("Data", response.data.data)
                     /* take payload backup to check for changes later */
                     if (this.payloadBackup.length === response.data.data.length) {
                         /* No change in payload hence do nothing */
@@ -205,7 +212,7 @@ class ListPost extends React.Component {
                         }
                         
                         /* Create UI tiles to display */
-                        this.createTiles(response.data.data)
+                        await this.createTiles(response.data.data)
                         this.setState({ refreshing: false, networkChanged: false })
                     }
                 }).catch((error) => {
@@ -235,8 +242,8 @@ class ListPost extends React.Component {
             }
         }
     }   
-    createTiles = async (data) => {
-        this.profileData = await loadProfile(this.payload, this.props.isConnected) 
+    createTiles = (data) => {
+        this.profileData = this.profileData
         data.map((item, index) => {      
             this.postList.push(
                 // Post Component
@@ -350,8 +357,8 @@ const mapStateToProps = (state) => {
         associate_id: state.user.associate_id,
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
-        isConnected: state.system.isConnected
-
+        isConnected: state.system.isConnected,
+        idToken: state.user.idToken
     };
 }
 

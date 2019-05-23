@@ -145,6 +145,14 @@ class QuestionContainer extends React.Component {
         if (this.state.currentPage < this.state.pageCount - 1)
             this.pager.setPage(this.state.currentPage + 1)
     }
+
+    //Authemtication header
+    headers = {
+        headers: {
+            Authorization: this.props.idToken
+        }
+    }
+
     submitHandler = () => {
         this.setState({ isSubmitLoading: true })
         try {
@@ -156,7 +164,7 @@ class QuestionContainer extends React.Component {
                         survey_id: this.questionData.survey.id,
                         answer_set: this.answerSet
                     }
-                    save_answers(payload).then(() => {
+                    save_answers(payload, this.headers).then(() => {
 
                         /* Give rewards */
                         give_rewards(
@@ -164,7 +172,7 @@ class QuestionContainer extends React.Component {
                                 "tenant_id" : this.props.tenant_id,
                                 "associate_id" : this.props.associate_id,
                                 "event_id" : "a675055e-2d11-42e1-8938-57a4f5fc037b"
-                            }).then((res) => {
+                            }, this.headers).then((res) => {
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: res.data.points
                             })
@@ -320,7 +328,8 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         tenant_id:state.user.accountAlias,
         isConnected: state.system.isConnected,
-        associate_id: state.user.associate_id
+        associate_id: state.user.associate_id,
+        idToken: state.user.idToken
     };
 }
 

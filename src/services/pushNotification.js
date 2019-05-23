@@ -7,5 +7,5 @@ export const register_device = (
     payload
 ) => {
     const endpoint = url + "/" + config.type.api + "/" + config.api.register_device
-    return axios.post(endpoint,payload)
+    return axios.post(endpoint, payload)
 }

@@ -159,7 +159,7 @@ export const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 15,
         paddingTop: 15,
-        backgroundColor: '#efefef'
+        // backgroundColor: '#efefef'
     },
     modalCaontainer: {
         flex: 1,
