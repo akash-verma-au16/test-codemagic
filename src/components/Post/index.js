@@ -124,7 +124,8 @@ class Post extends Component {
         // console.log('PD', this.props.profileData)
         this.props.navigation.navigate('Profile', {
             associateId: this.props.postCreator_id,
-            profileData: this.props.postCreator_id === this.props.associate_id ? this.props.profileData : {}
+            profileData: this.props.postCreator_id === this.props.associate_id ? this.props.profileData : {},
+            isPost: this.props.postCreator_id === this.props.associate_id ? true : false
         })
     }
 

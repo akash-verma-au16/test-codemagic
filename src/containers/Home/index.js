@@ -132,9 +132,9 @@ class Home extends React.Component {
     
     async componentWillMount() {
         if (this.state.associate_id !== this.props.associate_id) {
-            if (this.state.associate_id == undefined) {
+            if (this.state.associate_id == undefined || this.state.associate_id == "") {
                 this.setState({ associate_id: this.props.associate_id })
-                this.loadProfile()
+                // this.loadProfile()
             }
             console.log('Logged if')
             await this.loadProfile()
@@ -143,11 +143,14 @@ class Home extends React.Component {
         else {
             console.log('Logged else')
             await this.loadData()
-            this.setState({ loading: false })
+            // this.setState({ loading: false })
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        if(this.props.navigation.getParam('isPost')) {
+            await this.loadProfile()
+        }
         this.loadSummary()
         this.handleImageDownload()
         if(this.state.associate_id === this.props.associate_id) {
@@ -186,7 +189,7 @@ class Home extends React.Component {
     }
 
     async loadData() {
-        await this.loadHome()
+        await this.loadHome()            
     }
 
     headers = {
@@ -205,7 +208,7 @@ class Home extends React.Component {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 console.log("Calling user_profile")
                 user_profile(payload, this.headers).then((response) => {
-                    // console.log(response)
+                    console.log(response)
                     this.userData = response.data.data
                     if (this.userData.length === 0) {
                         this.projectList = []
@@ -385,8 +388,9 @@ class Home extends React.Component {
                         );
                         await update_profile(payload,this.headers).then((res) => {
                             console.log(res)
-                            this.setState({ imageUrl: this.state.photo }, () => this.handleUploadImage())
-
+                            if(this.state.photo !== null) {
+                                this.setState({ imageUrl: this.state.photo }, () => this.handleUploadImage())   
+                            }
                         }).catch((e) => {
                             console.log(e)
                         })
@@ -897,7 +901,7 @@ class Home extends React.Component {
                                                 
                                                 {!this.state.isImageLoading ? (
                                                     <Image
-                                                        source={{ uri: this.state.isEdit && this.state.photo !== null ? this.state.photo : this.state.imageUrl}}
+                                                        source={{ uri: this.state.photo !== null ? this.state.photo : this.state.imageUrl}}
                                                         style={styles.profilePic}
                                                     />
                                                 ) : (

@@ -12,7 +12,7 @@ export default {
         news_feed:"https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/news_feed",
         list_survey:"https://mjangpdi2k.execute-api.ap-southeast-1.amazonaws.com/dev/survey/list_survey",
         give_reward:"https://835zntrqv6.execute-api.ap-southeast-1.amazonaws.com/api/give_reward",
-        inapp_notification: "https://flnuddep8j.execute-api.ap-southeast-1.amazonaws.com/api/list_inapp_notif",
+        inapp_notification: "https://flnuddep8j.execute-api.ap-southeast-1.amazonaws.com/api/list_inapp",
         read_transaction: "https://835zntrqv6.execute-api.ap-southeast-1.amazonaws.com/api/read_transactions",
         get_balance: "https://lb3kbimo6b.execute-api.ap-south-1.amazonaws.com/api/get_balance",
         user_profile: "https://42afo3tdyc.execute-api.ap-southeast-1.amazonaws.com/api/get_profile",
