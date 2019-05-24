@@ -174,7 +174,7 @@ class ListSurvey extends React.Component {
                             const profileObj = navigation.getParam('profileData')
                             navigation.navigate('Profile', {
                                 profileData: profileObj,
-                                'associateId': navigation.getParam('associateId')
+                                associateId: navigation.getParam('associateId')
                             })
                         }
                     }}
@@ -363,11 +363,12 @@ class ListSurvey extends React.Component {
 
                     </View>
                     <NavigationEvents
-                        onWillFocus={() => {
+                        onWillFocus={async() => {
                             if (this.props.isConnected) {
                                 if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                     console.log('Calling from Navigation Event')
                                     this.loadSurveys()
+                                    this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
                                 }
                             }
                         }}

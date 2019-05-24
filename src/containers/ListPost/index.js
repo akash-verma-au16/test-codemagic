@@ -246,8 +246,8 @@ class ListPost extends React.Component {
             }
         }
     }   
-    createTiles = (data) => {
-        this.profileData = this.profileData
+    createTiles = async(data) => {
+        this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
         data.map((item, index) => {      
             this.postList.push(
                 // Post Component
