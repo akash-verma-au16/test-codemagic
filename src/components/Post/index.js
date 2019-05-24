@@ -129,10 +129,20 @@ class Post extends Component {
     }
 
     onAssociateTaphandler = (associateId) => {
-        this.props.navigation.push('Profile', {
-            associateId: associateId,
-            profileData: this.props.postCreator_id === this.props.associate_id ? this.props.profileData : {}
-        })
+        if(this.props.isConnected) {
+            this.props.navigation.push('Profile', {
+                associateId: associateId,
+                profileData: this.props.postCreator_id === this.props.associate_id ? this.props.profileData : {}
+            })
+        } else {
+            ToastAndroid.showWithGravityAndOffset(
+                'Please connect to the Internet',
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM,
+                25,
+                100,
+            );
+        }
     }
 
     showToast() {
@@ -151,7 +161,7 @@ class Post extends Component {
     ]
 
     otherData = [
-        { icon: 'dingding', type: 'AntDesign', text: 'Others', name: 'others', key: 'others' }
+        { icon: 'report', type: 'MaterialIcons', text: 'Report Post', name: 'report', key: 'report' }
     ]
 
     render() {

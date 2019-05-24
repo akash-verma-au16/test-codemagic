@@ -12,14 +12,14 @@ export async function loadProfile(payload, headers, isConnected) {
                 return profileData
 
             }).catch((error) => {
-                console.log(error)
+                console.log("Profile error")
                 return undefined
             })
         }
     }
     catch (error) {
         // this.setState({ loading: false })
-        console.log("error", error.code)
+        console.log("Profile Catch error")
         return undefined
     }
     // this.setState({loading: true})
