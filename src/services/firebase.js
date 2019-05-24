@@ -65,6 +65,7 @@ const getToken = async () => {
         tenant_id : tenant_id,
         associate_id:associate_id,
         platform : Platform.OS,
-        device_token : fcmToken
+        device_token : fcmToken,
+        device_uid: DeviceInfo.getUniqueID()
     })
 }

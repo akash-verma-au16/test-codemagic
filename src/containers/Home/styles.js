@@ -50,7 +50,8 @@ export const styles = StyleSheet.create({
         color: '#1c92c4',
         textAlign: 'center',
         fontWeight: 'bold',
-        fontSize: 22
+        fontSize: 22,
+        width: "100%"
         // marginTop: 5
     },
     textInactive: {

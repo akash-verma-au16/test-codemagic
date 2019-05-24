@@ -11,7 +11,7 @@ export default {
         get_visibility: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/get_visibility",
         news_feed:"https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/news_feed",
         list_survey:"https://mjangpdi2k.execute-api.ap-southeast-1.amazonaws.com/dev/survey/list_survey",
-        give_reward:"https://lb3kbimo6b.execute-api.ap-south-1.amazonaws.com/api/give_reward",
+        give_reward:"https://835zntrqv6.execute-api.ap-southeast-1.amazonaws.com/api/give_reward",
         inapp_notification: "https://flnuddep8j.execute-api.ap-southeast-1.amazonaws.com/api/list_inapp_notif",
         read_transaction: "https://835zntrqv6.execute-api.ap-southeast-1.amazonaws.com/api/read_transactions",
         get_balance: "https://lb3kbimo6b.execute-api.ap-south-1.amazonaws.com/api/get_balance",
@@ -83,3 +83,6 @@ export default {
 // strength_counts: "https://gp4itpb287.execute-api.ap-southeast-1.amazonaws.com/dev/post/strength_count"
 // list_posts: "https://gp4itpb287.execute-api.ap-southeast-1.amazonaws.com/dev/post/list_posts"
 // get_visibility: "https://gp4itpb287.execute-api.ap-southeast-1.amazonaws.com/dev/post/get_visibility"
+
+//Reward nasic URL
+// https://835zntrqv6.execute-api.ap-southeast-1.amazonaws.com/api
