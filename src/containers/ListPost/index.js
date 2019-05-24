@@ -249,6 +249,7 @@ class ListPost extends React.Component {
                 // Post Component
                 <Post 
                     key= {index}
+                    postId = {item.Item.post_id}
                     postCreator={item.Item.associate_name} 
                     postCreator_id = {item.Item.associate_id} 
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}

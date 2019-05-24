@@ -3,9 +3,16 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Alert } from 'react-native';
 // Components from Native Base
 import { Icon } from 'native-base'
+
+import { styles } from './styles'
+
+/* unique id generation */
+import uuid from 'uuid'
+
 //Cusotm component
 import VisibilityModal from '../../containers/VisibilityModal'
 
+import { like_post } from '../../services/post'
 //React navigation
 import { withNavigation } from 'react-navigation';
 
@@ -51,11 +58,66 @@ class Post extends Component {
             }
         });
     }
+
+    likePost = () => {
+        /* unique id generation */
+        const id = uuid.v4()
+        /* epoch time calculation */
+        const dateTime = Date.now();
+        const timestamp = Math.floor(dateTime / 1000);
+        const payload = {
+            Data: {
+                post_id: this.props.postId,
+                tenant_id: this.props.accountAlias,
+                ops: "like",
+                like: {
+                    like_id: id,
+                    associate_id: this.props.associate_id,
+                    time: timestamp
+                }
+            }
+        }
+        console.log("Payload", payload)
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
+        try {
+            like_post(payload, headers).then((res) => {
+                console.log("Response", res)
+                
+            }).catch((e) => {
+                console.log(e)
+            })
+        }
+        catch (e) {
+            console.log(e)
+
+        }
+    }
     onLikeHnadler = () => {
-        this.setState({
-            like: !this.state.like,
-            likes: this.state.like ? this.state.likes - 1 : this.state.likes + 1
-        })
+        if(this.props.isConnected) {
+            console.log("postId",this.props.postId)
+            this.setState({
+                like: !this.state.like,
+                likes: this.state.like ? this.state.likes - 1 : this.state.likes + 1
+            }, () => {
+                if(this.state.like) {
+                    this.likePost()
+                }
+            })
+        }
+        else {
+            ToastAndroid.showWithGravityAndOffset(
+                'No Internet Connection',
+                ToastAndroid.LONG,
+                ToastAndroid.TOP,
+                25,
+                100,
+            );
+        }
+       
     }
 
     onIconPresshandler = () => {
@@ -151,7 +213,7 @@ class Post extends Component {
                 </View>
                 <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>                    
 
-                <TouchableOpacity underlayColor= '#111' activeOpacity={0.5} onPress={() => this.props.navigation.navigate('Comments')}>
+                <TouchableOpacity underlayColor='#111' activeOpacity={0.5} onPress={() => this.props.navigation.navigate('Comments', { postId: this.props.postId })}>
                     <View style={{ width: "100%"}}>
                         {/* <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>                     */}
                         <View style={styles.infoTab}>
@@ -186,7 +248,7 @@ class Post extends Component {
                         <Icon name='md-thumbs-up' style={ this.state.like ? styles.like : styles.unlike }/>
                         <Text style={this.state.like ? styles.footerTextActive : styles.footerTextInactive}>Like</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView} onPress={() => this.props.navigation.navigate('Comments',{isComment: true})}>
+                    <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView} onPress={() => this.props.navigation.navigate('Comments',{isComment: true, postId: this.props.postId})}>
                         <Icon name='comment' type={'MaterialIcons'} style={styles.comment} />
                         <Text style={styles.footerText}>Comment</Text>
                     </TouchableOpacity>
@@ -240,97 +302,12 @@ class Post extends Component {
     }
 }
 
-const styles= StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-        // padding: 10
-    },
-    card: {
-        // marginTop: 10,
-        marginBottom: 8,
-        backgroundColor: 'white',
-        width: '100%',
-        // borderRadius: 5,
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        shadowOffset: { width: 5, height: 5 },
-        shadowColor: '#111',
-        shadowOpacity: 0.8,
-        elevation: 2
-    },
-    postText: {
-        fontFamily: "OpenSans-Regular",
-        fontWeight: '400',
-        color: '#000',
-        fontSize: 15
-    },
-    associate: {
-        color: '#1c92c4',
-        fontWeight: 'bold'
-    },
-    strength: {
-        fontWeight: 'bold',
-        fontSize: 15
-    },
-    like : {
-        fontSize: 20,
-        color: '#1c92c4'
-    },
-    unlike: {
-        fontSize: 20, 
-        color: '#ccc'
-    },
-    comment: {
-        fontSize: 19,
-        color: '#ccc'
-    },
-    infoTab: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: 5,
-        width: "100%"
-    },
-    infoText: {
-        fontFamily: 'OpenSans-Regular',
-        fontSize: 12
-    },
-    infoNo: {
-        fontSize: 13,
-        fontFamily: "Roboto-Medium",
-        paddingRight: 5
-    },
-    footerText: {
-        fontFamily: "OpenSans-Regular",
-        fontSize: 13,
-        marginLeft: 11
-    },
-    footerTextActive: {
-        fontFamily: "OpenSans-Regular",
-        fontSize: 13,
-        marginLeft: 11,
-        color: '#1c92c4'
-    },
-    footerTextInactive: {
-        fontFamily: "OpenSans-Regular",
-        fontSize: 13,
-        marginLeft: 11
-    },
-    footerConetntView: {
-        // width: '35%',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center'
-    }
-})
-
 const mapStateToProps = (state) => {
     return {
         userName: state.user.firstName + " " + state.user.lastName,
-        associate_id: state.user.associate_id
+        accountAlias: state.user.accountAlias,
+        associate_id: state.user.associate_id,
+        isConnected: state.system.isConnected
     };
 }
 

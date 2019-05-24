@@ -312,6 +312,7 @@ class CreatePost extends React.Component {
                 message: this.state.text,
                 type: this.state.postType,
                 sub_type: this.state.endorsementStrength,
+                ops: "post",
                 tagged_associates: associateList,
                 privacy: {
                     type: this.state.visibilityKey,

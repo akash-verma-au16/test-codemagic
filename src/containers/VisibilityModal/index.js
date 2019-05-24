@@ -5,7 +5,6 @@ import {
     Modal,
     TouchableHighlight,
     TouchableOpacity,
-    TouchableWithoutFeedback,
     StyleSheet
 } from 'react-native';
 import {
