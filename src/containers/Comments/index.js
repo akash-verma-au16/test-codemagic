@@ -13,7 +13,12 @@ import {
 
 import { Icon } from 'native-base'
 
+/* unique id generation */
+import uuid from 'uuid'
+
 import { dummyData } from './data'
+//Add comment
+import { add_comment } from '../../services/comments'
 
 //Redux
 import { connect } from 'react-redux'
@@ -32,9 +37,11 @@ class Comments extends React.Component {
             addCommentText: "",
             isComment: this.props.navigation.getParam('isComment')
         }
+        this.postId = this.props.navigation.getParam('postId')
         this.loadComments =  this.loadComments.bind(this)
         this.focusHandler = this.focusHandler.bind(this)
         this.commentList = [] 
+        this.data = dummyData
         // this.scrollViewRef = React.createRef();
     }
     componentWillMount() {
@@ -56,9 +63,94 @@ class Comments extends React.Component {
     componentWillUnmount() {
         this.backHandler.remove();
     }
+    //Authorization headers
+    headers = {
+        headers: {
+            Authorization: this.props.idToken
+        }
+    }
+
+    addComment = () => {
+        if(this.state.addCommentText.length > 0) {
+            if(this.props.isConnected) {
+                /* unique id generation */
+                const id = uuid.v4()
+                /* epoch time calculation */
+                const dateTime = Date.now();
+                const timestamp = Math.floor(dateTime / 1000);
+
+                const payload = {
+                    Data: {
+                        post_id: this.postId,
+                        tenant_id: this.props.accountAlias,
+                        ops: "comment",
+                        comment: {
+                            comment_id: id,
+                            associate_id: this.props.associate_id,
+                            time: timestamp,
+                            message: this.state.addCommentText
+                        }
+                    }
+                }   
+                console.log("payload", payload)
+                try {
+                    add_comment(payload, this.headers).then((res) => {
+                        console.log('addComment',res)
+                        this.data.push({
+                            associate: this.props.fullName,
+                            associate_id: this.props.associate_id,
+                            comment: this.state.addCommentText,
+                            time: payload.Data.comment.time
+                        })
+                        this.loadComments()
+                        this.setState({addCommentText: "" })
+                        Keyboard.dismiss()
+                    }).catch ((error) => {
+                        Keyboard.dismiss()
+                        ToastAndroid.showWithGravityAndOffset(
+                            "error.code",
+                            ToastAndroid.LONG,
+                            ToastAndroid.BOTTOM,
+                            25,
+                            100,
+                        );
+                    })
+                }
+                catch(e) {
+                    ToastAndroid.showWithGravityAndOffset(
+                        "e.code",
+                        ToastAndroid.LONG,
+                        ToastAndroid.BOTTOM,
+                        25,
+                        100,
+                    );
+                }
+            }
+            else {
+                ToastAndroid.showWithGravityAndOffset(
+                    'No Internet Connection',
+                    ToastAndroid.LONG,
+                    ToastAndroid.TOP,
+                    25,
+                    100,
+                );
+            }
+        }
+        else {
+            ToastAndroid.showWithGravityAndOffset(
+                'Please, Write something...',
+                ToastAndroid.LONG,
+                ToastAndroid.TOP,
+                25,
+                100,
+            );
+        }
+    }
 
     loadComments = () => {
-        dummyData.map((item, index) => {
+        console.log("loadComments")
+        this.commentList = []
+        this.data.map((item, index) => {
             this.commentList.push(
                 <Comment
                     key={index}
@@ -85,30 +177,6 @@ class Comments extends React.Component {
     focusHandler = () => {
         // this.scrollViewRef.current.scrollTo({x: 0, y: 500, animated: true})
         this.scrollView.scrollToEnd();
-    }
-
-    handleSubmitComment = () => {
-        if (this.state.addCommentText.length > 0) {
-            Keyboard.dismiss();
-            ToastAndroid.showWithGravityAndOffset(
-                'Coming soon',
-                ToastAndroid.LONG,
-                ToastAndroid.BOTTOM,
-                25,
-                100,
-            );
-            this.setState({ addCommentText: "" })
-        }
-        else {
-            ToastAndroid.showWithGravityAndOffset(
-                'Please, Write something...',
-                ToastAndroid.LONG,
-                ToastAndroid.TOP,
-                25,
-                100,
-            );
-        }
-        
     }
 
     render() {
@@ -168,7 +236,7 @@ class Comments extends React.Component {
                             name='send'
                             type={'MaterialIcons'}
                             style={this.state.addCommentText.length > 0 ? styles.iconActive : styles.iconInactive} 
-                            onPress={this.handleSubmitComment}
+                            onPress={this.addComment}
                         />
                     </View>
                 </View>
@@ -179,11 +247,13 @@ class Comments extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        // accountAlias: state.user.accountAlias,
+        fullName: state.user.firstName+" "+state.user.lastName,
+        accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
-        isConnected: state.system.isConnected
+        isConnected: state.system.isConnected,
+        idToken: state.user.idToken
 
     };
 }

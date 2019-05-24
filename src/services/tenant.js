@@ -14,6 +14,8 @@ export const read_member = (
 export const list_associate = (
     payload, headers
 ) => {
-    const endpoint = url + "/" + env + "/" + config.role.admin + "/" + config.api.list_associate
+    const endpoint = config.url.list_associates
     return axios.post(endpoint, payload, headers)
 }
+
+// const endpoint = url + "/" + env + "/" + config.role.admin + "/" + config.api.list_associate

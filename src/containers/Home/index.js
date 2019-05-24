@@ -37,6 +37,14 @@ import Post from '../../components/Post/index'
 //Card component
 import Card from '../../components/Card/index'
 
+import VisibilityModal from '../../containers/VisibilityModal/index'
+import axios from 'axios';
+
+import ImageCropPicker from 'react-native-image-crop-picker';
+
+/* For uploading Image to S3 */
+import RNFetchBlob from 'rn-fetch-blob'
+
 /* Redux */
 import { connect } from 'react-redux'
 import { dev } from '../../store/actions'
@@ -70,7 +78,17 @@ class Home extends React.Component {
             email: "",
             phoneNo: "",
             isSaved: false,
-            isEdit: false
+            isEdit: false,
+            //state value for VisibilityModal component
+            visibilityModalVisible: false,
+            isImageLoading: false,
+            isApiLoading: false,
+            imageUrl: null,
+            credentials: {
+                tenant_name: 'happyworks testbbsg9v9gp',
+                file_name: 'logo.png',
+                associate_email: 'happyworks-test@gmail.com'
+            }
         }
         this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id })
         console.log('Associate ID:',this.state.associate_id)
@@ -126,6 +144,7 @@ class Home extends React.Component {
 
     componentDidMount() {
         this.loadSummary()
+        this.handleImageDownload()
         if(this.state.associate_id === this.props.associate_id) {
         // Calling transaction list API after render method
             this.loadTransactions()
@@ -520,6 +539,106 @@ class Home extends React.Component {
         })
         this.setState({refreshing: false})
     }
+    //Visibilty input data
+    data = [
+        { icon: 'camera', type: 'Entypo', text: 'Open Camera', name: 'open', key: 'open' },
+        { icon: 'photo-library', type: 'MaterialIcons', text: 'Import From Gallery', name: 'import', key: 'import' }
+    ]
+
+    /* Upload image to AWS S3 */
+    handleUploadImage = () => {
+        /* Get signed URL */
+        const endpoint = 'https://38fo7itjbj.execute-api.ap-southeast-1.amazonaws.com/api/file_upload'
+        const { credentials } = this.state
+        axios.post(endpoint, {
+            'tenant_name': credentials.tenant_name,
+            'file_name': credentials.file_name,
+            'associate_email': credentials.associate_email
+        })
+            .then((response) => {
+
+                const headers = {
+                    'Content-Type': 'multipart/form-data',
+                }
+                let url = this.state.imageUrl
+
+                RNFetchBlob.fetch('PUT', response.data.data['upload-signed-url'], headers, RNFetchBlob.wrap(url))
+                    .then(() => {
+                        console.log('image uploaded')
+                        // this.setState({ }, () => this.handleImageDownload())
+                        // this.setTimeout(() => this.handleImageDownload(), 3000)
+                        this.handleImageDownload()
+                    }).catch((error) => {
+                        console.log(error)
+                    })
+            })
+            .catch((error) => {
+                console.log('error', error)
+            })
+    }
+
+    /* Get image from S3 */
+    handleImageDownload = () => {
+        console.log("Calling handleImageDownload")
+        this.setState({ isImageLoading: true })
+        /* Request image*/
+        const endpoint = 'https://38fo7itjbj.execute-api.ap-southeast-1.amazonaws.com/api/file_download'
+        const { credentials } = this.state
+        axios.post(endpoint, {
+            "tenant_name": credentials.tenant_name,
+            "file_name": credentials.file_name,
+            "associate_email": credentials.associate_email
+        }).then((response) => {
+            console.log("Image response", response)
+            /* Store the image */
+            this.setState({ isImageLoading: false, imageUrl: response.data.data['download-signed-url'] })
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+
+    /* Load image from camera */
+    handleChoosePhotoFromCamera = () => {
+        const options = {
+            noData: true
+        }
+        /* Request permissions and import image */
+        ImageCropPicker.openCamera({
+            width: 300,
+            height: 400,
+            cropping: true
+        }).then(image => {
+            console.log(image);
+
+            let updatedResponse = image
+            updatedResponse.fileName = 'logo.png'
+
+            /* store the image */
+            this.setState({ imageUrl: updatedResponse.path }, () => this.handleUploadImage())
+        }).catch(() => {
+            alert('Please provide the permission')
+        })
+    }
+    /* Load image from gallary or internal storage */
+    handleChoosePhotoFromLibrary = () => {
+        /* Request permissions and import image */
+        ImageCropPicker.openPicker({
+            width: 100,
+            height: 100,
+            cropping: true
+        }).then(image => {
+            console.log(image);
+
+            let updatedResponse = image
+            updatedResponse.fileName = 'logo.png'
+
+            /* store the image */
+            this.setState({ imageUrl: updatedResponse.path }, () => this.handleUploadImage())
+
+        }).catch(() => {
+            alert('Please provide the permission')
+        })
+    }
 
     render() {
         if(this.state.loading) {
@@ -540,11 +659,13 @@ class Home extends React.Component {
                 >
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: "100%", padding: 15 }}>
                         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '35%' }}>
-                            <Image
-                                style={{ borderRadius: 90, width: 90, height: 90, aspectRatio: 1 / 1, margin: 10 }}
-                                source={thumbnail}
-                                resizeMode='stretch'
-                            />
+                            <View style={styles.tbWrapper}>
+                                <Image
+                                    style={{ borderRadius: 90, width: 90, height: 90, aspectRatio: 1 / 1, margin: 10 }}
+                                    source={{ uri: this.state.imageUrl }}
+                                    resizeMode='stretch'
+                                />
+                            </View>
                             {
                                 this.state.associate_id === this.props.associate_id ?
                                     <TouchableOpacity style={styles.editBtn} onPress={this.openModal} activeOpacity={0.9}>
@@ -750,12 +871,18 @@ class Home extends React.Component {
                                     >
                                         <View style={{alignItems: 'center', justifyContent: 'center', padding: 20}}>
                                             <View style={styles.imageWrapper}>
-                                                <Image 
-                                                    source={thumbnail} 
-                                                    style={styles.profilePic}
-                                                />
+                                                
+                                                {!this.state.isImageLoading ? (
+                                                    <Image
+                                                        source={{ uri: this.state.imageUrl}}
+                                                        style={styles.profilePic}
+                                                    />
+                                                ) : (
+                                                    <ActivityIndicator size="large" color="#0000ff" />
+                                                )
+                                                }    
                                             </View>
-                                            <TouchableOpacity>
+                                            <TouchableOpacity onPress={() => this.setState({ visibilityModalVisible: true})}>
                                                 <Text style={styles.changePicText}>Change Profile Photo</Text>
                                             </TouchableOpacity>
                                         </View>
@@ -828,6 +955,24 @@ class Home extends React.Component {
                                         </View>
                                     </ScrollView>
                                 </View>
+                                <VisibilityModal
+                                    enabled={this.state.visibilityModalVisible}
+                                    data={ this.data }
+                                    onChangeListener={({ text, name, key }) => {
+                                        if(key == 'open') {
+                                            this.handleChoosePhotoFromCamera()
+                                        }
+                                        else {
+                                            this.handleChoosePhotoFromLibrary()
+                                        }
+                                    }}
+                                    visibilityDisableHandler={() => {
+                                        this.setState({ visibilityModalVisible: false })
+                                    }}
+                                    onRequestClose={() => {
+                                        this.setState({ visibilityModalVisible: false })
+                                    }}
+                                />
                             </View>
                         </Root>
                     </KeyboardAvoidingView>

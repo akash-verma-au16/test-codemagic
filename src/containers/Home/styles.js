@@ -212,6 +212,21 @@ export const styles = StyleSheet.create({
         aspectRatio: 1 / 1,
         borderRadius: 130
     },
+    tbWrapper: {
+        height: 95,
+        width: 95,
+        borderRadius: 95,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 5,
+        borderColor: '#FFF',
+        shadowOffset: { width: 5, height: 5 },
+        shadowColor: '#333',
+        shadowRadius: 2,
+        shadowOpacity: 0.4,
+        elevation: 5,
+        marginBottom: 15
+    },
     imageWrapper: {
         height: 137,
         width: 137,
