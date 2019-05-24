@@ -67,5 +67,9 @@ const getToken = async () => {
         platform : Platform.OS,
         device_token : fcmToken,
         device_uid: DeviceInfo.getUniqueID()
+    }).then((res) => {
+        console.log("register_device", res)
+    }).catch((e) => {
+        console.log("error", e.code)
     })
 }

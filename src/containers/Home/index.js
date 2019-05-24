@@ -91,7 +91,7 @@ class Home extends React.Component {
                 associate_email: 'happyworks-test@gmail.com'
             }
         }
-        this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id })
+        this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id || this.state.associate_id == undefined })
         console.log('Associate ID:',this.state.associate_id)
         this.loadProfile = this.loadProfile.bind(this)
         this.loadTransactions = this.loadTransactions.bind(this)
