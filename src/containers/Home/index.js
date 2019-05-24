@@ -83,6 +83,7 @@ class Home extends React.Component {
             visibilityModalVisible: false,
             isImageLoading: false,
             isApiLoading: false,
+            photo: null,
             imageUrl: null,
             credentials: {
                 tenant_name: 'happyworks testbbsg9v9gp',
@@ -131,6 +132,10 @@ class Home extends React.Component {
     
     async componentWillMount() {
         if (this.state.associate_id !== this.props.associate_id) {
+            if (this.state.associate_id == undefined) {
+                this.setState({ associate_id: this.props.associate_id })
+                this.loadProfile()
+            }
             console.log('Logged if')
             await this.loadProfile()
             // await this.setState({ loading: false })
@@ -138,7 +143,7 @@ class Home extends React.Component {
         else {
             console.log('Logged else')
             await this.loadData()
-            await this.setState({ loading: false })
+            this.setState({ loading: false })
         }
     }
 
@@ -380,6 +385,7 @@ class Home extends React.Component {
                         );
                         await update_profile(payload,this.headers).then((res) => {
                             console.log(res)
+                            this.setState({ imageUrl: this.state.photo }, () => this.handleUploadImage())
 
                         }).catch((e) => {
                             console.log(e)
@@ -560,7 +566,7 @@ class Home extends React.Component {
                 const headers = {
                     'Content-Type': 'multipart/form-data'
                 }
-                var url = this.state.imageUrl
+                var url = this.state.photo
 
                 await RNFetchBlob.fetch('PUT', response.data.data['upload-signed-url'], headers, RNFetchBlob.wrap(url))
                     .then(() => {
@@ -614,9 +620,15 @@ class Home extends React.Component {
             updatedResponse.fileName = 'logo.png'
 
             /* store the image */
-            this.setState({ imageUrl: updatedResponse.path }, () => this.handleUploadImage())
-        }).catch(() => {
-            alert('Please provide the permission')
+            this.setState({ photo: updatedResponse.path, isEdit: true })
+        }).catch((e) => {
+            console.log("error", e.code)
+            if (e.code == "E_PICKER_CANCELLED") {
+                return
+            }
+            else {
+                alert('Please provide the permission')
+            }
         })
     }
     /* Load image from gallary or internal storage */
@@ -633,10 +645,16 @@ class Home extends React.Component {
             updatedResponse.fileName = 'logo.png'
 
             /* store the image */
-            this.setState({ imageUrl: updatedResponse.path }, () => this.handleUploadImage())
+            this.setState({ photo: updatedResponse.path, isEdit: true })
 
-        }).catch(() => {
-            alert('Please provide the permission')
+        }).catch((e) => {
+            console.log("error", e.code)
+            if (e.code == "E_PICKER_CANCELLED") {
+                return
+            }
+            else {
+                alert('Please provide the permission')
+            }
         })
     }
 
@@ -879,7 +897,7 @@ class Home extends React.Component {
                                                 
                                                 {!this.state.isImageLoading ? (
                                                     <Image
-                                                        source={{ uri: this.state.imageUrl}}
+                                                        source={{ uri: this.state.isEdit && this.state.photo !== null ? this.state.photo : this.state.imageUrl}}
                                                         style={styles.profilePic}
                                                     />
                                                 ) : (

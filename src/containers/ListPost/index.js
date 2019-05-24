@@ -110,8 +110,11 @@ class ListPost extends React.Component {
          "associate_id": this.props.associate_id
      }
      async componentDidMount() {
-         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
-         this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
+         if(this.props.isAuthenticate) {
+             this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
+             this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
+         }
+         
          this.interval = setInterval(() => {this.loadPosts()}, 10000);
          //Detecting network connectivity change
          NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
@@ -217,6 +220,7 @@ class ListPost extends React.Component {
                     }
                 }).catch((error) => {
                     this.setState({ refreshing: false, networkChanged: false })
+                    console.log()
                     // if (!this.props.isConnected) {
                     //     Toast.show({
                     //         text: error.response.data.code, 
@@ -299,10 +303,11 @@ class ListPost extends React.Component {
                 </ScrollView>
 
                 <NavigationEvents
-                    onWillFocus={() =>{
+                    onWillFocus={async() =>{
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.loadPosts()
+                                this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
                             }
                         }     
                     }}

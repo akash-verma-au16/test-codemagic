@@ -62,7 +62,7 @@ class Comment extends React.Component {
     ]
 
     otherData = [
-        { icon: 'dingding', type: 'AntDesign', text: 'Others', name: 'others', key: 'others' }
+        { icon: 'report', type: 'MaterialIcons', text: 'Report Comment', name: 'report', key: 'report' }
     ]
 
     showToast() {
