@@ -317,11 +317,11 @@ class Home extends React.Component {
                     })
                 }
             }).catch((e) => {
-                this.setState({ summaryRefreshing: true })
+                this.setState({ summaryRefreshing: false })
             })
         }
         catch(e){
-            this.setState({ summaryRefreshing: true })
+            this.setState({ summaryRefreshing: false })
         }
         
         this.setState({ summaryRefreshing: false })
@@ -555,19 +555,19 @@ class Home extends React.Component {
             'file_name': credentials.file_name,
             'associate_email': credentials.associate_email
         })
-            .then((response) => {
-
+            .then(async(response) => {
+                console.log("Upload Image", response)
                 const headers = {
-                    'Content-Type': 'multipart/form-data',
+                    'Content-Type': 'multipart/form-data'
                 }
-                let url = this.state.imageUrl
+                var url = this.state.imageUrl
 
-                RNFetchBlob.fetch('PUT', response.data.data['upload-signed-url'], headers, RNFetchBlob.wrap(url))
+                await RNFetchBlob.fetch('PUT', response.data.data['upload-signed-url'], headers, RNFetchBlob.wrap(url))
                     .then(() => {
                         console.log('image uploaded')
                         // this.setState({ }, () => this.handleImageDownload())
                         // this.setTimeout(() => this.handleImageDownload(), 3000)
-                        this.handleImageDownload()
+                        // this.handleImageDownload()
                     }).catch((error) => {
                         console.log(error)
                     })
@@ -598,12 +598,12 @@ class Home extends React.Component {
     }
 
     /* Load image from camera */
-    handleChoosePhotoFromCamera = () => {
+    handleChoosePhotoFromCamera = async () => {
         const options = {
             noData: true
         }
         /* Request permissions and import image */
-        ImageCropPicker.openCamera({
+        await ImageCropPicker.openCamera({
             width: 300,
             height: 400,
             cropping: true
@@ -660,11 +660,16 @@ class Home extends React.Component {
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: "100%", padding: 15 }}>
                         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '35%' }}>
                             <View style={styles.tbWrapper}>
-                                <Image
-                                    style={{ borderRadius: 90, width: 90, height: 90, aspectRatio: 1 / 1, margin: 10 }}
-                                    source={{ uri: this.state.imageUrl }}
-                                    resizeMode='stretch'
-                                />
+                                {!this.state.isImageLoading ?
+                                    <Image
+                                        style={{ borderRadius: 90, width: 90, height: 90, aspectRatio: 1 / 1, margin: 10 }}
+                                        source={{ uri: this.state.imageUrl }}
+                                        resizeMode='stretch'
+                                    />
+                                    :
+                                    <ActivityIndicator size='small' color="#1c92c4" />
+                                }
+                                
                             </View>
                             {
                                 this.state.associate_id === this.props.associate_id ?
@@ -878,7 +883,7 @@ class Home extends React.Component {
                                                         style={styles.profilePic}
                                                     />
                                                 ) : (
-                                                    <ActivityIndicator size="large" color="#0000ff" />
+                                                    <ActivityIndicator size='large' color="#1c92c4" />
                                                 )
                                                 }    
                                             </View>
