@@ -35,3 +35,17 @@ export const update_profile = (
     const endpoint = config.url.update_profile
     return axios.post(endpoint, payload, headers)
 }
+
+export const file_download = (
+    payload
+) => {
+    const endpoint = config.url.file_download
+    return axios.post(endpoint, payload)
+}
+
+export const file_upload = (
+    payload
+) => {
+    const endpoint = config.url.file_upload
+    return axios.post(endpoint, payload)
+}

@@ -6,8 +6,7 @@ import {
     TouchableOpacity,
     Animated,
     BackHandler,
-    ScrollView,
-    Dimensions
+    ToastAndroid
 } from 'react-native';
 
 /* Native Base */
@@ -34,7 +33,7 @@ import RoundButton from '../../components/RoundButton'
 import logo from '../../assets/Logo_High_black.png'
 /* Services */
 import { login } from '../../services/bAuth'
-import { read_member } from '../../services/tenant'
+import { read_member, read_tenant } from '../../services/tenant'
 import { configureFirebase } from '../../services/firebase'
 /* Utilities */
 import toSentenceCase from '../../utilities/toSentenceCase'
@@ -53,11 +52,12 @@ class LoginPage extends React.Component {
             logoFade: new Animated.Value(0),
             sloganFade: new Animated.Value(0)
         }
-
+        this.tenantName = ""
         /* Refs are used to redirect the focus to the next component using keyboard button */
         this.textInputAccountAlias = React.createRef();
         this.textInputEmail = React.createRef();
         this.textInputPassword = React.createRef();
+        
     }
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -131,62 +131,83 @@ class LoginPage extends React.Component {
                             this.setState({ isSignInLoading: false })
                             return
                         }
-
-                        read_member({
-                            tenant_id: this.state.accountAlias.toLowerCase().trim(),
-                            email: this.state.email.toLowerCase().trim()
+                        read_tenant({
+                            tenant_id: this.state.accountAlias.toLowerCase().trim()
                         },{
                             headers: {
                                 Authorization: response.data.payload.idToken.jwtToken
                             }
-                        }).then(res => {
-                            console.log("Login",res.data)
-                            let firstName = toSentenceCase(response.data.payload.idToken.payload.given_name);
-                            let lastName = toSentenceCase(response.data.payload.idToken.payload.family_name);
-                            const payload = {
-                                accountAlias: this.state.accountAlias.toLowerCase().trim(),
-                                tenant_name: this.state.accountAlias.toLowerCase().trim(),
-                                associate_id: res.data.data.associate_id,
-                                firstName: firstName,
-                                lastName: lastName,
-                                phoneNumber: response.data.payload.idToken.payload.phone_number,
-                                emailAddress: response.data.payload.idToken.payload.email.toLowerCase(),
-                                idToken: response.data.payload.idToken.jwtToken
-                                
-                            };
-                            console.log("Payload", payload)
-                            // Toast.show({
-                            //     text: 'Welcome ' + response.data.payload.idToken.payload.given_name + '!',
-                            //     type: "success"
-                            // })
-                            this.props.authenticate(payload);
-                            //configure firebase for push notification
-                            const email = this.state.email.toLowerCase().trim()
-                            configureFirebase({
-                                firstName,
-                                lastName,
-                                email,
-                                payload
-                            })
-                            this.props.navigation.navigate('TabNavigator')
-                        }).catch((error) => {
-                            console.log("Logged in catch")
-                            this.setState({ isSignInLoading: false });
-                            if(this.props.isConnected) {
-                                console.log("Error", error)
-                                Toast.show({
-                                    text: error.response.data.code,
-                                    type: 'danger',
-                                    duration: 3000
+                        }).then((tenantRes) => {
+                            // console.log("Tenant Data", res)
+                            // this.tenantName = tenantRes.data.data[0].tenant_name
+                            if (tenantRes.data.data[0].is_disabled) {
+                                ToastAndroid.showWithGravityAndOffset(
+                                    'No Internet Connection',
+                                    ToastAndroid.LONG,
+                                    ToastAndroid.TOP,
+                                    25,
+                                    100,
+                                );
+                            } else {
+                                read_member({
+                                    tenant_id: this.state.accountAlias.toLowerCase().trim(),
+                                    email: this.state.email.toLowerCase().trim()
+                                }, {
+                                    headers: {
+                                        Authorization: response.data.payload.idToken.jwtToken
+                                    }
+                                }).then(res => {
+                                    console.log("Login", res.data)
+                                    let firstName = toSentenceCase(response.data.payload.idToken.payload.given_name);
+                                    let lastName = toSentenceCase(response.data.payload.idToken.payload.family_name);
+                                    const payload = {
+                                        accountAlias: this.state.accountAlias.toLowerCase().trim(),
+                                        tenant_name: tenantRes.data.data[0].tenant_name,
+                                        associate_id: res.data.data.associate_id,
+                                        firstName: firstName,
+                                        lastName: lastName,
+                                        phoneNumber: response.data.payload.idToken.payload.phone_number,
+                                        emailAddress: response.data.payload.idToken.payload.email.toLowerCase(),
+                                        idToken: response.data.payload.idToken.jwtToken
+
+                                    };
+                                    console.log("Payload", payload)
+                                    // Toast.show({
+                                    //     text: 'Welcome ' + response.data.payload.idToken.payload.given_name + '!',
+                                    //     type: "success"
+                                    // })
+                                    this.props.authenticate(payload);
+                                    //configure firebase for push notification
+                                    const email = this.state.email.toLowerCase().trim()
+                                    configureFirebase({
+                                        firstName,
+                                        lastName,
+                                        email,
+                                        payload
+                                    })
+                                    this.props.navigation.navigate('TabNavigator')
+                                }).catch((error) => {
+                                    this.setState({ isSignInLoading: false });
+                                    if (this.props.isConnected) {
+                                        console.log("Error", error)
+                                        Toast.show({
+                                            text: error.response.data.code,
+                                            type: 'danger',
+                                            duration: 3000
+                                        })
+                                    }
+                                    else {
+                                        Toast.show({
+                                            text: 'Please connect to the internet.',
+                                            type: 'danger',
+                                            duration: 3000
+                                        })
+                                    }
                                 })
                             }
-                            else {
-                                Toast.show({
-                                    text: 'Please connect to the internet.',
-                                    type: 'danger',
-                                    duration: 3000
-                                })
-                            }
+
+                        }).catch((e) => {
+                            console.log(e)
                         })
                     }).catch((error) => {
                         try {

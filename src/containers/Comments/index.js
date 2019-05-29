@@ -10,15 +10,15 @@ import {
     BackHandler,
     Keyboard
 } from 'react-native';
+import NetInfo from "@react-native-community/netinfo"
 
 import { Icon } from 'native-base'
 
 /* unique id generation */
 import uuid from 'uuid'
 
-import { dummyData } from './data'
-//Add comment
-import { add_comment } from '../../services/comments'
+//Comment API methods
+import { add_comment, list_comments } from '../../services/comments'
 
 //Redux
 import { connect } from 'react-redux'
@@ -38,14 +38,16 @@ class Comments extends React.Component {
             isComment: this.props.navigation.getParam('isComment')
         }
         this.postId = this.props.navigation.getParam('postId')
-        this.loadComments =  this.loadComments.bind(this)
+        this.fetchComments = this.fetchComments.bind(this)
+        this.loadComments = this.loadComments.bind(this)
         this.focusHandler = this.focusHandler.bind(this)
         this.commentList = [] 
-        this.data = dummyData
+        this.comments = []
         // this.scrollViewRef = React.createRef();
     }
     componentWillMount() {
-        this.loadComments()
+        this.setState({ commentsRefresh: true})
+        this.fetchComments()
     }
 
     componentDidMount() {
@@ -54,6 +56,9 @@ class Comments extends React.Component {
             this.goBack();
             return true;
         });
+        //Add network Connectivity Listener
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange)
+        this.interval = setInterval(() => { this.fetchComments() }, 5000);
     }
 
     async goBack() {
@@ -62,11 +67,69 @@ class Comments extends React.Component {
 
     componentWillUnmount() {
         this.backHandler.remove();
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+        clearInterval(this.interval)
     }
+
+    handleConnectivityChange = (isConnected) => {
+        if (isConnected) {
+            this.fetchComments()
+        }
+    }
+
     //Authorization headers
     headers = {
         headers: {
             Authorization: this.props.idToken
+        }
+    }
+    fetchComments = () => {
+        const payload = {
+            "post_id": this.postId,
+            "tenant_id": this.props.accountAlias,
+            "associate_id": this.props.associate_id
+        }
+        try {
+            if (this.props.isConnected) {
+                list_comments(payload).then((response) => {
+                    // console.log("Comment Response", response.data.data.Items)
+                    if(response.data.data.Items.length == 0) {
+                        this.commentList = []
+                        this.commentList.push(<Text style={{ margin: 10 }} key={0}>No Comments</Text>)
+                        this.commentList.push(<Text key={1}>Add Comment to start Conversation</Text>)
+                        this.setState({ commentsRefresh: false })                        
+                        return
+                    }
+                    else {
+                        if(this.comments.length == 0) {
+                            this.comments = response.data.data.Items
+                        }
+                        if (this.comments.length !== response.data.data.Items.length) {       
+                            this.comments = response.data.data.Items
+                            console.log("this.comments2",this.comments)
+                            this.loadComments(this.comments)
+                        } 
+                        else {
+                            console.log("API RESPONSE")
+                            this.loadComments(this.comments)
+                        }
+                    }
+                    // console.log("List Comments", response.data.data)
+                }).catch((e) => {
+                    console.log(e)
+                })
+            } else {
+                ToastAndroid.showWithGravityAndOffset(
+                    'Please, Connect to the internet',
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM,
+                    25,
+                    100,
+                );
+            }
+        }
+        catch(e) {
+            console.log(e)
         }
     }
 
@@ -92,38 +155,47 @@ class Comments extends React.Component {
                         }
                     }
                 }   
-                console.log("payload", payload)
                 try {
-                    add_comment(payload, this.headers).then((res) => {
+                    this.setState({ commentsRefresh: true })
+                    add_comment(payload, this.headers).then(async(res) => {
                         console.log('addComment',res)
-                        this.data.push({
-                            associate: this.props.fullName,
-                            associate_id: this.props.associate_id,
-                            comment: this.state.addCommentText,
-                            time: payload.Data.comment.time
-                        })
-                        this.loadComments()
-                        this.setState({addCommentText: "" })
+                        if(res.status === 200) {
+                            this.comments.push({
+                                associate_id: payload.Data.comment.associate_id,
+                                comment_id: payload.Data.comment.comment_id,
+                                message: payload.Data.comment.message,
+                                post_id: payload.Data.post_id,
+                                tenant_id: payload.Data.tenant_id,
+                                time: payload.Data.comment.time
+                            })
+                            this.loadComments(this.comments)
+                            // setTimeout(() => this.fetchComments(), 1000)
+                            this.setState({addCommentText: "" })
+                        }
+                        else {
+                            ToastAndroid.showWithGravityAndOffset(
+                                "Something went wrong while Commenting, please try agin",
+                                ToastAndroid.LONG,
+                                ToastAndroid.BOTTOM,
+                                25,
+                                100,
+                            );
+                        }
                         Keyboard.dismiss()
                     }).catch ((error) => {
                         Keyboard.dismiss()
-                        ToastAndroid.showWithGravityAndOffset(
-                            "error.code",
-                            ToastAndroid.LONG,
-                            ToastAndroid.BOTTOM,
-                            25,
-                            100,
-                        );
+                        console.log(error)
+                        // ToastAndroid.showWithGravityAndOffset(
+                        //     "error.code",
+                        //     ToastAndroid.LONG,
+                        //     ToastAndroid.BOTTOM,
+                        //     25,
+                        //     100,
+                        // );
                     })
                 }
                 catch(e) {
-                    ToastAndroid.showWithGravityAndOffset(
-                        "e.code",
-                        ToastAndroid.LONG,
-                        ToastAndroid.BOTTOM,
-                        25,
-                        100,
-                    );
+                    console.log(e)
                 }
             }
             else {
@@ -147,21 +219,22 @@ class Comments extends React.Component {
         }
     }
 
-    loadComments = () => {
+    loadComments = (data) => {
         console.log("loadComments")
         this.commentList = []
-        this.data.map((item, index) => {
+        data.map((item, index) => {
             this.commentList.push(
                 <Comment
                     key={index}
                     associate={item.associate} 
                     id={item.associate_id}
-                    message={item.comment}
+                    message={item.message}
                     time={item.time} 
                     onPress={() => this.setState({modalVisible: true})}
                 />
             )
         })
+        this.setState({ commentsRefresh: false })
     }
     showToast() {
         ToastAndroid.showWithGravityAndOffset(
@@ -207,7 +280,7 @@ class Comments extends React.Component {
                             onRefresh={() => {
                                 if (this.props.isConnected) {
                                     if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                        this.loadComments()
+                                        this.fetchComments()
                                     }
                                 }
                                 else {

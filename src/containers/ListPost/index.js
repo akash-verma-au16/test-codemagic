@@ -177,30 +177,34 @@ class ListPost extends React.Component {
         }
         
         if (payload.tenant_id !== "" && payload.associate_id !=="") {
-            console.log('calling ListPost')
             try {
                 console.log('Calling NEWS_FEED API')
-                news_feed(payload, this.headers).then(async(response) => {
-                    // console.log("Data", response.data.data)
+                news_feed(payload, this.headers).then((response) => {
+                    console.log("data", response.data.data)
                     /* take payload backup to check for changes later */
-                    if (this.payloadBackup.length === response.data.data.length) {
-                        /* No change in payload hence do nothing */
-
+                    if (this.payloadBackup.length === response.data.data.posts.length) {
+                    /* No change in payload hence do nothing */
+                        console.log("log1")
+                        this.setState({ refreshing: false, networkChanged: false })
+                        // this.postList = []
+                        // this.createTiles(response.data.data.posts, response.data.data.counts)
                         /* Checking if any data is available */
-                        if (response.data.data.length === 0) {
+                        if (response.data.data.posts === 0) {
                             /* Display warning on the screen */
                             this.postList = []
                             this.postList.push(<Text style={{margin:10}} key={0}>No post to display</Text>)
                             this.postList.push(<Text style={{margin:10}} key={1}>Create a new post by clicking on + icon</Text>)
+                        
+                            /* Update state to render warning */
+                            this.setState({ refreshing: false, networkChanged: false })
+                            return
                         }
-                        /* Update state to render warning */
-                        this.setState({ refreshing: false, networkChanged: false })
-                        return
                     } else {
+                        console.log("log2")
                         /* Change in payload */
 
                         /* Take Backup */
-                        this.payloadBackup = response.data.data
+                        this.payloadBackup = response.data.data.posts
 
                         /* Skip for initial post load */
                         if (this.postList.length !== 0) {
@@ -209,18 +213,14 @@ class ListPost extends React.Component {
                                 /* Show th new post button */ 
                                 this.setState({ newPostVisibility: true })
                             }
-
-                            /* reset the tiles */
-                            this.postList = []
                         }
                         
                         /* Create UI tiles to display */
-                        await this.createTiles(response.data.data)
-                        this.setState({ refreshing: false, networkChanged: false })
+                        this.createTiles(response.data.data.posts, response.data.data.counts)
                     }
                 }).catch((error) => {
                     this.setState({ refreshing: false, networkChanged: false })
-                    console.log()
+                    console.log(error)
                     // if (!this.props.isConnected) {
                     //     Toast.show({
                     //         text: error.response.data.code, 
@@ -246,9 +246,14 @@ class ListPost extends React.Component {
             }
         }
     }   
-    createTiles = async(data) => {
+    createTiles = async(posts, counts) => {
+        this.postList = []
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
-        data.map((item, index) => {      
+        posts.map((item, index) => {
+            var all_counts = counts.filter((count) => {
+                return item.Item.post_id === count.post_id
+            }) 
+            console.log("count", all_counts)
             this.postList.push(
                 // Post Component
                 <Post 
@@ -261,10 +266,13 @@ class ListPost extends React.Component {
                     postMessage={item.Item.message} 
                     taggedAssociates={item.Item.tagged_associates} 
                     strength={item.Item.sub_type} 
-                    associate={item.Item.associate_id}
+                    associate={item.Item.associate_id} 
+                    likeCount={all_counts[0]['likeCount']}
+                    commentCount={all_counts[0]['commentCount']}
                 />
             )
         })
+        this.setState({ refreshing: false, networkChanged: false })
     }
     render() {
 
@@ -307,7 +315,7 @@ class ListPost extends React.Component {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.loadPosts()
-                                this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
+                                // this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
                             }
                         }     
                     }}

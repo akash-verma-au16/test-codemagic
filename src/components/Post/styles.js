@@ -58,6 +58,11 @@ export const styles = StyleSheet.create({
         fontFamily: 'OpenSans-Regular',
         fontSize: 12
     },
+    navBar: { 
+        flexDirection: 'row', 
+        width: "40%", 
+        alignItems: 'center'
+    },
     infoNo: {
         fontSize: 13,
         fontFamily: "Roboto-Medium",
@@ -80,7 +85,7 @@ export const styles = StyleSheet.create({
         marginLeft: 11
     },
     footerConetntView: {
-        // width: '35%',
+        width: '33.33%',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center'

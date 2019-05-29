@@ -39,3 +39,10 @@ export const like_post = (
     const endpoint = config.url.like_post
     return axios.put(endpoint, payload, headers)
 }
+
+export const unlike_post = (
+    payload, headers
+) => {
+    const endpoint = config.url.unlike_post
+    return axios.put(endpoint, payload, headers)
+}

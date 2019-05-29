@@ -7,21 +7,26 @@ export default {
         rewards: "https://lb3kbimo6b.execute-api.ap-south-1.amazonaws.com",
         post: "https://ueb6oyqxnf.execute-api.ap-southeast-1.amazonaws.com",
         push:"https://flnuddep8j.execute-api.ap-southeast-1.amazonaws.com",
-        create_post:"https://0n3dfqk7t5.execute-api.ap-southeast-1.amazonaws.com/dev/posts/create_post",
+        create_post:"https://qunmuep2fj.execute-api.ap-southeast-1.amazonaws.com/sandbox/posts/create-post",
         get_visibility: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/get_visibility",
-        news_feed:"https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/news_feed",
+        news_feed:"https://s7tmikdn2d.execute-api.ap-southeast-1.amazonaws.com/sandbox/post/news_feed",
         list_survey:"https://mjangpdi2k.execute-api.ap-southeast-1.amazonaws.com/dev/survey/list_survey",
         give_reward:"https://835zntrqv6.execute-api.ap-southeast-1.amazonaws.com/api/give_reward",
         inapp_notification: "https://flnuddep8j.execute-api.ap-southeast-1.amazonaws.com/api/list_inapp",
         read_transaction: "https://835zntrqv6.execute-api.ap-southeast-1.amazonaws.com/api/read_transactions",
         get_balance: "https://lb3kbimo6b.execute-api.ap-south-1.amazonaws.com/api/get_balance",
         user_profile: "https://42afo3tdyc.execute-api.ap-southeast-1.amazonaws.com/api/get_profile",
-        list_posts: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/list_posts",
-        strength_counts: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/strength_count",
+        list_posts: "https://s7tmikdn2d.execute-api.ap-southeast-1.amazonaws.com/sandbox/post/list_posts",
+        strength_counts: "https://s7tmikdn2d.execute-api.ap-southeast-1.amazonaws.com/sandbox/post/strength_count",
         update_profile: "https://42afo3tdyc.execute-api.ap-southeast-1.amazonaws.com/api/update_profile",
         list_associates: "https://k8d1sxf4w7.execute-api.ap-southeast-1.amazonaws.com/devhw/admin/list_associate",
         comment_post: "https://qunmuep2fj.execute-api.ap-southeast-1.amazonaws.com/sandbox/posts/comment_post",
-        like_post: "https://qunmuep2fj.execute-api.ap-southeast-1.amazonaws.com/sandbox/posts/like_post"
+        like_post: "https://qunmuep2fj.execute-api.ap-southeast-1.amazonaws.com/sandbox/posts/like_post",
+        unlike_post: "https://qunmuep2fj.execute-api.ap-southeast-1.amazonaws.com/sandbox/posts/unlike_post",
+        file_download: "https://38fo7itjbj.execute-api.ap-southeast-1.amazonaws.com/api/file_download",
+        file_upload: "https://38fo7itjbj.execute-api.ap-southeast-1.amazonaws.com/api/file_upload",
+        list_comments: "https://s7tmikdn2d.execute-api.ap-southeast-1.amazonaws.com/sandbox/post/list_comments",
+        read_tenant: "https://k8d1sxf4w7.execute-api.ap-southeast-1.amazonaws.com/devhw/super_admin/read_tenant"
     },
     api: {
         signup: "signup",
@@ -86,3 +91,9 @@ export default {
 
 //Reward nasic URL
 // https://835zntrqv6.execute-api.ap-southeast-1.amazonaws.com/api
+
+// Changed Endpoints 28/05
+// create_post: "https://0n3dfqk7t5.execute-api.ap-southeast-1.amazonaws.com/dev/posts/create_post"
+// list_posts: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/list_posts"
+// news_feed: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/news_feed"
+// strength_counts: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/strength_count"

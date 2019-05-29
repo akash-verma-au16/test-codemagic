@@ -12,7 +12,7 @@ import uuid from 'uuid'
 //Cusotm component
 import VisibilityModal from '../../containers/VisibilityModal'
 
-import { like_post } from '../../services/post'
+import { like_post, unlike_post } from '../../services/post'
 //React navigation
 import { withNavigation } from 'react-navigation';
 
@@ -28,9 +28,10 @@ class Post extends Component {
         super(props);
         this.state = {
             like: false,
-            likes: 5,
-            comments: 10,
-            modalVisible: false
+            likes: this.props.likeCount,
+            comments: this.props.commentCount,
+            modalVisible: false,
+            likeId: ""
         }
 
         //formatting update locale
@@ -62,6 +63,7 @@ class Post extends Component {
     likePost = () => {
         /* unique id generation */
         const id = uuid.v4()
+        this.setState({likeId: id})
         /* epoch time calculation */
         const dateTime = Date.now();
         const timestamp = Math.floor(dateTime / 1000);
@@ -77,7 +79,6 @@ class Post extends Component {
                 }
             }
         }
-        console.log("Payload", payload)
         const headers = {
             headers: {
                 Authorization: this.props.idToken
@@ -96,6 +97,37 @@ class Post extends Component {
 
         }
     }
+
+    unlikePost = () => {
+        const payload = {
+            Data: {
+                post_id: this.props.postId,
+                tenant_id: this.props.accountAlias,
+                ops: "unlike",
+                like: {
+                    like_id: this.state.likeId,
+                    associate_id: this.props.associate_id
+                }
+            }
+        }
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
+        try {
+            unlike_post(payload, headers).then((res) => {
+                console.log("Response", res)
+            }).catch((e) => {
+                console.log(e)
+            })
+        }
+        catch (e) {
+            console.log(e)
+
+        }
+    }
+
     onLikeHnadler = () => {
         if(this.props.isConnected) {
             console.log("postId",this.props.postId)
@@ -104,7 +136,9 @@ class Post extends Component {
                 likes: this.state.like ? this.state.likes - 1 : this.state.likes + 1
             }, () => {
                 if(this.state.like) {
-                    this.likePost()
+                    setTimeout(() => this.likePost(), 2000)
+                } else {
+                    setTimeout(() => this.unlikePost(), 2000)
                 }
             })
         }
@@ -117,7 +151,6 @@ class Post extends Component {
                 100,
             );
         }
-       
     }
 
     onIconPresshandler = () => {
@@ -188,20 +221,17 @@ class Post extends Component {
                         </Text>
                     </TouchableOpacity>
                     {/* <Text style={styles.timeStamp}>{item.Item.time}</Text> */}
-                    <TouchableOpacity style={{height: 30, width: 30, borderRadius:30, alignItems: 'flex-end', justifyContent:'center'}} onPress={() => this.setState({ modalVisible: true })} underlayColor='#fff'>
-                        <Icon
-                            name='dots-three-vertical'
-                            type='Entypo'
-                            style={{ fontSize: 14, color: '#333' }} 
-                        />
-                    </TouchableOpacity>
+                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'}}>
+                        <Moment style={{ fontSize: 11, marginRight: 5 }} element={Text} fromNow>{this.props.time * 1000}</Moment>                        
+                        <TouchableOpacity style={{height: 30, width: 20, borderRadius:30, alignItems: 'flex-end', justifyContent:'center'}} onPress={() => this.setState({ modalVisible: true })} underlayColor='#fff'>
+                            <Icon
+                                name='dots-three-horizontal'
+                                type='Entypo'
+                                style={{ fontSize: 14, color: '#333' }} 
+                            />
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                {/* <View style={{
-                    backgroundColor: '#ddd',
-                    height: 1,
-                    width: '100%',
-                    marginVertical: 2
-                }} /> */}
                 <View name='content' style={{ flex: 2, paddingVertical: 10 }}>
                     <Text style={styles.postText}>
 
@@ -224,27 +254,21 @@ class Post extends Component {
                 </View>
                 <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>                    
 
-                <TouchableOpacity underlayColor='#111' activeOpacity={0.5} onPress={() => this.props.navigation.navigate('Comments', { postId: this.props.postId })}>
-                    <View style={{ width: "100%"}}>
-                        {/* <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>                     */}
-                        <View style={styles.infoTab}>
-                            <View style={{ flexDirection: 'row', width: "50%", alignItems: 'center' }}>
-                                <View style={{ flexDirection: 'row', width: "40%", alignItems: 'center' }}>
-                                    <Text style={styles.infoNo}>{this.state.likes}</Text>
-                                    <Text style={styles.infoText}>{this.state.likes > 1 ? "Likes" : "Like"}</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', width: "40%", alignItems: 'center' }}>
-                                    <Text style={styles.infoNo}>{this.state.comments}</Text>
-                                    <Text style={styles.infoText}>{this.state.comments > 1 ? 'Comments' : 'Comment'}</Text>
-                                </View>
-                            </View>
-
-                            <Moment style={{ fontSize: 12 }} element={Text} fromNow>{this.props.time * 1000}</Moment>
-
-                            {/* <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5}}></View> */}
+                <View style={{ width: "100%"}}>
+                    {/* <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>                     */}
+                    <View style={styles.infoTab}>
+                        <View style={{ flexDirection: 'row', width: "50%", alignItems: 'center' }}>
+                            <TouchableOpacity activeOpacity={0.8} underlayColor='#111' style={styles.navBar} onPress={() => this.props.navigation.navigate('Likes')}>
+                                <Text style={styles.infoNo}>{this.state.likes}</Text>
+                                <Text style={styles.infoText}>{this.state.likes > 1 ? "Likes" : "Like"}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.navBar} underlayColor='#111' activeOpacity={0.8} onPress={() => this.props.navigation.navigate('Comments', { postId: this.props.postId })}>
+                                <Text style={styles.infoNo}>{this.state.comments}</Text>
+                                <Text style={styles.infoText}>{this.state.comments > 1 ? 'Comments' : 'Comment'}</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
-                </TouchableOpacity>
+                </View>
                 <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>                    
                 
                 <View name='footer'
@@ -255,18 +279,18 @@ class Post extends Component {
                         justifyContent: 'space-around',
                         padding: 3
                     }}>
-                    <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView} onPress={this.onLikeHnadler}>
+                    <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={this.onLikeHnadler}>
                         <Icon name='md-thumbs-up' style={ this.state.like ? styles.like : styles.unlike }/>
                         <Text style={this.state.like ? styles.footerTextActive : styles.footerTextInactive}>Like</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView} onPress={() => this.props.navigation.navigate('Comments',{isComment: true, postId: this.props.postId})}>
+                    <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={() => this.props.navigation.navigate('Comments',{isComment: true, postId: this.props.postId})}>
                         <Icon name='comment' type={'MaterialIcons'} style={styles.comment} />
                         <Text style={styles.footerText}>Comment</Text>
                     </TouchableOpacity>
-                    {/* <TouchableOpacity activeOpacity={0.9} style={styles.footerConetntView}>
-                        <Icon name='comment' type={'MaterialIcons'} style={styles.comment} />
-                        <Text style={styles.footerText}>Comment</Text>
-                    </TouchableOpacity> */}
+                    <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView}>
+                        <Icon name='heart-outlined' type={'Entypo'} style={{ color: '#bababa', fontSize: 19}} />
+                        <Text style={styles.footerText}>Add-on</Text>
+                    </TouchableOpacity>
                 </View>
                 <VisibilityModal 
                     enabled={this.state.modalVisible}

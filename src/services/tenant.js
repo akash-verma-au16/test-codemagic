@@ -18,4 +18,11 @@ export const list_associate = (
     return axios.post(endpoint, payload, headers)
 }
 
+export const read_tenant = (
+    payload, headers
+) => {
+    const endpoint = config.url.read_tenant
+    return axios.post(endpoint, payload, headers)
+}
+
 // const endpoint = url + "/" + env + "/" + config.role.admin + "/" + config.api.list_associate
