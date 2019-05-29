@@ -49,17 +49,15 @@ import RNFetchBlob from 'rn-fetch-blob'
 import { connect } from 'react-redux'
 import { dev } from '../../store/actions'
 
-//Row data for Home & Summary tab
 // import { homeData } from './data'
 import { strngthIcon } from '../../components/Card/data'
 
 // API methods
-import { read_transaction, user_profile } from '../../services/profile'
+import { read_transaction, user_profile, strength_counts, update_profile, file_download, file_upload } from '../../services/profile'
 import { list_posts } from '../../services/post'
-import { strength_counts, update_profile } from '../../services/profile'
 
 /* Assets */
-import thumbnail from '../../assets/thumbnail.jpg'
+// import thumbnail from '../../assets/thumbnail.jpg'
 
 class Home extends React.Component {
     constructor(props) {
@@ -82,14 +80,8 @@ class Home extends React.Component {
             //state value for VisibilityModal component
             visibilityModalVisible: false,
             isImageLoading: false,
-            isApiLoading: false,
             photo: null,
-            imageUrl: null,
-            credentials: {
-                tenant_name: 'happyworks testbbsg9v9gp',
-                file_name: 'logo.png',
-                associate_email: 'happyworks-test@gmail.com'
-            }
+            imageUrl: null
         }
         this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id || this.state.associate_id == undefined })
         console.log('Associate ID:',this.state.associate_id)
@@ -134,7 +126,7 @@ class Home extends React.Component {
         if (this.state.associate_id !== this.props.associate_id) {
             if (this.state.associate_id == undefined || this.state.associate_id == "") {
                 this.setState({ associate_id: this.props.associate_id })
-                // this.loadProfile()
+                this.loadSummary()
             }
             console.log('Logged if')
             await this.loadProfile()
@@ -152,7 +144,9 @@ class Home extends React.Component {
             await this.loadProfile()
         }
         this.loadSummary()
-        this.handleImageDownload()
+        if (this.state.associate_id === this.props.associate_id){
+            this.handleImageDownload()
+        }
         if(this.state.associate_id === this.props.associate_id) {
         // Calling transaction list API after render method
             this.loadTransactions()
@@ -210,6 +204,9 @@ class Home extends React.Component {
                 user_profile(payload, this.headers).then((response) => {
                     console.log(response)
                     this.userData = response.data.data
+                    if (this.state.associate_id !== this.props.associate_id) {
+                        this.handleImageDownload()
+                    } 
                     if (this.userData.length === 0) {
                         this.projectList = []
                         this.projectList.push('No Projects')
@@ -246,8 +243,8 @@ class Home extends React.Component {
                 
                 await list_posts(payload, this.headers).then((response) => {
                     console.log('Calling Loadhome')
-                    if(this.homeDataBackup.length === response.data.data.length) {
-                        if(response.data.data.length === 0) {
+                    if(this.homeDataBackup.length === response.data.data.posts.length) {
+                        if(response.data.data.posts === 0) {
                             this.homeDataRowList = []
                             if (this.state.associate_id !== this.props.associate_id) {
                                 this.homeDataRowList.push(<Text style={{ margin: 10 }} key={0}>No posts found for this User.</Text>)
@@ -261,9 +258,9 @@ class Home extends React.Component {
                         this.setState({ homeRefreshing: false })
                         return
                     } else {
-                        this.homeDataBackup = response.data.data
+                        this.homeDataBackup = response.data.data.posts
                         this.homeDataList = []
-                        response.data.data.map((item, index) => {
+                        response.data.data.posts.map((item, index) => {
                             this.homeDataList.push(
                                 // Post Component
                                 <Post
@@ -309,11 +306,11 @@ class Home extends React.Component {
                 }
                 else {
                     this.summeryList = []
-                    response.data.data.map((item, index) => {
+                    response.data.data.map(async (item, index) => {
                         const imageURI = strngthIcon.filter((endorse) => {
                             return item.sub_type == endorse.name
                         })
-                        this.summeryList.push(
+                        await this.summeryList.push(
                             <View key={index}>
                                 <Card
                                     image={imageURI[0].source}
@@ -331,9 +328,7 @@ class Home extends React.Component {
         catch(e){
             this.setState({ summaryRefreshing: false })
         }
-        
         this.setState({ summaryRefreshing: false })
-
     }
 
     async handleEditProfile(){
@@ -558,26 +553,30 @@ class Home extends React.Component {
     /* Upload image to AWS S3 */
     handleUploadImage = () => {
         /* Get signed URL */
-        const endpoint = 'https://38fo7itjbj.execute-api.ap-southeast-1.amazonaws.com/api/file_upload'
-        const { credentials } = this.state
-        axios.post(endpoint, {
-            'tenant_name': credentials.tenant_name,
-            'file_name': credentials.file_name,
-            'associate_email': credentials.associate_email
-        })
-            .then(async(response) => {
+        const payload = {
+            tenant_name: this.props.tenantName + this.props.accountAlias,
+            file_name: 'logo.png',
+            associate_email: this.props.email
+        }
+        file_upload(payload)
+            .then((response) => {
                 console.log("Upload Image", response)
                 const headers = {
                     'Content-Type': 'multipart/form-data'
                 }
                 var url = this.state.photo
 
-                await RNFetchBlob.fetch('PUT', response.data.data['upload-signed-url'], headers, RNFetchBlob.wrap(url))
+                RNFetchBlob.fetch('PUT', response.data.data['upload-signed-url'], headers, RNFetchBlob.wrap(url))
                     .then(() => {
                         console.log('image uploaded')
                         // this.setState({ }, () => this.handleImageDownload())
                         // this.setTimeout(() => this.handleImageDownload(), 3000)
-                        // this.handleImageDownload()
+                        this.handleImageDownload()
+                        ImageCropPicker.clean().then(() => {
+                            console.log('removed all tmp images from tmp directory');
+                        }).catch(e => {
+                            alert(e);
+                        });
                     }).catch((error) => {
                         console.log(error)
                     })
@@ -592,13 +591,13 @@ class Home extends React.Component {
         console.log("Calling handleImageDownload")
         this.setState({ isImageLoading: true })
         /* Request image*/
-        const endpoint = 'https://38fo7itjbj.execute-api.ap-southeast-1.amazonaws.com/api/file_download'
-        const { credentials } = this.state
-        axios.post(endpoint, {
-            "tenant_name": credentials.tenant_name,
-            "file_name": credentials.file_name,
-            "associate_email": credentials.associate_email
-        }).then((response) => {
+        const payload = {
+            tenant_name: this.props.tenantName + this.props.accountAlias,
+            file_name: 'logo.png',
+            associate_email: this.userData.email
+        }
+        console.log("Payload", payload)
+        file_download(payload).then((response) => {
             console.log("Image response", response)
             /* Store the image */
             this.setState({ isImageLoading: false, imageUrl: response.data.data['download-signed-url'] })
@@ -608,15 +607,19 @@ class Home extends React.Component {
     }
 
     /* Load image from camera */
-    handleChoosePhotoFromCamera = async () => {
+    handleChoosePhotoFromCamera = () => {
         const options = {
             noData: true
         }
         /* Request permissions and import image */
-        await ImageCropPicker.openCamera({
+        ImageCropPicker.openCamera({
             width: 300,
-            height: 400,
-            cropping: true
+            height: 300,
+            cropping: true,
+            compressImageMaxWidth: 300,
+            compressImageMaxHeight: 300,
+            avoidEmptySpaceAroundImage: false
+            // mediaType: 'photo'
         }).then(image => {
             console.log(image);
 
@@ -639,14 +642,25 @@ class Home extends React.Component {
     handleChoosePhotoFromLibrary = () => {
         /* Request permissions and import image */
         ImageCropPicker.openPicker({
-            width: 100,
-            height: 100,
-            cropping: true
+            width: 300,
+            height: 300,
+            cropping: true,
+            compressImageMaxWidth: 300,
+            compressImageMaxHeight: 300,
+            avoidEmptySpaceAroundImage: false
+            // freeStyleCropEnabled: true,
+            // enableRotationGesture: true
         }).then(image => {
             console.log(image);
 
             let updatedResponse = image
             updatedResponse.fileName = 'logo.png'
+
+            // ImageCropPicker.clean().then(() => {
+            //     console.log('removed all tmp images from tmp directory');
+            // }).catch(e => {
+            //     alert(e);
+            // });
 
             /* store the image */
             this.setState({ photo: updatedResponse.path, isEdit: true })
@@ -1020,7 +1034,8 @@ const mapStateToProps = (state) => {
         isConnected: state.system.isConnected,
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
-        idToken: state.user.idToken
+        idToken: state.user.idToken,
+        tenantName: state.user.tenant_name
     };
 }
 
