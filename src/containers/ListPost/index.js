@@ -105,8 +105,27 @@ class ListPost extends React.Component {
             this.props.navigation.navigate('LoginPage')
             return
         }
+        
     }
-
+    componentDidUpdate(){
+        this.handlePushNotificationNavigation()
+    }
+    handlePushNotificationNavigation = async () => {
+        try {
+            //Check if previous state exists
+            const value = await AsyncStorage.getItem('pushNotificationNavigation');
+            
+            if (value) {
+                // We have state!!
+                alert('navigating')
+                AsyncStorage.removeItem('pushNotificationNavigation')
+                this.props.navigation.navigate('TermsAndConditions')
+            } 
+            
+        } catch (error) {
+            // Error retrieving data
+        }
+    }
     goBack() {
         return true
     }
@@ -141,11 +160,6 @@ class ListPost extends React.Component {
         PushNotification.onNotification((notification) => {
             // Display inApp notification
             console.log('in app notification', notification);
-        });
-        PushNotification.onNotificationOpened((notification) => {
-            //Navigate to the respective page with payload
-            console.log('the notification is opened', notification);
-
         });
 
     }

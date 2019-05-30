@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Navigator from './src/containers/Navigator'
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from "@react-native-community/netinfo"
-import { StatusBar } from 'react-native';
+import { StatusBar, Linking } from 'react-native';
 import { Root } from 'native-base'
 import { createStore, compose } from 'redux'
 import reducer from './src/store/reducers'
@@ -21,6 +21,7 @@ Analytics.configure(awsconfig);
 // configure push notification
 PushNotification.configure(awsconfig);
 
+const prefix = 'happyworks://';
 export default class App extends Component {
 
     constructor(props) {
@@ -29,7 +30,7 @@ export default class App extends Component {
             dataLoaded: false,
             isConnected: undefined
         }
-        
+
         /* Connect to redux dev tools in dev mode */
         if (__DEV__) {
             this.composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
@@ -44,7 +45,7 @@ export default class App extends Component {
         try {
             //Check if previous state exists
             const value = await AsyncStorage.getItem('reduxState');
-            
+
             if (value) {
                 // We have state!!
                 this.store = createStore(reducer, JSON.parse(value), this.composeEnhancers())
@@ -76,9 +77,22 @@ export default class App extends Component {
         PushNotification.onRegister((token) => {
             //Generate Device token
             console.log('in app registration', token);
-            AsyncStorage.setItem('token',token)
+            AsyncStorage.setItem('token', token)
             alert('Token Generated' + token)
-            
+
+        });
+        PushNotification.onNotificationOpened((notification) => {
+            //Navigate to the respective page with payload
+            console.log('the notification is opened', notification)
+            AsyncStorage.setItem('pushNotificationNavigation', 'yes')
+            const url = 'happyworks://SurveyExit/'
+            Linking.canOpenURL(url).then(supported => {
+                if (supported) {
+                    Linking.openURL(url);
+                } else {
+                    console.log("Don't know how to open URI: " + this.props.url);
+                }
+            })
         });
     }
     componentWillUnmount() {
@@ -100,7 +114,7 @@ export default class App extends Component {
                     <StatusBar backgroundColor='#1c92c4' barStyle='light-content' />
                     <Provider store={this.store}>
                         <OfflineNotice isConnected={this.state.isConnected} />
-                        <Navigator />
+                        <Navigator uriPrefix={prefix} />
                     </Provider>
                 </Root>
                 : null
