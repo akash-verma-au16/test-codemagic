@@ -13,9 +13,12 @@
     "connect-wifi": "adb connect 192.168.1.10:5555"
   },
   "dependencies": {
+    "@aws-amplify/pushnotification": "^1.0.27",
     "@babel/runtime": "^7.4.3",
     "@react-native-community/async-storage": "^1.2.2",
     "@react-native-community/netinfo": "^2.0.0",
+    "aws-amplify": "^1.1.28",
+    "aws-amplify-react-native": "^2.1.12",
     "axios": "^0.18.0",
     "bugsnag-react-native": "^2.15.0",
     "moment": "^2.24.0",
@@ -25,9 +28,7 @@
     "react-moment": "^0.9.2",
     "react-native": "^0.59.6",
     "react-native-charts-wrapper": "^0.5.1",
-    "react-native-device-info": "^1.6.0",
     "react-native-draggable-flatlist": "^1.1.7",
-    "react-native-firebase": "^5.2.3",
     "react-native-gesture-handler": "^1.0.15",
     "react-native-image-crop-picker": "^0.24.1",
     "react-native-ionicons": "^4.5.5",
