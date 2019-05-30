@@ -9,7 +9,8 @@ import {
     BackHandler
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
-
+import AsyncStorage from '@react-native-community/async-storage';
+import {NavigationActions} from 'react-navigation'
 import Post from '../../components/Post/index'
 /* Redux */
 import { connect } from 'react-redux'
@@ -23,10 +24,22 @@ import {
 import { news_feed } from '../../services/post'
 
 //Prefetch profile data
-import { loadProfile } from '../Home/apicalls' 
+import { loadProfile } from '../Home/apicalls'
 /* Components */
 import { NavigationEvents } from 'react-navigation';
 import thumbnail from '../../assets/thumbnail.jpg'
+// push notification
+import Auth from '@aws-amplify/auth';
+import Analytics from '@aws-amplify/analytics';
+import PushNotification from '@aws-amplify/pushnotification';
+import awsconfig from '../../../aws-exports';
+
+// retrieve temporary AWS credentials and sign requests
+Auth.configure(awsconfig);
+// send analytics events to Amazon Pinpoint
+Analytics.configure(awsconfig);
+// configure push notification
+PushNotification.configure(awsconfig);
 
 class ListPost extends React.Component {
     constructor(props) {
@@ -48,7 +61,7 @@ class ListPost extends React.Component {
         this.profileData = {}
         this.counts={}
     }
-    
+
     static navigationOptions = ({ navigation }) => {
         return {
 
@@ -96,8 +109,27 @@ class ListPost extends React.Component {
             this.props.navigation.navigate('LoginPage')
             return
         }
+        
     }
-
+    componentDidUpdate(){
+        this.handlePushNotificationNavigation()
+    }
+    handlePushNotificationNavigation = async () => {
+        try {
+            //Check if previous state exists
+            const value = await AsyncStorage.getItem('pushNotificationNavigation');
+            
+            if (value) {
+                // We have state!!
+                alert('navigating')
+                AsyncStorage.removeItem('pushNotificationNavigation')
+                this.props.navigation.navigate('TermsAndConditions')
+            } 
+            
+        } catch (error) {
+            // Error retrieving data
+        }
+    }
     goBack() {
         return true
     }
@@ -109,36 +141,41 @@ class ListPost extends React.Component {
         }
     }
     //profile payload
-     payload = {
-         "tenant_id": this.props.accountAlias,
-         "associate_id": this.props.associate_id
-     }
-     async componentDidMount() {
-         if(this.props.isAuthenticate) {
-             this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
-             this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
-         }
-         
-         this.interval = setInterval(() => {this.loadPosts()}, 10000);
-         //Detecting network connectivity change
-         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-         //Handling hardware backpress event
-         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-             this.goBack()
-         })
-         //  Loading profile
-         this.props.navigation.setParams({'profileData': this.profileData})
+    payload = {
+        "tenant_id": this.props.accountAlias,
+        "associate_id": this.props.associate_id
+    }
+    async componentDidMount() {
+        if (this.props.isAuthenticate) {
+            this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
+            this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
+        }
 
-     }
+        this.interval = setInterval(() => { this.loadPosts() }, 10000);
+        //Detecting network connectivity change
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+        //Handling hardware backpress event
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            this.goBack()
+        })
+        //  Loading profile
+        this.props.navigation.setParams({ 'profileData': this.profileData })
+        
+        PushNotification.onNotification((notification) => {
+            // Display inApp notification
+            console.log('in app notification', notification);
+        });
 
-     componentWillUnmount() {
-         clearInterval(this.interval)
-         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
-         this.backHandler.remove()
-     } 
+    }
 
-    handleConnectivityChange =  (isConnected) => {
-        if(isConnected) {
+    componentWillUnmount() {
+        clearInterval(this.interval)
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+        this.backHandler.remove()
+    }
+
+    handleConnectivityChange = (isConnected) => {
+        if (isConnected) {
             this.setState({
                 networkChanged: true
             }, async () => {
@@ -149,10 +186,10 @@ class ListPost extends React.Component {
             })
         }
         else {
-            this.props.navigation.setParams({'isConnected': false })
+            this.props.navigation.setParams({ 'isConnected': false })
         }
     }
-    
+
     newPostHandler = () => {
 
         /* Hide the Button */
@@ -165,7 +202,7 @@ class ListPost extends React.Component {
 
     scrollHandler = (event) => {
         this.scrollPosition = event.nativeEvent.contentOffset.y;
-        if(this.scrollPosition <= 0) {
+        if (this.scrollPosition <= 0) {
             this.setState({
                 newPostVisibility: false
             });
@@ -179,15 +216,15 @@ class ListPost extends React.Component {
             tenant_id: this.props.accountAlias,
             associate_id: this.props.associate_id
         }
-        
-        if (payload.tenant_id !== "" && payload.associate_id !=="") {
+
+        if (payload.tenant_id !== "" && payload.associate_id !== "") {
             try {
                 console.log('Calling NEWS_FEED API')
                 news_feed(payload, this.headers).then((response) => {
                     console.log("data", response.data.data)
                     /* take payload backup to check for changes later */
                     if (this.payloadBackup.length === response.data.data.posts.length) {
-                    /* No change in payload hence do nothing */
+                        /* No change in payload hence do nothing */
                         console.log("log1")
                         this.setState({ refreshing: false, networkChanged: false })
                         // this.postList = []
@@ -196,9 +233,9 @@ class ListPost extends React.Component {
                         if (response.data.data.posts.length === 0) {
                             /* Display warning on the screen */
                             this.postList = []
-                            this.postList.push(<Text style={{margin:10}} key={0}>No post to display</Text>)
-                            this.postList.push(<Text style={{margin:10}} key={1}>Create a new post by clicking on + icon</Text>)
-                        
+                            this.postList.push(<Text style={{ margin: 10 }} key={0}>No post to display</Text>)
+                            this.postList.push(<Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon</Text>)
+
                             /* Update state to render warning */
                             this.setState({ refreshing: false, networkChanged: false })
                             return
@@ -214,7 +251,7 @@ class ListPost extends React.Component {
                         if (this.postList.length !== 0) {
 
                             if (this.scrollPosition > 150) {
-                                /* Show th new post button */ 
+                                /* Show th new post button */
                                 this.setState({ newPostVisibility: true })
                             }
                         }
@@ -222,6 +259,7 @@ class ListPost extends React.Component {
                             this.counts[item.post_id] = {likeCount: item.likeCount, commentCount: item.commentCount}
                         })
                         console.log("this.counts",this.counts)
+
                         /* Create UI tiles to display */
                         this.createTiles(response.data.data.posts, this.counts)
                     }
@@ -242,7 +280,7 @@ class ListPost extends React.Component {
                     //     })
                     // }
                 })
-            } 
+            }
             catch (error) {
                 Toast.show({
                     text: 'Something went wrong',
@@ -252,6 +290,15 @@ class ListPost extends React.Component {
                 this.setState({ refreshing: false, networkChanged: false })
             }
         }
+    }
+    createTiles = async (posts, counts) => {
+        this.postList = []
+        this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
+        posts.map((item, index) => {
+            var all_counts = counts.filter((count) => {
+                return item.Item.post_id === count.post_id
+            })
+            console.log("count", all_counts)
     }   
     createTiles = async(posts, counts) => {
         this.setState({ refreshing: true })
@@ -259,13 +306,17 @@ class ListPost extends React.Component {
         this.postList = []
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
         posts.map((item, index) => {
+            var all_counts = counts.filter((count) => {
+                return item.Item.post_id === count.post_id
+            })
+            console.log("count", all_counts)
             this.postList.push(
                 // Post Component
-                <Post 
-                    key= {index}
-                    postId = {item.Item.post_id}
-                    postCreator={item.Item.associate_name} 
-                    postCreator_id = {item.Item.associate_id} 
+                <Post
+                    key={index}
+                    postId={item.Item.post_id}
+                    postCreator={item.Item.associate_name}
+                    postCreator_id={item.Item.associate_id}
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time= {item.Item.time} 
                     postMessage={item.Item.message} 
@@ -285,16 +336,16 @@ class ListPost extends React.Component {
 
             <Container style={{ backgroundColor: '#eee' }}>
 
-                <ScrollView 
-                    showsVerticalScrollIndicator = {false}
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
                     refreshControl={
                         <RefreshControl
                             refreshing={this.state.refreshing || this.state.networkChanged} //this.props.isConnected
                             onRefresh={() => {
                                 /* Show loader when manual refresh is triggered */
-                                if(this.props.isConnected) {
+                                if (this.props.isConnected) {
                                     this.setState({ refreshing: true }, this.loadPosts())
-                                }else {
+                                } else {
                                     this.setState({ refreshing: false, networkChanged: false }, () => {
                                         Toast.show({
                                             text: 'Please connect to the internet.',
@@ -311,18 +362,18 @@ class ListPost extends React.Component {
                     ref={this.scrollViewRef}
                     onScroll={(event) => { this.scrollHandler(event) }}
                 >
-                    
+
                     {this.postList}
                 </ScrollView>
 
                 <NavigationEvents
-                    onWillFocus={async() =>{
+                    onWillFocus={async () => {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.loadPosts()
                                 // this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
                             }
-                        }     
+                        }
                     }}
                 />
                 {this.state.newPostVisibility ?
@@ -346,7 +397,7 @@ class ListPost extends React.Component {
                         onPress={this.newPostHandler}
 
                     >
-                        <Text style={{ fontWeight: '500',color:'#fff', textAlign: 'center', flexWrap: 'wrap', width: 100 }}>New Post</Text>
+                        <Text style={{ fontWeight: '500', color: '#fff', textAlign: 'center', flexWrap: 'wrap', width: 100 }}>New Post</Text>
                     </TouchableOpacity>
                     :
                     null
@@ -363,8 +414,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#eee',
         paddingTop: 3
     },
-    thumbnail : {
-        
+    thumbnail: {
+        height: '70%',
+        borderRadius: 50,
+        margin: 10
     }
 });
 

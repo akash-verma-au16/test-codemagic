@@ -73,6 +73,7 @@ const RootStack = createStackNavigator(
         
         'SurveyExit': {
             screen: SurveyExit,
+            path: 'SurveyExit',
             navigationOptions: {
                 header:null
             }
