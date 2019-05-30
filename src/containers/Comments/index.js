@@ -18,7 +18,7 @@ import { Icon } from 'native-base'
 import uuid from 'uuid'
 
 //Comment API methods
-import { add_comment, list_comments } from '../../services/comments'
+import { add_comment, list_comments, delete_comment } from '../../services/comments'
 
 //Redux
 import { connect } from 'react-redux'
@@ -35,7 +35,8 @@ class Comments extends React.Component {
         this.state = {
             commentsRefresh: false,
             addCommentText: "",
-            isComment: this.props.navigation.getParam('isComment')
+            isComment: this.props.navigation.getParam('isComment'),
+            isCommentDeleted: false
         }
         this.postId = this.props.navigation.getParam('postId')
         this.fetchComments = this.fetchComments.bind(this)
@@ -91,7 +92,7 @@ class Comments extends React.Component {
         }
         try {
             if (this.props.isConnected) {
-                list_comments(payload).then((response) => {
+                list_comments(payload, this.headers).then((response) => {
                     // console.log("Comment Response", response.data.data.Items)
                     if(response.data.data.Items.length == 0) {
                         this.commentList = []
@@ -104,13 +105,21 @@ class Comments extends React.Component {
                         if(this.comments.length == 0) {
                             this.comments = response.data.data.Items
                         }
-                        if (this.comments.length !== response.data.data.Items.length) {       
-                            this.comments = response.data.data.Items
-                            console.log("this.comments2",this.comments)
-                            this.loadComments(this.comments)
+                        console.log("this.comments.length", this.comments.length)
+                        console.log("response.data.data.Items.length", response.data.data.Items.length)
+                        if (this.comments.length !== response.data.data.Items.length) {
+                            if (this.comments.length > response.data.data.Items.length) {
+                                return
+                            }   
+                            else {
+                                if(this.state.isComment === false) {
+                                    this.comments = response.data.data.Items
+                                    this.loadComments(this.comments)
+                                }
+                            }    
                         } 
                         else {
-                            console.log("API RESPONSE")
+                            console.log("this.comments", this.comments)
                             this.loadComments(this.comments)
                         }
                     }
@@ -141,7 +150,7 @@ class Comments extends React.Component {
                 /* epoch time calculation */
                 const dateTime = Date.now();
                 const timestamp = Math.floor(dateTime / 1000);
-
+                var comment = this.state.addCommentText
                 const payload = {
                     Data: {
                         post_id: this.postId,
@@ -151,26 +160,29 @@ class Comments extends React.Component {
                             comment_id: id,
                             associate_id: this.props.associate_id,
                             time: timestamp,
-                            message: this.state.addCommentText
+                            message: comment
                         }
                     }
                 }   
                 try {
-                    this.setState({ commentsRefresh: true })
+                    this.setState({ addCommentText: "" })
+                    this.comments.push({
+                        associate_id: payload.Data.comment.associate_id,
+                        comment_id: payload.Data.comment.comment_id,
+                        message: payload.Data.comment.message,
+                        post_id: payload.Data.post_id,
+                        tenant_id: payload.Data.tenant_id,
+                        time: payload.Data.comment.time
+                    })
+                    this.loadComments(this.comments)
+                    Keyboard.dismiss()
+                    // this.setState({ commentsRefresh: true })
                     add_comment(payload, this.headers).then(async(res) => {
                         console.log('addComment',res)
                         if(res.status === 200) {
-                            this.comments.push({
-                                associate_id: payload.Data.comment.associate_id,
-                                comment_id: payload.Data.comment.comment_id,
-                                message: payload.Data.comment.message,
-                                post_id: payload.Data.post_id,
-                                tenant_id: payload.Data.tenant_id,
-                                time: payload.Data.comment.time
-                            })
-                            this.loadComments(this.comments)
+                            console.log("Comment",this.state.addCommentText)
+                            
                             // setTimeout(() => this.fetchComments(), 1000)
-                            this.setState({addCommentText: "" })
                         }
                         else {
                             ToastAndroid.showWithGravityAndOffset(
@@ -181,7 +193,6 @@ class Comments extends React.Component {
                                 100,
                             );
                         }
-                        Keyboard.dismiss()
                     }).catch ((error) => {
                         Keyboard.dismiss()
                         console.log(error)
@@ -199,13 +210,7 @@ class Comments extends React.Component {
                 }
             }
             else {
-                ToastAndroid.showWithGravityAndOffset(
-                    'No Internet Connection',
-                    ToastAndroid.LONG,
-                    ToastAndroid.TOP,
-                    25,
-                    100,
-                );
+                this.showToast()
             }
         }
         else {
@@ -219,23 +224,70 @@ class Comments extends React.Component {
         }
     }
 
-    loadComments = (data) => {
+    loadComments = async(data) => {
         console.log("loadComments")
+        var inputData = data.sort((a,b) => {return a.time -b.time})
         this.commentList = []
-        data.map((item, index) => {
+        await inputData.map((item, index) => {
             this.commentList.push(
                 <Comment
-                    key={index}
+                    key={index} 
+                    comment_id={item.comment_id}
                     associate={item.associate} 
                     id={item.associate_id}
                     message={item.message}
                     time={item.time} 
-                    onPress={() => this.setState({modalVisible: true})}
+                    onPress={() => this.setState({modalVisible: true})} 
+                    commentDeletehandle={this.deleteComment}
                 />
             )
         })
         this.setState({ commentsRefresh: false })
     }
+
+    deleteComment = (comment_id, comment) => {
+        console.log("delete comment")
+        if(this.props.isConnected) {
+            /* epoch time calculation */
+            const dateTime = Date.now();
+            const timestamp = Math.floor(dateTime / 1000);
+            const payload = {
+                Data: {
+                    post_id: this.postId,
+                    tenant_id: this.props.accountAlias,
+                    ops: "delete_comment",
+                    comment: {
+                        comment_id: comment_id,
+                        associate_id: this.props.associate_id,
+                        time: timestamp,
+                        message: comment
+                    }
+                }
+            }
+            // const deleteComment = this.comments.filter((ele) => { return ele.comment_id == comment_id })
+            var index = this.comments.findIndex((elm) => { return elm.comment_id == comment_id })
+            console.log("index",index)
+            this.comments.splice(index, 1)
+            this.loadComments(this.comments)
+            this.setState({ isCommentDeleted: true })
+            try {
+                delete_comment(payload, this.headers).then(async(response) => {
+                    console.log("Comment Deleted")
+                    this.setState({ isCommentDeleted: false})
+                }).catch((e) => {
+                    console.log(e)
+                })
+            }
+            catch (e) {
+                console.log(e)
+            }
+        }
+        else {
+            this.showToast()
+        }
+        
+    }
+
     showToast() {
         ToastAndroid.showWithGravityAndOffset(
             'Please, Connect to the internet',
@@ -308,6 +360,8 @@ class Comments extends React.Component {
                         <Icon
                             name='send'
                             type={'MaterialIcons'}
+                            active={this.state.addCommentText.length > 0 ? true : false}
+                            // style={styles.iconActive}
                             style={this.state.addCommentText.length > 0 ? styles.iconActive : styles.iconInactive} 
                             onPress={this.addComment}
                         />

@@ -38,7 +38,6 @@ import Endorsement from '../../components/Endorsement'
 import Gratitude from '../../components/Gratitude'
 
 class CreatePost extends React.Component {
-
     constructor(props) {
         super(props)
 
@@ -603,6 +602,7 @@ class CreatePost extends React.Component {
                             gratitudeHandler={this.gratitudeHandler}
                         />
                         : null}
+                    <View style={{height: 50, width: '100%', backgroundColor: 'green'}}></View>
                 </ScrollView>
 
                 <VisibilityModal 
