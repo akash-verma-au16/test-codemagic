@@ -151,7 +151,7 @@ class LoginPage extends React.Component {
         }, () => {
             try {
                 if (this.state.accountAlias && this.state.email && this.state.password) {
-                    
+                    console.log("Log in")
                     login({
                         accountAlias: this.state.accountAlias,
                         email: this.state.email,
@@ -306,6 +306,7 @@ class LoginPage extends React.Component {
                     this.setState({ isSignInLoading: false })
                 }
             } catch (error) {
+                console.log("error")
                 Toast.show({
                     text: "Something went wrong, please try again later.",
                     type: "danger"

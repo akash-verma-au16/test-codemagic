@@ -8,7 +8,7 @@ export default {
         post: "https://ueb6oyqxnf.execute-api.ap-southeast-1.amazonaws.com",
         push:"https://flnuddep8j.execute-api.ap-southeast-1.amazonaws.com",
         create_post:"https://qunmuep2fj.execute-api.ap-southeast-1.amazonaws.com/sandbox/posts/create-post",
-        get_visibility: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/get_visibility",
+        get_visibility: "https://s7tmikdn2d.execute-api.ap-southeast-1.amazonaws.com/sandbox/post/get_visibility",
         news_feed:"https://s7tmikdn2d.execute-api.ap-southeast-1.amazonaws.com/sandbox/post/news_feed",
         list_survey:"https://mjangpdi2k.execute-api.ap-southeast-1.amazonaws.com/dev/survey/list_survey",
         give_reward:"https://835zntrqv6.execute-api.ap-southeast-1.amazonaws.com/api/give_reward",

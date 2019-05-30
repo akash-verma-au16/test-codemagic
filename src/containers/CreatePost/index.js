@@ -601,7 +601,9 @@ class CreatePost extends React.Component {
                             gratitudeHandler={this.gratitudeHandler}
                         />
                         : null}
-                    <View style={{height: 50, width: '100%', backgroundColor: 'green'}}></View>
+                    <View style={{height: 50, width: '100%', backgroundColor: 'green'}}>
+                        
+                    </View>
                 </ScrollView>
 
                 <VisibilityModal 
