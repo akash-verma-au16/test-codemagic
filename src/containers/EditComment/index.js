@@ -56,16 +56,7 @@ class EditComment extends React.Component {
                         color: 'white',
                         margin: 19
                     } 
-                } onPress={() => {
-                    Keyboard.dismiss()
-                    ToastAndroid.showWithGravityAndOffset(
-                        'Coming soon',
-                        ToastAndroid.LONG,
-                        ToastAndroid.BOTTOM,
-                        25,
-                        100,
-                    );
-                }}
+                } onPress={navigation.getParam('editCommentHandler')}
                 />
             ),
             headerLeft: (
@@ -113,12 +104,16 @@ class EditComment extends React.Component {
     }
 
     componentDidMount() {
-        this.props.navigation.setParams({ isChanged: this.state.isChanged });        
+        this.props.navigation.setParams({ isChanged: this.state.isChanged, editCommentHandler: this.editCommentHandler });        
         // Hardware backpress handle
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             this.goBack();
             return true;
         });
+    }
+
+    editCommentHandler = () => {
+        
     }
 
     goBack() {

@@ -46,6 +46,7 @@ class ListPost extends React.Component {
         this.scrollPosition = 0
         //Carry Profile Data
         this.profileData = {}
+        this.counts={}
     }
     
     static navigationOptions = ({ navigation }) => {
@@ -189,7 +190,7 @@ class ListPost extends React.Component {
                         // this.postList = []
                         // this.createTiles(response.data.data.posts, response.data.data.counts)
                         /* Checking if any data is available */
-                        if (response.data.data.posts === 0) {
+                        if (response.data.data.posts.length === 0) {
                             /* Display warning on the screen */
                             this.postList = []
                             this.postList.push(<Text style={{margin:10}} key={0}>No post to display</Text>)
@@ -214,9 +215,12 @@ class ListPost extends React.Component {
                                 this.setState({ newPostVisibility: true })
                             }
                         }
-                        
+                        response.data.data.counts.map((item) => {
+                            this.counts[item.post_id] = {likeCount: item.likeCount, commentCount: item.commentCount}
+                        })
+                        console.log("this.counts",this.counts)
                         /* Create UI tiles to display */
-                        this.createTiles(response.data.data.posts, response.data.data.counts)
+                        this.createTiles(response.data.data.posts, this.counts)
                     }
                 }).catch((error) => {
                     this.setState({ refreshing: false, networkChanged: false })
@@ -247,13 +251,11 @@ class ListPost extends React.Component {
         }
     }   
     createTiles = async(posts, counts) => {
+        this.setState({ refreshing: true })
+        console.log("Counts", counts)
         this.postList = []
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
         posts.map((item, index) => {
-            var all_counts = counts.filter((count) => {
-                return item.Item.post_id === count.post_id
-            }) 
-            console.log("count", all_counts)
             this.postList.push(
                 // Post Component
                 <Post 
@@ -267,8 +269,8 @@ class ListPost extends React.Component {
                     taggedAssociates={item.Item.tagged_associates} 
                     strength={item.Item.sub_type} 
                     associate={item.Item.associate_id} 
-                    likeCount={all_counts[0]['likeCount']}
-                    commentCount={all_counts[0]['commentCount']}
+                    likeCount={counts[item.Item.post_id].likeCount}
+                    commentCount={counts[item.Item.post_id].commentCount}
                 />
             )
         })
