@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
 import AsyncStorage from '@react-native-community/async-storage';
-import {NavigationActions} from 'react-navigation'
 import Post from '../../components/Post/index'
 /* Redux */
 import { connect } from 'react-redux'
@@ -296,15 +295,7 @@ class ListPost extends React.Component {
             }
         }
     }
-    createTiles = async (posts, counts) => {
-        this.postList = []
-        this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
-        posts.map((item, index) => {
-            var all_counts = counts.filter((count) => {
-                return item.Item.post_id === count.post_id
-            })
-            console.log("count", all_counts)
-    }   
+  
     createTiles = async(posts, counts) => {
         this.setState({ refreshing: true })
         console.log("Counts", counts)
