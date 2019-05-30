@@ -7,11 +7,19 @@ import { Root } from 'native-base'
 import { createStore, compose } from 'redux'
 import reducer from './src/store/reducers'
 import { Provider } from 'react-redux'
-import firebase from 'react-native-firebase';
-import { Client } from 'bugsnag-react-native';
 import OfflineNotice from './src/components/OfflineNotice/index'
+// push notification
+import Auth from '@aws-amplify/auth';
+import Analytics from '@aws-amplify/analytics';
+import PushNotification from '@aws-amplify/pushnotification';
+import awsconfig from './aws-exports';
 
-const bugsnag = new Client("92e5cb01626cd2496fddc87114d1f793");
+// retrieve temporary AWS credentials and sign requests
+Auth.configure(awsconfig);
+// send analytics events to Amazon Pinpoint
+Analytics.configure(awsconfig);
+// configure push notification
+PushNotification.configure(awsconfig);
 
 export default class App extends Component {
 
@@ -61,13 +69,18 @@ export default class App extends Component {
         });
     }
 
-    async componentDidMount() {
-        this.checkPermission();
-        this.createNotificationListeners();
+    componentDidMount() {
         //Adding connection change listener
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-    }
 
+        PushNotification.onRegister((token) => {
+            //Generate Device token
+            console.log('in app registration', token);
+            AsyncStorage.setItem('token',token)
+            alert('Token Generated' + token)
+            
+        });
+    }
     componentWillUnmount() {
         this.notificationListener();
         this.notificationOpenedListener();
@@ -79,64 +92,11 @@ export default class App extends Component {
     handleConnectivityChange = isConnected => {
         this.setState({ isConnected: isConnected ? true : false });
     };
-    //1
-    async checkPermission() {
-        const enabled = await firebase.messaging().hasPermission();
-        if (!enabled) {
-            this.requestPermission();
-        }
-    }
 
-    async createNotificationListeners() {
-        const channel = new firebase.notifications.Android.Channel(
-            '1',
-            'happyworks',
-            firebase.notifications.Android.Importance.Max
-        ).setDescription('A natural description of the channel');
-        firebase.notifications().android.createChannel(channel);
-
-        /*
-        * Triggered when a particular notification has been received in foreground
-        * */
-        this.notificationListener = firebase.notifications().onNotification((notification) => {
-            const localNotification = new firebase.notifications.Notification({
-                sound: 'default',
-                show_in_foreground: true
-            })
-                .setNotificationId(notification.notificationId)
-                .setTitle(notification.title)
-                .setSubtitle(notification.subtitle)
-                .setBody(notification.body)
-                .setData(notification.data)
-                .android.setChannelId('1') 
-                .android.setColor('#000000')
-                .android.setPriority(firebase.notifications.Android.Priority.High);
-            firebase.notifications()
-                .displayNotification(localNotification)
-                .catch();
-        });
-
-        this.notificationOpenedListener = firebase.notifications().onNotificationOpened(() => {
-
-        });
-    }
-
-    //2
-    async requestPermission() {
-        try {
-            await firebase.messaging().requestPermission();
-            // User has authorised
-            this.getToken();
-        } catch (error) {
-            // User has rejected permissions
-        }
-    }
-
-    // Status bar color #1c92c4
     render() {
         return (
             this.state.dataLoaded ?
-                <Root style={{zIndex:0}}>
+                <Root style={{ zIndex: 0 }}>
                     <StatusBar backgroundColor='#1c92c4' barStyle='light-content' />
                     <Provider store={this.store}>
                         <OfflineNotice isConnected={this.state.isConnected} />

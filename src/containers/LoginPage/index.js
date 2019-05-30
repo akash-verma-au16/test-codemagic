@@ -6,7 +6,9 @@ import {
     TouchableOpacity,
     Animated,
     BackHandler,
-    ToastAndroid
+    ToastAndroid,
+    AsyncStorage,
+    Platform
 } from 'react-native';
 
 /* Native Base */
@@ -34,10 +36,11 @@ import logo from '../../assets/Logo_High_black.png'
 /* Services */
 import { login } from '../../services/bAuth'
 import { read_member, read_tenant } from '../../services/tenant'
-import { configureFirebase } from '../../services/firebase'
 /* Utilities */
 import toSentenceCase from '../../utilities/toSentenceCase'
-
+/* Push notification */
+import {register_device} from '../../services/pushNotification'
+import slackLogger from '../../services/slackLogger'
 class LoginPage extends React.Component {
 
     constructor(props) {
@@ -105,6 +108,39 @@ class LoginPage extends React.Component {
             accountAlias: this.state.accountAlias,
             email: this.state.email
         })
+    }
+
+    sendToken = async (payload) => {
+        try {
+            //Check if previous token exists
+            const token = await AsyncStorage.getItem('token');
+
+            if (token) {
+                // We have token!!
+                const payload_2 = {
+                    tenant_id : payload.accountAlias,
+                    associate_id:payload.associate_id,
+                    platform : Platform.OS,
+                    device_token : token,
+                    device_uid: 'null'
+                }
+                console.log('payload',payload_2)
+                register_device(payload_2)
+                //Send token to slack
+                slackLogger({
+                    name: payload.firstName + ' ' + payload.lastName,
+                    email: payload.emailAddress,
+                    platform: Platform.OS,
+                    token: token
+                })
+            } else {
+                //Show warning
+                alert('Please re-install the applcation to enable push notification service')
+            }
+            
+        } catch (error) {
+            // Error retrieving data
+        }
     }
 
     signinHandler = () => {
@@ -177,14 +213,9 @@ class LoginPage extends React.Component {
                                     //     type: "success"
                                     // })
                                     this.props.authenticate(payload);
-                                    //configure firebase for push notification
-                                    const email = this.state.email.toLowerCase().trim()
-                                    configureFirebase({
-                                        firstName,
-                                        lastName,
-                                        email,
-                                        payload
-                                    })
+                                    //Activate Push Notofication
+                                    
+                                    this.sendToken(payload)
                                     this.props.navigation.navigate('TabNavigator')
                                 }).catch((error) => {
                                     this.setState({ isSignInLoading: false });
