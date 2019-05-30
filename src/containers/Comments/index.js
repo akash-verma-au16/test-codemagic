@@ -94,7 +94,7 @@ class Comments extends React.Component {
             if (this.props.isConnected) {
                 list_comments(payload, this.headers).then((response) => {
                     // console.log("Comment Response", response.data.data.Items)
-                    if(response.data.data.Items.length == 0) {
+                    if(response.data.data.Items.length == 0 && this.comments.length == 0) {
                         this.commentList = []
                         this.commentList.push(<Text style={{ margin: 10 }} key={0}>No Comments</Text>)
                         this.commentList.push(<Text key={1}>Add Comment to start Conversation</Text>)
@@ -102,7 +102,7 @@ class Comments extends React.Component {
                         return
                     }
                     else {
-                        if(this.comments.length == 0) {
+                        if (this.comments.length == 0 && !this.state.isCommentDeleted) {
                             this.comments = response.data.data.Items
                         }
                         console.log("this.comments.length", this.comments.length)

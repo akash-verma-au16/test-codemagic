@@ -71,6 +71,11 @@ class ListPost extends React.Component {
                             })
                         }
 
+                    }} 
+                    style={{
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: 50
                     }}
                 >
                     <Thumbnail
