@@ -28,12 +28,14 @@ class Post extends Component {
         super(props);
         this.state = {
             like: false,
+            isLiked: false,
             likes: this.props.likeCount,
             comments: this.props.commentCount,
             modalVisible: false,
             likeId: ""
         }
-
+        console.log("LikesCount", this.state.likes)
+        console.log("CommentCount", this.state.comments)
         //formatting update locale
         Moment.globalMoment = moment;
         moment.updateLocale('en', {
@@ -87,6 +89,9 @@ class Post extends Component {
         try {
             like_post(payload, headers).then((res) => {
                 console.log("Response", res)
+                if(res.status === 200) {
+                    this.setState({ isLiked: true})
+                }
                 
             }).catch((e) => {
                 console.log(e)
@@ -117,7 +122,10 @@ class Post extends Component {
         }
         try {
             unlike_post(payload, headers).then((res) => {
-                console.log("Response", res)
+                console.log("Unlike", res)
+                if (res.status === 200) {
+                    this.setState({ isLiked: false })
+                }
             }).catch((e) => {
                 console.log(e)
             })
@@ -132,13 +140,16 @@ class Post extends Component {
         if(this.props.isConnected) {
             console.log("postId",this.props.postId)
             this.setState({
-                like: !this.state.like,
-                likes: this.state.like ? this.state.likes - 1 : this.state.likes + 1
+                like: !this.state.like
             }, () => {
                 if(this.state.like) {
-                    setTimeout(() => this.likePost(), 2000)
+                    this.props.likeCount + 1 
+                    this.likePost()
+                    // setTimeout(() => this.likePost(), 3000)
                 } else {
-                    setTimeout(() => this.unlikePost(), 2000)
+                    this.props.likeCount - 1 
+                    this.unlikePost()
+                    // setTimeout(() => this.unlikePost(), 3000)                        
                 }
             })
         }
@@ -259,12 +270,12 @@ class Post extends Component {
                     <View style={styles.infoTab}>
                         <View style={{ flexDirection: 'row', width: "50%", alignItems: 'center' }}>
                             <TouchableOpacity activeOpacity={0.8} underlayColor='#111' style={styles.navBar} onPress={() => this.props.navigation.navigate('Likes')}>
-                                <Text style={styles.infoNo}>{this.state.likes}</Text>
-                                <Text style={styles.infoText}>{this.state.likes > 1 ? "Likes" : "Like"}</Text>
+                                <Text style={styles.infoNo}>{this.props.likeCount}</Text>
+                                <Text style={styles.infoText}>{this.props.likeCount > 1 ? "Likes" : "Like"}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.navBar} underlayColor='#111' activeOpacity={0.8} onPress={() => this.props.navigation.navigate('Comments', { postId: this.props.postId })}>
-                                <Text style={styles.infoNo}>{this.state.comments}</Text>
-                                <Text style={styles.infoText}>{this.state.comments > 1 ? 'Comments' : 'Comment'}</Text>
+                                <Text style={styles.infoNo}>{this.props.commentCount}</Text>
+                                <Text style={styles.infoText}>{this.props.commentCount > 1 ? 'Comments' : 'Comment'}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

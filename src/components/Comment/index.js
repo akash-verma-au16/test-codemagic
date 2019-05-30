@@ -124,7 +124,7 @@ class Comment extends React.Component {
                                         style: 'cancel'
                                     },
                                     {
-                                        text: 'Yes', onPress: () => { this.showToast() }
+                                        text: 'Yes', onPress: () => { this.props.commentDeletehandle(this.props.comment_id, this.props.message)}
                                     }
                                 ],
                                 { cancelable: false },
