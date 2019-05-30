@@ -513,7 +513,6 @@ class CreatePost extends React.Component {
                             this.associateData.push({ id: item.associate_id, name: fullName })
                             console.log("Associate data",this.associateData)
                         }
-
                     })
                     this.setState({ isTagerLoading: false })
                 })

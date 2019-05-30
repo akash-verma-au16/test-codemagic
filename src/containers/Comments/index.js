@@ -127,15 +127,7 @@ class Comments extends React.Component {
                 }).catch((e) => {
                     console.log(e)
                 })
-            } else {
-                ToastAndroid.showWithGravityAndOffset(
-                    'Please, Connect to the internet',
-                    ToastAndroid.LONG,
-                    ToastAndroid.BOTTOM,
-                    25,
-                    100,
-                );
-            }
+            } 
         }
         catch(e) {
             console.log(e)
