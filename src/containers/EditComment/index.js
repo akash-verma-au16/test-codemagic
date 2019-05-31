@@ -19,6 +19,8 @@ class EditComment extends React.Component {
             epoch: this.props.navigation.getParam('time'),
             isChanged: false
         }
+        console.log("Input epoch:", this.state.epoch)
+
         this.associateList = []
 
         this.textInputRef = React.createRef();
@@ -117,6 +119,7 @@ class EditComment extends React.Component {
     }
 
     editCommentHandler = () => {
+        console.log("Input epoch:", this.state.epoch)
         const payload = {
             "Data": {
                 "post_id": this.props.navigation.getParam('postId'),
@@ -224,7 +227,7 @@ class EditComment extends React.Component {
                             </View>
                             <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>{this.state.associate}</Text>
                         </View>
-                        <Moment style={{ fontSize: 12 }} element={Text} fromNow>{this.state.epoch}</Moment>
+                        <Moment style={{ fontSize: 12 }} element={Text} fromNow>{this.state.epoch * 1000}</Moment>
 
                     </View>
 

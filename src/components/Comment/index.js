@@ -123,7 +123,7 @@ class Comment extends React.Component {
                             this.props.navigation.navigate('EditComment',{
                                 associate: this.props.associate,
                                 comment: this.props.message,
-                                time: this.props.time * 1000,
+                                time: this.props.time,
                                 postId: this.props.post_id, 
                                 commentId: this.props.comment_id,
                                 returnData: this.returnData.bind(this)
