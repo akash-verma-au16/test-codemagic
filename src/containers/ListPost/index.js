@@ -28,17 +28,8 @@ import { loadProfile } from '../Home/apicalls'
 import { NavigationEvents } from 'react-navigation';
 import thumbnail from '../../assets/thumbnail.jpg'
 // push notification
-import Auth from '@aws-amplify/auth';
-import Analytics from '@aws-amplify/analytics';
+import { withInAppNotification } from 'react-native-in-app-notification'
 import PushNotification from '@aws-amplify/pushnotification';
-import awsconfig from '../../../aws-exports';
-
-// retrieve temporary AWS credentials and sign requests
-Auth.configure(awsconfig);
-// send analytics events to Amazon Pinpoint
-Analytics.configure(awsconfig);
-// configure push notification
-PushNotification.configure(awsconfig);
 
 class ListPost extends React.Component {
     constructor(props) {
@@ -112,7 +103,16 @@ class ListPost extends React.Component {
             this.props.navigation.navigate('LoginPage')
             return
         }
-        
+        PushNotification.onNotification((notification) => {
+            // Note that the notification object structure is different from Android and IOS
+            console.log('in app notification', notification);
+            
+            this.props.showNotification({
+                title: 'You pressed it!',
+                message: 'The notification has been triggered',
+                onPress: () => alert('Alert', 'You clicked the notification!')
+            })
+        })
     }
     componentDidUpdate(){
         this.handlePushNotificationNavigation()
@@ -418,4 +418,4 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(ListPost)
+export default connect(mapStateToProps, null)(withInAppNotification(ListPost))
