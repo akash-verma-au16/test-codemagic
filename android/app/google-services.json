@@ -1,39 +1,37 @@
 {
   "project_info": {
-    "project_number": "125328983666",
-    "firebase_url": "https://happyworks-dae8d.firebaseio.com",
-    "project_id": "happyworks-dae8d",
-    "storage_bucket": "happyworks-dae8d.appspot.com"
+    "project_number": "36986265199",
+    "firebase_url": "https://happyworks-dev.firebaseio.com",
+    "project_id": "happyworks-dev",
+    "storage_bucket": "happyworks-dev.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:125328983666:android:ebe73f184d32340d",
+        "mobilesdk_app_id": "1:36986265199:android:ebe73f184d32340d",
         "android_client_info": {
           "package_name": "com.happyworks"
         }
       },
       "oauth_client": [
         {
-          "client_id": "125328983666-sb9oa4vv4hdh5p36aqc8sace7e24i167.apps.googleusercontent.com",
+          "client_id": "36986265199-befhfm414do69fjjaoc2quc5s36bu7e8.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCv6MUoKNdP5tA6OHRo68F0pPuI8ouVrdU"
+          "current_key": "AIzaSyCMh78HJjjC-QOQzktftY4YTnFgpK20BPE"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "36986265199-befhfm414do69fjjaoc2quc5s36bu7e8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
