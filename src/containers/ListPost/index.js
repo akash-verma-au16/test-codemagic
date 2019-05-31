@@ -29,8 +29,8 @@ import { NavigationEvents } from 'react-navigation';
 import thumbnail from '../../assets/thumbnail.jpg'
 // push notification
 import { withInAppNotification } from 'react-native-in-app-notification'
-import PushNotification from '@aws-amplify/pushnotification';
-
+import PushNotification from '@aws-amplify/pushnotification'
+import notificationIcon from '../../assets/Logo_High_black.png'
 class ListPost extends React.Component {
     constructor(props) {
         super(props)
@@ -111,6 +111,7 @@ class ListPost extends React.Component {
             this.props.showNotification({
                 title: notification.title,
                 message: notification.body,
+                icon: notificationIcon,
                 onPress: () => {
                     const url = notification.data['pinpoint.deeplink']
                     const data = url.split('/')
