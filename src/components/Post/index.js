@@ -167,6 +167,11 @@ class Post extends Component {
         }
     }
 
+    returnData() {
+        console.log("retunr data")
+        // this.setState({ id: id, name: name });
+    }
+
     onIconPresshandler = () => {
         // console.log('PD', this.props.profileData)
         this.props.navigation.navigate('Profile', {
@@ -297,14 +302,21 @@ class Post extends Component {
                         <Icon name='md-thumbs-up' style={ this.state.like ? styles.like : styles.unlike }/>
                         <Text style={this.state.like ? styles.footerTextActive : styles.footerTextInactive}>Like</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={() => this.props.navigation.navigate('Comments',{isComment: true, postId: this.props.postId})}>
+                    <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={() => this.props.navigation.navigate('Comments', {
+                        isComment: true, 
+                        postId: this.props.postId
+                    })}>
                         <Icon name='comment' type={'MaterialIcons'} style={styles.comment} />
                         <Text style={styles.footerText}>Comment</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView}>
-                        <Icon name='heart-outlined' type={'Entypo'} style={{ color: '#bababa', fontSize: 19}} />
-                        <Text style={styles.footerText}>Add-on</Text>
-                    </TouchableOpacity>
+                    {
+                        this.props.postCreator_id !== this.props.associate_id ? 
+                            <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView}>
+                                <Icon name='heart-outlined' type={'Entypo'} style={{ color: '#bababa', fontSize: 19 }} />
+                                <Text style={styles.footerText}>Add-on</Text>
+                            </TouchableOpacity>
+                            : null
+                    }
                 </View>
                 <VisibilityModal 
                     enabled={this.state.modalVisible}

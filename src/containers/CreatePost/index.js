@@ -26,6 +26,7 @@ import { connect } from 'react-redux'
 // React Navigation
 import { NavigationEvents } from 'react-navigation';
 /* Services */
+import { loadProfile } from '../Home/apicalls' 
 import { create_post, get_visibility } from '../../services/post'
 import toSentenceCase from '../../utilities/toSentenceCase'
 import uuid from 'uuid'
@@ -61,7 +62,7 @@ class CreatePost extends React.Component {
         }
         this.state = this.initialState
         this.inputTextRef = React.createRef();
-
+        this.profileData = {}
         this.visibilityData = []
         this.associateData = []
     }
@@ -262,7 +263,18 @@ class CreatePost extends React.Component {
                 );
                 return
             }
-        } else {
+        } 
+        if (this.state.addPoints > this.profileData.wallet_balance) {
+            ToastAndroid.showWithGravityAndOffset(
+                'You have insufficient wallet balance ' +  this.profileData.wallet_balance +' points.',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+                25,
+                100,
+            );
+            return
+        }
+        else {
             /* if gratitude is selected */
 
             /* check if text is present */
@@ -608,8 +620,8 @@ class CreatePost extends React.Component {
                             <TextInput
                                 placeholder='Add points'
                                 placeholderTextColor='#777'
-                                value={this.state.addPoints.toString()}
-                                style={styles.addPoints}
+                                style={styles.addPoints} 
+                                value={this.state.addPoints == 0 ? "" : this.state.addPoints.toString()}
                                 selectionColor='#1c92c4'
                                 onChangeText={(text) => this.setState({ addPoints: text })}
                                 keyboardType='number-pad'
@@ -617,19 +629,19 @@ class CreatePost extends React.Component {
                             />
                         </View>
                         <View style={styles.pointButtonView}>
-                            <TouchableOpacity style={styles.pointsView} onPress={() => this.setState({ addPoints: 10 })}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 10 })}>
                                 <Text style={styles.points}>+10</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.pointsView} onPress={() => this.setState({ addPoints: 15 })}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 15 })}>
                                 <Text style={styles.points}>+15</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.pointsView} onPress={() => this.setState({ addPoints: 25 })}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 25 })}>
                                 <Text style={styles.points}>+25</Text>
                             </TouchableOpacity>
                         </View>
-                        <TouchableOpacity style={styles.buttonView}>
+                        {/* <TouchableOpacity style={styles.buttonView}>
                             <Text style={styles.add}>ADD</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
 
                     </View>
                 </ScrollView>
@@ -652,11 +664,19 @@ class CreatePost extends React.Component {
                 />
 
                 <NavigationEvents
-                    onWillFocus={() => {
+                    onWillFocus={async() => {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.loadVisibility()
                                 this.loadMembers()
+                                this.profileData = await loadProfile({
+                                    "tenant_id": this.props.accountAlias,
+                                    "associate_id": this.props.associate_id
+                                }, {
+                                    headers: {
+                                        Authorization: this.props.idToken
+                                    }
+                                }, this.props.isConnected);
                             }
                         }
                     }}

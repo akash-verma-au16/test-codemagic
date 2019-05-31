@@ -26,7 +26,9 @@ class Comment extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            modalVisible: false
+            modalVisible: false, 
+            isEdit: false, 
+            editComment: ""
         }
         this.showToast = this.showToast.bind(this)
         //formatting update locale
@@ -75,6 +77,16 @@ class Comment extends React.Component {
         );
     }
 
+    returnData(data) {
+        this.setState({ 
+            isEdit: true,
+            editComment: data.message 
+        })
+
+        console.log("Return Data", data)
+        // this.setState({ id: id, name: name });
+    }
+
     render() {
         return (
             <View style={styles.container} key={this.props.key}>
@@ -99,7 +111,7 @@ class Comment extends React.Component {
                                 />
                             </TouchableOpacity>
                         </View>
-                        <Text style={styles.comment}>{this.props.message}</Text>
+                        <Text style={styles.comment}>{this.state.isEdit ? this.state.editComment : this.props.message}</Text>
                     </View>
                     <Moment style={{ fontSize: 14, paddingVertical: 3, paddingLeft: 10 }} element={Text} fromNow>{this.props.time * 1000}</Moment>
                 </View>
@@ -111,7 +123,10 @@ class Comment extends React.Component {
                             this.props.navigation.navigate('EditComment',{
                                 associate: this.props.associate,
                                 comment: this.props.message,
-                                time: this.props.time * 1000
+                                time: this.props.time * 1000,
+                                postId: this.props.post_id, 
+                                commentId: this.props.comment_id,
+                                returnData: this.returnData.bind(this)
                             })
                         }
                         else if(key == 'delete') {
