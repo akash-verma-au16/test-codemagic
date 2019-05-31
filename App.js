@@ -30,9 +30,15 @@ PushNotification.onRegister((token) => {
 PushNotification.onNotificationOpened((notification) => {
     //Navigate to the respective page with payload
     console.log('the notification is opened', notification)
-    if(notification['pinpoint.deeplink'] === 'happyworks://endorsement/'){
-        alert('endorsing')
-        AsyncStorage.setItem('pushNotificationNavigation', 'e3b33719-5893-43c2-93d3-43103eba462e')
+    const url = notification['pinpoint.deeplink']
+    const data = url.split('/')
+    if(data[2] === 'endorsement'){
+        if(data[3])
+            AsyncStorage.setItem('pushNotificationNavigation',data[3])
+    }
+    else if(data[2] == 'gratitude'){
+        if(data[3])
+            AsyncStorage.setItem('pushNotificationNavigation',data[3])
     }
     
 });

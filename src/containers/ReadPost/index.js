@@ -184,7 +184,10 @@ class ListPost extends React.Component {
                             />
                         )
                         
-                    }).catch((error) => { console.log(error.response) })
+                    }).catch(() => {
+                        this.setState({ refreshing: false, networkChanged: false })
+                        alert('Invalid post')
+                    })
                 
             }
             catch (error) {
