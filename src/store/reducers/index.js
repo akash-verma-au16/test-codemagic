@@ -92,16 +92,6 @@ export default (state = initialState, action) => {
         }
     }
 
-    case user.WALLET_BALLANCE: {
-        return {
-            ...state,
-            user: {
-                ...state.user,
-                walletBalance: action.payload.walletBalance
-            }
-        }
-    }
-
     default: {
         return state;
     }

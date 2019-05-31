@@ -93,7 +93,7 @@ class Comments extends React.Component {
         try {
             if (this.props.isConnected) {
                 list_comments(payload, this.headers).then((response) => {
-                    // console.log("Comment Response", response.data.data.Items)
+                    console.log("Comment Response", response.data.data.Items)
                     if(response.data.data.Items.length == 0 && this.comments.length == 0) {
                         this.commentList = []
                         this.commentList.push(<Text style={{ margin: 10 }} key={0}>No Comments</Text>)
@@ -112,7 +112,7 @@ class Comments extends React.Component {
                                 return
                             }   
                             else {
-                                if(this.state.isComment === false) {
+                                if (this.state.isCommentDeleted === false) {
                                     this.comments = response.data.data.Items
                                     this.loadComments(this.comments)
                                 }
@@ -224,7 +224,8 @@ class Comments extends React.Component {
             this.commentList.push(
                 <Comment
                     key={index} 
-                    comment_id={item.comment_id}
+                    comment_id={item.comment_id} 
+                    post_id={item.post_id}
                     associate={item.associate} 
                     id={item.associate_id}
                     message={item.message}

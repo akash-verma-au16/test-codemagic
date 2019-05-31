@@ -5,6 +5,10 @@ import { Icon } from 'native-base'
 // Components from Moment.js
 import Moment from 'react-moment'
 import moment from 'moment/min/moment-with-locales'
+// API Methods
+import { edit_comment } from '../../services/comments'
+/* Redux */
+import { connect } from 'react-redux'
 
 class EditComment extends React.Component {
     constructor(props) {
@@ -15,6 +19,8 @@ class EditComment extends React.Component {
             epoch: this.props.navigation.getParam('time'),
             isChanged: false
         }
+        console.log("Input epoch:", this.state.epoch)
+
         this.associateList = []
 
         this.textInputRef = React.createRef();
@@ -113,7 +119,54 @@ class EditComment extends React.Component {
     }
 
     editCommentHandler = () => {
-        
+        console.log("Input epoch:", this.state.epoch)
+        const payload = {
+            "Data": {
+                "post_id": this.props.navigation.getParam('postId'),
+                "tenant_id": this.props.accountAlias,
+                "ops": "update_comment",
+                "comment": {
+                    "comment_id": this.props.navigation.getParam('commentId'),
+                    "associate_id": this.props.associate_id,
+                    "time": this.state.epoch,
+                    "message": this.state.comment
+                }
+            }
+        }
+        console.log('Data', payload)
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
+        if (this.props.isConnected) {
+            try {
+                edit_comment(payload, headers).then((res) => {
+                    console.log('Edit comment', res)
+                    if(res.status === 200) {
+                        this.props.navigation.state.params.returnData({
+                            message: this.state.comment
+                        })
+                        this.props.navigation.goBack()
+                    }
+                }).catch((e) => {
+                    console.log(e)
+                })
+            }
+            catch(e) {
+                console.log(e)
+            }
+        }
+        else {
+            ToastAndroid.showWithGravityAndOffset(
+                'Please, connect to the internet',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+                25,
+                100,
+            );
+        }
     }
 
     goBack() {
@@ -174,7 +227,7 @@ class EditComment extends React.Component {
                             </View>
                             <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>{this.state.associate}</Text>
                         </View>
-                        <Moment style={{ fontSize: 12 }} element={Text} fromNow>{this.state.epoch}</Moment>
+                        <Moment style={{ fontSize: 12 }} element={Text} fromNow>{this.state.epoch * 1000}</Moment>
 
                     </View>
 
@@ -237,4 +290,13 @@ const styles = StyleSheet.create({
     }
 })
 
-export default EditComment
+const mapStateToProps = (state) => {
+    return {
+        accountAlias: state.user.accountAlias,
+        associate_id: state.user.associate_id,
+        isConnected: state.system.isConnected,
+        idToken: state.user.idToken
+    };
+}
+
+export default connect(mapStateToProps, null)(EditComment) 

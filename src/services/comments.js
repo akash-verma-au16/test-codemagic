@@ -12,11 +12,11 @@ export const list_comments = (payload, header) => {
 }
 
 export const delete_comment = (payload, header) => {
-    const endpoint = config.url.comment_post
+    const endpoint = config.url.delete_comment
     return axios.put(endpoint, payload, header)
 }
 
 export const edit_comment = (payload, header) => {
-    const endpoint = config.url.comment_post
+    const endpoint = config.url.edit_comment
     return axios.put(endpoint, payload, header)
 }

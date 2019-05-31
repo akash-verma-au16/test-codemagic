@@ -82,7 +82,6 @@ class ListPost extends React.Component {
                                 associateId: navigation.getParam('associateId')
                             })
                         }
-
                     }} 
                     style={{
                         alignItems: 'center',
@@ -151,13 +150,11 @@ class ListPost extends React.Component {
      }
      async componentDidMount() {
          if(this.props.isAuthenticate) {
-             this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
-            
              this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
          }
          
-         this.interval = setInterval(() => {this.loadPosts()}, 10000);
-         //Detecting network connectivity change
+         this.interval = setInterval(() => this.loadPosts(), 10000);
+             //Detecting network connectivity change
          NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
          //Handling hardware backpress event
          this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -306,10 +303,6 @@ class ListPost extends React.Component {
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
         // this.props.update_wallet()
         posts.map((item, index) => {
-            var all_counts = counts.filter((count) => {
-                return item.Item.post_id === count.post_id
-            })
-            console.log("count", all_counts)
             this.postList.push(
                 // Post Component
                 <Post
@@ -371,7 +364,6 @@ class ListPost extends React.Component {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.loadPosts()
-                                // this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
                             }
                         }
                     }}
@@ -427,10 +419,4 @@ const mapStateToProps = (state) => {
     };
 }
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        update_wallet: (props) => dispatch({ type: user.WALLET_BALLANCE, payload: props })
-    };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ListPost)
+export default connect(mapStateToProps, null)(ListPost)
