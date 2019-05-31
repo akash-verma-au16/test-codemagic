@@ -6,10 +6,12 @@ import com.facebook.react.ReactApplication;
 import com.amazonaws.amplify.pushnotification.RNPushNotificationPackage;
 import com.RNFetchBlob.RNFetchBlobPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
+
 import com.reactnativecommunity.netinfo.NetInfoPackage;
 import com.github.wuxudong.rncharts.MPAndroidChartPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.bugsnag.BugsnagReactNative;
+
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -19,6 +21,7 @@ import com.facebook.react.bridge.ReadableNativeArray;
 import com.facebook.react.bridge.ReadableNativeMap;
 import java.util.Arrays;
 import java.util.List;
+
 
 public class MainApplication extends Application implements ReactApplication {
 
