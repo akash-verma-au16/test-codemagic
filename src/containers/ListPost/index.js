@@ -114,7 +114,11 @@ class ListPost extends React.Component {
                 icon: notificationIcon,
                 onPress: () => {
                     const url = notification.data['pinpoint.deeplink']
-                    const data = url.split('/')
+                    let data = ''
+                    if (url)
+                        data = url.split('/')
+                    else
+                        return
                     if (data[2] === 'endorsement') {
                         if (data[3])
                             this.props.navigation.navigate('ReadPost', { id: data[3] })
