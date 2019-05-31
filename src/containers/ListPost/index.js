@@ -46,7 +46,7 @@ class ListPost extends React.Component {
         this.scrollPosition = 0
         //Carry Profile Data
         this.profileData = {}
-        this.counts={}
+        this.counts=[]
     }
     
     static navigationOptions = ({ navigation }) => {
@@ -121,6 +121,7 @@ class ListPost extends React.Component {
      async componentDidMount() {
          if(this.props.isAuthenticate) {
              this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
+            
              this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
          }
          
@@ -223,12 +224,22 @@ class ListPost extends React.Component {
                                 this.setState({ newPostVisibility: true })
                             }
                         }
-                        response.data.data.counts.map((item) => {
-                            this.counts[item.post_id] = {likeCount: item.likeCount, commentCount: item.commentCount}
+                        // response.data.data.counts.map((item) => {
+                        //     this.counts[item.post_id] = {likeCount: item.likeCount, commentCount: item.commentCount}
+                        // })
+                        this.postList = response.data.data.posts 
+                        this.postList.map((item) => {
+                            this.counts = response.data.data.counts.filter((elm) => {
+                                return elm.post_id == item.Item.post_id
+                            })
+                            console.log("this.postList",this.postList)
+                            item.Item.likeCount = this.counts[0].likeCount
+                            item.Item.commentCount = this.counts[0].commentCount
                         })
-                        console.log("this.counts",this.counts)
+
+                        console.log("Updated Comments",this.comments)
                         /* Create UI tiles to display */
-                        this.createTiles(response.data.data.posts, this.counts)
+                        this.createTiles(this.postList)
                     }
                 }).catch((error) => {
                     this.setState({ refreshing: false, networkChanged: false })
@@ -258,11 +269,11 @@ class ListPost extends React.Component {
             }
         }
     }   
-    createTiles = async(posts, counts) => {
-        this.setState({ refreshing: true })
-        console.log("Counts", counts)
+    createTiles = async(posts) => {
+        // this.setState({ refreshing: true })
         this.postList = []
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
+        // this.props.update_wallet()
         posts.map((item, index) => {
             this.postList.push(
                 // Post Component
@@ -277,8 +288,8 @@ class ListPost extends React.Component {
                     taggedAssociates={item.Item.tagged_associates} 
                     strength={item.Item.sub_type} 
                     associate={item.Item.associate_id} 
-                    likeCount={counts[item.Item.post_id].likeCount}
-                    commentCount={counts[item.Item.post_id].commentCount}
+                    likeCount={item.Item.likeCount}
+                    commentCount={item.Item.commentCount}
                 />
             )
         })
@@ -367,9 +378,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#eee',
         paddingTop: 3
-    },
-    thumbnail : {
-        
     }
 });
 
@@ -384,4 +392,10 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(ListPost)
+const mapDispatchToProps = (dispatch) => {
+    return {
+        update_wallet: (props) => dispatch({ type: user.WALLET_BALLANCE, payload: props })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ListPost)

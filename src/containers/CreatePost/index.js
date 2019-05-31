@@ -8,7 +8,8 @@ import {
     Keyboard,
     ScrollView,
     Alert,
-    ToastAndroid
+    ToastAndroid,
+    TextInput
 } from 'react-native';
 
 import NetInfo from "@react-native-community/netinfo"
@@ -55,7 +56,8 @@ class CreatePost extends React.Component {
             isShowingKeyboard: false,
             taggedAssociates: [],
             postType: '',
-            endorsementStrength: ''
+            endorsementStrength: '',
+            addPoints: 0
         }
         this.state = this.initialState
         this.inputTextRef = React.createRef();
@@ -317,8 +319,8 @@ class CreatePost extends React.Component {
                     type: this.state.visibilityKey,
                     id: this.state.visibilityName == "" ? this.props.accountAlias : this.state.visibilityName //this.state.visibilityName
                 },
-                time: timestamp
-
+                time: timestamp,
+                points: this.state.addPoints
             }
 
         }
@@ -601,8 +603,34 @@ class CreatePost extends React.Component {
                             gratitudeHandler={this.gratitudeHandler}
                         />
                         : null}
-                    <View style={{height: 50, width: '100%', backgroundColor: 'green'}}>
-                        
+                    <View style={styles.addPointsContainer}>
+                        <View style={{alignItems: 'center', justifyContent: 'center', paddingHorizontal: 7, width:'100%'}}>
+                            <TextInput
+                                placeholder='Add points'
+                                placeholderTextColor='#777'
+                                value={this.state.addPoints.toString()}
+                                style={styles.addPoints}
+                                selectionColor='#1c92c4'
+                                onChangeText={(text) => this.setState({ addPoints: text })}
+                                keyboardType='number-pad'
+                                underlineColorAndroid='#1c92c4'
+                            />
+                        </View>
+                        <View style={styles.pointButtonView}>
+                            <TouchableOpacity style={styles.pointsView} onPress={() => this.setState({ addPoints: 10 })}>
+                                <Text style={styles.points}>+10</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.pointsView} onPress={() => this.setState({ addPoints: 15 })}>
+                                <Text style={styles.points}>+15</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.pointsView} onPress={() => this.setState({ addPoints: 25 })}>
+                                <Text style={styles.points}>+25</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <TouchableOpacity style={styles.buttonView}>
+                            <Text style={styles.add}>ADD</Text>
+                        </TouchableOpacity>
+
                     </View>
                 </ScrollView>
 
@@ -656,6 +684,58 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlign: 'center'
 
+    },
+    addPointsContainer: { 
+        width: '90%', 
+        borderRadius: 10, 
+        backgroundColor: '#fff', 
+        marginVertical: 10, 
+        paddingVertical: 20,
+        paddingHorizontal: 5,
+        shadowOffset: { width: 5, height: 5 },
+        shadowColor: 'black',
+        shadowOpacity: 0.2,
+        elevation: 2,
+    },
+    addPoints: {
+        width: "100%",
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        fontSize: 18
+    },
+    pointButtonView: {
+        flexDirection: 'row',
+        paddingHorizontal: 5,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%', 
+        marginTop: 15
+    },
+    pointsView: {
+        width: '30%',
+        borderWidth: 1,
+        borderRadius: 3,
+        borderColor: '#1c92c4',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 10,
+        paddingVertical: 7
+    },
+    points:{
+        color: '#1c92c4',
+        fontSize: 16
+    },
+    buttonView: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5,
+        paddingVertical: 10,
+        backgroundColor: '#1c92c4',
+        marginTop: 15
+    },
+    add: {
+        color: '#fff',
+        fontSize: 18
     }
 });
 
