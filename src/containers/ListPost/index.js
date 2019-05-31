@@ -303,10 +303,6 @@ class ListPost extends React.Component {
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
         // this.props.update_wallet()
         posts.map((item, index) => {
-            var all_counts = counts.filter((count) => {
-                return item.Item.post_id === count.post_id
-            })
-            console.log("count", all_counts)
             this.postList.push(
                 // Post Component
                 <Post
