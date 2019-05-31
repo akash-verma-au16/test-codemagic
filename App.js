@@ -111,7 +111,7 @@ export default class App extends Component {
     render() {
         return (
             this.state.dataLoaded ?
-                <InAppNotificationProvider>
+                <InAppNotificationProvider backgroundColour='#76c1e2'>
                     <Root style={{ zIndex: 0 }}>
                         <StatusBar backgroundColor='#1c92c4' barStyle='light-content' />
                         <Provider store={this.store}>
