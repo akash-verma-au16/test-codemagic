@@ -28,18 +28,9 @@ import { loadProfile } from '../Home/apicalls'
 import { NavigationEvents } from 'react-navigation';
 import thumbnail from '../../assets/thumbnail.jpg'
 // push notification
-import Auth from '@aws-amplify/auth';
-import Analytics from '@aws-amplify/analytics';
-import PushNotification from '@aws-amplify/pushnotification';
-import awsconfig from '../../../aws-exports';
-
-// retrieve temporary AWS credentials and sign requests
-Auth.configure(awsconfig);
-// send analytics events to Amazon Pinpoint
-Analytics.configure(awsconfig);
-// configure push notification
-PushNotification.configure(awsconfig);
-
+import { withInAppNotification } from 'react-native-in-app-notification'
+import PushNotification from '@aws-amplify/pushnotification'
+import notificationIcon from '../../assets/Logo_High_black.png'
 class ListPost extends React.Component {
     constructor(props) {
         super(props)
@@ -58,7 +49,7 @@ class ListPost extends React.Component {
         this.scrollPosition = 0
         //Carry Profile Data
         this.profileData = {}
-        this.counts=[]
+        this.counts = []
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -82,7 +73,7 @@ class ListPost extends React.Component {
                                 associateId: navigation.getParam('associateId')
                             })
                         }
-                    }} 
+                    }}
                     style={{
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -112,23 +103,44 @@ class ListPost extends React.Component {
             this.props.navigation.navigate('LoginPage')
             return
         }
-        
+        PushNotification.onNotification((notification) => {
+            // Note that the notification object structure is different from Android and IOS
+            console.log('in app notification', notification);
+
+            //Display notification
+            this.props.showNotification({
+                title: notification.title,
+                message: notification.body,
+                icon: notificationIcon,
+                onPress: () => {
+                    const url = notification.data['pinpoint.deeplink']
+                    const data = url.split('/')
+                    if (data[2] === 'endorsement') {
+                        if (data[3])
+                            this.props.navigation.navigate('ReadPost', { id: data[3] })
+                    }
+                    else if (data[2] == 'gratitude') {
+                        if (data[3])
+                            this.props.navigation.navigate('ReadPost', { id: data[3] })
+                    }
+                }
+            })
+        })
     }
-    componentDidUpdate(){
+    componentDidUpdate() {
         this.handlePushNotificationNavigation()
     }
     handlePushNotificationNavigation = async () => {
         try {
             //Check if previous state exists
             const value = await AsyncStorage.getItem('pushNotificationNavigation');
-            
+
             if (value) {
                 // We have state!!
-                alert('navigating')
                 AsyncStorage.removeItem('pushNotificationNavigation')
-                this.props.navigation.navigate('TermsAndConditions')
-            } 
-            
+                this.props.navigation.navigate('ReadPost', { id: value })
+            }
+
         } catch (error) {
             // Error retrieving data
         }
@@ -144,35 +156,35 @@ class ListPost extends React.Component {
         }
     }
     //profile payload
-     payload = {
-         "tenant_id": this.props.accountAlias,
-         "associate_id": this.props.associate_id
-     }
-     async componentDidMount() {
-         if(this.props.isAuthenticate) {
-             this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
-         }
-         
-         this.interval = setInterval(() => this.loadPosts(), 10000);
-             //Detecting network connectivity change
-         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-         //Handling hardware backpress event
-         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-             this.goBack()
-         })
-         //  Loading profile
-         this.props.navigation.setParams({'profileData': this.profileData})
+    payload = {
+        "tenant_id": this.props.accountAlias,
+        "associate_id": this.props.associate_id
+    }
+    async componentDidMount() {
+        if (this.props.isAuthenticate) {
+            this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
+        }
 
-     }
+        this.interval = setInterval(() => this.loadPosts(), 10000);
+        //Detecting network connectivity change
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+        //Handling hardware backpress event
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            this.goBack()
+        })
+        //  Loading profile
+        this.props.navigation.setParams({ 'profileData': this.profileData })
 
-     componentWillUnmount() {
-         clearInterval(this.interval)
-         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
-         this.backHandler.remove()
-     } 
+    }
 
-    handleConnectivityChange =  (isConnected) => {
-        if(isConnected) {
+    componentWillUnmount() {
+        clearInterval(this.interval)
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+        this.backHandler.remove()
+    }
+
+    handleConnectivityChange = (isConnected) => {
+        if (isConnected) {
             this.setState({
                 networkChanged: true
             }, async () => {
@@ -255,17 +267,17 @@ class ListPost extends React.Component {
                         // response.data.data.counts.map((item) => {
                         //     this.counts[item.post_id] = {likeCount: item.likeCount, commentCount: item.commentCount}
                         // })
-                        this.postList = response.data.data.posts 
+                        this.postList = response.data.data.posts
                         this.postList.map((item) => {
                             this.counts = response.data.data.counts.filter((elm) => {
                                 return elm.post_id == item.Item.post_id
                             })
-                            console.log("this.postList",this.postList)
+                            console.log("this.postList", this.postList)
                             item.Item.likeCount = this.counts[0].likeCount
                             item.Item.commentCount = this.counts[0].commentCount
                         })
 
-                        console.log("Updated Comments",this.comments)
+                        console.log("Updated Comments", this.comments)
                         /* Create UI tiles to display */
                         this.createTiles(this.postList)
                     }
@@ -296,8 +308,8 @@ class ListPost extends React.Component {
                 this.setState({ refreshing: false, networkChanged: false })
             }
         }
-    }   
-    createTiles = async(posts) => {
+    }
+    createTiles = async (posts) => {
         // this.setState({ refreshing: true })
         this.postList = []
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
@@ -311,11 +323,11 @@ class ListPost extends React.Component {
                     postCreator={item.Item.associate_name}
                     postCreator_id={item.Item.associate_id}
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
-                    time= {item.Item.time} 
-                    postMessage={item.Item.message} 
-                    taggedAssociates={item.Item.tagged_associates} 
-                    strength={item.Item.sub_type} 
-                    associate={item.Item.associate_id} 
+                    time={item.Item.time}
+                    postMessage={item.Item.message}
+                    taggedAssociates={item.Item.tagged_associates}
+                    strength={item.Item.sub_type}
+                    associate={item.Item.associate_id}
                     likeCount={item.Item.likeCount}
                     commentCount={item.Item.commentCount}
                 />
@@ -419,4 +431,4 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(ListPost)
+export default connect(mapStateToProps, null)(withInAppNotification(ListPost))
