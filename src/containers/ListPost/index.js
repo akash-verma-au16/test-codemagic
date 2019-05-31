@@ -124,9 +124,8 @@ class ListPost extends React.Component {
             
             if (value) {
                 // We have state!!
-                alert('navigating')
                 AsyncStorage.removeItem('pushNotificationNavigation')
-                this.props.navigation.navigate('TermsAndConditions')
+                this.props.navigation.navigate('ReadPost',{id:value})
             } 
             
         } catch (error) {
@@ -154,7 +153,7 @@ class ListPost extends React.Component {
          }
          
          this.interval = setInterval(() => this.loadPosts(), 10000);
-             //Detecting network connectivity change
+         //Detecting network connectivity change
          NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
          //Handling hardware backpress event
          this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -171,7 +170,7 @@ class ListPost extends React.Component {
          this.backHandler.remove()
      } 
 
-    handleConnectivityChange =  (isConnected) => {
+    handleConnectivityChange = (isConnected) => {
         if(isConnected) {
             this.setState({
                 networkChanged: true

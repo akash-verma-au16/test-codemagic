@@ -17,6 +17,7 @@ import Likes from '../Likes/index'
 import Comments from '../Comments/index'
 import EditPost from '../EditPost/index'
 import EditComment from '../EditComment/index'
+import ReadPost from '../ReadPost'
 /* This stack will contain list of all pages */
 const RootStack = createStackNavigator(
     {
@@ -135,6 +136,15 @@ const RootStack = createStackNavigator(
                     fontWeight: 'bold',
                     fontSize: 19,
                     fontFamily: 'OpenSans-Regular'
+                }
+            }
+        },
+        'ReadPost': {
+            screen: ReadPost,
+            navigationOptions: {
+                headerStyle: {
+                    backgroundColor: '#1c92c4',
+                    height: 40
                 }
             }
         },

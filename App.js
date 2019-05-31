@@ -21,6 +21,21 @@ Analytics.configure(awsconfig);
 // configure push notification
 PushNotification.configure(awsconfig);
 
+PushNotification.onRegister((token) => {
+    //Generate Device token
+    console.log('in app registration', token);
+    AsyncStorage.setItem('token', token)
+
+});
+PushNotification.onNotificationOpened((notification) => {
+    //Navigate to the respective page with payload
+    console.log('the notification is opened', notification)
+    if(notification['pinpoint.deeplink'] === 'happyworks://endorsement/'){
+        alert('endorsing')
+        AsyncStorage.setItem('pushNotificationNavigation', 'e3b33719-5893-43c2-93d3-43103eba462e')
+    }
+    
+});
 const prefix = 'happyworks://';
 export default class App extends Component {
 
@@ -73,27 +88,7 @@ export default class App extends Component {
     componentDidMount() {
         //Adding connection change listener
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-
-        PushNotification.onRegister((token) => {
-            //Generate Device token
-            console.log('in app registration', token);
-            AsyncStorage.setItem('token', token)
-            alert('Token Generated' + token)
-
-        });
-        PushNotification.onNotificationOpened((notification) => {
-            //Navigate to the respective page with payload
-            console.log('the notification is opened', notification)
-            AsyncStorage.setItem('pushNotificationNavigation', 'yes')
-            const url = 'happyworks://SurveyExit/'
-            Linking.canOpenURL(url).then(supported => {
-                if (supported) {
-                    Linking.openURL(url);
-                } else {
-                    console.log("Don't know how to open URI: " + this.props.url);
-                }
-            })
-        });
+        
     }
     componentWillUnmount() {
         this.notificationListener();
