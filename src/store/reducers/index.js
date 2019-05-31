@@ -1,4 +1,4 @@
-import { auth,system,dev } from '../actions'
+import { auth,system,dev, user } from '../actions'
 
 const initialState = {
     isAuthenticate: false,
@@ -12,7 +12,8 @@ const initialState = {
         emailAddress: "",
         imageUrl: "",
         tenantImageUrl: "",
-        idToken:""
+        idToken:"",
+        walletBalance: ""
     },
     system: {
         isFreshInstall: true,
@@ -73,7 +74,6 @@ export default (state = initialState, action) => {
     }
 
     case dev.CLEAR_DATA: {
-
         return {
             ...initialState
         }
@@ -88,6 +88,16 @@ export default (state = initialState, action) => {
                 lastName: action.payload.lastName,
                 phoneNumber: action.payload.phoneNumber,
                 emailAddress: action.payload.emailAddress
+            }
+        }
+    }
+
+    case user.WALLET_BALLANCE: {
+        return {
+            ...state,
+            user: {
+                ...state.user,
+                walletBalance: action.payload.walletBalance
             }
         }
     }

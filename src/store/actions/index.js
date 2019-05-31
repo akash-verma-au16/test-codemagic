@@ -12,3 +12,7 @@ export const dev = {
     CLEAR_DATA : 'CLEAR_DATA',
     UPDATE_USER: 'UPDATE_USER'
 }
+
+export const user = {
+    WALLET_BALLANCE : 'WALLET_BALLANCE'
+}

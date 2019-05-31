@@ -58,7 +58,7 @@ class ListPost extends React.Component {
         this.scrollPosition = 0
         //Carry Profile Data
         this.profileData = {}
-        this.counts={}
+        this.counts=[]
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -145,41 +145,37 @@ class ListPost extends React.Component {
         }
     }
     //profile payload
-    payload = {
-        "tenant_id": this.props.accountAlias,
-        "associate_id": this.props.associate_id
-    }
-    async componentDidMount() {
-        if (this.props.isAuthenticate) {
-            this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
-            this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
-        }
+     payload = {
+         "tenant_id": this.props.accountAlias,
+         "associate_id": this.props.associate_id
+     }
+     async componentDidMount() {
+         if(this.props.isAuthenticate) {
+             this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
+            
+             this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
+         }
+         
+         this.interval = setInterval(() => {this.loadPosts()}, 10000);
+         //Detecting network connectivity change
+         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+         //Handling hardware backpress event
+         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+             this.goBack()
+         })
+         //  Loading profile
+         this.props.navigation.setParams({'profileData': this.profileData})
 
-        this.interval = setInterval(() => { this.loadPosts() }, 10000);
-        //Detecting network connectivity change
-        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-        //Handling hardware backpress event
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            this.goBack()
-        })
-        //  Loading profile
-        this.props.navigation.setParams({ 'profileData': this.profileData })
-        
-        PushNotification.onNotification((notification) => {
-            // Display inApp notification
-            console.log('in app notification', notification);
-        });
+     }
 
-    }
+     componentWillUnmount() {
+         clearInterval(this.interval)
+         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+         this.backHandler.remove()
+     } 
 
-    componentWillUnmount() {
-        clearInterval(this.interval)
-        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
-        this.backHandler.remove()
-    }
-
-    handleConnectivityChange = (isConnected) => {
-        if (isConnected) {
+    handleConnectivityChange =  (isConnected) => {
+        if(isConnected) {
             this.setState({
                 networkChanged: true
             }, async () => {
@@ -259,13 +255,22 @@ class ListPost extends React.Component {
                                 this.setState({ newPostVisibility: true })
                             }
                         }
-                        response.data.data.counts.map((item) => {
-                            this.counts[item.post_id] = {likeCount: item.likeCount, commentCount: item.commentCount}
+                        // response.data.data.counts.map((item) => {
+                        //     this.counts[item.post_id] = {likeCount: item.likeCount, commentCount: item.commentCount}
+                        // })
+                        this.postList = response.data.data.posts 
+                        this.postList.map((item) => {
+                            this.counts = response.data.data.counts.filter((elm) => {
+                                return elm.post_id == item.Item.post_id
+                            })
+                            console.log("this.postList",this.postList)
+                            item.Item.likeCount = this.counts[0].likeCount
+                            item.Item.commentCount = this.counts[0].commentCount
                         })
-                        console.log("this.counts",this.counts)
 
+                        console.log("Updated Comments",this.comments)
                         /* Create UI tiles to display */
-                        this.createTiles(response.data.data.posts, this.counts)
+                        this.createTiles(this.postList)
                     }
                 }).catch((error) => {
                     this.setState({ refreshing: false, networkChanged: false })
@@ -294,13 +299,12 @@ class ListPost extends React.Component {
                 this.setState({ refreshing: false, networkChanged: false })
             }
         }
-    }
-  
-    createTiles = async(posts, counts) => {
-        this.setState({ refreshing: true })
-        console.log("Counts", counts)
+    }   
+    createTiles = async(posts) => {
+        // this.setState({ refreshing: true })
         this.postList = []
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
+        // this.props.update_wallet()
         posts.map((item, index) => {
             var all_counts = counts.filter((count) => {
                 return item.Item.post_id === count.post_id
@@ -319,8 +323,8 @@ class ListPost extends React.Component {
                     taggedAssociates={item.Item.tagged_associates} 
                     strength={item.Item.sub_type} 
                     associate={item.Item.associate_id} 
-                    likeCount={counts[item.Item.post_id].likeCount}
-                    commentCount={counts[item.Item.post_id].commentCount}
+                    likeCount={item.Item.likeCount}
+                    commentCount={item.Item.commentCount}
                 />
             )
         })
@@ -409,11 +413,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#eee',
         paddingTop: 3
-    },
-    thumbnail: {
-        height: '70%',
-        borderRadius: 50,
-        margin: 10
     }
 });
 
@@ -428,4 +427,10 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(ListPost)
+const mapDispatchToProps = (dispatch) => {
+    return {
+        update_wallet: (props) => dispatch({ type: user.WALLET_BALLANCE, payload: props })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ListPost)

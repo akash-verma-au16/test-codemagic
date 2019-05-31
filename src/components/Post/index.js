@@ -26,7 +26,7 @@ import moment from 'moment/min/moment-with-locales'
 class Post extends Component {
     constructor(props) {
         super(props);
-        this.state = {
+        let initalState = {
             like: false,
             isLiked: false,
             likes: this.props.likeCount,
@@ -34,6 +34,7 @@ class Post extends Component {
             modalVisible: false,
             likeId: ""
         }
+        this.state = initalState
         console.log("LikesCount", this.state.likes)
         console.log("CommentCount", this.state.comments)
         //formatting update locale
@@ -143,11 +144,13 @@ class Post extends Component {
                 like: !this.state.like
             }, () => {
                 if(this.state.like) {
-                    this.props.likeCount + 1 
+                    this.props.likeCount + 1
+                    this.setState((prev) => ({ isLiked: true, likes: prev.likes + 1}))
                     this.likePost()
                     // setTimeout(() => this.likePost(), 3000)
                 } else {
-                    this.props.likeCount - 1 
+                    this.props.likeCount - 1
+                    this.setState((prev) => ({ isLiked: false, likes: prev.likes - 1 }))
                     this.unlikePost()
                     // setTimeout(() => this.unlikePost(), 3000)                        
                 }
@@ -270,11 +273,11 @@ class Post extends Component {
                     <View style={styles.infoTab}>
                         <View style={{ flexDirection: 'row', width: "50%", alignItems: 'center' }}>
                             <TouchableOpacity activeOpacity={0.8} underlayColor='#111' style={styles.navBar} onPress={() => this.props.navigation.navigate('Likes')}>
-                                <Text style={styles.infoNo}>{this.props.likeCount}</Text>
+                                <Text style={styles.infoNo}>{this.state.likes}</Text>
                                 <Text style={styles.infoText}>{this.props.likeCount > 1 ? "Likes" : "Like"}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.navBar} underlayColor='#111' activeOpacity={0.8} onPress={() => this.props.navigation.navigate('Comments', { postId: this.props.postId })}>
-                                <Text style={styles.infoNo}>{this.props.commentCount}</Text>
+                                <Text style={styles.infoNo}>{this.state.comments}</Text>
                                 <Text style={styles.infoText}>{this.props.commentCount > 1 ? 'Comments' : 'Comment'}</Text>
                             </TouchableOpacity>
                         </View>
