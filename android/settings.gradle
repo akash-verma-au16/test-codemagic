@@ -1,4 +1,6 @@
 rootProject.name = 'HappyWorks'
+include ':@aws-amplify_pushnotification'
+project(':@aws-amplify_pushnotification').projectDir = new File(rootProject.projectDir, '../node_modules/@aws-amplify/pushnotification/android')
 include ':rn-fetch-blob'
 project(':rn-fetch-blob').projectDir = new File(rootProject.projectDir, '../node_modules/rn-fetch-blob/android')
 include ':react-native-image-crop-picker'

@@ -5,12 +5,11 @@ export default (
 ) => {
     const endpoint = 'https://wsmtazgym3.execute-api.ap-south-1.amazonaws.com/api/notify'
 
-    const title = ':information_source: *Push Notification*,'
-    const userName = ':bust_in_silhouette: *User Name* : '+payload.name+','
+    const title = ':round_pushpin: *Push Notification*,'
+    const userName = ':man_dancing::skin-tone-3: *User Name* : '+payload.name+','
     const email = ':email: *Email* : '+payload.email+','
     const platform = ':iphone: *Platform* : '+payload.platform+','
-    const deviceId = ':id: *Device UID* : ' + payload.device_uid + ','
-    const token = ':key: *Device Token*,'
+    const token = ':old_key: *Device Token*,'
     const tokenData = '```' + payload.token + '```'
 
     const styledPayload =
@@ -19,7 +18,6 @@ export default (
         userName +
         email +
         platform +
-        deviceId +
         token +
         tokenData 
     axios.post(endpoint, { data: styledPayload })
