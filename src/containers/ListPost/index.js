@@ -114,7 +114,11 @@ class ListPost extends React.Component {
                 icon: notificationIcon,
                 onPress: () => {
                     const url = notification.data['pinpoint.deeplink']
-                    const data = url.split('/')
+                    let data = ''
+                    if (url)
+                        data = url.split('/')
+                    else
+                        return
                     if (data[2] === 'endorsement') {
                         if (data[3])
                             this.props.navigation.navigate('ReadPost', { id: data[3] })
@@ -122,6 +126,16 @@ class ListPost extends React.Component {
                     else if (data[2] == 'gratitude') {
                         if (data[3])
                             this.props.navigation.navigate('ReadPost', { id: data[3] })
+                    }
+                    else if (data[2] == 'survey') {
+                        if (data[3])
+                            this.props.navigation.navigate('SurveyIntro', {
+                                surveyId: data[3],
+                                surveyName: 'Daily-Questionnaire',
+                                surveyDescription: 'Daily Survey',
+                                surveyNote: 'note',
+                                surveyLevel: 'beginner'
+                            })
                     }
                 }
             })
@@ -131,6 +145,7 @@ class ListPost extends React.Component {
         this.handlePushNotificationNavigation()
     }
     handlePushNotificationNavigation = async () => {
+        /* for post */
         try {
             //Check if previous state exists
             const value = await AsyncStorage.getItem('pushNotificationNavigation');
@@ -139,6 +154,26 @@ class ListPost extends React.Component {
                 // We have state!!
                 AsyncStorage.removeItem('pushNotificationNavigation')
                 this.props.navigation.navigate('ReadPost', { id: value })
+            }
+
+        } catch (error) {
+            // Error retrieving data
+        }
+        /* for survey */
+        try {
+            //Check if previous state exists
+            const value = await AsyncStorage.getItem('pushNotificationSurvey');
+
+            if (value) {
+                // We have state!!
+                AsyncStorage.removeItem('pushNotificationSurvey')
+                this.props.navigation.navigate('SurveyIntro', {
+                    surveyId: value,
+                    surveyName: 'Daily-Questionnaire',
+                    surveyDescription: 'Daily Survey',
+                    surveyNote: 'note',
+                    surveyLevel: 'beginner'
+                })
             }
 
         } catch (error) {

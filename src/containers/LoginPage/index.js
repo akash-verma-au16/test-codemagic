@@ -121,8 +121,7 @@ class LoginPage extends React.Component {
                     tenant_id : payload.accountAlias,
                     associate_id:payload.associate_id,
                     platform : Platform.OS,
-                    device_token : token,
-                    device_uid: 'null'
+                    device_token : token
                 }
                 console.log('payload',payload_2)
                 register_device(payload_2)
@@ -135,7 +134,8 @@ class LoginPage extends React.Component {
                 })
             } else {
                 //Show warning
-                alert('Please re-install the applcation to enable push notification service')
+                alert('We were unable to register your device for push notifications, Please restart the app and check for working internet connection.')
+                return false
             }
             
         } catch (error) {
@@ -215,7 +215,8 @@ class LoginPage extends React.Component {
                                     this.props.authenticate(payload);
                                     //Activate Push Notofication
                                     
-                                    this.sendToken(payload)
+                                    if(!this.sendToken(payload))
+                                        return
                                     this.props.navigation.navigate('TabNavigator')
                                 }).catch((error) => {
                                     this.setState({ isSignInLoading: false });
