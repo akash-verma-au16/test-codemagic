@@ -21,6 +21,7 @@ import {
 } from 'native-base';
 /* Services */
 import { logout } from '../../services/bAuth'
+import { unregister } from '../../services/pushNotification'
 /* Custom Components */
 import LoadingModal from '../LoadingModal'
 class Settings extends React.Component {
@@ -98,9 +99,17 @@ class Settings extends React.Component {
             accountAlias: this.props.accountAlias,
             email: this.props.email
         }
+        const payload_2 = {
+            tenant_id : this.props.accountAlias,
+            associate_id:this.props.associate_id
+        }
+        console.log(payload)
         logout(payload).then((res) => {
             console.log(res)
             this.props.deAuthenticate()
+            
+            console.log(' logout payload',payload_2)
+            unregister(payload_2)
             this.setState({ isLoading: false })
             // Toast.show({
             //     text: 'Signed out Successfully',
@@ -238,8 +247,8 @@ const mapStateToProps = (state) => {
     return {
         accountAlias: state.user.accountAlias,
         email: state.user.emailAddress,
-        isConnected: state.system.isConnected
-
+        isConnected: state.system.isConnected,
+        associate_id: state.user.associate_id
     };
 }
 const mapDispatchToProps = (dispatch) => {

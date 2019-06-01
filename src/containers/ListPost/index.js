@@ -30,18 +30,9 @@ import { loadProfile } from '../Home/apicalls'
 import { NavigationEvents } from 'react-navigation';
 import thumbnail from '../../assets/thumbnail.jpg'
 // push notification
-import Auth from '@aws-amplify/auth';
-import Analytics from '@aws-amplify/analytics';
-import PushNotification from '@aws-amplify/pushnotification';
-import awsconfig from '../../../aws-exports';
-
-// retrieve temporary AWS credentials and sign requests
-Auth.configure(awsconfig);
-// send analytics events to Amazon Pinpoint
-Analytics.configure(awsconfig);
-// configure push notification
-PushNotification.configure(awsconfig);
-
+import { withInAppNotification } from 'react-native-in-app-notification'
+import PushNotification from '@aws-amplify/pushnotification'
+import notificationIcon from '../../assets/Logo_High_black.png'
 class ListPost extends React.Component {
     constructor(props) {
         super(props)
@@ -62,7 +53,7 @@ class ListPost extends React.Component {
         this.scrollPosition = 0
         //Carry Profile Data
         this.profileData = {}
-        this.counts=[]
+        this.counts = []
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -86,7 +77,7 @@ class ListPost extends React.Component {
                                 associateId: navigation.getParam('associateId')
                             })
                         }
-                    }} 
+                    }}
                     style={{
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -116,23 +107,79 @@ class ListPost extends React.Component {
             this.props.navigation.navigate('LoginPage')
             return
         }
-        
+        PushNotification.onNotification((notification) => {
+            // Note that the notification object structure is different from Android and IOS
+            console.log('in app notification', notification);
+
+            //Display notification
+            this.props.showNotification({
+                title: notification.title,
+                message: notification.body,
+                icon: notificationIcon,
+                onPress: () => {
+                    const url = notification.data['pinpoint.deeplink']
+                    let data = ''
+                    if (url)
+                        data = url.split('/')
+                    else
+                        return
+                    if (data[2] === 'endorsement') {
+                        if (data[3])
+                            this.props.navigation.navigate('ReadPost', { id: data[3] })
+                    }
+                    else if (data[2] == 'gratitude') {
+                        if (data[3])
+                            this.props.navigation.navigate('ReadPost', { id: data[3] })
+                    }
+                    else if (data[2] == 'survey') {
+                        if (data[3])
+                            this.props.navigation.navigate('SurveyIntro', {
+                                surveyId: data[3],
+                                surveyName: 'Daily-Questionnaire',
+                                surveyDescription: 'Daily Survey',
+                                surveyNote: 'note',
+                                surveyLevel: 'beginner'
+                            })
+                    }
+                }
+            })
+        })
     }
-    componentDidUpdate(){
+    componentDidUpdate() {
         this.handlePushNotificationNavigation()
     }
     handlePushNotificationNavigation = async () => {
+        /* for post */
         try {
             //Check if previous state exists
             const value = await AsyncStorage.getItem('pushNotificationNavigation');
-            
+
             if (value) {
                 // We have state!!
-                alert('navigating')
                 AsyncStorage.removeItem('pushNotificationNavigation')
-                this.props.navigation.navigate('TermsAndConditions')
-            } 
-            
+                this.props.navigation.navigate('ReadPost', { id: value })
+            }
+
+        } catch (error) {
+            // Error retrieving data
+        }
+        /* for survey */
+        try {
+            //Check if previous state exists
+            const value = await AsyncStorage.getItem('pushNotificationSurvey');
+
+            if (value) {
+                // We have state!!
+                AsyncStorage.removeItem('pushNotificationSurvey')
+                this.props.navigation.navigate('SurveyIntro', {
+                    surveyId: value,
+                    surveyName: 'Daily-Questionnaire',
+                    surveyDescription: 'Daily Survey',
+                    surveyNote: 'note',
+                    surveyLevel: 'beginner'
+                })
+            }
+
         } catch (error) {
             // Error retrieving data
         }
@@ -274,7 +321,7 @@ class ListPost extends React.Component {
                             this.counts = response.data.data.counts.filter((elm) => {
                                 return elm.post_id == item.Item.post_id
                             })
-                            console.log("this.postList",this.postList)
+                            console.log("this.postList", this.postList)
                             item.Item.likeCount = this.counts[0].likeCount
                             item.Item.commentCount = this.counts[0].commentCount
                         })
@@ -476,4 +523,4 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(ListPost)
+export default connect(mapStateToProps, null)(withInAppNotification(ListPost))

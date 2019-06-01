@@ -33,6 +33,13 @@ export const news_feed = (
     return axios.post(endpoint, payload, headers)
 }
 
+export const read_post = (
+    payload, headers
+) => {
+    const endpoint = config.url.read_posts
+    return axios.post(endpoint, payload, headers)
+}
+
 export const like_post = (
     payload, headers
 ) => {

@@ -13,7 +13,7 @@ import Auth from '@aws-amplify/auth';
 import Analytics from '@aws-amplify/analytics';
 import PushNotification from '@aws-amplify/pushnotification';
 import awsconfig from './aws-exports';
-
+import { InAppNotificationProvider } from 'react-native-in-app-notification'
 // retrieve temporary AWS credentials and sign requests
 Auth.configure(awsconfig);
 // send analytics events to Amazon Pinpoint
@@ -21,6 +21,35 @@ Analytics.configure(awsconfig);
 // configure push notification
 PushNotification.configure(awsconfig);
 
+PushNotification.onRegister((token) => {
+    //Generate Device token
+    console.log('in app registration', token);
+    AsyncStorage.setItem('token', token)
+
+});
+PushNotification.onNotificationOpened((notification) => {
+    //Navigate to the respective page with payload
+    console.log('the notification is opened', notification)
+    const url = notification['pinpoint.deeplink']
+    let data = ''
+    if (url)
+        data = url.split('/')
+    else
+        return
+    if (data[2] === 'endorsement') {
+        if (data[3])
+            AsyncStorage.setItem('pushNotificationNavigation', data[3])
+    }
+    else if (data[2] == 'gratitude') {
+        if (data[3])
+            AsyncStorage.setItem('pushNotificationNavigation', data[3])
+    }
+    else if (data[2] == 'survey') {
+        if (data[3])
+            AsyncStorage.setItem('pushNotificationSurvey', data[3])
+    }
+
+});
 const prefix = 'happyworks://';
 export default class App extends Component {
 
@@ -74,26 +103,6 @@ export default class App extends Component {
         //Adding connection change listener
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
 
-        PushNotification.onRegister((token) => {
-            //Generate Device token
-            console.log('in app registration', token);
-            AsyncStorage.setItem('token', token)
-            alert('Token Generated' + token)
-
-        });
-        PushNotification.onNotificationOpened((notification) => {
-            //Navigate to the respective page with payload
-            console.log('the notification is opened', notification)
-            AsyncStorage.setItem('pushNotificationNavigation', 'yes')
-            const url = 'happyworks://SurveyExit/'
-            Linking.canOpenURL(url).then(supported => {
-                if (supported) {
-                    Linking.openURL(url);
-                } else {
-                    console.log("Don't know how to open URI: " + this.props.url);
-                }
-            })
-        });
     }
     componentWillUnmount() {
         this.notificationListener();
@@ -110,13 +119,15 @@ export default class App extends Component {
     render() {
         return (
             this.state.dataLoaded ?
-                <Root style={{ zIndex: 0 }}>
-                    <StatusBar backgroundColor='#1c92c4' barStyle='light-content' />
-                    <Provider store={this.store}>
-                        <OfflineNotice isConnected={this.state.isConnected} />
-                        <Navigator uriPrefix={prefix} />
-                    </Provider>
-                </Root>
+                <InAppNotificationProvider backgroundColour='#76c1e2'>
+                    <Root style={{ zIndex: 0 }}>
+                        <StatusBar backgroundColor='#1c92c4' barStyle='light-content' />
+                        <Provider store={this.store}>
+                            <OfflineNotice isConnected={this.state.isConnected} />
+                            <Navigator uriPrefix={prefix} />
+                        </Provider>
+                    </Root>
+                </InAppNotificationProvider>
                 : null
         )
     }
