@@ -121,8 +121,7 @@ class LoginPage extends React.Component {
                     tenant_id : payload.accountAlias,
                     associate_id:payload.associate_id,
                     platform : Platform.OS,
-                    device_token : token,
-                    device_uid: 'null'
+                    device_token : token
                 }
                 console.log('payload',payload_2)
                 register_device(payload_2)
