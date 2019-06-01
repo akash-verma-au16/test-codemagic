@@ -17,8 +17,7 @@ import {
     Container,
     Content,
     Icon,
-    H3,
-    Toast
+    H3
 } from 'native-base';
 /* Services */
 import { logout } from '../../services/bAuth'

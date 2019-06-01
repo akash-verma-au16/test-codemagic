@@ -44,6 +44,10 @@ PushNotification.onNotificationOpened((notification) => {
         if (data[3])
             AsyncStorage.setItem('pushNotificationNavigation', data[3])
     }
+    else if (data[2] == 'survey') {
+        if (data[3])
+            AsyncStorage.setItem('pushNotificationSurvey', data[3])
+    }
 
 });
 const prefix = 'happyworks://';
