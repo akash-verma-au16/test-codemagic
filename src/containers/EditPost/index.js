@@ -5,6 +5,11 @@ import { Icon } from 'native-base'
 // Components from Moment.js
 import Moment from 'react-moment'
 import moment from 'moment/min/moment-with-locales'
+//API methods
+import { edit_post } from '../../services/post'
+
+/* Redux */
+import { connect } from 'react-redux'
 
 class EditPost extends React.Component {
     constructor(props) {
@@ -51,22 +56,15 @@ class EditPost extends React.Component {
         return {
 
             headerRight: (
-                <Icon name='md-checkmark' type='Ionicons' style={
-                    {
-                        color: 'white',
-                        margin: 19
-                    }
-                } onPress={() => {
-                    Keyboard.dismiss()
-                    ToastAndroid.showWithGravityAndOffset(
-                        'Coming soon',
-                        ToastAndroid.LONG,
-                        ToastAndroid.BOTTOM,
-                        25,
-                        100,
-                    );
-                }}
-                />
+                navigation.getParam('isChanged') ?
+                    <Icon name='md-checkmark' type='Ionicons' style={
+                        {
+                            color: 'white',
+                            margin: 19
+                        }
+                    } onPress={navigation.getParam('editPostHandler')}
+                    />
+                    : <View style={{ magin: 19 }}></View>
             ),
             headerLeft: (
                 <Icon name='ios-arrow-back' type='Ionicons' style={
@@ -112,14 +110,37 @@ class EditPost extends React.Component {
         };
     }
 
-
     componentDidMount() {
-        this.props.navigation.setParams({ isChanged: this.state.isChanged }); 
+        this.props.navigation.setParams({ isChanged: this.state.isChanged, editPostHandler: this.editPostHandler }); 
         // Hardware backpress handle
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             this.goBack();
             return true;
         });
+    }
+
+    editPostHandler = () => {
+        const payload = {
+            Data: {
+                post_id: this.props.navigation.getParam('postId'),
+                tenant_id: this.props.accountAlias,
+                associate_id: this.props.associate_id,
+                message: this.state.postMessage,
+                type: this.props.navigation.getParam('type'),
+                sub_type: this.state.strength,
+                ops: "edit_post",
+                tagged_associates:this.state.taggedAssociates,
+                privacy: {
+                    type: "tenant",
+                    id: this.props.accountAlias
+                },
+                time: this.state.epoch
+            }
+        }
+        this.props.navigation.state.params.returnData({
+            message: this.state.postMessage
+        })
+        this.props.navigation.goBack()
     }
 
     showToast() {
@@ -190,7 +211,7 @@ class EditPost extends React.Component {
                             </View>
                             <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>{this.state.postCreator}</Text>
                         </View>
-                        <Moment style={{ fontSize: 12 }} element={Text} fromNow>{this.state.epoch}</Moment>
+                        <Moment style={{ fontSize: 12 }} element={Text} fromNow>{this.state.epoch * 1000}</Moment>
 
                     </View>
                     
@@ -221,7 +242,7 @@ class EditPost extends React.Component {
                             selectionColor='#1c92c4'
                             onChangeText={(text) => {
                                 this.setState({ postMessage: text, isChanged: true })
-                                this.props.navigation.setParams({ isChanged: this.state.isChanged });    
+                                this.props.navigation.setParams({ isChanged: true });    
                             }}
                         />
                         <Text style={styles.strength}> #{this.state.strength}</Text>
@@ -282,4 +303,18 @@ const styles =  StyleSheet.create({
     }
 })
 
-export default EditPost
+const mapStateToProps = (state) => {
+    return {
+        accountAlias: state.user.accountAlias,
+        associate_id: state.user.associate_id,
+        firstName: state.user.firstName,
+        lastName: state.user.lastName,
+        emailAddress: state.user.emailAddress,
+        isAuthenticate: state.isAuthenticate,
+        isFreshInstall: state.system.isFreshInstall,
+        isConnected: state.system.isConnected,
+        idToken: state.user.idToken
+    };
+}
+
+export default connect(mapStateToProps, null)(EditPost)

@@ -17,8 +17,7 @@ import {
     Container,
     Content,
     Icon,
-    H3,
-    Toast
+    H3
 } from 'native-base';
 /* Services */
 import { logout } from '../../services/bAuth'
@@ -99,7 +98,6 @@ class Settings extends React.Component {
             accountAlias: this.props.accountAlias,
             email: this.props.email
         }
-        console.log(payload)
         logout(payload).then((res) => {
             console.log(res)
             this.props.deAuthenticate()

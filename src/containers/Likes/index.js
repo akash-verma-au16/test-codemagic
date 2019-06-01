@@ -89,6 +89,7 @@ class Likes extends React.Component {
     }
 
     loadPeople = () => {
+        this.peopleList = []
         this.setState({ peopleListrefresh: true})
         data.map((item, index) => {
             this.peopleList.push(
