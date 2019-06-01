@@ -289,7 +289,7 @@ class ListPost extends React.Component {
                         // this.postList = []
                         // this.createTiles(response.data.data.posts, response.data.data.counts)
                         /* Checking if any data is available */
-                        if (response.data.data.posts.length === 0 && this.postList.length === 0) {
+                        if (response.data.data.posts.length === 0) {
                             /* Display warning on the screen */
                             this.postList = []
                             this.postList.push(<Text style={{ margin: 10 }} key={0}>No post to display</Text>)
