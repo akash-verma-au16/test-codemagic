@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    View,
     StyleSheet,
     Text,
     ScrollView,
@@ -288,7 +289,7 @@ class ListPost extends React.Component {
                         // this.postList = []
                         // this.createTiles(response.data.data.posts, response.data.data.counts)
                         /* Checking if any data is available */
-                        if (response.data.data.posts.length === 0) {
+                        if (response.data.data.posts.length === 0 && this.postList.length === 0) {
                             /* Display warning on the screen */
                             this.postList = []
                             this.postList.push(<Text style={{ margin: 10 }} key={0}>No post to display</Text>)
@@ -316,6 +317,9 @@ class ListPost extends React.Component {
                         // response.data.data.counts.map((item) => {
                         //     this.counts[item.post_id] = {likeCount: item.likeCount, commentCount: item.commentCount}
                         // })
+                        if (this.state.isPostDeleted) {
+                            return
+                        }
                         this.posts = response.data.data.posts 
                         this.posts.map((item) => {
                             this.counts = response.data.data.counts.filter((elm) => {
@@ -325,7 +329,6 @@ class ListPost extends React.Component {
                             item.Item.likeCount = this.counts[0].likeCount
                             item.Item.commentCount = this.counts[0].commentCount
                         })
-                        this.postList = []
                         /* Create UI tiles to display */
                         this.createTiles(this.posts)
                     }
@@ -373,15 +376,15 @@ class ListPost extends React.Component {
 
             var index = this.posts.findIndex((post) => {return post.Item.post_id == postId})
             console.log("Delete PostIndex", index)
+            this.postList.splice(index, 1)
+            this.setState({ isPostDeleted: true })
             this.posts.splice(index, 1)
             this.createTiles(this.posts)
-            this.setState({ isPostDeleted: true })
 
             try {
                 await delete_post(payload, this.headers).then((res) => {
                     if(res.status === 200) {
-                        this.setState({isPostDeleted: false})
-                        this.loadPosts()
+                        // this.setState({isPostDeleted: false})
                     }
                     console.log('delete_post', res)
                 }).catch((e) => {
@@ -399,6 +402,7 @@ class ListPost extends React.Component {
 
     createTiles = async(posts) => {
         // this.setState({ refreshing: true })
+        this.postList = []
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
         // this.props.update_wallet()
         posts.map((item, index) => {
@@ -422,7 +426,7 @@ class ListPost extends React.Component {
                 />
             )
         })
-        this.setState({ refreshing: false, networkChanged: false })
+        this.setState({ refreshing: false, networkChanged: false, isPostDeleted: false })
     }
     render() {
 
@@ -457,7 +461,11 @@ class ListPost extends React.Component {
                     onScroll={(event) => { this.scrollHandler(event) }}
                 >
 
-                    {this.postList}
+                    {this.postList.length > 0 ? this.postList : (
+                        <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                            <Text style={{ margin: 10 }} key={0}>No post to display</Text>
+                            <Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon</Text>
+                        </View>)}
                 </ScrollView>
 
                 <NavigationEvents
