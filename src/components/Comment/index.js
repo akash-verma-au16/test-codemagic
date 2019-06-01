@@ -98,7 +98,7 @@ class Comment extends React.Component {
                 <View style={{width: '88%'}}>
                     <View style={[styles.commentWrapper, { width: '100%' }]}>
                         <View style={[styles.footer, { justifyContent: 'space-between', width: '100%' }]}>
-                            <Text style={styles.commentor}>{this.props.associate}</Text>
+                            <Text style={styles.commentor}>{this.props.id == this.props.associate_id ? this.props.userName : this.props.associate }</Text>
                             <TouchableOpacity 
                                 style={{ height: 20, width: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}
                                 underlayColor='#fff' 
@@ -121,7 +121,7 @@ class Comment extends React.Component {
                     onChangeListener={({ text, name, key }) => {
                         if (key == 'edit') {
                             this.props.navigation.navigate('EditComment',{
-                                associate: this.props.associate,
+                                associate: this.props.userName,
                                 comment: this.props.message,
                                 time: this.props.time,
                                 postId: this.props.post_id, 
@@ -139,7 +139,7 @@ class Comment extends React.Component {
                                         style: 'cancel'
                                     },
                                     {
-                                        text: 'Yes', onPress: () => { this.props.commentDeletehandle(this.props.comment_id, this.props.message)}
+                                        text: 'Yes', onPress: () => { this.props.commentDeletehandler(this.props.comment_id, this.props.message)}
                                     }
                                 ],
                                 { cancelable: false },
@@ -224,6 +224,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
+        userName: state.user.firstName + " " + state.user.lastName,
         associate_id: state.user.associate_id
     };
 }

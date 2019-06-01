@@ -6,7 +6,8 @@ import {
     RefreshControl,
     TouchableOpacity,
     Dimensions,
-    BackHandler
+    BackHandler,
+    ToastAndroid
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
 import AsyncStorage from '@react-native-community/async-storage';
@@ -20,8 +21,9 @@ import {
     Thumbnail
 } from 'native-base';
 /* Services */
-import { news_feed } from '../../services/post'
-
+import { news_feed, delete_post } from '../../services/post'
+//Loading Modal
+import LoadingModal from '../LoadingModal'
 //Prefetch profile data
 import { loadProfile } from '../Home/apicalls'
 /* Components */
@@ -38,11 +40,13 @@ class ListPost extends React.Component {
             refreshing: true,
             newPostVisibility: false,
             isConnected: this.props.isConnected,
-            networkChanged: false
+            networkChanged: false,
+            isPostDeleted: false
         }
         this.loadPosts = this.loadPosts.bind(this);
-        this.postList = [],
-        this.taggedAssociate = [],
+        this.posts = []
+        this.postList = []
+        this.taggedAssociate = []
         this.scrollViewRef = React.createRef();
         this.payloadBackup = []
         this.windowWidth = Dimensions.get("window").width;
@@ -191,35 +195,35 @@ class ListPost extends React.Component {
         }
     }
     //profile payload
-    payload = {
-        "tenant_id": this.props.accountAlias,
-        "associate_id": this.props.associate_id
-    }
-    async componentDidMount() {
-        if (this.props.isAuthenticate) {
-            this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
-        }
+     payload = {
+         "tenant_id": this.props.accountAlias,
+         "associate_id": this.props.associate_id
+     }
+     async componentDidMount() {
+         if(this.props.isAuthenticate) {
+             this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
+         }
+         
+         this.interval = setInterval(() => this.loadPosts(), 10000);
+         //Detecting network connectivity change
+         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+         //Handling hardware backpress event
+         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+             this.goBack()
+         })
+         //  Loading profile
+         this.props.navigation.setParams({'profileData': this.profileData})
 
-        this.interval = setInterval(() => this.loadPosts(), 10000);
-        //Detecting network connectivity change
-        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-        //Handling hardware backpress event
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            this.goBack()
-        })
-        //  Loading profile
-        this.props.navigation.setParams({ 'profileData': this.profileData })
+     }
 
-    }
+     componentWillUnmount() {
+         clearInterval(this.interval)
+         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+         this.backHandler.remove()
+     } 
 
-    componentWillUnmount() {
-        clearInterval(this.interval)
-        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
-        this.backHandler.remove()
-    }
-
-    handleConnectivityChange = (isConnected) => {
-        if (isConnected) {
+    handleConnectivityChange =  (isConnected) => {
+        if(isConnected) {
             this.setState({
                 networkChanged: true
             }, async () => {
@@ -252,6 +256,16 @@ class ListPost extends React.Component {
             });
             return
         }
+    }
+
+    showToast() {
+        ToastAndroid.showWithGravityAndOffset(
+            'Please, Connect to the internet',
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM,
+            25,
+            100,
+        );
     }
 
     //Loads news feed
@@ -302,8 +316,8 @@ class ListPost extends React.Component {
                         // response.data.data.counts.map((item) => {
                         //     this.counts[item.post_id] = {likeCount: item.likeCount, commentCount: item.commentCount}
                         // })
-                        this.postList = response.data.data.posts
-                        this.postList.map((item) => {
+                        this.posts = response.data.data.posts 
+                        this.posts.map((item) => {
                             this.counts = response.data.data.counts.filter((elm) => {
                                 return elm.post_id == item.Item.post_id
                             })
@@ -311,10 +325,9 @@ class ListPost extends React.Component {
                             item.Item.likeCount = this.counts[0].likeCount
                             item.Item.commentCount = this.counts[0].commentCount
                         })
-
-                        console.log("Updated Comments", this.comments)
+                        this.postList = []
                         /* Create UI tiles to display */
-                        this.createTiles(this.postList)
+                        this.createTiles(this.posts)
                     }
                 }).catch((error) => {
                     this.setState({ refreshing: false, networkChanged: false })
@@ -343,10 +356,49 @@ class ListPost extends React.Component {
                 this.setState({ refreshing: false, networkChanged: false })
             }
         }
+    }   
+
+    //Delete Post
+    deletePost = async(postId) => {
+        console.log("Delete PostId", postId)
+        if (this.props.isConnected) {
+            const payload = {
+                Data: {
+                    post_id: postId,
+                    tenant_id: this.props.accountAlias,
+                    ops: "delete_post",
+                    associate_id: this.props.associate_id
+                }
+            }
+
+            var index = this.posts.findIndex((post) => {return post.Item.post_id == postId})
+            console.log("Delete PostIndex", index)
+            this.posts.splice(index, 1)
+            this.createTiles(this.posts)
+            this.setState({ isPostDeleted: true })
+
+            try {
+                await delete_post(payload, this.headers).then((res) => {
+                    if(res.status === 200) {
+                        this.setState({isPostDeleted: false})
+                        this.loadPosts()
+                    }
+                    console.log('delete_post', res)
+                }).catch((e) => {
+                    console.log(e)
+                })
+            }
+            catch(e) {
+                console.log(e)
+            }
+        }
+        else {
+            this.showToast()
+        }
     }
-    createTiles = async (posts) => {
+
+    createTiles = async(posts) => {
         // this.setState({ refreshing: true })
-        this.postList = []
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
         // this.props.update_wallet()
         posts.map((item, index) => {
@@ -358,13 +410,15 @@ class ListPost extends React.Component {
                     postCreator={item.Item.associate_name}
                     postCreator_id={item.Item.associate_id}
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
-                    time={item.Item.time}
-                    postMessage={item.Item.message}
-                    taggedAssociates={item.Item.tagged_associates}
-                    strength={item.Item.sub_type}
-                    associate={item.Item.associate_id}
+                    time= {item.Item.time} 
+                    postMessage={item.Item.message} 
+                    taggedAssociates={item.Item.tagged_associates} 
+                    strength={item.Item.sub_type} 
+                    type={item.Item.type}
+                    associate={item.Item.associate_id} 
                     likeCount={item.Item.likeCount}
-                    commentCount={item.Item.commentCount}
+                    commentCount={item.Item.commentCount} 
+                    postDeleteHandler={this.deletePost}
                 />
             )
         })
@@ -441,6 +495,9 @@ class ListPost extends React.Component {
                     :
                     null
                 }
+                {/* <LoadingModal
+                    enabled={this.state.isPostDeleted}
+                /> */}
             </Container>
 
         );

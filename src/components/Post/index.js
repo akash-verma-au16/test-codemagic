@@ -32,7 +32,9 @@ class Post extends Component {
             likes: this.props.likeCount,
             comments: this.props.commentCount,
             modalVisible: false,
-            likeId: ""
+            likeId: "",
+            isEdit: false,
+            editPostMessage: ""
         }
         this.state = initalState
         console.log("LikesCount", this.state.likes)
@@ -167,11 +169,6 @@ class Post extends Component {
         }
     }
 
-    returnData() {
-        console.log("retunr data")
-        // this.setState({ id: id, name: name });
-    }
-
     onIconPresshandler = () => {
         // console.log('PD', this.props.profileData)
         this.props.navigation.navigate('Profile', {
@@ -207,6 +204,13 @@ class Post extends Component {
             100,
         );
     }
+
+    returnData = (data) => {
+        this.setState({
+            isEdit: true,
+            editPostMessage: data.message
+        })
+    } 
 
     data = [
         { icon: 'edit', type: 'AntDesign', text: 'Edit Post', name:'edit' , key: 'edit'},
@@ -266,7 +270,7 @@ class Post extends Component {
                             ))
                         })}
                         {this.associateList}
-                        {this.props.postMessage}
+                        {this.state.isEdit ? this.state.editPostMessage : this.props.postMessage}
 
                         <Text style={styles.strength}> #{this.props.strength}</Text>
                     </Text>
@@ -332,19 +336,22 @@ class Post extends Component {
                                         style: 'cancel'
                                     },
                                     {
-                                        text: 'Yes', onPress: () => { this.showToast() }
+                                        text: 'Yes', onPress: () => { this.props.postDeleteHandler(this.props.postId) }
                                     }
                                 ],
                                 { cancelable: false },
                             )
                         } 
                         else if(key == 'edit') {
-                            this.props.navigation.navigate('EditPost',{
-                                associate: this.props.postCreator,
+                            this.props.navigation.navigate('EditPost',{ 
+                                returnData: this.returnData.bind(this),
+                                associate: this.props.userName,
                                 postMessage: this.props.postMessage,
                                 taggedAssociates: this.props.taggedAssociates,
                                 strength: this.props.strength,
-                                time: this.props.time * 1000 
+                                time: this.props.time,
+                                postId: this.props.postId,
+                                type: this.props.type
                             })
                         }
                         else {

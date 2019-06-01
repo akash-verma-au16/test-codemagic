@@ -57,13 +57,15 @@ class EditComment extends React.Component {
         return {
 
             headerRight: (
-                <Icon name='md-checkmark' type='Ionicons' style={
-                    {
-                        color: 'white',
-                        margin: 19
-                    } 
-                } onPress={navigation.getParam('editCommentHandler')}
-                />
+                navigation.getParam('isChanged') ?
+                    <Icon name='md-checkmark' type='Ionicons' style={
+                        {
+                            color: 'white',
+                            margin: 19
+                        } 
+                    } onPress={navigation.getParam('editCommentHandler')}
+                    />
+                    : <View style={{ magin: 19 }}></View>
             ),
             headerLeft: (
                 <Icon name='ios-arrow-back' type='Ionicons' style={
@@ -119,21 +121,19 @@ class EditComment extends React.Component {
     }
 
     editCommentHandler = () => {
-        console.log("Input epoch:", this.state.epoch)
         const payload = {
             "Data": {
-                "post_id": this.props.navigation.getParam('postId'),
-                "tenant_id": this.props.accountAlias,
-                "ops": "update_comment",
-                "comment": {
-                    "comment_id": this.props.navigation.getParam('commentId'),
-                    "associate_id": this.props.associate_id,
-                    "time": this.state.epoch,
-                    "message": this.state.comment
+                post_id: this.props.navigation.getParam('postId'),
+                tenant_id: this.props.accountAlias,
+                ops: "update_comment",
+                comment: {
+                    comment_id: this.props.navigation.getParam('commentId'),
+                    associate_id: this.props.associate_id,
+                    time: this.state.epoch,
+                    message: this.state.comment
                 }
             }
         }
-        console.log('Data', payload)
         //Authorization headers
         const headers = {
             headers: {
@@ -244,7 +244,7 @@ class EditComment extends React.Component {
                         selectionColor='#1c92c4'
                         onChangeText={(text) => {
                             this.setState({ comment: text, isChanged: true })
-                            this.props.navigation.setParams({ isChanged: this.state.isChanged });  
+                            this.props.navigation.setParams({ isChanged: true });  
                         }}
                     />
 

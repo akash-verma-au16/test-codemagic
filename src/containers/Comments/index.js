@@ -231,7 +231,7 @@ class Comments extends React.Component {
                     message={item.message}
                     time={item.time} 
                     onPress={() => this.setState({modalVisible: true})} 
-                    commentDeletehandle={this.deleteComment}
+                    commentDeletehandler={this.deleteComment}
                 />
             )
         })
@@ -258,15 +258,16 @@ class Comments extends React.Component {
                 }
             }
             // const deleteComment = this.comments.filter((ele) => { return ele.comment_id == comment_id })
-            var index = this.comments.findIndex((elm) => { return elm.comment_id == comment_id })
+            var index = this.comments.findIndex((comment) => { return comment.comment_id == comment_id })
             console.log("index",index)
             this.comments.splice(index, 1)
             this.loadComments(this.comments)
             this.setState({ isCommentDeleted: true })
             try {
                 delete_comment(payload, this.headers).then(async(response) => {
-                    console.log("Comment Deleted")
-                    this.setState({ isCommentDeleted: false})
+                    if(response.status === 200) {
+                        this.setState({ isCommentDeleted: false })
+                    }
                 }).catch((e) => {
                     console.log(e)
                 })

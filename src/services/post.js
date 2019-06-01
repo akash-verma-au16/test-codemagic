@@ -53,3 +53,17 @@ export const unlike_post = (
     const endpoint = config.url.unlike_post
     return axios.put(endpoint, payload, headers)
 }
+
+export const edit_post = (
+    payload, headers
+) => {
+    const endpoint = config.url.edit_post
+    return axios.put(endpoint, payload, headers)
+}
+
+export const delete_post = (
+    payload, headers
+) => {
+    const endpoint = config.url.delete_post
+    return axios.put(endpoint, payload, headers)
+}
