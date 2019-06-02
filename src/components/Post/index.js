@@ -31,6 +31,7 @@ class Post extends Component {
             isLiked: false,
             likes: this.props.likeCount,
             comments: this.props.commentCount,
+            postMessage: this.props.postMessage,
             modalVisible: false,
             likeId: "",
             isEdit: false,
@@ -39,6 +40,7 @@ class Post extends Component {
         this.state = initalState
         console.log("LikesCount", this.state.likes)
         console.log("CommentCount", this.state.comments)
+        this.postMessage = this.props.postMessage
         //formatting update locale
         Moment.globalMoment = moment;
         moment.updateLocale('en', {
@@ -205,11 +207,19 @@ class Post extends Component {
         );
     }
 
+    returnCount = (count) => {
+        console.log(count)
+        this.setState({
+            comments: count.count
+        })
+    }
+
     returnData = (data) => {
         this.setState({
             isEdit: true,
-            editPostMessage: data.message
+            postMessage: data.message
         })
+        
     } 
 
     data = [
@@ -270,7 +280,8 @@ class Post extends Component {
                             ))
                         })}
                         {this.associateList}
-                        {this.state.isEdit ? this.state.editPostMessage : this.props.postMessage}
+                        {this.state.postMessage}
+                        {/* {this.state.isEdit ? this.state.editPostMessage : this.state.postMessage} */}
 
                         <Text style={styles.strength}> #{this.props.strength}</Text>
                     </Text>
@@ -285,7 +296,7 @@ class Post extends Component {
                                 <Text style={styles.infoNo}>{this.state.likes}</Text>
                                 <Text style={styles.infoText}>{this.props.likeCount > 1 ? "Likes" : "Like"}</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.navBar} underlayColor='#111' activeOpacity={0.8} onPress={() => this.props.navigation.navigate('Comments', { postId: this.props.postId })}>
+                            <TouchableOpacity style={styles.navBar} underlayColor='#111' activeOpacity={0.8} onPress={() => this.props.navigation.navigate('Comments', { postId: this.props.postId, returnCount: this.returnCount.bind(this) })}>
                                 <Text style={styles.infoNo}>{this.state.comments}</Text>
                                 <Text style={styles.infoText}>{this.props.commentCount > 1 ? 'Comments' : 'Comment'}</Text>
                             </TouchableOpacity>
@@ -346,7 +357,7 @@ class Post extends Component {
                             this.props.navigation.navigate('EditPost',{ 
                                 returnData: this.returnData.bind(this),
                                 associate: this.props.userName,
-                                postMessage: this.props.postMessage,
+                                postMessage: this.state.postMessage.replace(this.props.strength.toLowerCase(), ''),
                                 taggedAssociates: this.props.taggedAssociates,
                                 strength: this.props.strength,
                                 time: this.props.time,
