@@ -287,28 +287,18 @@ class ListPost extends React.Component {
                         /* No change in payload hence do nothing */
                         console.log("log1")
                         this.setState({ refreshing: false, networkChanged: false })
-                        // this.postList = []
-                        // this.createTiles(response.data.data.posts, response.data.data.counts)
+                        
                         /* Checking if any data is available */
                         if (response.data.data.posts.length === 0) {
-                            /* Display warning on the screen */
                             this.setState({initalLoad: true})
                             this.postList = []
-                            // this.postList.push(<Text style={{ margin: 10 }} key={0}>No post to display</Text>)
-                            // this.postList.push(<Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon</Text>)
-
                             /* Update state to render warning */
                             this.setState({ refreshing: false, networkChanged: false })
                             return
                         }
                     } else {
-                        console.log("log2")
                         /* Change in payload */
-
-                        /* Take Backup */
-                        this.payloadBackup = response.data.data.posts
-
-                        /* Skip for initial post load */
+                        this.setState({ initalLoad: false })
                         if (this.postList.length !== 0) {
 
                             if (this.scrollPosition > 150) {
@@ -316,20 +306,30 @@ class ListPost extends React.Component {
                                 this.setState({ newPostVisibility: true })
                             }
                         }
-                        this.postList = []
                         if (this.state.isPostDeleted) {
+                            // this.setState({ isPostDeleted: false })
                             return
                         }
-                        this.posts = response.data.data.posts 
+                        if (this.posts.length == 0 && !this.state.isPostDeleted) {
+                            this.posts = response.data.data.posts
+                        }
+
+                        /* Take Backup */
+                        this.payloadBackup = response.data.data.posts
+                        if (this.posts.length !== response.data.data.posts.length) {
+                            if (this.posts.length < response.data.data.posts.length && this.state.isPostDeleted) {
+                                return 
+                            }
+                        }
+                        this.posts = response.data.data.posts
                         this.posts.map((item) => {
                             this.counts = response.data.data.counts.filter((elm) => {
                                 return elm.post_id == item.Item.post_id
                             })
-                            console.log("this.postList", this.postList)
                             item.Item.likeCount = this.counts[0].likeCount
                             item.Item.commentCount = this.counts[0].commentCount
                         })
-                        this.setState({ initalLoad: false })
+                        this.postList = []
                         /* Create UI tiles to display */
                         this.createTiles(this.posts)
                     }
@@ -366,6 +366,7 @@ class ListPost extends React.Component {
     deletePost = async(postId) => {
         console.log("Delete PostId", postId)
         if (this.props.isConnected) {
+            this.setState({ isPostDeleted: true })
             const payload = {
                 Data: {
                     post_id: postId,
@@ -382,13 +383,14 @@ class ListPost extends React.Component {
             if(this.posts.length == 0) {
                 this.setState({ initalLoad: true })
             }
-            this.setState({ isPostDeleted: true, refreshing: true })
-            this.createTiles(this.posts)
-
+            this.setState({ isPostDeleted: true })
             try {
                 await delete_post(payload, this.headers).then((res) => {
                     if(res.status === 200) {
-                        this.setState({isPostDeleted: false})
+                        this.postList = []
+                        this.createTiles(this.posts)
+                        // this.loadPosts()
+                        // this.setState({isPostDeleted: false})
                     }
                     console.log('delete_post', res)
                 }).catch((e) => {
@@ -398,6 +400,8 @@ class ListPost extends React.Component {
             catch(e) {
                 console.log(e)
             }
+            // this.setState({isPostDeleted: false})
+
         }
         else {
             this.showToast()
@@ -405,10 +409,13 @@ class ListPost extends React.Component {
     }
 
     createTiles = async(posts) => {
-        this.setState({ refreshing: true })
-        // this.postList = []
+        // this.postList = this.state.isPostDeleted ? [] : this.postList
+        console.log('this.state.isPostDeleted', this.state.isPostDeleted)
+        // this.setState({ refreshing: true })
+        console.log("this.postList", this.postList)
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
         // this.props.update_wallet()
+        // this.postList = []
         posts.map((item, index) => {
             this.postList.push(
                 // Post Component
@@ -430,7 +437,6 @@ class ListPost extends React.Component {
                 />
             )
         })
-        
         this.setState({ refreshing: false, networkChanged: false, isPostDeleted: false })
 
     }
@@ -509,9 +515,9 @@ class ListPost extends React.Component {
                     :
                     null
                 }
-                {/* <LoadingModal
+                <LoadingModal
                     enabled={this.state.isPostDeleted}
-                /> */}
+                />
             </Container>
 
         );
