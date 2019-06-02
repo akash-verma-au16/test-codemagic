@@ -23,7 +23,6 @@ class EditPost extends React.Component {
             isChanged: false
         }
         this.associateList=[]
-        this.showToast = this.showToast.bind(this)
 
         //formatting update locale
         Moment.globalMoment = moment;
