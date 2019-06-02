@@ -55,12 +55,7 @@ class Comments extends React.Component {
                     {
                         color: 'white',
                         padding: 19
-                    }} onPress={() => {
-                    navigation.state.params.returnCount({
-                        count: navigation.getParam('commentCount')
-                    })
-                    navigation.goBack()
-                }} />
+                    }} onPress={navigation.getParam('commentCount')} />
             )
         }
     }
@@ -82,6 +77,14 @@ class Comments extends React.Component {
         //Add network Connectivity Listener
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange)
         this.interval = setInterval(() => { this.fetchComments() }, 10000);
+    }
+
+    commentCount = () => {
+        var count = this.commentList.length
+        this.props.navigation.state.params.returnCount({
+            count: count
+        })
+        this.props.navigation.goBack()
     }
 
     componentWillUnmount() {
@@ -119,7 +122,7 @@ class Comments extends React.Component {
                     }
                     else {
                         this.setState({ initialLoad: false})
-                        this.commentList = []
+                        this.commentList = [] 
                         if (this.comments.length == 0 && !this.state.isCommentDeleted) {
                             this.comments = response.data.data.Items
                         }
@@ -187,6 +190,7 @@ class Comments extends React.Component {
                         tenant_id: payload.Data.tenant_id,
                         time: payload.Data.comment.time
                     })
+                    this.props.navigation.setParams({ commentCount: this.comments.length })
                     this.commentList=[]
                     this.loadComments(this.comments)
                     Keyboard.dismiss()
@@ -240,7 +244,8 @@ class Comments extends React.Component {
 
     loadComments = async(data) => {
         console.log("loadComments")
-        this.commentList = this.state.isCommentDeleted ? [] : this.commentList 
+        // this.commentList = this.state.isCommentDeleted ? [] : this.commentList
+        console.log("this.commentList", this.commentList) 
         var inputData = data.sort((a,b) => {return a.time -b.time})
         // this.commentList = []
         await inputData.map((item, index) => {
@@ -258,7 +263,7 @@ class Comments extends React.Component {
                 />
             )
         })
-        this.props.navigation.setParams({commentCount: data.length})
+        this.props.navigation.setParams({ commentCount: this.commentCount})
         this.setState({ commentsRefresh: false, isCommentDeleted: false, initialLoad: false })
     }
 
