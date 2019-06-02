@@ -42,7 +42,8 @@ class ListPost extends React.Component {
             newPostVisibility: false,
             isConnected: this.props.isConnected,
             networkChanged: false,
-            isPostDeleted: false
+            isPostDeleted: false,
+            initalLoad: false
         }
         this.loadPosts = this.loadPosts.bind(this);
         this.posts = []
@@ -291,9 +292,10 @@ class ListPost extends React.Component {
                         /* Checking if any data is available */
                         if (response.data.data.posts.length === 0) {
                             /* Display warning on the screen */
+                            this.setState({initalLoad: true})
                             this.postList = []
-                            this.postList.push(<Text style={{ margin: 10 }} key={0}>No post to display</Text>)
-                            this.postList.push(<Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon</Text>)
+                            // this.postList.push(<Text style={{ margin: 10 }} key={0}>No post to display</Text>)
+                            // this.postList.push(<Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon</Text>)
 
                             /* Update state to render warning */
                             this.setState({ refreshing: false, networkChanged: false })
@@ -314,9 +316,7 @@ class ListPost extends React.Component {
                                 this.setState({ newPostVisibility: true })
                             }
                         }
-                        // response.data.data.counts.map((item) => {
-                        //     this.counts[item.post_id] = {likeCount: item.likeCount, commentCount: item.commentCount}
-                        // })
+                        this.postList = []
                         if (this.state.isPostDeleted) {
                             return
                         }
@@ -329,6 +329,7 @@ class ListPost extends React.Component {
                             item.Item.likeCount = this.counts[0].likeCount
                             item.Item.commentCount = this.counts[0].commentCount
                         })
+                        this.setState({ initalLoad: false })
                         /* Create UI tiles to display */
                         this.createTiles(this.posts)
                     }
@@ -377,14 +378,17 @@ class ListPost extends React.Component {
             var index = this.posts.findIndex((post) => {return post.Item.post_id == postId})
             console.log("Delete PostIndex", index)
             this.postList.splice(index, 1)
-            this.setState({ isPostDeleted: true })
             this.posts.splice(index, 1)
+            if(this.posts.length == 0) {
+                this.setState({ initalLoad: true })
+            }
+            this.setState({ isPostDeleted: true, refreshing: true })
             this.createTiles(this.posts)
 
             try {
                 await delete_post(payload, this.headers).then((res) => {
                     if(res.status === 200) {
-                        // this.setState({isPostDeleted: false})
+                        this.setState({isPostDeleted: false})
                     }
                     console.log('delete_post', res)
                 }).catch((e) => {
@@ -401,8 +405,8 @@ class ListPost extends React.Component {
     }
 
     createTiles = async(posts) => {
-        // this.setState({ refreshing: true })
-        this.postList = []
+        this.setState({ refreshing: true })
+        // this.postList = []
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
         // this.props.update_wallet()
         posts.map((item, index) => {
@@ -426,7 +430,9 @@ class ListPost extends React.Component {
                 />
             )
         })
+        
         this.setState({ refreshing: false, networkChanged: false, isPostDeleted: false })
+
     }
     render() {
 
@@ -461,7 +467,7 @@ class ListPost extends React.Component {
                     onScroll={(event) => { this.scrollHandler(event) }}
                 >
 
-                    {this.postList.length > 0 ? this.postList : (
+                    {!this.state.initalLoad ? this.postList : (
                         <View style={{alignItems: 'center', justifyContent: 'center'}}>
                             <Text style={{ margin: 10 }} key={0}>No post to display</Text>
                             <Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon</Text>

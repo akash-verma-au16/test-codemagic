@@ -137,6 +137,41 @@ class EditPost extends React.Component {
                 time: this.state.epoch
             }
         }
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
+
+        if (this.props.isConnected) {
+            try {
+                edit_post(payload, headers).then((res) => {
+                    console.log('Edit Post', res)
+                    if (res.status === 200) {
+                        this.props.navigation.state.params.returnData({
+                            message: this.state.postMessage
+                        })
+                        this.props.navigation.goBack()
+                    }
+                }).catch((e) => {
+                    console.log(e)
+                })
+            }
+            catch (e) {
+                console.log(e)
+            }
+        }
+        else {
+            ToastAndroid.showWithGravityAndOffset(
+                'Please, connect to the internet',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+                25,
+                100,
+            );
+        }
+
         this.props.navigation.state.params.returnData({
             message: this.state.postMessage
         })

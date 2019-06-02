@@ -33,6 +33,7 @@ class Comments extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            initialLoad: false,
             commentsRefresh: false,
             addCommentText: "",
             isComment: this.props.navigation.getParam('isComment'),
@@ -46,6 +47,24 @@ class Comments extends React.Component {
         this.comments = []
         // this.scrollViewRef = React.createRef();
     }
+
+    static navigationOptions = ({ navigation }) => {
+        return {
+            headerLeft: (
+                <Icon name='ios-arrow-back' type='Ionicons' style={
+                    {
+                        color: 'white',
+                        padding: 19
+                    }} onPress={() => {
+                    navigation.state.params.returnCount({
+                        count: navigation.getParam('commentCount')
+                    })
+                    navigation.goBack()
+                }} />
+            )
+        }
+    }
+
     componentWillMount() {
         this.setState({ commentsRefresh: true})
         this.fetchComments()
@@ -54,16 +73,15 @@ class Comments extends React.Component {
     componentDidMount() {
         // Hardware backpress handle
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            this.goBack();
+            this.props.navigation.state.params.returnCount({
+                count: this.commentList.length
+            })
+            this.props.navigation.goBack()
             return true;
         });
         //Add network Connectivity Listener
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange)
-        this.interval = setInterval(() => { this.fetchComments() }, 5000);
-    }
-
-    async goBack() {
-        await this.props.navigation.goBack()
+        this.interval = setInterval(() => { this.fetchComments() }, 10000);
     }
 
     componentWillUnmount() {
@@ -96,17 +114,17 @@ class Comments extends React.Component {
                     console.log("Comment Response", response.data.data.Items)
                     if(response.data.data.Items.length == 0 && this.comments.length == 0) {
                         this.commentList = []
-                        this.commentList.push(<Text style={{ margin: 10 }} key={0}>No Comments</Text>)
-                        this.commentList.push(<Text key={1}>Add Comment to start Conversation</Text>)
-                        this.setState({ commentsRefresh: false })                        
+                        this.setState({ commentsRefresh: false, initialLoad: true })                        
                         return
                     }
                     else {
+                        this.setState({ initialLoad: false})
+                        this.commentList = []
                         if (this.comments.length == 0 && !this.state.isCommentDeleted) {
                             this.comments = response.data.data.Items
                         }
-                        console.log("this.comments.length", this.comments.length)
-                        console.log("response.data.data.Items.length", response.data.data.Items.length)
+
+                        // this.commentList = []
                         if (this.comments.length !== response.data.data.Items.length) {
                             if (this.comments.length > response.data.data.Items.length) {
                                 return
@@ -115,6 +133,9 @@ class Comments extends React.Component {
                                 if (this.state.isCommentDeleted === false) {
                                     this.comments = response.data.data.Items
                                     this.loadComments(this.comments)
+                                }
+                                else {
+                                    return
                                 }
                             }    
                         } 
@@ -166,6 +187,7 @@ class Comments extends React.Component {
                         tenant_id: payload.Data.tenant_id,
                         time: payload.Data.comment.time
                     })
+                    this.commentList=[]
                     this.loadComments(this.comments)
                     Keyboard.dismiss()
                     // this.setState({ commentsRefresh: true })
@@ -218,8 +240,9 @@ class Comments extends React.Component {
 
     loadComments = async(data) => {
         console.log("loadComments")
+        this.commentList = this.state.isCommentDeleted ? [] : this.commentList 
         var inputData = data.sort((a,b) => {return a.time -b.time})
-        this.commentList = []
+        // this.commentList = []
         await inputData.map((item, index) => {
             this.commentList.push(
                 <Comment
@@ -235,7 +258,8 @@ class Comments extends React.Component {
                 />
             )
         })
-        this.setState({ commentsRefresh: false })
+        this.props.navigation.setParams({commentCount: data.length})
+        this.setState({ commentsRefresh: false, isCommentDeleted: false, initialLoad: false })
     }
 
     deleteComment = (comment_id, comment) => {
@@ -260,9 +284,17 @@ class Comments extends React.Component {
             // const deleteComment = this.comments.filter((ele) => { return ele.comment_id == comment_id })
             var index = this.comments.findIndex((comment) => { return comment.comment_id == comment_id })
             console.log("index",index)
+            // this.commentList = this.commentList.sort((a, b) => { return a.time - b.time })
+            this.commentList.splice(index, 1)
+            this.comments.sort((a, b) => { return a.time - b.time })
             this.comments.splice(index, 1)
-            this.loadComments(this.comments)
-            this.setState({ isCommentDeleted: true })
+            if(this.comments.length == 0) {
+                this.setState({ initialLoad: true, isCommentDeleted: true })
+            }
+            else {
+                this.setState({ isCommentDeleted: true })
+                this.loadComments(this.comments)
+            }
             try {
                 delete_comment(payload, this.headers).then(async(response) => {
                     if(response.status === 200) {
@@ -301,23 +333,10 @@ class Comments extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <TouchableOpacity style={styles.header} onPress={() => this.props.navigation.navigate('Likes')}>
-                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                        <Icon type='AntDesign' name='like2' style={{ fontSize: 25, color: '#1c92c4'}} />
-                        <Text style={styles.headerText}>Liked by 5 people</Text>
-                    </View>
-                    {/* future purpose */}
-                    {/* <TouchableOpacity>
-                        <Icon type='AntDesign' name='like2' style={{fontSize: 20, color: }}/>
-                    </TouchableOpacity> */}
-                    <Icon type='Ionicons' name='ios-arrow-forward' style={{ fontSize: 25, color: '#111'}} />
-                </TouchableOpacity>
-                {/* horizontal line */}
-                <View style={styles.horizontalLine}></View>
                 {/* Comment content */}
                 <ScrollView
                     showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingTop: 5 }}
+                    contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingTop: 15 }}
                     ref={(scrollView) => { this.scrollView = scrollView }}
                     // {this.scrollViewRef}
                     refreshControl={
@@ -335,7 +354,10 @@ class Comments extends React.Component {
                             }}
                         />
                     }>
-                    {this.commentList}
+                    {!this.state.initialLoad ? this.commentList : (<View style={{alignItems: 'center', justifyContent: 'center'}}>
+                        <Text style={{ margin: 10 }} key={0}>No Comments</Text>
+                        <Text key={1}>Add Comment to start Conversation</Text>
+                    </View>)}
                 </ScrollView>
                 <View style={styles.addCommentView}>
                     <TextInput
