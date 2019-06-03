@@ -213,6 +213,12 @@ export const styles = StyleSheet.create({
         aspectRatio: 1 / 1,
         borderRadius: 130
     },
+    t_time: {
+        marginTop: 7,
+        color: '#777',
+        fontSize: 13, 
+        fontFamily: 'Opensans-Regular'
+    },
     tbWrapper: {
         height: 95,
         width: 95,

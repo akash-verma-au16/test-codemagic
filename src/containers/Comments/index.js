@@ -2,7 +2,6 @@ import React from 'react';
 import {
     View,
     Text,
-    TouchableOpacity,
     ScrollView,
     RefreshControl,
     TextInput,
@@ -40,6 +39,7 @@ class Comments extends React.Component {
             isCommentDeleted: false
         }
         this.postId = this.props.navigation.getParam('postId')
+        this.commentCount = this.commentCount.bind(this)
         this.fetchComments = this.fetchComments.bind(this)
         this.loadComments = this.loadComments.bind(this)
         this.focusHandler = this.focusHandler.bind(this)
@@ -55,7 +55,8 @@ class Comments extends React.Component {
                     {
                         color: 'white',
                         padding: 19
-                    }} onPress={navigation.getParam('commentCount')} />
+                    }} onPress={
+                    navigation.getParam('commentCount')} />
             )
         }
     }
@@ -68,18 +69,18 @@ class Comments extends React.Component {
     componentDidMount() {
         // Hardware backpress handle
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            this.props.navigation.state.params.returnCount({
-                count: this.commentList.length
-            })
-            this.props.navigation.goBack()
+            this.commentCount()
             return true;
         });
         //Add network Connectivity Listener
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange)
         this.interval = setInterval(() => { this.fetchComments() }, 10000);
+        this.props.navigation.setParams({ commentCount: this.commentCount })
     }
 
     commentCount = () => {
+        Keyboard.dismiss()
+        console.log("Comment Count")
         var count = this.commentList.length
         this.props.navigation.state.params.returnCount({
             count: count
@@ -254,7 +255,7 @@ class Comments extends React.Component {
                     key={index} 
                     comment_id={item.comment_id} 
                     post_id={item.post_id}
-                    associate={item.associate} 
+                    associate={this.props.associateList[item.associate_id]} 
                     id={item.associate_id}
                     message={item.message}
                     time={item.time} 
@@ -395,6 +396,7 @@ class Comments extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        associateList: state.user.associateList,
         fullName: state.user.firstName+" "+state.user.lastName,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,

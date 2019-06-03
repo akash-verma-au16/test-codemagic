@@ -28,6 +28,10 @@ import {
 
 } from 'native-base';
 
+// Components from Moment.js
+import Moment from 'react-moment'
+import moment from 'moment/min/moment-with-locales'
+
 //styles
 import { styles } from './styles'
 
@@ -92,7 +96,6 @@ class Home extends React.Component {
         this.loadSummary = this.loadSummary.bind(this)
         this.showToast = this.showToast.bind(this)
         this.handleEditProfile = this.handleEditProfile.bind(this)
-        this.loadTransactions = this.loadTransactions.bind(this)
         this.pager = React.createRef();
         this.homeDataList = []
         this.homeDataRowList = []
@@ -105,6 +108,30 @@ class Home extends React.Component {
         this.userData = this.state.associate_id == this.props.associate_id ? this.props.navigation.getParam('profileData') : {}
         console.log('Rec Obj',this.userData)
         this.dataList = []
+
+        Moment.globalMoment = moment;
+        // moment.updateLocale('en', {
+        //     relativeTime: {
+        //         past: function (input) {
+        //             return input === 'just now'
+        //                 ? input
+        //                 : input + ' ago'
+        //         },
+        //         s: 'just now',
+        //         future: "in %s",
+        //         ss: '%ds',
+        //         m: "%dm",
+        //         mm: "%dm",
+        //         h: "%dh",
+        //         hh: "%dh",
+        //         d: "%dd",
+        //         dd: "%dd",
+        //         M: "%dm",
+        //         MM: "%dm",
+        //         y: "%dy",
+        //         yy: "%dy"
+        //     }
+        // });
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -484,6 +511,7 @@ class Home extends React.Component {
                 this.setState({ refreshing: true })
                 // console.log("Calling read_transaction API")
                 await read_transaction(payload, this.headers).then(response => {
+                    console.log("Transaction", response.data.data.transaction_data)
                     if (this.transactionDataBackup.length === response.data.data.transaction_data) {
                         if (response.data.data.transaction_data.length == 0) {
                             this.transactionList = []
@@ -526,15 +554,22 @@ class Home extends React.Component {
                         <View style={styles.transactionView}>
                             <View style={styles.textView}>
                                 <Text style={styles.tText}>
-                                    Your wallet was {item.t_type == 'credit' ? "credited with " : "debited with "} {item.points} points.
+                                    Your wallet was {item.t_type == 'cr' ? "credited with " : "debited by "} {item.points} points.
                                 </Text>
                                 <View style={{flexDirection: 'row', flexWrap: 'nowrap', width: "100%", alignItems: 'center', justifyContent: "space-between"}}>
-                                    <Text style={styles.timeStamp}>{item.created_at.date}</Text>
-                                    <Text style={[styles.timeStamp, {paddingRight: 20}]}>{item.created_at.time}</Text>
+                                    <View></View>
+                                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                                        <Text style={styles.t_time}>Date: </Text>
+                                        <Moment style={styles.timeStamp} element={Text} format="D MMM YYYY" withTitle>
+                                            {item.created_at}
+                                        </Moment>
+                                    </View>
+                                    
+                                    {/* <Text style={[styles.timeStamp, {paddingRight: 20}]}>{item.created_at}</Text> */}
                                 </View>
                             </View>
                             <View style={styles.pointsView}>
-                                <Text style={item.t_type == 'credit' ? styles.credit : styles.debit}>{item.t_type == 'credit' ? "+ " + item.points : "- " + item.points }</Text>
+                                <Text style={item.t_type == 'cr' ? styles.credit : styles.debit}>{item.t_type == 'credit' ? "+ " + item.points : "- " + item.points }</Text>
                             </View>
                         </View>
                     </View>

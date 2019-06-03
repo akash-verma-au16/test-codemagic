@@ -9,12 +9,14 @@ import {
     StyleSheet,
     Dimensions
 } from 'react-native';
+import NetInfo from "@react-native-community/netinfo"
 
 //Native base 
 import { Icon } from 'native-base'
 
+import { list_likes } from '../../services/post'
 //Custom Data
-import { data } from './data'
+// import { data } from './data'
 
 //Moment.js
 import Moment from 'react-moment'
@@ -27,9 +29,12 @@ class Likes extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            peopleListrefresh: false
+            postId: this.props.navigation.getParam('postId'),
+            peopleListrefresh: false,
+            noData: false
         }
         this.peopleList = []
+        this.people = []
         this.loadPeople = this.loadPeople.bind(this)
 
         //formatting update locale
@@ -59,15 +64,26 @@ class Likes extends React.Component {
     }
 
     componentWillMount() {
-        this.loadPeople()
+        this.setState({ peopleListrefresh: true })
+        this.fetchPeopleList()
     }
 
     componentDidMount() {
+        //Detecting network connectivity change
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
         // Hardware backpress handle
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             this.goBack();
             return true;
         });
+    }
+
+    handleConnectivityChange = (isConnected) => {
+        if(isConnected) {
+            this.setState({
+                peopleListrefresh: true
+            },() => this.fetchPeopleList())
+        }
     }
 
     async goBack() {
@@ -76,6 +92,7 @@ class Likes extends React.Component {
 
     componentWillUnmount() {
         this.backHandler.remove();
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
     }
 
     showToast() {
@@ -87,10 +104,52 @@ class Likes extends React.Component {
             100,
         );
     }
+    //Authorization headers
+    headers = {
+        headers: {
+            Authorization: this.props.idToken
+        }
+    }
 
-    loadPeople = () => {
+    fetchPeopleList = () => {
+        if(this.props.isConnected) {
+            const payload = {
+                post_id: this.state.postId,
+                tenant_id: this.props.accountAlias,
+                associate_id: this.props.associate_id
+            }
+            try {
+                list_likes(payload,this.headers).then((res) => {
+                    console.log(res)
+                    if(res.status == 200) {
+                        if (res.data.data.Items.length == 0) {
+                            this.setState({ noData: true, peopleListrefresh: false })
+                            return                            
+                        }
+                        else {
+                            this.people = res.data.data.Items
+                            this.loadPeople(this.people)
+                        }
+                    }
+                })
+            }
+            catch(e) {
+                console.log(e)
+            }
+        }
+        else {
+            ToastAndroid.showWithGravityAndOffset(
+                'Please, Connect to the internet',
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM,
+                25,
+                100,
+            );
+        }
+    }
+
+    loadPeople = (data) => {
         this.peopleList = []
-        this.setState({ peopleListrefresh: true})
         data.map((item, index) => {
             this.peopleList.push(
                 <View style={styles.tileContainer} key={index}>
@@ -101,7 +160,7 @@ class Likes extends React.Component {
                             </View>
                         </View>
                         <View style={styles.textViewWrapper}>
-                            <Text style={styles.name}>{item.name}</Text>
+                            <Text style={styles.name}>{this.props.associateList[item.associate_id]}</Text>
                             <Moment style={{ fontSize: 14, paddingVertical: 3 }} element={Text} fromNow>{item.time * 1000}</Moment>
                         </View>
                     </View>
@@ -133,7 +192,12 @@ class Likes extends React.Component {
                             }}
                         />
                     }>
-                    {this.peopleList}
+                    {!this.state.noData ? this.peopleList : <View style={{
+                        alignItems: 'center',
+                        justifyContent:'center'
+                    }}>
+                        <Text style={{margin: 20}}>No Likes for this post</Text>
+                    </View>}
                 </ScrollView>
             </View>
         )
@@ -182,10 +246,12 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
+        associateList: state.user.associateList,
+        accountAlias: state.user.accountAlias,
+        associate_id: state.user.associate_id,
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected
-
     };
 }
 

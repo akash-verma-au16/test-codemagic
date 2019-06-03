@@ -113,7 +113,8 @@ class EditPost extends React.Component {
         this.props.navigation.setParams({ isChanged: this.state.isChanged, editPostHandler: this.editPostHandler }); 
         // Hardware backpress handle
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            this.goBack();
+            Keyboard.dismiss()
+            this.goBack()
             return true;
         });
     }
@@ -149,10 +150,10 @@ class EditPost extends React.Component {
                     edit_post(payload, headers).then((res) => {
                         console.log('Edit Post', res)
                         if (res.status === 200) {
-                            this.props.navigation.state.params.returnData({
-                                message: this.state.postMessage
-                            })
-                            this.props.navigation.goBack()
+                            // this.props.navigation.state.params.returnData({
+                            //     message: this.state.postMessage
+                            // })
+                            // this.props.navigation.goBack()
                         }
                     }).catch((e) => {
                         console.log(e)
