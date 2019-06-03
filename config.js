@@ -37,8 +37,7 @@ export default {
         get_associate_name: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/get_associate_name",
         strength_details: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/strength_details",
         //likes Backup API
-        liked_post: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/liked_post",
-        rewards_addon: "https://835zntrqv6.execute-api.ap-southeast-1.amazonaws.com/api/share_addon"
+        liked_post: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/liked_post"
     },
     api: {
         signup: "signup",

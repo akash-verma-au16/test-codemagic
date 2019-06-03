@@ -22,8 +22,7 @@ import {
     Thumbnail
 } from 'native-base';
 /* Services */
-import { news_feed, delete_post, liked_post } from '../../services/post'
-import { dev } from '../../store/actions'
+import { news_feed, delete_post } from '../../services/post'
 //Loading Modal
 import LoadingModal from '../LoadingModal'
 //Prefetch profile data
@@ -31,7 +30,6 @@ import { loadProfile } from '../Home/apicalls'
 /* Components */
 import { NavigationEvents } from 'react-navigation';
 import thumbnail from '../../assets/thumbnail.jpg'
-
 // push notification
 import { withInAppNotification } from 'react-native-in-app-notification'
 import PushNotification from '@aws-amplify/pushnotification'
@@ -44,13 +42,9 @@ class ListPost extends React.Component {
             newPostVisibility: false,
             isConnected: this.props.isConnected,
             networkChanged: false,
-            isPostDeleted: false,
-            initalLoad: false
+            isPostDeleted: false
         }
-        this.loadLikes = this.loadLikes.bind(this)
         this.loadPosts = this.loadPosts.bind(this);
-        this.getProfile = this.getProfile.bind(this)
-        this.likes = []
         this.posts = []
         this.postList = []
         this.taggedAssociate = []
@@ -116,17 +110,12 @@ class ListPost extends React.Component {
         }
         PushNotification.onNotification((notification) => {
             // Note that the notification object structure is different from Android and IOS
+            console.log('in app notification', notification);
 
-            const messageLength = 40
-            let updatedMessage = notification.body
-            
-            if(updatedMessage.length > messageLength){
-                updatedMessage = updatedMessage.substring(0,messageLength) +'...'
-            }
             //Display notification
             this.props.showNotification({
                 title: notification.title,
-                message: updatedMessage,
+                message: notification.body,
                 icon: notificationIcon,
                 onPress: () => {
                     const url = notification.data['pinpoint.deeplink']
@@ -156,30 +145,7 @@ class ListPost extends React.Component {
                 }
             })
         })
-        this.loadLikes()
     }
-
-    loadLikes = () =>{
-        const payload = {
-            tenant_id: this.props.accountAlias,
-            associate_id: this.props.associate_id
-        }
-        try {
-            liked_post(payload,this.headers).then((res) => {
-                console.log("this.likes", this.likes)
-                if(res.status == "success") {
-                    this.likes = res.data
-                    console.log("this.likes")
-                }
-            }).catch((e) => {
-                console.log(e)
-            })
-        }
-        catch(e) {
-            console.log(e)
-        }
-    }
-
     componentDidUpdate() {
         this.handlePushNotificationNavigation()
     }
@@ -257,12 +223,13 @@ class ListPost extends React.Component {
          this.backHandler.remove()
      } 
 
-    handleConnectivityChange = (isConnected) => {
+    handleConnectivityChange =  (isConnected) => {
         if(isConnected) {
             this.setState({
                 networkChanged: true
             }, async () => {
                 this.loadPosts()
+                this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
                 console.log('Data:', this.profileData)
                 this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': this.props.isConnected })
             })
@@ -319,18 +286,27 @@ class ListPost extends React.Component {
                         /* No change in payload hence do nothing */
                         console.log("log1")
                         this.setState({ refreshing: false, networkChanged: false })
-                        
+                        // this.postList = []
+                        // this.createTiles(response.data.data.posts, response.data.data.counts)
                         /* Checking if any data is available */
                         if (response.data.data.posts.length === 0) {
-                            this.setState({initalLoad: true})
+                            /* Display warning on the screen */
                             this.postList = []
+                            this.postList.push(<Text style={{ margin: 10 }} key={0}>No post to display</Text>)
+                            this.postList.push(<Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon</Text>)
+
                             /* Update state to render warning */
                             this.setState({ refreshing: false, networkChanged: false })
                             return
                         }
                     } else {
+                        console.log("log2")
                         /* Change in payload */
-                        this.setState({ initalLoad: false })
+
+                        /* Take Backup */
+                        this.payloadBackup = response.data.data.posts
+
+                        /* Skip for initial post load */
                         if (this.postList.length !== 0) {
 
                             if (this.scrollPosition > 150) {
@@ -338,32 +314,21 @@ class ListPost extends React.Component {
                                 this.setState({ newPostVisibility: true })
                             }
                         }
+                        // response.data.data.counts.map((item) => {
+                        //     this.counts[item.post_id] = {likeCount: item.likeCount, commentCount: item.commentCount}
+                        // })
                         if (this.state.isPostDeleted) {
-                            // this.setState({ isPostDeleted: false })
                             return
                         }
-                        if (this.posts.length == 0 && !this.state.isPostDeleted) {
-                            this.posts = []
-                            this.posts = response.data.data.posts
-                        }
-
-                        /* Take Backup */
-                        this.payloadBackup = response.data.data.posts
-                        if (this.posts.length !== response.data.data.posts.length) {
-                            if (this.posts.length < response.data.data.posts.length && this.state.isPostDeleted) {
-                                return 
-                            }
-                        }
-                        this.posts = []
-                        this.posts = response.data.data.posts
+                        this.posts = response.data.data.posts 
                         this.posts.map((item) => {
                             this.counts = response.data.data.counts.filter((elm) => {
                                 return elm.post_id == item.Item.post_id
                             })
+                            console.log("this.postList", this.postList)
                             item.Item.likeCount = this.counts[0].likeCount
                             item.Item.commentCount = this.counts[0].commentCount
                         })
-                        this.postList = []
                         /* Create UI tiles to display */
                         this.createTiles(this.posts)
                     }
@@ -396,21 +361,10 @@ class ListPost extends React.Component {
         }
     }   
 
-    //Edit Post
-    editPost = (postId, postMessage) => {
-        this.posts.map((post) => {
-            if (post.Item.post_id == postId) {
-                post.Item.message = postMessage 
-            }
-        })
-        this.createTiles(this.posts)
-    }
-
     //Delete Post
     deletePost = async(postId) => {
         console.log("Delete PostId", postId)
         if (this.props.isConnected) {
-            this.setState({ isPostDeleted: true })
             const payload = {
                 Data: {
                     post_id: postId,
@@ -423,17 +377,13 @@ class ListPost extends React.Component {
             var index = this.posts.findIndex((post) => {return post.Item.post_id == postId})
             console.log("Delete PostIndex", index)
             this.postList.splice(index, 1)
-            this.posts.splice(index, 1)
-            if(this.posts.length == 0) {
-                this.setState({ initalLoad: true })
-            }
             this.setState({ isPostDeleted: true })
+            this.posts.splice(index, 1)
+            this.createTiles(this.posts)
+
             try {
                 await delete_post(payload, this.headers).then((res) => {
                     if(res.status === 200) {
-                        this.postList = []
-                        this.createTiles(this.posts)
-                        // this.loadPosts()
                         // this.setState({isPostDeleted: false})
                     }
                     console.log('delete_post', res)
@@ -444,32 +394,24 @@ class ListPost extends React.Component {
             catch(e) {
                 console.log(e)
             }
-            // this.setState({isPostDeleted: false})
-
         }
         else {
             this.showToast()
         }
     }
-    getProfile= async() => {
-        console.log("loadProfile")
-        this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
-        console.log("this.profileData.wallet_balance", this.profileData.wallet_balance)
-        const payload = {
-            walletBalance: this.profileData.wallet_balance
-        }
-        this.props.updateWallet(payload)  
-    }
 
     createTiles = async(posts) => {
+        // this.setState({ refreshing: true })
+        this.postList = []
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
+        // this.props.update_wallet()
         posts.map((item, index) => {
             this.postList.push(
                 // Post Component
                 <Post
                     key={index}
                     postId={item.Item.post_id}
-                    postCreator={this.props.associateList[item.Item.associate_id]}
+                    postCreator={item.Item.associate_name}
                     postCreator_id={item.Item.associate_id}
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time= {item.Item.time} 
@@ -481,12 +423,10 @@ class ListPost extends React.Component {
                     likeCount={item.Item.likeCount}
                     commentCount={item.Item.commentCount} 
                     postDeleteHandler={this.deletePost}
-                    editPostHandler={this.editPost}
                 />
             )
         })
         this.setState({ refreshing: false, networkChanged: false, isPostDeleted: false })
-
     }
     render() {
 
@@ -521,7 +461,7 @@ class ListPost extends React.Component {
                     onScroll={(event) => { this.scrollHandler(event) }}
                 >
 
-                    {!this.state.initalLoad ? this.postList : (
+                    {this.postList.length > 0 ? this.postList : (
                         <View style={{alignItems: 'center', justifyContent: 'center'}}>
                             <Text style={{ margin: 10 }} key={0}>No post to display</Text>
                             <Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon</Text>
@@ -533,7 +473,6 @@ class ListPost extends React.Component {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.loadPosts()
-                                this.getProfile()
                             }
                         }
                     }}
@@ -564,9 +503,9 @@ class ListPost extends React.Component {
                     :
                     null
                 }
-                <LoadingModal
+                {/* <LoadingModal
                     enabled={this.state.isPostDeleted}
-                />
+                /> */}
             </Container>
 
         );
@@ -583,7 +522,6 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        associateList: state.user.associateList,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         isAuthenticate: state.isAuthenticate,
@@ -593,10 +531,4 @@ const mapStateToProps = (state) => {
     };
 }
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props })
-    };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(withInAppNotification(ListPost))
+export default connect(mapStateToProps, null)(withInAppNotification(ListPost))

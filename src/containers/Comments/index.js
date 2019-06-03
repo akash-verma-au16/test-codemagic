@@ -2,6 +2,7 @@ import React from 'react';
 import {
     View,
     Text,
+    TouchableOpacity,
     ScrollView,
     RefreshControl,
     TextInput,
@@ -32,14 +33,12 @@ class Comments extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            initialLoad: false,
             commentsRefresh: false,
             addCommentText: "",
             isComment: this.props.navigation.getParam('isComment'),
             isCommentDeleted: false
         }
         this.postId = this.props.navigation.getParam('postId')
-        this.commentCount = this.commentCount.bind(this)
         this.fetchComments = this.fetchComments.bind(this)
         this.loadComments = this.loadComments.bind(this)
         this.focusHandler = this.focusHandler.bind(this)
@@ -47,20 +46,6 @@ class Comments extends React.Component {
         this.comments = []
         // this.scrollViewRef = React.createRef();
     }
-
-    static navigationOptions = ({ navigation }) => {
-        return {
-            headerLeft: (
-                <Icon name='ios-arrow-back' type='Ionicons' style={
-                    {
-                        color: 'white',
-                        padding: 19
-                    }} onPress={
-                    navigation.getParam('commentCount')} />
-            )
-        }
-    }
-
     componentWillMount() {
         this.setState({ commentsRefresh: true})
         this.fetchComments()
@@ -69,23 +54,16 @@ class Comments extends React.Component {
     componentDidMount() {
         // Hardware backpress handle
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            this.commentCount()
+            this.goBack();
             return true;
         });
         //Add network Connectivity Listener
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange)
-        this.interval = setInterval(() => { this.fetchComments() }, 10000);
-        this.props.navigation.setParams({ commentCount: this.commentCount })
+        this.interval = setInterval(() => { this.fetchComments() }, 5000);
     }
 
-    commentCount = () => {
-        Keyboard.dismiss()
-        console.log("Comment Count")
-        var count = this.commentList.length
-        this.props.navigation.state.params.returnCount({
-            count: count
-        })
-        this.props.navigation.goBack()
+    async goBack() {
+        await this.props.navigation.goBack()
     }
 
     componentWillUnmount() {
@@ -118,17 +96,17 @@ class Comments extends React.Component {
                     console.log("Comment Response", response.data.data.Items)
                     if(response.data.data.Items.length == 0 && this.comments.length == 0) {
                         this.commentList = []
-                        this.setState({ commentsRefresh: false, initialLoad: true })                        
+                        this.commentList.push(<Text style={{ margin: 10 }} key={0}>No Comments</Text>)
+                        this.commentList.push(<Text key={1}>Add Comment to start Conversation</Text>)
+                        this.setState({ commentsRefresh: false })                        
                         return
                     }
                     else {
-                        this.setState({ initialLoad: false})
-                        this.commentList = [] 
                         if (this.comments.length == 0 && !this.state.isCommentDeleted) {
                             this.comments = response.data.data.Items
                         }
-
-                        // this.commentList = []
+                        console.log("this.comments.length", this.comments.length)
+                        console.log("response.data.data.Items.length", response.data.data.Items.length)
                         if (this.comments.length !== response.data.data.Items.length) {
                             if (this.comments.length > response.data.data.Items.length) {
                                 return
@@ -137,9 +115,6 @@ class Comments extends React.Component {
                                 if (this.state.isCommentDeleted === false) {
                                     this.comments = response.data.data.Items
                                     this.loadComments(this.comments)
-                                }
-                                else {
-                                    return
                                 }
                             }    
                         } 
@@ -191,8 +166,6 @@ class Comments extends React.Component {
                         tenant_id: payload.Data.tenant_id,
                         time: payload.Data.comment.time
                     })
-                    this.props.navigation.setParams({ commentCount: this.comments.length })
-                    this.commentList=[]
                     this.loadComments(this.comments)
                     Keyboard.dismiss()
                     // this.setState({ commentsRefresh: true })
@@ -244,15 +217,16 @@ class Comments extends React.Component {
     }
 
     loadComments = async(data) => {
+        console.log("loadComments")
         var inputData = data.sort((a,b) => {return a.time -b.time})
-        // this.commentList = []
+        this.commentList = []
         await inputData.map((item, index) => {
             this.commentList.push(
                 <Comment
                     key={index} 
                     comment_id={item.comment_id} 
                     post_id={item.post_id}
-                    associate={this.props.associateList[item.associate_id]} 
+                    associate={item.associate} 
                     id={item.associate_id}
                     message={item.message}
                     time={item.time} 
@@ -261,8 +235,7 @@ class Comments extends React.Component {
                 />
             )
         })
-        this.props.navigation.setParams({ commentCount: this.commentCount})
-        this.setState({ commentsRefresh: false, isCommentDeleted: false, initialLoad: false })
+        this.setState({ commentsRefresh: false })
     }
 
     deleteComment = (comment_id, comment) => {
@@ -287,17 +260,9 @@ class Comments extends React.Component {
             // const deleteComment = this.comments.filter((ele) => { return ele.comment_id == comment_id })
             var index = this.comments.findIndex((comment) => { return comment.comment_id == comment_id })
             console.log("index",index)
-            // this.commentList = this.commentList.sort((a, b) => { return a.time - b.time })
-            this.commentList.splice(index, 1)
-            this.comments.sort((a, b) => { return a.time - b.time })
             this.comments.splice(index, 1)
-            if(this.comments.length == 0) {
-                this.setState({ initialLoad: true, isCommentDeleted: true })
-            }
-            else {
-                this.setState({ isCommentDeleted: true })
-                this.loadComments(this.comments)
-            }
+            this.loadComments(this.comments)
+            this.setState({ isCommentDeleted: true })
             try {
                 delete_comment(payload, this.headers).then(async(response) => {
                     if(response.status === 200) {
@@ -336,10 +301,23 @@ class Comments extends React.Component {
     render() {
         return (
             <View style={styles.container}>
+                <TouchableOpacity style={styles.header} onPress={() => this.props.navigation.navigate('Likes')}>
+                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                        <Icon type='AntDesign' name='like2' style={{ fontSize: 25, color: '#1c92c4'}} />
+                        <Text style={styles.headerText}>Liked by 5 people</Text>
+                    </View>
+                    {/* future purpose */}
+                    {/* <TouchableOpacity>
+                        <Icon type='AntDesign' name='like2' style={{fontSize: 20, color: }}/>
+                    </TouchableOpacity> */}
+                    <Icon type='Ionicons' name='ios-arrow-forward' style={{ fontSize: 25, color: '#111'}} />
+                </TouchableOpacity>
+                {/* horizontal line */}
+                <View style={styles.horizontalLine}></View>
                 {/* Comment content */}
                 <ScrollView
                     showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingTop: 15 }}
+                    contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingTop: 5 }}
                     ref={(scrollView) => { this.scrollView = scrollView }}
                     // {this.scrollViewRef}
                     refreshControl={
@@ -357,10 +335,7 @@ class Comments extends React.Component {
                             }}
                         />
                     }>
-                    {!this.state.initialLoad ? this.commentList : (<View style={{alignItems: 'center', justifyContent: 'center'}}>
-                        <Text style={{ margin: 10 }} key={0}>No Comments</Text>
-                        <Text key={1}>Add Comment to start Conversation</Text>
-                    </View>)}
+                    {this.commentList}
                 </ScrollView>
                 <View style={styles.addCommentView}>
                     <TextInput
@@ -393,7 +368,6 @@ class Comments extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        associateList: state.user.associateList,
         fullName: state.user.firstName+" "+state.user.lastName,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,

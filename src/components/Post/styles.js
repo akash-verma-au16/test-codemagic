@@ -89,20 +89,5 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center'
-    },
-    addon: {
-        color: '#1c92c4',
-        fontSize: 15,
-        fontFamily: 'Opensans-Regular',
-        fontWeight: '400'
-    },
-    addOnView: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 10,
-        paddingVertical: 1,
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#1c92c4'
     }
 })

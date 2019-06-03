@@ -120,17 +120,7 @@ const RootStack = createStackNavigator(
         'Comments': {
             screen: Comments,
             navigationOptions: {
-                headerStyle: {
-                    backgroundColor: '#1c92c4',
-                    height: 40
-                },
-                title: 'Comments',
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                    fontWeight: 'bold',
-                    fontSize: 19,
-                    fontFamily: 'OpenSans-Regular'
-                }
+                header: null
             }
         },
         'EditPost': {

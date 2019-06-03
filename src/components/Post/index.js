@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // Components from React-Native
-import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Alert, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Alert } from 'react-native';
 // Components from Native Base
 import { Icon } from 'native-base'
 
@@ -12,7 +12,7 @@ import uuid from 'uuid'
 //Cusotm component
 import VisibilityModal from '../../containers/VisibilityModal'
 
-import { like_post, unlike_post, rewards_addon } from '../../services/post'
+import { like_post, unlike_post } from '../../services/post'
 //React navigation
 import { withNavigation } from 'react-navigation';
 
@@ -26,23 +26,19 @@ import moment from 'moment/min/moment-with-locales'
 class Post extends Component {
     constructor(props) {
         super(props);
-        this.returnCount = this.returnCount.bind(this)
-        this.initalState = {
+        let initalState = {
             like: false,
             isLiked: false,
+            likes: this.props.likeCount,
+            comments: this.props.commentCount,
             modalVisible: false,
             likeId: "",
             isEdit: false,
-            editPostMessage: "",
-            addOn: 0,
-            likes: this.props.likeCount,
-            comments: this.props.commentCount,
-            postMessage: this.props.postMessage,
-            taggedAssociates: this.props.taggedAssociates
+            editPostMessage: ""
         }
-        this.state = this.initalState
-        this.postMessage = this.props.postMessage
-        this.taggedAssociates = []
+        this.state = initalState
+        console.log("LikesCount", this.state.likes)
+        console.log("CommentCount", this.state.comments)
         //formatting update locale
         Moment.globalMoment = moment;
         moment.updateLocale('en', {
@@ -69,13 +65,6 @@ class Post extends Component {
         });
     }
 
-    //Authorization headers
-    headers = {
-        headers: {
-            Authorization: this.props.idToken
-        }
-    }
-
     likePost = () => {
         /* unique id generation */
         const id = uuid.v4()
@@ -95,8 +84,13 @@ class Post extends Component {
                 }
             }
         }
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
         try {
-            like_post(payload, this.headers).then((res) => {
+            like_post(payload, headers).then((res) => {
                 console.log("Response", res)
                 if(res.status === 200) {
                     this.setState({ isLiked: true})
@@ -124,8 +118,13 @@ class Post extends Component {
                 }
             }
         }
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
         try {
-            unlike_post(payload, this.headers).then((res) => {
+            unlike_post(payload, headers).then((res) => {
                 console.log("Unlike", res)
                 if (res.status === 200) {
                     this.setState({ isLiked: false })
@@ -206,67 +205,11 @@ class Post extends Component {
         );
     }
 
-    rewardsAddon = () => {
-        console.log("this.props.walletBalance",this.props.walletBalance)
-        if (this.props.isConnected) {
-            this.setState({ addOn: this.state.addOn + 10 })
-            // this.taggedAssociates = this.props.taggedAssociates
-            // this.taggedAssociates.map((item) => {
-            //     delete item.associate_name
-
-            // })
-            console.log("this.props.taggedAssociates", this.props.taggedAssociates)
-            const payload = {
-                tenant_id: this.props.accountAlias,
-                associate_id: this.props.associate_id,
-                tagged_associates: this.props.taggedAssociates,
-                sub_type: this.props.strength,
-                type: this.props.type,
-                post_id: this.props.postId,
-                points: "10"
-            }
-            console.log("Rewards payload",payload )
-            
-            // try {
-            //     rewards_addon(payload, this.headers).then((res) => {
-            //         console.log('Addon', res)
-
-            //     }).catch((e) => {
-            //         console.log(e)
-            //     })
-            // }
-            // catch (e) {
-            //     console.log(e)
-            // }
-        }
-        else {
-            ToastAndroid.showWithGravityAndOffset(
-                'No Internet Connection',
-                ToastAndroid.LONG,
-                ToastAndroid.TOP,
-                25,
-                100,
-            );
-        }
-    }
-
-    returnCount = (count) => {
-        console.log(count)
-        this.setState({
-            comments: count.count
-        })
-    }
-
-    componentWillUnmount() {
-        this.setState(this.initalState)
-    }
-
     returnData = (data) => {
         this.setState({
             isEdit: true,
-            postMessage: data.message
+            editPostMessage: data.message
         })
-        this.props.editPostHandler(this.props.postId, data.message)
     } 
 
     data = [
@@ -299,13 +242,6 @@ class Post extends Component {
                         <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>
                             {this.props.postCreator_id === this.props.associate_id ? this.props.userName : this.props.postCreator}
                         </Text>
-                        { this.state.addOn > 0 && this.props.postCreator_id !== this.props.associate_id ? 
-                            <View style={styles.addOnView}>
-                                <Text style={styles.addon}>+{this.state.addOn}</Text>
-                            </View>
-                            :
-                            null
-                        }
                     </TouchableOpacity>
                     {/* <Text style={styles.timeStamp}>{item.Item.time}</Text> */}
                     <View style={{flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'}}>
@@ -334,8 +270,7 @@ class Post extends Component {
                             ))
                         })}
                         {this.associateList}
-                        {this.state.postMessage}
-                        {/* {this.state.isEdit ? this.state.editPostMessage : this.state.postMessage} */}
+                        {this.state.isEdit ? this.state.editPostMessage : this.props.postMessage}
 
                         <Text style={styles.strength}> #{this.props.strength}</Text>
                     </Text>
@@ -346,11 +281,11 @@ class Post extends Component {
                     {/* <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>                     */}
                     <View style={styles.infoTab}>
                         <View style={{ flexDirection: 'row', width: "50%", alignItems: 'center' }}>
-                            <TouchableOpacity activeOpacity={0.8} underlayColor='#111' style={styles.navBar} onPress={() => this.props.navigation.navigate('Likes', { postId: this.props.postId })}>
+                            <TouchableOpacity activeOpacity={0.8} underlayColor='#111' style={styles.navBar} onPress={() => this.props.navigation.navigate('Likes')}>
                                 <Text style={styles.infoNo}>{this.state.likes}</Text>
                                 <Text style={styles.infoText}>{this.props.likeCount > 1 ? "Likes" : "Like"}</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.navBar} underlayColor='#111' activeOpacity={0.8} onPress={() => this.props.navigation.navigate('Comments', { postId: this.props.postId, returnCount: this.returnCount })}>
+                            <TouchableOpacity style={styles.navBar} underlayColor='#111' activeOpacity={0.8} onPress={() => this.props.navigation.navigate('Comments', { postId: this.props.postId })}>
                                 <Text style={styles.infoNo}>{this.state.comments}</Text>
                                 <Text style={styles.infoText}>{this.props.commentCount > 1 ? 'Comments' : 'Comment'}</Text>
                             </TouchableOpacity>
@@ -373,17 +308,16 @@ class Post extends Component {
                     </TouchableOpacity>
                     <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={() => this.props.navigation.navigate('Comments', {
                         isComment: true, 
-                        postId: this.props.postId,
-                        returnCount: this.returnCount
+                        postId: this.props.postId
                     })}>
                         <Icon name='comment' type={'MaterialIcons'} style={styles.comment} />
                         <Text style={styles.footerText}>Comment</Text>
                     </TouchableOpacity>
                     {
-                        (this.props.postCreator_id !== this.props.associate_id) ? 
-                            <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={this.rewardsAddon}>
-                                <Icon name='md-add' type={'Ionicons'} style={this.state.addOn > 0 ? { color: '#1c92c4', fontSize: 19} : { color: '#bababa', fontSize: 19 }} />
-                                <Text style={this.state.addOn > 0 ? styles.footerTextActive : styles.footerTextInactive}>Add-on</Text>
+                        this.props.postCreator_id !== this.props.associate_id ? 
+                            <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView}>
+                                <Icon name='heart-outlined' type={'Entypo'} style={{ color: '#bababa', fontSize: 19 }} />
+                                <Text style={styles.footerText}>Add-on</Text>
                             </TouchableOpacity>
                             : null
                     }
@@ -412,7 +346,7 @@ class Post extends Component {
                             this.props.navigation.navigate('EditPost',{ 
                                 returnData: this.returnData.bind(this),
                                 associate: this.props.userName,
-                                postMessage: this.state.postMessage.replace(this.props.strength.toLowerCase(), ''),
+                                postMessage: this.props.postMessage,
                                 taggedAssociates: this.props.taggedAssociates,
                                 strength: this.props.strength,
                                 time: this.props.time,
@@ -438,7 +372,6 @@ class Post extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        walletbalance: state.user.walletBalance,
         userName: state.user.firstName + " " + state.user.lastName,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
