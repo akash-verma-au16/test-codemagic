@@ -311,6 +311,7 @@ class ListPost extends React.Component {
                             return
                         }
                         if (this.posts.length == 0 && !this.state.isPostDeleted) {
+                            this.posts = []
                             this.posts = response.data.data.posts
                         }
 
@@ -321,6 +322,7 @@ class ListPost extends React.Component {
                                 return 
                             }
                         }
+                        this.posts = []
                         this.posts = response.data.data.posts
                         this.posts.map((item) => {
                             this.counts = response.data.data.counts.filter((elm) => {
@@ -361,6 +363,16 @@ class ListPost extends React.Component {
             }
         }
     }   
+
+    //Edit Post
+    editPost = (postId, postMessage) => {
+        this.posts.map((post) => {
+            if (post.Item.post_id == postId) {
+                post.Item.message = postMessage 
+            }
+        })
+        this.createTiles(this.posts)
+    }
 
     //Delete Post
     deletePost = async(postId) => {
@@ -422,7 +434,7 @@ class ListPost extends React.Component {
                 <Post
                     key={index}
                     postId={item.Item.post_id}
-                    postCreator={item.Item.associate_name}
+                    postCreator={this.props.associateList[item.Item.associate_id]}
                     postCreator_id={item.Item.associate_id}
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time= {item.Item.time} 
@@ -434,6 +446,7 @@ class ListPost extends React.Component {
                     likeCount={item.Item.likeCount}
                     commentCount={item.Item.commentCount} 
                     postDeleteHandler={this.deletePost}
+                    editPostHandler={this.editPost}
                 />
             )
         })
@@ -534,6 +547,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
+        associateList: state.user.associateList,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         isAuthenticate: state.isAuthenticate,

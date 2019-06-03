@@ -25,4 +25,11 @@ export const read_tenant = (
     return axios.post(endpoint, payload, headers)
 }
 
+export const list_project_members = (
+    payload, headers
+) => {
+    const endpoint = config.url.list_project_members
+    return axios.post(endpoint, payload, headers)
+}
+
 // const endpoint = url + "/" + env + "/" + config.role.admin + "/" + config.api.list_associate
