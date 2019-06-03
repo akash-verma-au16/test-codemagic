@@ -488,18 +488,17 @@ class ListPost extends React.Component {
         return (
 
             <Container style={{ backgroundColor: '#eee' }}>
-
                 <ScrollView
                     showsVerticalScrollIndicator={false}
                     refreshControl={
                         <RefreshControl
-                            refreshing={this.state.refreshing || this.state.networkChanged} //this.props.isConnected
+                            refreshing={this.state.refreshing} //this.props.isConnected
                             onRefresh={() => {
                                 /* Show loader when manual refresh is triggered */
                                 if (this.props.isConnected) {
                                     this.setState({ refreshing: true }, this.loadPosts())
                                 } else {
-                                    this.setState({ refreshing: false, networkChanged: false }, () => {
+                                    this.setState({ refreshing: false }, () => {
                                         Toast.show({
                                             text: 'Please connect to the internet.',
                                             type: 'danger',

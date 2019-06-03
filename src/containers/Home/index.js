@@ -358,7 +358,7 @@ class Home extends React.Component {
                 <Post
                     key={index}
                     postId={item.Item.post_id}
-                    postCreator={item.Item.associate_name}
+                    postCreator={this.props.associateList[item.Item.associate_id]}
                     postCreator_id={item.Item.associate_id}
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time={item.Item.time}
@@ -600,6 +600,8 @@ class Home extends React.Component {
             console.log(error)
         }
     }
+    
+    transactionData = {}
 
     createTransactionTile = (data) => {
         data.map((item, index) => {
@@ -629,7 +631,7 @@ class Home extends React.Component {
                                 </View>
                             </View>
                             <View style={styles.pointsView}>
-                                <Text style={item.t_type == 'cr' ? styles.credit : styles.debit}>{item.t_type == 'credit' ? "+ " + item.points : "- " + item.points }</Text>
+                                <Text style={item.t_type == 'cr' ? styles.credit : styles.debit}>{item.t_type == 'cr' ? "+ " + item.points : "- " + item.points }</Text>
                             </View>
                         </View>
                     </View>
@@ -1116,7 +1118,9 @@ class Home extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        associateList: state.user.associateList,
         email: state.user.emailAddress,
+        userName: state.user.firstName + " " + state.user.lastName,
         firstName: state.user.firstName,
         lastName: state.user.lastName,
         accountAlias: state.user.accountAlias,
