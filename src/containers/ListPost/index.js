@@ -111,12 +111,17 @@ class ListPost extends React.Component {
         }
         PushNotification.onNotification((notification) => {
             // Note that the notification object structure is different from Android and IOS
-            console.log('in app notification', notification);
 
+            const messageLength = 40
+            let updatedMessage = notification.body
+            
+            if(updatedMessage.length > messageLength){
+                updatedMessage = updatedMessage.substring(0,messageLength) +'...'
+            }
             //Display notification
             this.props.showNotification({
                 title: notification.title,
-                message: notification.body,
+                message: updatedMessage,
                 icon: notificationIcon,
                 onPress: () => {
                     const url = notification.data['pinpoint.deeplink']
@@ -224,7 +229,7 @@ class ListPost extends React.Component {
          this.backHandler.remove()
      } 
 
-    handleConnectivityChange =  (isConnected) => {
+    handleConnectivityChange = (isConnected) => {
         if(isConnected) {
             this.setState({
                 networkChanged: true

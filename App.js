@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Navigator from './src/containers/Navigator'
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from "@react-native-community/netinfo"
-import { StatusBar, Linking } from 'react-native';
+import { StatusBar, Linking ,View,Text,TouchableOpacity} from 'react-native';
 import { Root } from 'native-base'
 import { createStore, compose } from 'redux'
 import reducer from './src/store/reducers'
@@ -119,7 +119,7 @@ export default class App extends Component {
     render() {
         return (
             this.state.dataLoaded ?
-                <InAppNotificationProvider backgroundColour='#76c1e2'>
+                <InAppNotificationProvider backgroundColour='#76c1e2' closeInterval={5000} >
                     <Root style={{ zIndex: 0 }}>
                         <StatusBar backgroundColor='#1c92c4' barStyle='light-content' />
                         <Provider store={this.store}>
