@@ -58,7 +58,7 @@ import { strngthIcon } from '../../components/Card/data'
 
 // API methods
 import { read_transaction, user_profile, strength_counts, update_profile, file_download, file_upload } from '../../services/profile'
-import { list_posts } from '../../services/post'
+import { list_posts, delete_post } from '../../services/post'
 
 /* Assets */
 // import thumbnail from '../../assets/thumbnail.jpg'
@@ -85,7 +85,8 @@ class Home extends React.Component {
             visibilityModalVisible: false,
             isImageLoading: false,
             photo: null,
-            imageUrl: null
+            imageUrl: null,
+            isPostDeleted: false
         }
         this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id || this.state.associate_id == undefined })
         console.log('Associate ID:',this.state.associate_id)
@@ -97,6 +98,8 @@ class Home extends React.Component {
         this.showToast = this.showToast.bind(this)
         this.handleEditProfile = this.handleEditProfile.bind(this)
         this.pager = React.createRef();
+        this.posts = []
+        this.counts = []
         this.homeDataList = []
         this.homeDataRowList = []
         this.projectList = []
@@ -110,28 +113,6 @@ class Home extends React.Component {
         this.dataList = []
 
         Moment.globalMoment = moment;
-        // moment.updateLocale('en', {
-        //     relativeTime: {
-        //         past: function (input) {
-        //             return input === 'just now'
-        //                 ? input
-        //                 : input + ' ago'
-        //         },
-        //         s: 'just now',
-        //         future: "in %s",
-        //         ss: '%ds',
-        //         m: "%dm",
-        //         mm: "%dm",
-        //         h: "%dh",
-        //         hh: "%dh",
-        //         d: "%dd",
-        //         dd: "%dd",
-        //         M: "%dm",
-        //         MM: "%dm",
-        //         y: "%dy",
-        //         yy: "%dy"
-        //     }
-        // });
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -256,6 +237,65 @@ class Home extends React.Component {
         // this.setState({loading: true})
     }
 
+    editPost = () => {
+        ToastAndroid.showWithGravityAndOffset(
+            'Coming soon',
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM,
+            25,
+            100,
+        );
+    }
+
+    deletePost = (postId) => {
+        ToastAndroid.showWithGravityAndOffset(
+            'Coming soon',
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM,
+            25,
+            100,
+        );
+        // if (this.props.isConnected) {
+        //     this.setState({ isPostDeleted: true })
+        //     const payload = {
+        //         Data: {
+        //             post_id: postId,
+        //             tenant_id: this.props.accountAlias,
+        //             ops: "delete_post",
+        //             associate_id: this.props.associate_id
+        //         }
+        //     }
+
+        //     var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
+        //     console.log("Delete PostIndex", index)
+        //     this.homeDataList.splice(index, 1)
+        //     this.posts.splice(index, 1)
+        //     if (this.posts.length == 0) {
+        //         this.setState({ initalLoad: true })
+        //     }
+        //     this.setState({ isPostDeleted: true })
+        //     try {
+        //         delete_post(payload, this.headers).then((res) => {
+        //             if (res.status === 200) {
+        //                 // this.loadPosts()
+        //                 this.setState({isPostDeleted: false})
+        //             }
+        //             console.log('delete_post', res)
+        //         }).catch((e) => {
+        //             console.log(e)
+        //         })
+        //     }
+        //     catch (e) {
+        //         console.log(e)
+        //     }
+        //     // this.setState({isPostDeleted: false})
+
+        // }
+        // else {
+        //     this.showToast()
+        // }
+    }
+
     async loadHome() {
         this.setState({
             homeRefreshing: true
@@ -285,25 +325,18 @@ class Home extends React.Component {
                         this.setState({ homeRefreshing: false })
                         return
                     } else {
+                        this.posts = []
                         this.homeDataBackup = response.data.data.posts
-                        this.homeDataList = []
-                        response.data.data.posts.map((item, index) => {
-                            this.homeDataList.push(
-                                // Post Component
-                                <Post
-                                    key={index}
-                                    postCreator={item.Item.associate_name} 
-                                    postCreator_id={item.Item.associate_id} 
-                                    profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
-                                    time={item.Item.time}
-                                    postMessage={item.Item.message}
-                                    taggedAssociates={item.Item.tagged_associates}
-                                    strength={item.Item.sub_type}
-                                    associate={item.Item.associate_id}
-                                />
-                            )
+                        this.posts = response.data.data.posts
+                        this.posts.map((item) => {
+                            this.counts = response.data.data.counts.filter((elm) => {
+                                return elm.post_id == item.Item.post_id
+                            })
+                            item.Item.likeCount = this.counts[0].likeCount
+                            item.Item.commentCount = this.counts[0].commentCount
                         })
-                        this.setState({ homeRefreshing: false })
+                        
+                        this.createTiles(this.posts)
                     }
                 }).catch((e) => {
                     this.setState({ homeRefreshing: false })
@@ -315,6 +348,32 @@ class Home extends React.Component {
             this.setState({ homeRefreshing: false })
             console.log(error)
         }
+    }
+
+    createTiles = (posts) => {
+        this.homeDataList = []
+        posts.map((item, index) => {
+            this.homeDataList.push(
+                // Post Component
+                <Post
+                    key={index}
+                    postId={item.Item.post_id}
+                    postCreator={item.Item.associate_name}
+                    postCreator_id={item.Item.associate_id}
+                    profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
+                    time={item.Item.time}
+                    postMessage={item.Item.message}
+                    taggedAssociates={item.Item.tagged_associates}
+                    strength={item.Item.sub_type}
+                    associate={item.Item.associate_id}
+                    likeCount={item.Item.likeCount}
+                    commentCount={item.Item.commentCount}
+                    postDeleteHandler={this.deletePost}
+                    editPostHandler={this.editPost} 
+                />
+            )
+        })
+        this.setState({ homeRefreshing: false, isPostDeleted: false })
     }
 
     loadSummary = () => {
@@ -400,6 +459,7 @@ class Home extends React.Component {
                             "last_name": this.state.lastName,
                             "email": this.state.email,
                             "phone_number": "+91" + this.state.phoneNo
+                            
                         }
                         ToastAndroid.showWithGravityAndOffset(
                             'Updating',
@@ -604,8 +664,6 @@ class Home extends React.Component {
                 RNFetchBlob.fetch('PUT', response.data.data['upload-signed-url'], headers, RNFetchBlob.wrap(url))
                     .then(() => {
                         console.log('image uploaded')
-                        // this.setState({ }, () => this.handleImageDownload())
-                        // this.setTimeout(() => this.handleImageDownload(), 3000)
                         this.handleImageDownload()
                         ImageCropPicker.clean().then(() => {
                             console.log('removed all tmp images from tmp directory');
@@ -643,9 +701,6 @@ class Home extends React.Component {
 
     /* Load image from camera */
     handleChoosePhotoFromCamera = () => {
-        const options = {
-            noData: true
-        }
         /* Request permissions and import image */
         ImageCropPicker.openCamera({
             width: 300,

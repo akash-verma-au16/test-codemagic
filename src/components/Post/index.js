@@ -30,18 +30,19 @@ class Post extends Component {
         this.initalState = {
             like: false,
             isLiked: false,
-            likes: 0,
-            comments: 0,
-            postMessage: "",
             modalVisible: false,
             likeId: "",
             isEdit: false,
             editPostMessage: "",
-            addOn: 0
+            addOn: 0,
+            likes: this.props.likeCount,
+            comments: this.props.commentCount,
+            postMessage: this.props.postMessage,
+            taggedAssociates: this.props.taggedAssociates
         }
         this.state = this.initalState
-        
         this.postMessage = this.props.postMessage
+        this.taggedAssociates = []
         //formatting update locale
         Moment.globalMoment = moment;
         moment.updateLocale('en', {
@@ -73,13 +74,6 @@ class Post extends Component {
         headers: {
             Authorization: this.props.idToken
         }
-    }
-    componentWillMount() {
-        this.setState({
-            likes: this.props.likeCount,
-            comments: this.props.commentCount,
-            postMessage: this.props.postMessage
-        })
     }
 
     likePost = () => {
@@ -213,47 +207,41 @@ class Post extends Component {
     }
 
     rewardsAddon = () => {
-        if(this.state.addOn > this.profileData.wallet_balance) {
-            if (this.props.isConnected) {
-                this.props.taggedAssociates.map((item) => {
-                    delete item.associate_name
-                })
-                console.log("this.props.taggedAssociates", this.props.taggedAssociates)
-                const payload = {
-                    tenant_id: this.props.accountAlias,
-                    associate_id: this.props.associate_id,
-                    tagged_associates: this.props.taggedAssociates,
-                    sub_type: this.props.strength,
-                    type: this.props.type,
-                    post_id: this.props.postId,
-                    points: 10
-                }
-                this.setState({ addOn: this.state.addOn + 10 })
-                try {
-                    rewards_addon(payload, this.headers).then((res) => {
-                        console.log('Addon', res)
+        console.log("this.props.walletBalance",this.props.walletBalance)
+        if (this.props.isConnected) {
+            this.setState({ addOn: this.state.addOn + 10 })
+            // this.taggedAssociates = this.props.taggedAssociates
+            // this.taggedAssociates.map((item) => {
+            //     delete item.associate_name
 
-                    }).catch((e) => {
-                        console.log(e)
-                    })
-                }
-                catch (e) {
-                    console.log(e)
-                }
+            // })
+            console.log("this.props.taggedAssociates", this.props.taggedAssociates)
+            const payload = {
+                tenant_id: this.props.accountAlias,
+                associate_id: this.props.associate_id,
+                tagged_associates: this.props.taggedAssociates,
+                sub_type: this.props.strength,
+                type: this.props.type,
+                post_id: this.props.postId,
+                points: "10"
             }
-            else {
-                ToastAndroid.showWithGravityAndOffset(
-                    'No Internet Connection',
-                    ToastAndroid.LONG,
-                    ToastAndroid.TOP,
-                    25,
-                    100,
-                );
-            }
+            console.log("Rewards payload",payload )
+            
+            // try {
+            //     rewards_addon(payload, this.headers).then((res) => {
+            //         console.log('Addon', res)
+
+            //     }).catch((e) => {
+            //         console.log(e)
+            //     })
+            // }
+            // catch (e) {
+            //     console.log(e)
+            // }
         }
         else {
             ToastAndroid.showWithGravityAndOffset(
-                'You have insufficient points in your wallet',
+                'No Internet Connection',
                 ToastAndroid.LONG,
                 ToastAndroid.TOP,
                 25,
@@ -394,8 +382,8 @@ class Post extends Component {
                     {
                         (this.props.postCreator_id !== this.props.associate_id) ? 
                             <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={this.rewardsAddon}>
-                                <Icon name='md-add' type={'Ionicons'} style={{ color: '#bababa', fontSize: 19 }} />
-                                <Text style={styles.footerText}>Add-on</Text>
+                                <Icon name='md-add' type={'Ionicons'} style={this.state.addOn > 0 ? { color: '#1c92c4', fontSize: 19} : { color: '#bababa', fontSize: 19 }} />
+                                <Text style={this.state.addOn > 0 ? styles.footerTextActive : styles.footerTextInactive}>Add-on</Text>
                             </TouchableOpacity>
                             : null
                     }
@@ -450,6 +438,7 @@ class Post extends Component {
 
 const mapStateToProps = (state) => {
     return {
+        walletbalance: state.user.walletBalance,
         userName: state.user.firstName + " " + state.user.lastName,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,

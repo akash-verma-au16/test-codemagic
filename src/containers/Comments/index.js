@@ -244,9 +244,6 @@ class Comments extends React.Component {
     }
 
     loadComments = async(data) => {
-        console.log("loadComments")
-        // this.commentList = this.state.isCommentDeleted ? [] : this.commentList
-        console.log("this.commentList", this.commentList) 
         var inputData = data.sort((a,b) => {return a.time -b.time})
         // this.commentList = []
         await inputData.map((item, index) => {

@@ -22,7 +22,8 @@ import {
     Thumbnail
 } from 'native-base';
 /* Services */
-import { news_feed, delete_post } from '../../services/post'
+import { news_feed, delete_post, liked_post } from '../../services/post'
+import { dev } from '../../store/actions'
 //Loading Modal
 import LoadingModal from '../LoadingModal'
 //Prefetch profile data
@@ -30,6 +31,7 @@ import { loadProfile } from '../Home/apicalls'
 /* Components */
 import { NavigationEvents } from 'react-navigation';
 import thumbnail from '../../assets/thumbnail.jpg'
+
 // push notification
 import { withInAppNotification } from 'react-native-in-app-notification'
 import PushNotification from '@aws-amplify/pushnotification'
@@ -45,7 +47,10 @@ class ListPost extends React.Component {
             isPostDeleted: false,
             initalLoad: false
         }
+        this.loadLikes = this.loadLikes.bind(this)
         this.loadPosts = this.loadPosts.bind(this);
+        this.getProfile = this.getProfile.bind(this)
+        this.likes = []
         this.posts = []
         this.postList = []
         this.taggedAssociate = []
@@ -146,7 +151,30 @@ class ListPost extends React.Component {
                 }
             })
         })
+        this.loadLikes()
     }
+
+    loadLikes = () =>{
+        const payload = {
+            tenant_id: this.props.accountAlias,
+            associate_id: this.props.associate_id
+        }
+        try {
+            liked_post(payload,this.headers).then((res) => {
+                console.log("this.likes", this.likes)
+                if(res.status == "success") {
+                    this.likes = res.data
+                    console.log("this.likes")
+                }
+            }).catch((e) => {
+                console.log(e)
+            })
+        }
+        catch(e) {
+            console.log(e)
+        }
+    }
+
     componentDidUpdate() {
         this.handlePushNotificationNavigation()
     }
@@ -230,7 +258,6 @@ class ListPost extends React.Component {
                 networkChanged: true
             }, async () => {
                 this.loadPosts()
-                this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
                 console.log('Data:', this.profileData)
                 this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': this.props.isConnected })
             })
@@ -419,15 +446,18 @@ class ListPost extends React.Component {
             this.showToast()
         }
     }
+    getProfile= async() => {
+        console.log("loadProfile")
+        this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
+        console.log("this.profileData.wallet_balance", this.profileData.wallet_balance)
+        const payload = {
+            walletBalance: this.profileData.wallet_balance
+        }
+        this.props.updateWallet(payload)  
+    }
 
     createTiles = async(posts) => {
-        // this.postList = this.state.isPostDeleted ? [] : this.postList
-        console.log('this.state.isPostDeleted', this.state.isPostDeleted)
-        // this.setState({ refreshing: true })
-        console.log("this.postList", this.postList)
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
-        // this.props.update_wallet()
-        // this.postList = []
         posts.map((item, index) => {
             this.postList.push(
                 // Post Component
@@ -498,6 +528,7 @@ class ListPost extends React.Component {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.loadPosts()
+                                this.getProfile()
                             }
                         }
                     }}
@@ -557,4 +588,10 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(withInAppNotification(ListPost))
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withInAppNotification(ListPost))

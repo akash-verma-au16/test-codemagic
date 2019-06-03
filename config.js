@@ -38,8 +38,7 @@ export default {
         strength_details: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/strength_details",
         //likes Backup API
         liked_post: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/liked_post",
-        //Rewards addon sandbox
-        rewards_addon: "https://stqt4n24jb.execute-api.ap-southeast-1.amazonaws.com/api/share_addon"
+        rewards_addon: "https://835zntrqv6.execute-api.ap-southeast-1.amazonaws.com/api/share_addon"
     },
     api: {
         signup: "signup",
