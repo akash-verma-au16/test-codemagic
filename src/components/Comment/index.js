@@ -210,17 +210,7 @@ const styles = StyleSheet.create({
         flexWrap: 'nowrap',
         alignItems: 'center',
         justifyContent: 'flex-start'
-    },
-    // like: {
-    //     fontFamily: 'OpenSans- Regular',
-    //     fontSize: 16,
-    //     color: '#1c92c4'
-    // },
-    // unlike: {
-    //     fontFamily: 'OpenSans- Regular',
-    //     fontSize: 16,
-    //     color: '#ccc'
-    // }
+    }
 })
 
 const mapStateToProps = (state) => {

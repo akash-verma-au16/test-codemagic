@@ -183,7 +183,7 @@ class Likes extends React.Component {
                             onRefresh={() => {
                                 if (this.props.isConnected) {
                                     if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                        this.loadPeople()
+                                        this.fetchPeopleList()
                                     }
                                 }
                                 else {

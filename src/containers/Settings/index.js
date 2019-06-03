@@ -83,7 +83,7 @@ class Settings extends React.Component {
             onPress: () => this.toast()
         },
         {
-            key: 'App Version : 1.12',
+            key: 'App Version : 1.13',
             icon: 'md-phone-portrait'
         },
         {

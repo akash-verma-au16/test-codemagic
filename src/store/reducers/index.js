@@ -94,6 +94,16 @@ export default (state = initialState, action) => {
         }
     }
 
+    case dev.UPDATE_WALLET: {
+        return {
+            ...state,
+            user: {
+                ...state.user,
+                walletBalance: action.payload.walletBalance
+            }
+        }
+    }
+
     default: {
         return state;
     }
