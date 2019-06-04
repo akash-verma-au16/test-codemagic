@@ -122,6 +122,7 @@ class ListPost extends React.Component {
             
             /* Store the image */
             console.log('image url',response.data.data['download-signed-url'])
+
             this.props.navigation.setParams({ 'imageUrl': response.data.data['download-signed-url']})
             this.props.imageUrl(response.data.data['download-signed-url'])
         }).catch((error) => {
@@ -554,6 +555,7 @@ class ListPost extends React.Component {
                     onWillFocus={async () => {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
+                                this.handleImageDownload()
                                 this.loadPosts()
                                 this.getProfile()
                             }
