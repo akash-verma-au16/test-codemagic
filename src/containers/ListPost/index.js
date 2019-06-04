@@ -130,8 +130,6 @@ class ListPost extends React.Component {
         })
     }
     componentWillMount() {
-        /* Load image from S3 */
-        this.handleImageDownload()
 
         this.props.navigation.setParams({ commingSoon: this.commingSoon });
         if (this.props.isFreshInstall) {
@@ -524,6 +522,7 @@ class ListPost extends React.Component {
                             refreshing={this.state.refreshing} //this.props.isConnected
                             onRefresh={() => {
                                 /* Show loader when manual refresh is triggered */
+                                this.props.navigation.setParams({ 'imageUrl': this.props.imagelink})
                                 if (this.props.isConnected) {
                                     this.setState({ refreshing: true }, this.loadPosts())
                                 } else {
@@ -555,7 +554,7 @@ class ListPost extends React.Component {
                     onWillFocus={async () => {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                this.handleImageDownload()
+                                this.props.navigation.setParams({ 'imageUrl': this.props.imagelink})
                                 this.loadPosts()
                                 this.getProfile()
                             }
@@ -614,7 +613,7 @@ const mapStateToProps = (state) => {
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
         idToken: state.user.idToken,
-        imageUrl:state.user.imageUrl,
+        imagelink:state.user.imageUrl,
         tenant_name:state.user.tenant_name,
         email:state.user.emailAddress
     };
