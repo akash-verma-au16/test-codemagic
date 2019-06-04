@@ -84,7 +84,7 @@ class CreatePost extends React.Component {
                     disabled={true}
                 >
                     <Thumbnail
-                        source={thumbnail}
+                        source={{uri:navigation.getParam('imageUrl')}}
 
                         style={
                             {
@@ -266,7 +266,7 @@ class CreatePost extends React.Component {
         } 
         if (this.state.addPoints > this.profileData.wallet_balance) {
             ToastAndroid.showWithGravityAndOffset(
-                'You have insufficient wallet balance ' +  this.profileData.wallet_balance +' points.',
+                'You have insufficient wallet balance ' + this.profileData.wallet_balance +' points.',
                 ToastAndroid.SHORT,
                 ToastAndroid.BOTTOM,
                 25,
@@ -667,6 +667,7 @@ class CreatePost extends React.Component {
                     onWillFocus={async() => {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
+                                this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl})
                                 this.loadVisibility()
                                 this.loadMembers()
                                 this.profileData = await loadProfile({
@@ -715,7 +716,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 5, height: 5 },
         shadowColor: 'black',
         shadowOpacity: 0.2,
-        elevation: 2,
+        elevation: 2
     },
     addPoints: {
         width: "100%",
@@ -769,7 +770,8 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        idToken: state.user.idToken,
+        imageUrl:state.user.imageUrl
     };
 }
 

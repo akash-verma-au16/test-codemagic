@@ -13,8 +13,11 @@ import {
 import NetInfo from "@react-native-community/netinfo"
 import AsyncStorage from '@react-native-community/async-storage';
 import Post from '../../components/Post/index'
+
 /* Redux */
 import { connect } from 'react-redux'
+import {user} from '../../store/actions'
+import { file_download } from '../../services/profile'
 import {
     Container,
     Icon,
@@ -92,7 +95,7 @@ class ListPost extends React.Component {
                     }}
                 >
                     <Thumbnail
-                        source={thumbnail}
+                        source={{ uri: navigation.getParam('imageUrl')}}
                         style={{
                             height: '70%',
                             borderRadius: 50,
@@ -104,7 +107,31 @@ class ListPost extends React.Component {
             )
         };
     };
+    
+    /* Get image from S3 */
+    handleImageDownload = () => {
+        
+        /* Request image*/
+        const payload = {
+            tenant_name: this.props.tenant_name + this.props.accountAlias,
+            file_name: 'logo.png',
+            associate_email: this.props.email
+        }
+        console.log("Payload", payload)
+        file_download(payload).then((response) => {
+            
+            /* Store the image */
+            console.log('image url',response.data.data['download-signed-url'])
+
+            this.props.navigation.setParams({ 'imageUrl': response.data.data['download-signed-url']})
+            this.props.imageUrl(response.data.data['download-signed-url'])
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
     componentWillMount() {
+        /* Load image from S3 */
+        this.handleImageDownload()
 
         this.props.navigation.setParams({ commingSoon: this.commingSoon });
         if (this.props.isFreshInstall) {
@@ -252,7 +279,7 @@ class ListPost extends React.Component {
          this.backHandler.remove()
      } 
 
-    handleConnectivityChange =  (isConnected) => {
+    handleConnectivityChange = (isConnected) => {
         if(isConnected) {
             this.setState({
                 networkChanged: true
@@ -528,6 +555,7 @@ class ListPost extends React.Component {
                     onWillFocus={async () => {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
+                                this.handleImageDownload()
                                 this.loadPosts()
                                 this.getProfile()
                             }
@@ -585,14 +613,17 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        idToken: state.user.idToken,
+        imageUrl:state.user.imageUrl,
+        tenant_name:state.user.tenant_name,
+        email:state.user.emailAddress
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props })
+        updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
+        imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props })
     };
 }
-
 export default connect(mapStateToProps, mapDispatchToProps)(withInAppNotification(ListPost))
