@@ -23,7 +23,6 @@ class EditPost extends React.Component {
             isChanged: false
         }
         this.associateList=[]
-        this.showToast = this.showToast.bind(this)
 
         //formatting update locale
         Moment.globalMoment = moment;
@@ -114,43 +113,81 @@ class EditPost extends React.Component {
         this.props.navigation.setParams({ isChanged: this.state.isChanged, editPostHandler: this.editPostHandler }); 
         // Hardware backpress handle
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            this.goBack();
+            Keyboard.dismiss()
+            this.goBack()
             return true;
         });
     }
 
     editPostHandler = () => {
-        const payload = {
-            Data: {
-                post_id: this.props.navigation.getParam('postId'),
-                tenant_id: this.props.accountAlias,
-                associate_id: this.props.associate_id,
-                message: this.state.postMessage,
-                type: this.props.navigation.getParam('type'),
-                sub_type: this.state.strength,
-                ops: "edit_post",
-                tagged_associates:this.state.taggedAssociates,
-                privacy: {
-                    type: "tenant",
-                    id: this.props.accountAlias
-                },
-                time: this.state.epoch
+        if(this.state.postMessage.length > 0) {
+            const payload = {
+                Data: {
+                    post_id: this.props.navigation.getParam('postId'),
+                    tenant_id: this.props.accountAlias,
+                    associate_id: this.props.associate_id,
+                    message: this.state.postMessage,
+                    type: this.props.navigation.getParam('type'),
+                    sub_type: this.state.strength,
+                    ops: "edit_post",
+                    tagged_associates: this.state.taggedAssociates,
+                    privacy: {
+                        type: "tenant",
+                        id: this.props.accountAlias
+                    },
+                    time: this.state.epoch
+                }
             }
-        }
-        this.props.navigation.state.params.returnData({
-            message: this.state.postMessage
-        })
-        this.props.navigation.goBack()
-    }
+            //Authorization headers
+            const headers = {
+                headers: {
+                    Authorization: this.props.idToken
+                }
+            }
 
-    showToast() {
-        ToastAndroid.showWithGravityAndOffset(
-            'Coming soon',
-            ToastAndroid.LONG,
-            ToastAndroid.BOTTOM,
-            25,
-            100,
-        );
+            if (this.props.isConnected) {
+                try {
+                    edit_post(payload, headers).then((res) => {
+                        console.log('Edit Post', res)
+                        if (res.status === 200) {
+                            // this.props.navigation.state.params.returnData({
+                            //     message: this.state.postMessage
+                            // })
+                            // this.props.navigation.goBack()
+                        }
+                    }).catch((e) => {
+                        console.log(e)
+                    })
+                }
+                catch (e) {
+                    console.log(e)
+                }
+            }
+            else {
+                ToastAndroid.showWithGravityAndOffset(
+                    'Please, connect to the internet',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                    25,
+                    100,
+                );
+            }
+
+            this.props.navigation.state.params.returnData({
+                message: this.state.postMessage
+            })
+            this.props.navigation.goBack()
+        }
+        else {
+            ToastAndroid.showWithGravityAndOffset(
+                'Post cannot be empty',
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM,
+                25,
+                100,
+            );
+        }
+        
     }
 
     async goBack() {

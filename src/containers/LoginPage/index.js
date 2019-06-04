@@ -40,6 +40,7 @@ import { read_member, read_tenant } from '../../services/tenant'
 import toSentenceCase from '../../utilities/toSentenceCase'
 /* Push notification */
 import {register_device} from '../../services/pushNotification'
+import { get_associate_name } from '../../services/post'
 import slackLogger from '../../services/slackLogger'
 class LoginPage extends React.Component {
 
@@ -60,6 +61,8 @@ class LoginPage extends React.Component {
         this.textInputAccountAlias = React.createRef();
         this.textInputEmail = React.createRef();
         this.textInputPassword = React.createRef();
+        this.associateList = {}
+        this.getAssociateNames = this.getAssociateNames.bind(this)
         
     }
     componentDidMount() {
@@ -100,6 +103,20 @@ class LoginPage extends React.Component {
         //     }
         // )
         // ]).start()
+    }
+
+    getAssociateNames = async (tenantId) => {
+        try {
+            await get_associate_name({ tenant_id: tenantId }).then((res) => {
+                console.log('res', res)
+                res.data.data.map((item) => {
+                    this.associateList[item.associate_id] = item.full_name
+                })
+            })  
+        }
+        catch(e) {
+            console.log(e)
+        }
     }
 
     forgotPasswordHandler=()=>{
@@ -173,7 +190,9 @@ class LoginPage extends React.Component {
                             headers: {
                                 Authorization: response.data.payload.idToken.jwtToken
                             }
-                        }).then((tenantRes) => {
+                        }).then(async(tenantRes) => {
+                            await this.getAssociateNames(this.state.accountAlias)
+                            console.log("Get associate name", this.associateList)
                             // console.log("Tenant Data", res)
                             // this.tenantName = tenantRes.data.data[0].tenant_name
                             if (tenantRes.data.data[0].is_disabled) {
@@ -204,7 +223,8 @@ class LoginPage extends React.Component {
                                         lastName: lastName,
                                         phoneNumber: response.data.payload.idToken.payload.phone_number,
                                         emailAddress: response.data.payload.idToken.payload.email.toLowerCase(),
-                                        idToken: response.data.payload.idToken.jwtToken
+                                        idToken: response.data.payload.idToken.jwtToken,
+                                        associateList: this.associateList
 
                                     };
                                     console.log("Payload", payload)

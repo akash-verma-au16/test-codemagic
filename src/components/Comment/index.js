@@ -25,11 +25,12 @@ import moment from 'moment/min/moment-with-locales'
 class Comment extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {
-            modalVisible: false, 
-            isEdit: false, 
-            editComment: ""
+        let initialState = {
+            modalVisible: false,
+            isEdit: false,
+            comment: this.props.message
         }
+        this.state = initialState
         this.showToast = this.showToast.bind(this)
         //formatting update locale
         Moment.globalMoment = moment;
@@ -80,7 +81,7 @@ class Comment extends React.Component {
     returnData(data) {
         this.setState({ 
             isEdit: true,
-            editComment: data.message 
+            comment: data.message 
         })
 
         console.log("Return Data", data)
@@ -111,7 +112,7 @@ class Comment extends React.Component {
                                 />
                             </TouchableOpacity>
                         </View>
-                        <Text style={styles.comment}>{this.state.isEdit ? this.state.editComment : this.props.message}</Text>
+                        <Text style={styles.comment}>{this.state.comment}</Text>
                     </View>
                     <Moment style={{ fontSize: 14, paddingVertical: 3, paddingLeft: 10 }} element={Text} fromNow>{this.props.time * 1000}</Moment>
                 </View>
@@ -122,7 +123,7 @@ class Comment extends React.Component {
                         if (key == 'edit') {
                             this.props.navigation.navigate('EditComment',{
                                 associate: this.props.userName,
-                                comment: this.props.message,
+                                comment: this.state.comment,
                                 time: this.props.time,
                                 postId: this.props.post_id, 
                                 commentId: this.props.comment_id,
@@ -209,17 +210,7 @@ const styles = StyleSheet.create({
         flexWrap: 'nowrap',
         alignItems: 'center',
         justifyContent: 'flex-start'
-    },
-    // like: {
-    //     fontFamily: 'OpenSans- Regular',
-    //     fontSize: 16,
-    //     color: '#1c92c4'
-    // },
-    // unlike: {
-    //     fontFamily: 'OpenSans- Regular',
-    //     fontSize: 16,
-    //     color: '#ccc'
-    // }
+    }
 })
 
 const mapStateToProps = (state) => {
