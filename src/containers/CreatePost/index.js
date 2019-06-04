@@ -332,9 +332,8 @@ class CreatePost extends React.Component {
                     id: this.state.visibilityName == "" ? this.props.accountAlias : this.state.visibilityName //this.state.visibilityName
                 },
                 time: timestamp,
-                points: this.state.addPoints
+                points: this.state.addPoints > 0 ? this.state.addPoints : 0
             }
-
         }
         const headers = {
             headers: {
