@@ -130,7 +130,7 @@ class ListPost extends React.Component {
         })
     }
     componentWillMount() {
-
+        this.handleImageDownload()
         this.props.navigation.setParams({ commingSoon: this.commingSoon });
         if (this.props.isFreshInstall) {
             this.props.navigation.navigate('TermsAndConditions')

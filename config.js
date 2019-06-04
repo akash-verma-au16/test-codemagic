@@ -25,6 +25,7 @@ export default {
         like_post: "https://0n3dfqk7t5.execute-api.ap-southeast-1.amazonaws.com/dev/posts/like_post",
         unlike_post: "https://0n3dfqk7t5.execute-api.ap-southeast-1.amazonaws.com/dev/posts/unlike_post",
         list_likes: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/list_likes",
+        like_id: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/like_id",
         file_download: "https://38fo7itjbj.execute-api.ap-southeast-1.amazonaws.com/api/file_download",
         file_upload: "https://38fo7itjbj.execute-api.ap-southeast-1.amazonaws.com/api/file_upload",
         list_comments: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/list_comments",
