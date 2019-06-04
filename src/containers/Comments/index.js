@@ -83,7 +83,8 @@ class Comments extends React.Component {
         console.log("Comment Count")
         var count = this.commentList.length
         this.props.navigation.state.params.returnCount({
-            count: count
+            count: count,
+            countUpdated: true
         })
         this.props.navigation.goBack()
     }

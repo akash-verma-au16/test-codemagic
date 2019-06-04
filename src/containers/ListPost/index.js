@@ -326,6 +326,7 @@ class ListPost extends React.Component {
                             this.setState({ refreshing: false, networkChanged: false })
                             return
                         }
+
                     } else {
                         /* Change in payload */
                         if(this.state.initalLoad) {
@@ -370,19 +371,6 @@ class ListPost extends React.Component {
                 }).catch((error) => {
                     this.setState({ refreshing: false, networkChanged: false })
                     console.log(error)
-                    // if (!this.props.isConnected) {
-                    //     Toast.show({
-                    //         text: error.response.data.code, 
-                    //         type: 'danger',
-                    //         duration: 3000
-                    //     })
-                    // } else {
-                    //     Toast.show({
-                    //         text: "Please connect to the internet",
-                    //         type: 'danger',
-                    //         duration: 3000
-                    //     })
-                    // }
                 })
             }
             catch (error) {
@@ -454,6 +442,7 @@ class ListPost extends React.Component {
     getProfile= async() => {
         console.log("loadProfile")
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
+        this.props.navigation.setParams({ 'profileData': this.profileData })
         console.log("this.profileData.wallet_balance", this.profileData.wallet_balance)
         const payload = {
             walletBalance: this.profileData.wallet_balance

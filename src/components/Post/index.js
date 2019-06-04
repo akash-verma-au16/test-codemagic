@@ -76,29 +76,26 @@ class Post extends Component {
     }
 
     componentWillMount() {
-        this.setState({
-            ...this.state,
-            likes: this.props.likeCount,
-            comments: this.props.commentCount,
-            taggedAssociates: this.props.taggedAssociates
-        })
         this.restoreLikes()
     }
 
     componentWillReceiveProps(nextProps) {
-        if(nextProps.likeCount !== this.state.likes || nextProps.commentCount !== this.state.comments) {
+        if(nextProps.likeCount !== this.props.likeCount || nextProps.commentCount !== this.props.commentCount) {
             this.setState({
                 likes: nextProps.likeCount,
                 comments: nextProps.commentCount
             })
-            console.log("componentWillReceiveProps if", this.state.likes)
+        }
+        else if (this.state.likes > this.props.likeCount) {
+            this.setState({
+                likes: this.state.likes
+            })
         }
         else {
-            this.setState({ 
-                likes: this.props.likeCount,
-                comments: this.props.commentCount
+            this.setState({
+                likes: this.state.likes,
+                comments: this.state.comments
             })
-            console.log("componentWillReceiveProps", this.state.likes)
         }
     }
 
@@ -205,7 +202,7 @@ class Post extends Component {
                     this.likePost()
                     // setTimeout(() => this.likePost(), 3000)
                 } else {
-                    this.setState({ isLiked: false, likes: this.state.likes - 1 })
+                    this.setState({ isLiked: false, likes: this.state.likes > 0 ? this.state.likes - 1 : 0 })
                     this.unlikePost()
                     // setTimeout(() => this.unlikePost(), 3000)                        
                 }
@@ -273,21 +270,21 @@ class Post extends Component {
                 }
                 console.log("Rewards payload", payload1)
 
-                try {
-                    rewards_addon(payload1, this.headers).then((res) => {
-                        console.log("Addon", res)
-                        const payload = {
-                            walletBalance: this.props.walletBalance - 10
-                        }
-                        this.props.updateWallet(payload) 
+                // try {
+                //     rewards_addon(payload1, this.headers).then((res) => {
+                //         console.log("Addon", res)
+                //         const payload = {
+                //             walletBalance: this.props.walletBalance - 10
+                //         }
+                //         this.props.updateWallet(payload) 
 
-                    }).catch((e) => {
-                        console.log(e)
-                    })
-                }
-                catch (e) {
-                    console.log(e)
-                }
+                //     }).catch((e) => {
+                //         console.log(e)
+                //     })
+                // }
+                // catch (e) {
+                //     console.log(e)
+                // }
             }
             else {
                 ToastAndroid.showWithGravityAndOffset(
@@ -320,6 +317,7 @@ class Post extends Component {
 
     returnData = (data) => {
         this.setState({
+            ...this.state,
             isEdit: true,
             postMessage: data.message
         })
