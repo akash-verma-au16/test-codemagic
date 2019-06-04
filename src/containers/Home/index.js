@@ -694,7 +694,7 @@ class Home extends React.Component {
         const payload = {
             tenant_name: this.props.tenantName + this.props.accountAlias,
             file_name: 'logo.png',
-            associate_email: this.userData.email || this.props.navigation.getParam('profileData')
+            associate_email: this.userData.email || this.props.navigation.getParam('profileData').email
         }
         console.log("Payload", payload)
         file_download(payload).then((response) => {
