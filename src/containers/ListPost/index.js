@@ -302,11 +302,9 @@ class ListPost extends React.Component {
                     } else {
                         console.log("log2")
                         /* Change in payload */
-
-                        /* Take Backup */
-                        this.payloadBackup = response.data.data.posts
-
-                        /* Skip for initial post load */
+                        if(this.state.initalLoad) {
+                            this.setState({ initalLoad: false })
+                        }
                         if (this.postList.length !== 0) {
 
                             if (this.scrollPosition > 150) {
@@ -320,7 +318,20 @@ class ListPost extends React.Component {
                         if (this.state.isPostDeleted) {
                             return
                         }
-                        this.posts = response.data.data.posts 
+                        // if (this.posts.length == 0 && !this.state.isPostDeleted) {
+                        //     this.posts = []
+                        //     this.posts = response.data.data.posts
+                        // }
+
+                        // /* Take Backup */
+                        // this.payloadBackup = response.data.data.posts
+                        // if (this.posts.length !== response.data.data.posts.length) {
+                        //     if (this.posts.length < response.data.data.posts.length && this.state.isPostDeleted) {
+                        //         return 
+                        //     }
+                        // }
+                        // this.posts = []
+                        this.posts = response.data.data.posts
                         this.posts.map((item) => {
                             this.counts = response.data.data.counts.filter((elm) => {
                                 return elm.post_id == item.Item.post_id
@@ -433,18 +444,17 @@ class ListPost extends React.Component {
         return (
 
             <Container style={{ backgroundColor: '#eee' }}>
-
                 <ScrollView
                     showsVerticalScrollIndicator={false}
                     refreshControl={
                         <RefreshControl
-                            refreshing={this.state.refreshing || this.state.networkChanged} //this.props.isConnected
+                            refreshing={this.state.refreshing} //this.props.isConnected
                             onRefresh={() => {
                                 /* Show loader when manual refresh is triggered */
                                 if (this.props.isConnected) {
                                     this.setState({ refreshing: true }, this.loadPosts())
                                 } else {
-                                    this.setState({ refreshing: false, networkChanged: false }, () => {
+                                    this.setState({ refreshing: false }, () => {
                                         Toast.show({
                                             text: 'Please connect to the internet.',
                                             type: 'danger',
