@@ -17,7 +17,6 @@ import Post from '../../components/Post/index'
 /* Redux */
 import { connect } from 'react-redux'
 import {user} from '../../store/actions'
-import { file_download } from '../../services/profile'
 import {
     Container,
     Icon,
@@ -107,30 +106,8 @@ class ListPost extends React.Component {
             )
         };
     };
-    
-    /* Get image from S3 */
-    handleImageDownload = () => {
-        
-        /* Request image*/
-        const payload = {
-            tenant_name: this.props.tenant_name + this.props.accountAlias,
-            file_name: 'logo.png',
-            associate_email: this.props.email
-        }
-        console.log("Payload", payload)
-        file_download(payload).then((response) => {
-            
-            /* Store the image */
-            console.log('image url',response.data.data['download-signed-url'])
-
-            this.props.navigation.setParams({ 'imageUrl': response.data.data['download-signed-url']})
-            this.props.imageUrl(response.data.data['download-signed-url'])
-        }).catch((error) => {
-            console.log(error)
-        })
-    }
     componentWillMount() {
-        this.handleImageDownload()
+
         this.props.navigation.setParams({ commingSoon: this.commingSoon });
         if (this.props.isFreshInstall) {
             this.props.navigation.navigate('TermsAndConditions')
@@ -324,6 +301,7 @@ class ListPost extends React.Component {
 
     //Loads news feed
     loadPosts = () => {
+        this.props.navigation.setParams({ 'imageUrl': this.props.imagelink}) 
         const payload = {
             tenant_id: this.props.accountAlias,
             associate_id: this.props.associate_id
