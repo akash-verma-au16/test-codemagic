@@ -67,32 +67,3 @@ export const delete_post = (
     const endpoint = config.url.delete_post
     return axios.put(endpoint, payload, headers)
 }
-
-export const list_likes = (
-    payload, headers
-) => {
-    const endpoint = config.url.list_likes
-    return axios.post(endpoint, payload, headers)
-}
-
-export const liked_post = (
-    payload, headers
-) => {
-    const endpoint = config.url.liked_post
-    return axios.post(endpoint, payload, headers)
-}
-
-//Get Associate Names for Post
-export const get_associate_name = (
-    payload
-) => {
-    const endpoint = config.url.get_associate_name
-    return axios.post(endpoint, payload)
-}
-
-export const rewards_addon = (
-    payload, headers
-) => {
-    const endpoint = config.url.rewards_addon
-    return axios.post(endpoint, payload, headers)
-}

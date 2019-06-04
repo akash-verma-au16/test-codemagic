@@ -121,64 +121,52 @@ class EditComment extends React.Component {
     }
 
     editCommentHandler = () => {
-        if(this.state.comment.length > 0) {
-            const payload = {
-                "Data": {
-                    post_id: this.props.navigation.getParam('postId'),
-                    tenant_id: this.props.accountAlias,
-                    ops: "update_comment",
-                    comment: {
-                        comment_id: this.props.navigation.getParam('commentId'),
-                        associate_id: this.props.associate_id,
-                        time: this.state.epoch,
-                        message: this.state.comment
+        const payload = {
+            "Data": {
+                post_id: this.props.navigation.getParam('postId'),
+                tenant_id: this.props.accountAlias,
+                ops: "update_comment",
+                comment: {
+                    comment_id: this.props.navigation.getParam('commentId'),
+                    associate_id: this.props.associate_id,
+                    time: this.state.epoch,
+                    message: this.state.comment
+                }
+            }
+        }
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
+        if (this.props.isConnected) {
+            try {
+                edit_comment(payload, headers).then((res) => {
+                    console.log('Edit comment', res)
+                    if(res.status === 200) {
+                        this.props.navigation.state.params.returnData({
+                            message: this.state.comment
+                        })
+                        this.props.navigation.goBack()
                     }
-                }
-            }
-            //Authorization headers
-            const headers = {
-                headers: {
-                    Authorization: this.props.idToken
-                }
-            }
-            if (this.props.isConnected) {
-                try {
-                    edit_comment(payload, headers).then((res) => {
-                        console.log('Edit comment', res)
-                        if (res.status === 200) {
-                            this.props.navigation.state.params.returnData({
-                                message: this.state.comment
-                            })
-                            this.props.navigation.goBack()
-                        }
-                    }).catch((e) => {
-                        console.log(e)
-                    })
-                }
-                catch (e) {
+                }).catch((e) => {
                     console.log(e)
-                }
+                })
             }
-            else {
-                ToastAndroid.showWithGravityAndOffset(
-                    'Please, connect to the internet',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                    25,
-                    100,
-                );
+            catch(e) {
+                console.log(e)
             }
         }
         else {
             ToastAndroid.showWithGravityAndOffset(
-                'Comment cannot be empty',
-                ToastAndroid.LONG,
+                'Please, connect to the internet',
+                ToastAndroid.SHORT,
                 ToastAndroid.BOTTOM,
                 25,
                 100,
             );
         }
-       
     }
 
     goBack() {

@@ -28,10 +28,6 @@ import {
 
 } from 'native-base';
 
-// Components from Moment.js
-import Moment from 'react-moment'
-import moment from 'moment/min/moment-with-locales'
-
 //styles
 import { styles } from './styles'
 
@@ -58,7 +54,7 @@ import { strngthIcon } from '../../components/Card/data'
 
 // API methods
 import { read_transaction, user_profile, strength_counts, update_profile, file_download, file_upload } from '../../services/profile'
-import { list_posts, delete_post } from '../../services/post'
+import { list_posts } from '../../services/post'
 
 /* Assets */
 // import thumbnail from '../../assets/thumbnail.jpg'
@@ -85,8 +81,7 @@ class Home extends React.Component {
             visibilityModalVisible: false,
             isImageLoading: false,
             photo: null,
-            imageUrl: null,
-            isPostDeleted: false
+            imageUrl: null
         }
         this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id || this.state.associate_id == undefined })
         console.log('Associate ID:',this.state.associate_id)
@@ -97,9 +92,8 @@ class Home extends React.Component {
         this.loadSummary = this.loadSummary.bind(this)
         this.showToast = this.showToast.bind(this)
         this.handleEditProfile = this.handleEditProfile.bind(this)
+        this.loadTransactions = this.loadTransactions.bind(this)
         this.pager = React.createRef();
-        this.posts = []
-        this.counts = []
         this.homeDataList = []
         this.homeDataRowList = []
         this.projectList = []
@@ -111,8 +105,6 @@ class Home extends React.Component {
         this.userData = this.state.associate_id == this.props.associate_id ? this.props.navigation.getParam('profileData') : {}
         console.log('Rec Obj',this.userData)
         this.dataList = []
-
-        Moment.globalMoment = moment;
     }
     static navigationOptions = ({ navigation }) => {
         return {
@@ -237,65 +229,6 @@ class Home extends React.Component {
         // this.setState({loading: true})
     }
 
-    editPost = () => {
-        ToastAndroid.showWithGravityAndOffset(
-            'Coming soon',
-            ToastAndroid.LONG,
-            ToastAndroid.BOTTOM,
-            25,
-            100,
-        );
-    }
-
-    deletePost = (postId) => {
-        ToastAndroid.showWithGravityAndOffset(
-            'Coming soon',
-            ToastAndroid.LONG,
-            ToastAndroid.BOTTOM,
-            25,
-            100,
-        );
-        // if (this.props.isConnected) {
-        //     this.setState({ isPostDeleted: true })
-        //     const payload = {
-        //         Data: {
-        //             post_id: postId,
-        //             tenant_id: this.props.accountAlias,
-        //             ops: "delete_post",
-        //             associate_id: this.props.associate_id
-        //         }
-        //     }
-
-        //     var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
-        //     console.log("Delete PostIndex", index)
-        //     this.homeDataList.splice(index, 1)
-        //     this.posts.splice(index, 1)
-        //     if (this.posts.length == 0) {
-        //         this.setState({ initalLoad: true })
-        //     }
-        //     this.setState({ isPostDeleted: true })
-        //     try {
-        //         delete_post(payload, this.headers).then((res) => {
-        //             if (res.status === 200) {
-        //                 // this.loadPosts()
-        //                 this.setState({isPostDeleted: false})
-        //             }
-        //             console.log('delete_post', res)
-        //         }).catch((e) => {
-        //             console.log(e)
-        //         })
-        //     }
-        //     catch (e) {
-        //         console.log(e)
-        //     }
-        //     // this.setState({isPostDeleted: false})
-
-        // }
-        // else {
-        //     this.showToast()
-        // }
-    }
-
     async loadHome() {
         this.setState({
             homeRefreshing: true
@@ -325,18 +258,25 @@ class Home extends React.Component {
                         this.setState({ homeRefreshing: false })
                         return
                     } else {
-                        this.posts = []
                         this.homeDataBackup = response.data.data.posts
-                        this.posts = response.data.data.posts
-                        this.posts.map((item) => {
-                            this.counts = response.data.data.counts.filter((elm) => {
-                                return elm.post_id == item.Item.post_id
-                            })
-                            item.Item.likeCount = this.counts[0].likeCount
-                            item.Item.commentCount = this.counts[0].commentCount
+                        this.homeDataList = []
+                        response.data.data.posts.map((item, index) => {
+                            this.homeDataList.push(
+                                // Post Component
+                                <Post
+                                    key={index}
+                                    postCreator={item.Item.associate_name} 
+                                    postCreator_id={item.Item.associate_id} 
+                                    profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
+                                    time={item.Item.time}
+                                    postMessage={item.Item.message}
+                                    taggedAssociates={item.Item.tagged_associates}
+                                    strength={item.Item.sub_type}
+                                    associate={item.Item.associate_id}
+                                />
+                            )
                         })
-                        
-                        this.createTiles(this.posts)
+                        this.setState({ homeRefreshing: false })
                     }
                 }).catch((e) => {
                     this.setState({ homeRefreshing: false })
@@ -459,7 +399,6 @@ class Home extends React.Component {
                             "last_name": this.state.lastName,
                             "email": this.state.email,
                             "phone_number": "+91" + this.state.phoneNo
-                            
                         }
                         ToastAndroid.showWithGravityAndOffset(
                             'Updating',
@@ -571,7 +510,6 @@ class Home extends React.Component {
                 this.setState({ refreshing: true })
                 // console.log("Calling read_transaction API")
                 await read_transaction(payload, this.headers).then(response => {
-                    console.log("Transaction", response.data.data.transaction_data)
                     if (this.transactionDataBackup.length === response.data.data.transaction_data) {
                         if (response.data.data.transaction_data.length == 0) {
                             this.transactionList = []
@@ -616,18 +554,11 @@ class Home extends React.Component {
                         <View style={styles.transactionView}>
                             <View style={styles.textView}>
                                 <Text style={styles.tText}>
-                                    Your wallet was {item.t_type == 'cr' ? "credited with " : "debited by "} {item.points} points.
+                                    Your wallet was {item.t_type == 'credit' ? "credited with " : "debited with "} {item.points} points.
                                 </Text>
                                 <View style={{flexDirection: 'row', flexWrap: 'nowrap', width: "100%", alignItems: 'center', justifyContent: "space-between"}}>
-                                    <View></View>
-                                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                                        <Text style={styles.t_time}>Date: </Text>
-                                        <Moment style={styles.timeStamp} element={Text} format="D MMM YYYY" withTitle>
-                                            {item.created_at}
-                                        </Moment>
-                                    </View>
-                                    
-                                    {/* <Text style={[styles.timeStamp, {paddingRight: 20}]}>{item.created_at}</Text> */}
+                                    <Text style={styles.timeStamp}>{item.created_at.date}</Text>
+                                    <Text style={[styles.timeStamp, {paddingRight: 20}]}>{item.created_at.time}</Text>
                                 </View>
                             </View>
                             <View style={styles.pointsView}>
@@ -666,6 +597,8 @@ class Home extends React.Component {
                 RNFetchBlob.fetch('PUT', response.data.data['upload-signed-url'], headers, RNFetchBlob.wrap(url))
                     .then(() => {
                         console.log('image uploaded')
+                        // this.setState({ }, () => this.handleImageDownload())
+                        // this.setTimeout(() => this.handleImageDownload(), 3000)
                         this.handleImageDownload()
                         ImageCropPicker.clean().then(() => {
                             console.log('removed all tmp images from tmp directory');
@@ -703,6 +636,9 @@ class Home extends React.Component {
 
     /* Load image from camera */
     handleChoosePhotoFromCamera = () => {
+        const options = {
+            noData: true
+        }
         /* Request permissions and import image */
         ImageCropPicker.openCamera({
             width: 300,

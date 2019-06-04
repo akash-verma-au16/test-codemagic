@@ -10,8 +10,7 @@ export const system ={
 }
 export const dev = {
     CLEAR_DATA : 'CLEAR_DATA',
-    UPDATE_USER: 'UPDATE_USER',
-    UPDATE_WALLET: 'UPDATE_WALLET'
+    UPDATE_USER: 'UPDATE_USER'
 }
 
 export const user = {
