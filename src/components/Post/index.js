@@ -11,6 +11,8 @@ import { styles } from './styles'
 /* unique id generation */
 import uuid from 'uuid'
 
+import { dev } from '../../store/actions'
+
 //Cusotm component
 import VisibilityModal from '../../containers/VisibilityModal'
 
@@ -83,26 +85,20 @@ class Post extends Component {
         this.restoreLikes()
     }
 
-    componentWillUnmount() {
-        this.setState({
-            like: false,
-            isLiked: false,
-            modalVisible: false,
-            likeId: "",
-            isEdit: false,
-            editPostMessage: "",
-            addOn: 0,
-            likes: 0,
-            comments: 0,
-            taggedAssociates: []
-        })
-    }
     componentWillReceiveProps(nextProps) {
-        if(nextProps.likeCount !== this.state.likes) {
-            this.setState({likes: 0})
+        if(nextProps.likeCount !== this.state.likes || nextProps.commentCount !== this.state.comments) {
+            this.setState({
+                likes: nextProps.likeCount,
+                comments: nextProps.commentCount
+            })
+            console.log("componentWillReceiveProps if", this.state.likes)
         }
         else {
-            this.setState({ likes: this.state.likes })
+            this.setState({ 
+                likes: this.props.likeCount,
+                comments: this.props.commentCount
+            })
+            console.log("componentWillReceiveProps", this.state.likes)
         }
     }
 
@@ -264,46 +260,55 @@ class Post extends Component {
 
     rewardsAddon = () => {
         console.log("this.props.walletBalance",this.props.walletBalance)
-        if (this.props.isConnected) {
-            this.setState({ addOn: this.state.addOn + 10 })
-            // this.taggedAssociates = this.props.taggedAssociates
-            // this.taggedAssociates.map((item) => {
-            //     delete item.associate_name
+        if (this.props.walletBalance > 10) {
+            if (this.props.isConnected) {
+                this.setState({ addOn: this.state.addOn + 10 })
+                const payload1 = {
+                    tenant_id: this.props.accountAlias,
+                    associate_id: this.props.associate_id,
+                    sub_type: this.props.strength,
+                    type: "addon",
+                    post_id: this.props.postId,
+                    points: "10"
+                }
+                console.log("Rewards payload", payload1)
 
-            // })
-            console.log("this.props.taggedAssociates", this.props.taggedAssociates)
-            const payload = {
-                tenant_id: this.props.accountAlias,
-                associate_id: this.props.associate_id,
-                tagged_associates: this.props.taggedAssociates,
-                sub_type: this.props.strength,
-                type: this.props.type,
-                post_id: this.props.postId,
-                points: "10"
+                try {
+                    rewards_addon(payload1, this.headers).then((res) => {
+                        console.log("Addon", res)
+                        const payload = {
+                            walletBalance: this.props.walletBalance - 10
+                        }
+                        this.props.updateWallet(payload) 
+
+                    }).catch((e) => {
+                        console.log(e)
+                    })
+                }
+                catch (e) {
+                    console.log(e)
+                }
             }
-            console.log("Rewards payload",payload )
-            
-            // try {
-            //     rewards_addon(payload, this.headers).then((res) => {
-            //         console.log('Addon', res)
-
-            //     }).catch((e) => {
-            //         console.log(e)
-            //     })
-            // }
-            // catch (e) {
-            //     console.log(e)
-            // }
+            else {
+                ToastAndroid.showWithGravityAndOffset(
+                    'No Internet Connection',
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM,
+                    25,
+                    100,
+                );
+            }
         }
         else {
             ToastAndroid.showWithGravityAndOffset(
-                'No Internet Connection',
+                'You have insufficient points',
                 ToastAndroid.LONG,
-                ToastAndroid.TOP,
+                ToastAndroid.BOTTOM,
                 25,
                 100,
-            );
+            )
         }
+        this.setState({addOn: 0})
     }
 
     returnCount = (count) => {
@@ -489,7 +494,7 @@ class Post extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        walletbalance: state.user.walletBalance,
+        walletBalance: state.user.walletBalance,
         userName: state.user.firstName + " " + state.user.lastName,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
@@ -497,4 +502,10 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(withNavigation(Post))
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withNavigation(Post))
