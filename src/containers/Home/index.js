@@ -53,6 +53,9 @@ import RNFetchBlob from 'rn-fetch-blob'
 import { connect } from 'react-redux'
 import { dev } from '../../store/actions'
 
+//Loading Modal
+import LoadingModal from '../LoadingModal'
+
 // import { homeData } from './data'
 import { strngthIcon } from '../../components/Card/data'
 
@@ -248,52 +251,44 @@ class Home extends React.Component {
     }
 
     deletePost = (postId) => {
-        ToastAndroid.showWithGravityAndOffset(
-            'Coming soon',
-            ToastAndroid.LONG,
-            ToastAndroid.BOTTOM,
-            25,
-            100,
-        );
-        // if (this.props.isConnected) {
-        //     this.setState({ isPostDeleted: true })
-        //     const payload = {
-        //         Data: {
-        //             post_id: postId,
-        //             tenant_id: this.props.accountAlias,
-        //             ops: "delete_post",
-        //             associate_id: this.props.associate_id
-        //         }
-        //     }
+        if (this.props.isConnected) {
+            this.setState({ isPostDeleted: true })
+            const payload = {
+                Data: {
+                    post_id: postId,
+                    tenant_id: this.props.accountAlias,
+                    ops: "delete_post",
+                    associate_id: this.props.associate_id
+                }
+            }
 
-        //     var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
-        //     console.log("Delete PostIndex", index)
-        //     this.homeDataList.splice(index, 1)
-        //     this.posts.splice(index, 1)
-        //     if (this.posts.length == 0) {
-        //         this.setState({ initalLoad: true })
-        //     }
-        //     this.setState({ isPostDeleted: true })
-        //     try {
-        //         delete_post(payload, this.headers).then((res) => {
-        //             if (res.status === 200) {
-        //                 // this.loadPosts()
-        //                 this.setState({isPostDeleted: false})
-        //             }
-        //             console.log('delete_post', res)
-        //         }).catch((e) => {
-        //             console.log(e)
-        //         })
-        //     }
-        //     catch (e) {
-        //         console.log(e)
-        //     }
-        //     // this.setState({isPostDeleted: false})
+            var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
+            console.log("Delete PostIndex", index)
+            this.homeDataList.splice(index, 1)
+            this.posts.splice(index, 1)
+            if (this.posts.length == 0) {
+                this.setState({ initalLoad: true })
+            }
+            try {
+                delete_post(payload, this.headers).then((res) => {
+                    if (res.status === 200) {
+                        // this.loadPosts()
+                        this.setState({isPostDeleted: false})
+                    }
+                    console.log('delete_post', res)
+                }).catch((e) => {
+                    console.log(e)
+                })
+            }
+            catch (e) {
+                console.log(e)
+            }
+            // this.setState({isPostDeleted: false})
 
-        // }
-        // else {
-        //     this.showToast()
-        // }
+        }
+        else {
+            this.showToast()
+        }
     }
 
     async loadHome() {
@@ -600,8 +595,6 @@ class Home extends React.Component {
             console.log(error)
         }
     }
-    
-    transactionData = {}
 
     createTransactionTile = (data) => {
         data.map((item, index) => {
@@ -615,14 +608,26 @@ class Home extends React.Component {
                         </View>
                         <View style={styles.transactionView}>
                             <View style={styles.textView}>
-                                <Text style={styles.tText}>
-                                    Your wallet was {item.t_type == 'cr' ? "credited with " : "debited by "} {item.points} points.
-                                </Text>
+                                {
+                                    item.sevice_name == 'survey_reward' ?
+                                        <Text style={styles.surveryText}>
+                                        You have been rewarded for filling up Survey</Text>
+                                        :
+                                        <Text style={styles.tText}>
+                                            { 
+                                                (item.t_type == 'cr') ?
+                                                    'Points credited for: ' :
+                                                    'Points debited for: '
+                                            }
+                                            {item.sevice_sub_type}
+                                        </Text>
+                                }
                                 <View style={{flexDirection: 'row', flexWrap: 'nowrap', width: "100%", alignItems: 'center', justifyContent: "space-between"}}>
-                                    <View></View>
-                                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                                        <Text style={styles.t_time}>Date: </Text>
-                                        <Moment style={styles.timeStamp} element={Text} format='D MMM YYYY' withTitle>
+                                    <View style={{alignItems: 'center',justifyContent: 'center'}}>
+                                        {item.sevice_name !== 'survey_reward' ? <Text style={styles.fromTo}>{item.t_type == 'cr' ? 'From' : 'To'}: {item.t_type == 'cr' ? item.from_associate_details.associate_name : item.to_associate_details.associate_name}</Text> : null}
+                                    </View>
+                                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingRight: 6}}>
+                                        <Moment style={item.sevice_name == 'survey_reward' ? styles.timeStampS : styles.timeStamp} element={Text} format="D MMM YYYY" withTitle>
                                             {item.created_at}
                                         </Moment>
                                     </View>
@@ -689,7 +694,7 @@ class Home extends React.Component {
         const payload = {
             tenant_name: this.props.tenantName + this.props.accountAlias,
             file_name: 'logo.png',
-            associate_email: this.userData.email
+            associate_email: this.userData.email || this.props.navigation.getParam('profileData')
         }
         console.log("Payload", payload)
         file_download(payload).then((response) => {
@@ -1111,6 +1116,9 @@ class Home extends React.Component {
                         </Root>
                     </KeyboardAvoidingView>
                 </Modal>
+                <LoadingModal
+                    enabled={this.state.isPostDeleted}
+                />
             </Container>
 
         );

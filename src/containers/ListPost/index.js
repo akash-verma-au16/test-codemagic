@@ -370,13 +370,13 @@ class ListPost extends React.Component {
                         // }
 
                         // /* Take Backup */
-                        // this.payloadBackup = response.data.data.posts
+                        this.payloadBackup = response.data.data.posts
                         // if (this.posts.length !== response.data.data.posts.length) {
                         //     if (this.posts.length < response.data.data.posts.length && this.state.isPostDeleted) {
                         //         return 
                         //     }
                         // }
-                        // this.posts = []
+                        this.posts = []
                         this.posts = response.data.data.posts
                         this.posts.map((item) => {
                             this.counts = response.data.data.counts.filter((elm) => {
@@ -484,8 +484,8 @@ class ListPost extends React.Component {
     }
 
     createTiles = async(posts) => {
-        this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
-        posts.map((item, index) => {
+        this.getProfile()
+        await posts.map((item, index) => {
             this.postList.push(
                 // Post Component
                 <Post

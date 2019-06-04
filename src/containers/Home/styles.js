@@ -90,7 +90,8 @@ export const styles = StyleSheet.create({
         flexWrap: 'nowrap',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 10
+        padding: 10, 
+        paddingVertical: 13
     },
     iconView: {
         width: '20%',
@@ -122,7 +123,12 @@ export const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontFamily: "OpenSans-Regular"
     },
+    surveryText: {
+        fontFamily: "OpenSans-Regular",
+        fontSize: 15
+    },
     tText: {
+        paddingBottom: 10,
         fontFamily: "OpenSans-Regular",
         fontSize: 15
     },
@@ -131,6 +137,19 @@ export const styles = StyleSheet.create({
         width: "20%",
         alignItems: 'center',
         justifyContent: 'flex-start'
+    },
+    fromTo: {
+        color: '#333',
+        fontSize: 12,
+        marginTop: 7,
+        textAlign: 'left',
+        fontFamily: "OpenSans-Regular"
+    },
+    timeStampS: {
+        color: '#aaa',
+        fontSize: 12,
+        textAlign: 'left',
+        fontFamily: "OpenSans-Regular"
     },
     timeStamp: {
         color: '#aaa',
