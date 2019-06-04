@@ -627,7 +627,7 @@ class Home extends React.Component {
                                         {item.sevice_name !== 'survey_reward' ? <Text style={styles.fromTo}>{item.t_type == 'cr' ? 'From' : 'To'}: {item.t_type == 'cr' ? item.from_associate_details.associate_name : item.to_associate_details.associate_name}</Text> : null}
                                     </View>
                                     <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingRight: 6}}>
-                                        <Moment style={item.sevice_name == 'survey_reward' ? styles.timeStampS : styles.timeStamp} element={Text} format="D MMM YYYY" withTitle>
+                                        <Moment style={item.sevice_name == 'survey_reward' ? styles.timeStampS : styles.timeStamp} element={Text} format='D MMM YYYY' withTitle>
                                             {item.created_at}
                                         </Moment>
                                     </View>
@@ -701,7 +701,9 @@ class Home extends React.Component {
             console.log("Image response", response)
             /* Store the image */
             this.setState({ isImageLoading: false, imageUrl: response.data.data['download-signed-url'] })
-            this.props.imageUrl(response.data.data['download-signed-url'])
+            if(payload.associate_email===this.props.email)
+                this.props.imageUrl(response.data.data['download-signed-url'])
+
         }).catch((error) => {
             console.log(error)
         })
