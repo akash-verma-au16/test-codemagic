@@ -36,12 +36,13 @@ class Post extends Component {
             isEdit: false,
             editPostMessage: "",
             addOn: 0,
-            likes: 0,
-            comments: 0,
-            taggedAssociates: []
+            likes: this.props.likeCount, 
+            comments: this.props.commentCount,
+            taggedAssociates: this.props.taggedAssociates
         }
-        
         this.state = initalState
+        console.log("this.state.likes", this.state.likes)
+        console.log("this.state.comments", this.state.comments)
         this.postMessage = this.props.postMessage
         this.taggedAssociates = []
         //formatting update locale
@@ -70,15 +71,6 @@ class Post extends Component {
         });
     }
 
-    componentWillMount() {
-        this.setState({
-            ...this.state,
-            likes: this.props.likeCount,
-            comments: this.props.commentCount,
-            taggedAssociates: this.props.taggedAssociates
-        })
-    }
-
     componentWillUnmount() {
         this.setState({
             like: false,
@@ -93,14 +85,14 @@ class Post extends Component {
             taggedAssociates: []
         })
     }
-
-    shou(nextProps) {
-        if (nextProps.likeCount !== this.props.likeCount) {
-            // nextProps.myProp has a different value than our current prop
-            // so we can perform some calculations based on the new value
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.likeCount !== this.state.likes) {
+            this.setState({likes: 0})
+        }
+        else {
+            this.setState({ likes: this.state.likes })
         }
     }
-
 
     //Authorization headers
     headers = {

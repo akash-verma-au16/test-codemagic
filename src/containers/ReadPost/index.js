@@ -211,7 +211,7 @@ class ListPost extends React.Component {
                 <Post
                     key={index}
                     postId={item.Item.post_id}
-                    postCreator={item.Item.associate_name}
+                    postCreator={this.props}
                     postCreator_id={item.Item.associate_id}
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time={item.Item.time}
@@ -288,6 +288,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
+        associateList: state.user.associateList,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         isAuthenticate: state.isAuthenticate,
