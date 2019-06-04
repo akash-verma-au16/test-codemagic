@@ -21,6 +21,8 @@ import {
     View
 } from 'native-base';
 
+import { file_download } from '../../services/profile'
+import {user} from '../../store/actions'
 /* Redux */
 import { connect } from 'react-redux'
 import { auth } from '../../store/actions'
@@ -159,7 +161,19 @@ class LoginPage extends React.Component {
             // Error retrieving data
         }
     }
-
+    /* Get image from S3 */
+    handleImageDownload = () => { 
+        /* Request image*/
+        const payload = {
+            tenant_name: this.props.tenant_name + this.props.accountAlias,
+            file_name: 'logo.png',
+            associate_email: this.props.email
+        }
+        file_download(payload).then((response) => {
+            this.props.imageUrl(response.data.data['download-signed-url'])
+        }).catch(() => {
+        })
+    }
     signinHandler = () => {
         /* Hiding the keyboard to prevent Toast overlap */
         Keyboard.dismiss()
@@ -234,7 +248,7 @@ class LoginPage extends React.Component {
                                     // })
                                     this.props.authenticate(payload);
                                     //Activate Push Notofication
-                                    
+                                    this.handleImageDownload()
                                     if(!this.sendToken(payload))
                                         return
                                     this.props.navigation.navigate('TabNavigator')
@@ -437,13 +451,18 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         isAuthenticate: state.isAuthenticate,
-        isConnected: state.system.isConnected
+        isConnected: state.system.isConnected,
+        imagelink:state.user.imageUrl,
+        tenant_name:state.user.tenant_name,
+        email:state.user.emailAddress,
+        accountAlias: state.user.accountAlias
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        authenticate: (props) => dispatch({ type: auth.AUTHENTICATE_USER, payload: props })
+        authenticate: (props) => dispatch({ type: auth.AUTHENTICATE_USER, payload: props }),
+        imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props })
     };
 }
 
