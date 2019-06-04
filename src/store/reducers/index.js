@@ -62,7 +62,15 @@ export default (state = initialState, action) => {
             }
         }
     }
-
+    case user.UPDATE_IMAGE: {
+        return {
+            ...state,
+            user: {
+                ...state.user,
+                imageUrl:action.payload
+            }
+        }
+    }
     // Setting Internet Connectivity flag
 
     case system.NETWORK_STATUS: {
