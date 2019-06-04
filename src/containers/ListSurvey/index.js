@@ -180,7 +180,7 @@ class ListSurvey extends React.Component {
                     }}
                 >
                     <Thumbnail
-                        source={thumbnail}
+                        source={{uri:navigation.getParam('imageUrl')}}
 
                         style={
                             {
@@ -366,6 +366,7 @@ class ListSurvey extends React.Component {
                         onWillFocus={async() => {
                             if (this.props.isConnected) {
                                 if (!this.props.isFreshInstall && this.props.isAuthenticate) {
+                                    this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl})
                                     console.log('Calling from Navigation Event')
                                     this.loadSurveys()
                                     this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
@@ -412,7 +413,8 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        idToken: state.user.idToken,
+        imageUrl:state.user.imageUrl
 
     };
 }
