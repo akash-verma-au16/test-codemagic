@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 
 import NetInfo from "@react-native-community/netinfo"
-
+import { user } from '../../store/actions'
 import {
     Container,
     Text,
@@ -701,6 +701,7 @@ class Home extends React.Component {
             console.log("Image response", response)
             /* Store the image */
             this.setState({ isImageLoading: false, imageUrl: response.data.data['download-signed-url'] })
+            this.props.imageUrl(response.data.data['download-signed-url'])
         }).catch((error) => {
             console.log(error)
         })
@@ -777,7 +778,7 @@ class Home extends React.Component {
         if(this.state.loading) {
             return (
                 <View style={{alignItems: 'center', justifyContent: 'flex-start', marginTop: 25}}>
-                    <ActivityIndicator size="large" color="#1c92c4" />
+                    <ActivityIndicator size='large' color='#1c92c4' />
                 </View>
             )
         }
@@ -800,7 +801,7 @@ class Home extends React.Component {
                                         resizeMode='stretch'
                                     />
                                     :
-                                    <ActivityIndicator size='small' color="#1c92c4" />
+                                    <ActivityIndicator size='small' color='#1c92c4' />
                                 }
                                 
                             </View>
@@ -972,14 +973,14 @@ class Home extends React.Component {
                 </ScrollView>
                 
                 <Modal
-                    animationType="slide"
+                    animationType='slide'
                     transparent={false} 
                     hardwareAccelerated={true}
                     visible={this.state.modalVisible}
                     onRequestClose={this.requestCloseModal}>
                     <KeyboardAvoidingView style={{ flex: 1 }} 
                         keyboardVerticalOffset={-290}
-                        behavior="padding"
+                        behavior='padding'
                         enabled
                     >
                         <Root>
@@ -1016,7 +1017,7 @@ class Home extends React.Component {
                                                         style={styles.profilePic}
                                                     />
                                                 ) : (
-                                                    <ActivityIndicator size='large' color="#1c92c4" />
+                                                    <ActivityIndicator size='large' color='#1c92c4' />
                                                 )
                                                 }    
                                             </View>
@@ -1143,7 +1144,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        updateUser: (props) => dispatch({ type: dev.UPDATE_USER, payload: props })
+        updateUser: (props) => dispatch({ type: dev.UPDATE_USER, payload: props }),
+        imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props })
     };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Home)

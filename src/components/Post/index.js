@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 // Components from React-Native
 import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Alert, Keyboard } from 'react-native';
 // Components from Native Base
+import AsyncStorage from '@react-native-community/async-storage';
+
 import { Icon } from 'native-base'
 
 import { styles } from './styles'
@@ -22,7 +24,6 @@ import { connect } from 'react-redux'
 // Components from Moment.js
 import Moment from 'react-moment'
 import moment from 'moment/min/moment-with-locales'
-
 
 class Post extends Component {
     constructor(props) {
@@ -69,6 +70,17 @@ class Post extends Component {
                 yy: "%dy"
             }
         });
+        
+    }
+
+    componentWillMount() {
+        this.setState({
+            ...this.state,
+            likes: this.props.likeCount,
+            comments: this.props.commentCount,
+            taggedAssociates: this.props.taggedAssociates
+        })
+        this.restoreLikes()
     }
 
     componentWillUnmount() {
@@ -100,7 +112,26 @@ class Post extends Component {
             Authorization: this.props.idToken
         }
     }
+    restoreLikes = async () => {
+        try {
+            //Check if previous state exists
+            const value = await AsyncStorage.getItem(this.props.postId);
 
+            if (value) {
+                // We have state!!
+                console.log('Post Like: ',value)
+                if(value==='true'){
+                    this.setState({ isLiked: true,like:true})
+                }
+                else if(value==='false'){
+                    this.setState({ isLiked: false,like:false})
+                }
+
+            } 
+        } catch (error) {
+            // Error retrieving data
+        }
+    }
     likePost = () => {
         /* unique id generation */
         const id = uuid.v4()
@@ -125,6 +156,7 @@ class Post extends Component {
                 console.log("Response", res)
                 if(res.status === 200) {
                     this.setState({ isLiked: true})
+                    AsyncStorage.setItem(this.props.postId,'true')
                 }
                 
             }).catch((e) => {
@@ -154,6 +186,7 @@ class Post extends Component {
                 console.log("Unlike", res)
                 if (res.status === 200) {
                     this.setState({ isLiked: false })
+                    AsyncStorage.setItem(this.props.postId,'false')
                 }
             }).catch((e) => {
                 console.log(e)

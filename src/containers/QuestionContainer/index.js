@@ -155,6 +155,7 @@ class QuestionContainer extends React.Component {
 
     submitHandler = () => {
         this.setState({ isSubmitLoading: true })
+        
         try {
             if(this.props.isConnected) {
                 if (this.answerSet) {
@@ -211,6 +212,14 @@ class QuestionContainer extends React.Component {
     }
 
     goBack = () => {
+        if(this.state.isSubmitLoading){
+            Alert.alert(
+                'Submiting the survey!',
+                'take a deep breath..',
+                
+            )
+            return
+        }
         Alert.alert(
             'Are you sure?',
             'Your answers will not be saved untill you submit.',
