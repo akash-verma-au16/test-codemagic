@@ -325,7 +325,9 @@ class ListPost extends React.Component {
                         }
                     } else {
                         /* Change in payload */
-                        this.setState({ initalLoad: false })
+                        if(this.state.initalLoad) {
+                            this.setState({ initalLoad: false })
+                        }
                         if (this.postList.length !== 0) {
 
                             if (this.scrollPosition > 150) {
@@ -337,19 +339,19 @@ class ListPost extends React.Component {
                             // this.setState({ isPostDeleted: false })
                             return
                         }
-                        if (this.posts.length == 0 && !this.state.isPostDeleted) {
-                            this.posts = []
-                            this.posts = response.data.data.posts
-                        }
+                        // if (this.posts.length == 0 && !this.state.isPostDeleted) {
+                        //     this.posts = []
+                        //     this.posts = response.data.data.posts
+                        // }
 
-                        /* Take Backup */
-                        this.payloadBackup = response.data.data.posts
-                        if (this.posts.length !== response.data.data.posts.length) {
-                            if (this.posts.length < response.data.data.posts.length && this.state.isPostDeleted) {
-                                return 
-                            }
-                        }
-                        this.posts = []
+                        // /* Take Backup */
+                        // this.payloadBackup = response.data.data.posts
+                        // if (this.posts.length !== response.data.data.posts.length) {
+                        //     if (this.posts.length < response.data.data.posts.length && this.state.isPostDeleted) {
+                        //         return 
+                        //     }
+                        // }
+                        // this.posts = []
                         this.posts = response.data.data.posts
                         this.posts.map((item) => {
                             this.counts = response.data.data.counts.filter((elm) => {

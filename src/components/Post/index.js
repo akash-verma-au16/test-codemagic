@@ -23,11 +23,12 @@ import { connect } from 'react-redux'
 import Moment from 'react-moment'
 import moment from 'moment/min/moment-with-locales'
 
+
 class Post extends Component {
     constructor(props) {
         super(props);
         this.returnCount = this.returnCount.bind(this)
-        this.initalState = {
+        var initalState = {
             like: false,
             isLiked: false,
             modalVisible: false,
@@ -35,12 +36,12 @@ class Post extends Component {
             isEdit: false,
             editPostMessage: "",
             addOn: 0,
-            likes: this.props.likeCount,
-            comments: this.props.commentCount,
-            postMessage: this.props.postMessage,
-            taggedAssociates: this.props.taggedAssociates
+            likes: 0,
+            comments: 0,
+            taggedAssociates: []
         }
-        this.state = this.initalState
+        
+        this.state = initalState
         this.postMessage = this.props.postMessage
         this.taggedAssociates = []
         //formatting update locale
@@ -68,6 +69,38 @@ class Post extends Component {
             }
         });
     }
+
+    componentWillMount() {
+        this.setState({
+            ...this.state,
+            likes: this.props.likeCount,
+            comments: this.props.commentCount,
+            taggedAssociates: this.props.taggedAssociates
+        })
+    }
+
+    componentWillUnmount() {
+        this.setState({
+            like: false,
+            isLiked: false,
+            modalVisible: false,
+            likeId: "",
+            isEdit: false,
+            editPostMessage: "",
+            addOn: 0,
+            likes: 0,
+            comments: 0,
+            taggedAssociates: []
+        })
+    }
+
+    shou(nextProps) {
+        if (nextProps.likeCount !== this.props.likeCount) {
+            // nextProps.myProp has a different value than our current prop
+            // so we can perform some calculations based on the new value
+        }
+    }
+
 
     //Authorization headers
     headers = {
@@ -147,13 +180,11 @@ class Post extends Component {
                 like: !this.state.like
             }, () => {
                 if(this.state.like) {
-                    this.props.likeCount + 1
-                    this.setState((prev) => ({ isLiked: true, likes: prev.likes + 1}))
+                    this.setState({ isLiked: true, likes: this.state.likes + 1})
                     this.likePost()
                     // setTimeout(() => this.likePost(), 3000)
                 } else {
-                    this.props.likeCount - 1
-                    this.setState((prev) => ({ isLiked: false, likes: prev.likes - 1 }))
+                    this.setState({ isLiked: false, likes: this.state.likes - 1 })
                     this.unlikePost()
                     // setTimeout(() => this.unlikePost(), 3000)                        
                 }
@@ -257,10 +288,6 @@ class Post extends Component {
         })
     }
 
-    componentWillUnmount() {
-        this.setState(this.initalState)
-    }
-
     returnData = (data) => {
         this.setState({
             isEdit: true,
@@ -334,8 +361,7 @@ class Post extends Component {
                             ))
                         })}
                         {this.associateList}
-                        {this.state.postMessage}
-                        {/* {this.state.isEdit ? this.state.editPostMessage : this.state.postMessage} */}
+                        {this.state.isEdit ? this.state.editPostMessage : this.props.postMessage}
 
                         <Text style={styles.strength}> #{this.props.strength}</Text>
                     </Text>
@@ -412,7 +438,7 @@ class Post extends Component {
                             this.props.navigation.navigate('EditPost',{ 
                                 returnData: this.returnData.bind(this),
                                 associate: this.props.userName,
-                                postMessage: this.state.postMessage.replace(this.props.strength.toLowerCase(), ''),
+                                postMessage: this.props.postMessage.replace(this.props.strength.toLowerCase(), ''),
                                 taggedAssociates: this.props.taggedAssociates,
                                 strength: this.props.strength,
                                 time: this.props.time,
