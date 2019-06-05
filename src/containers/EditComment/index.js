@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, ScrollView, StyleSheet, ToastAndroid, Keyboard, Alert, Dimensions, TextInput, BackHandler } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, ToastAndroid, Keyboard, Alert, TextInput, BackHandler } from 'react-native'
 //Native base
 import { Icon } from 'native-base'
 // Components from Moment.js
@@ -19,7 +19,6 @@ class EditComment extends React.Component {
             epoch: this.props.navigation.getParam('time'),
             isChanged: false
         }
-        console.log("Input epoch:", this.state.epoch)
 
         this.associateList = []
 
@@ -50,7 +49,6 @@ class EditComment extends React.Component {
             }
         });
 
-        console.log(this.state)
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -75,7 +73,6 @@ class EditComment extends React.Component {
                     }
                 } 
                 onPress={() => {
-                    console.log(navigation.getParam('isChanged'))
                     if (navigation.getParam('isChanged')) {
                         Alert.alert(
                             'Discard Changes?',
@@ -144,20 +141,17 @@ class EditComment extends React.Component {
             if (this.props.isConnected) {
                 try {
                     edit_comment(payload, headers).then((res) => {
-                        console.log('Edit comment', res)
                         if (res.status === 200) {
                             this.props.navigation.state.params.returnData({
                                 message: this.state.comment
                             })
                             this.props.navigation.goBack()
                         }
-                    }).catch((e) => {
-                        console.log(e)
+                    }).catch(() => {
                     })
                 }
-                catch (e) {
-                    console.log(e)
-                }
+                catch (e){/* error */}
+                
             }
             else {
                 ToastAndroid.showWithGravityAndOffset(
@@ -223,7 +217,7 @@ class EditComment extends React.Component {
             <View style={styles.container}>
                 <ScrollView
                     contentContainerStyle={styles.scroll} 
-                    keyboardShouldPersistTaps="handled"
+                    keyboardShouldPersistTaps='handled'
                 >
                     <View style={styles.headerContainer}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 3 }}>

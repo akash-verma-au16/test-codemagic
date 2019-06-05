@@ -83,9 +83,6 @@ class Comment extends React.Component {
             isEdit: true,
             comment: data.message 
         })
-
-        console.log("Return Data", data)
-        // this.setState({ id: id, name: name });
     }
 
     render() {

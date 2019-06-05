@@ -67,7 +67,6 @@ class QuestionContainer extends React.Component {
     }
     // for MCQM
     MCQMHandler = (questionId, answerObj) => {
-        console.log('linked',answerObj)
         this.answerSet = {
             ...this.answerSet,
 

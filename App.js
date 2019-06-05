@@ -23,13 +23,11 @@ PushNotification.configure(awsconfig);
 
 PushNotification.onRegister((token) => {
     //Generate Device token
-    console.log('in app registration', token);
     AsyncStorage.setItem('token', token)
 
 });
 PushNotification.onNotificationOpened((notification) => {
     //Navigate to the respective page with payload
-    console.log('the notification is opened', notification)
     const url = notification['pinpoint.deeplink']
     let data = ''
     if (url)

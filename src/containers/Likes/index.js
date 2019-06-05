@@ -120,7 +120,6 @@ class Likes extends React.Component {
             }
             try {
                 list_likes(payload,this.headers).then((res) => {
-                    console.log(res)
                     if(res.status == 200) {
                         if (res.data.data.Items.length == 0) {
                             this.setState({ noData: true, peopleListrefresh: false })
@@ -133,9 +132,7 @@ class Likes extends React.Component {
                     }
                 })
             }
-            catch(e) {
-                console.log(e)
-            }
+            catch(e) {/* error */}
         }
         else {
             ToastAndroid.showWithGravityAndOffset(
