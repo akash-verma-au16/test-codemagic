@@ -430,11 +430,11 @@ class ListPost extends React.Component {
 
     createTiles = async(posts) => {
         this.getProfile()
-        await posts.map((item, index) => {
+        await posts.map((item) => {
             this.postList.push(
                 // Post Component
                 <Post
-                    key={index}
+                    key={item.Item.post_id}
                     postId={item.Item.post_id}
                     postCreator={this.props.associateList[item.Item.associate_id]}
                     postCreator_id={item.Item.associate_id}
