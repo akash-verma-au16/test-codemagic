@@ -92,7 +92,6 @@ class Home extends React.Component {
             isPostDeleted: false
         }
         this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id || this.state.associate_id == undefined })
-        console.log('Associate ID:',this.state.associate_id)
         this.loadProfile = this.loadProfile.bind(this)
         this.loadTransactions = this.loadTransactions.bind(this)
         this.loadData = this.loadData.bind(this)
@@ -112,7 +111,6 @@ class Home extends React.Component {
         this.transactionDataBackup = []
         this.homeDataBackup = []
         this.userData = this.state.associate_id == this.props.associate_id ? this.props.navigation.getParam('profileData') : {}
-        console.log('Rec Obj',this.userData)
         this.dataList = []
 
         Moment.globalMoment = moment;
@@ -139,12 +137,10 @@ class Home extends React.Component {
                 this.setState({ associate_id: this.props.associate_id })
                 this.loadSummary()
             }
-            console.log('Logged if')
             await this.loadProfile()
             // await this.setState({ loading: false })
         }
         else {
-            console.log('Logged else')
             await this.loadData()
             // this.setState({ loading: false })
         }
@@ -204,16 +200,13 @@ class Home extends React.Component {
     }
     //Load user profile API Handler
     loadProfile() {
-        // this.projectList = []
         const payload = {
             "tenant_id": this.props.accountAlias,
             "associate_id": this.state.associate_id
         }
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
-                console.log("Calling user_profile")
                 user_profile(payload, this.headers).then((response) => {
-                    console.log(response)
                     this.userData = response.data.data
                     if (this.state.associate_id !== this.props.associate_id) {
                         this.handleImageDownload()
@@ -228,16 +221,11 @@ class Home extends React.Component {
                         })
                     }
                     this.setState({ loading: false })
-                }).catch((error) => {
-                    console.log(error)
+                }).catch(() => {
                 })
             }
         }
-        catch(error) {
-            // this.setState({ loading: false })
-            console.log("error", error.code)
-        }
-        // this.setState({loading: true})
+        catch(error) {/* error */}
     }
 
     editPost = () => {
@@ -263,7 +251,6 @@ class Home extends React.Component {
             }
 
             var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
-            console.log("Delete PostIndex", index)
             this.homeDataList.splice(index, 1)
             this.posts.splice(index, 1)
             if (this.posts.length == 0) {
@@ -272,19 +259,12 @@ class Home extends React.Component {
             try {
                 delete_post(payload, this.headers).then((res) => {
                     if (res.status === 200) {
-                        // this.loadPosts()
                         this.setState({isPostDeleted: false})
                     }
-                    console.log('delete_post', res)
-                }).catch((e) => {
-                    console.log(e)
+                }).catch(() => {
                 })
             }
-            catch (e) {
-                console.log(e)
-            }
-            // this.setState({isPostDeleted: false})
-
+            catch (e) {/* error */}
         }
         else {
             this.showToast()
@@ -295,7 +275,6 @@ class Home extends React.Component {
         this.setState({
             homeRefreshing: true
         })
-        // console.log("user", this.userData.username)
         const payload = {
             "tenant_id": this.props.accountAlias,
             "associate_id": this.state.associate_id
@@ -304,7 +283,6 @@ class Home extends React.Component {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 
                 await list_posts(payload, this.headers).then((response) => {
-                    console.log('Calling Loadhome')
                     if(this.homeDataBackup.length === response.data.data.posts.length) {
                         if(response.data.data.posts === 0) {
                             this.homeDataRowList = []
@@ -335,13 +313,11 @@ class Home extends React.Component {
                     }
                 }).catch((e) => {
                     this.setState({ homeRefreshing: false })
-                    console.log(e)
                 })
             }
         }
         catch(error) {
             this.setState({ homeRefreshing: false })
-            console.log(error)
         }
     }
 
@@ -372,7 +348,6 @@ class Home extends React.Component {
     }
 
     loadSummary = () => {
-        // this.summeryList = []
         this.setState({summaryRefreshing: true})
         const payload = {
             "tenant_id": this.props.accountAlias,
@@ -380,7 +355,6 @@ class Home extends React.Component {
         }
         try {
             strength_counts(payload, this.headers).then((response) => {
-                console.log("Strengths", response.data.data)
                 if(response.data.data.length == 0) {
                     this.summeryRawList = []
                     this.summeryRawList.push(<Text key={0} style={{textAlign: 'center', width: '100%', alignItems: 'center', justifyContent: 'center'}}>No strengths to display.</Text>)
@@ -402,7 +376,7 @@ class Home extends React.Component {
                         )
                     })
                 }
-            }).catch((e) => {
+            }).catch(() => {
                 this.setState({ summaryRefreshing: false })
             })
         }
@@ -464,12 +438,10 @@ class Home extends React.Component {
                             100,
                         );
                         await update_profile(payload,this.headers).then((res) => {
-                            console.log(res)
                             if(this.state.photo !== null) {
                                 this.setState({ imageUrl: this.state.photo }, () => this.handleUploadImage())   
                             }
                         }).catch((e) => {
-                            console.log(e)
                         })
                     }
                     else {
@@ -485,9 +457,7 @@ class Home extends React.Component {
                     }
                 }
                     
-                catch(e) {
-                    console.log(e)
-                }
+                catch(e) {/* error */}
                 //Updating redux state
                 const payload = {
                     firstName: this.state.firstName,
@@ -539,7 +509,6 @@ class Home extends React.Component {
         else {
             this.setModalVisible(false)
         }
-        // this.setModalVisible(false)
     }
 
     //Helper functions
@@ -564,9 +533,7 @@ class Home extends React.Component {
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 this.setState({ refreshing: true })
-                // console.log("Calling read_transaction API")
                 await read_transaction(payload, this.headers).then(response => {
-                    console.log("Transaction", response.data.data.transaction_data)
                     if (this.transactionDataBackup.length === response.data.data.transaction_data) {
                         if (response.data.data.transaction_data.length == 0) {
                             this.transactionList = []
@@ -584,15 +551,13 @@ class Home extends React.Component {
                         this.createTransactionTile(response.data.data.transaction_data)
                         this.setState({ refreshing: false })
                     }
-                }).catch((error) => {
+                }).catch(() => {
                     this.setState({ refreshing: false })
-                    console.log(error)
                 })
             }
         }
         catch(error) {
             this.setState({ refreshing: false })
-            console.log(error)
         }
     }
 
@@ -662,7 +627,6 @@ class Home extends React.Component {
         }
         file_upload(payload)
             .then((response) => {
-                console.log("Upload Image", response)
                 const headers = {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -670,25 +634,20 @@ class Home extends React.Component {
 
                 RNFetchBlob.fetch('PUT', response.data.data['upload-signed-url'], headers, RNFetchBlob.wrap(url))
                     .then(() => {
-                        console.log('image uploaded')
                         this.handleImageDownload()
                         ImageCropPicker.clean().then(() => {
-                            console.log('removed all tmp images from tmp directory');
                         }).catch(e => {
                             alert(e);
                         });
-                    }).catch((error) => {
-                        console.log(error)
+                    }).catch(() => {
                     })
             })
-            .catch((error) => {
-                console.log('error', error)
+            .catch(() => {
             })
     }
 
     /* Get image from S3 */
     handleImageDownload = () => {
-        console.log("Calling handleImageDownload")
         this.setState({ isImageLoading: true })
         /* Request image*/
         const payload = {
@@ -696,16 +655,13 @@ class Home extends React.Component {
             file_name: 'logo.png',
             associate_email: this.userData.email || this.props.navigation.getParam('profileData').email
         }
-        console.log("Payload", payload)
         file_download(payload).then((response) => {
-            console.log("Image response", response)
             /* Store the image */
             this.setState({ isImageLoading: false, imageUrl: response.data.data['download-signed-url'] })
             if(payload.associate_email===this.props.email)
                 this.props.imageUrl(response.data.data['download-signed-url'])
 
-        }).catch((error) => {
-            console.log(error)
+        }).catch(() => {
         })
     }
 
@@ -721,7 +677,6 @@ class Home extends React.Component {
             avoidEmptySpaceAroundImage: false
             // mediaType: 'photo'
         }).then(image => {
-            console.log(image);
 
             let updatedResponse = image
             updatedResponse.fileName = 'logo.png'
@@ -729,7 +684,6 @@ class Home extends React.Component {
             /* store the image */
             this.setState({ photo: updatedResponse.path, isEdit: true })
         }).catch((e) => {
-            console.log("error", e.code)
             if (e.code == "E_PICKER_CANCELLED") {
                 return
             }
@@ -751,22 +705,13 @@ class Home extends React.Component {
             // freeStyleCropEnabled: true,
             // enableRotationGesture: true
         }).then(image => {
-            console.log(image);
 
             let updatedResponse = image
             updatedResponse.fileName = 'logo.png'
-
-            // ImageCropPicker.clean().then(() => {
-            //     console.log('removed all tmp images from tmp directory');
-            // }).catch(e => {
-            //     alert(e);
-            // });
-
             /* store the image */
             this.setState({ photo: updatedResponse.path, isEdit: true })
 
         }).catch((e) => {
-            console.log("error", e.code)
             if (e.code == "E_PICKER_CANCELLED") {
                 return
             }

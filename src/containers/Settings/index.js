@@ -103,12 +103,9 @@ class Settings extends React.Component {
             tenant_id : this.props.accountAlias,
             associate_id:this.props.associate_id
         }
-        console.log(payload)
-        logout(payload).then((res) => {
-            console.log(res)
+        logout(payload).then(() => {
             this.props.deAuthenticate()
             
-            console.log(' logout payload',payload_2)
             unregister(payload_2)
             this.setState({ isLoading: false })
             // Toast.show({

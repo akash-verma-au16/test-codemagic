@@ -60,15 +60,13 @@ class InAppNotifier extends React.Component {
                         this.createNotificationTile(response.data.in_app_data)
                         this.setState({ refreshing: false })
                     }
-                }).catch((error) => {
+                }).catch(() => {
                     this.setState({ refreshing: false })
-                    console.log(error)
                 })
             }
         }
         catch (error) {
             this.setState({ refreshing: false })
-            console.log("Error")
         }
         this.setState({refreshing: true})
     }

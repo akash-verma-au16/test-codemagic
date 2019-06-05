@@ -80,7 +80,6 @@ class Comments extends React.Component {
 
     commentCount = () => {
         Keyboard.dismiss()
-        console.log("Comment Count")
         var count = this.commentList.length
         this.props.navigation.state.params.returnCount({
             count: count,
@@ -116,7 +115,6 @@ class Comments extends React.Component {
         try {
             if (this.props.isConnected) {
                 list_comments(payload, this.headers).then((response) => {
-                    console.log("Comment Response", response.data.data.Items)
                     if(response.data.data.Items.length == 0 && this.comments.length == 0) {
                         this.commentList = []
                         this.setState({ commentsRefresh: false, initialLoad: true })                        
@@ -145,19 +143,14 @@ class Comments extends React.Component {
                             }    
                         } 
                         else {
-                            console.log("this.comments", this.comments)
                             this.loadComments(this.comments)
                         }
                     }
-                    // console.log("List Comments", response.data.data)
-                }).catch((e) => {
-                    console.log(e)
+                }).catch(() => {
                 })
             } 
         }
-        catch(e) {
-            console.log(e)
-        }
+        catch(e) {/* error */}
     }
 
     addComment = () => {
@@ -198,9 +191,7 @@ class Comments extends React.Component {
                     Keyboard.dismiss()
                     // this.setState({ commentsRefresh: true })
                     add_comment(payload, this.headers).then(async(res) => {
-                        console.log('addComment',res)
                         if(res.status === 200) {
-                            console.log("Comment",this.state.addCommentText)
                             
                             // setTimeout(() => this.fetchComments(), 1000)
                         }
@@ -213,21 +204,11 @@ class Comments extends React.Component {
                                 100,
                             );
                         }
-                    }).catch ((error) => {
+                    }).catch (() => {
                         Keyboard.dismiss()
-                        console.log(error)
-                        // ToastAndroid.showWithGravityAndOffset(
-                        //     "error.code",
-                        //     ToastAndroid.LONG,
-                        //     ToastAndroid.BOTTOM,
-                        //     25,
-                        //     100,
-                        // );
                     })
                 }
-                catch(e) {
-                    console.log(e)
-                }
+                catch(e) {/* error */}
             }
             else {
                 this.showToast()
@@ -267,7 +248,6 @@ class Comments extends React.Component {
     }
 
     deleteComment = (comment_id, comment) => {
-        console.log("delete comment")
         if(this.props.isConnected) {
             /* epoch time calculation */
             const dateTime = Date.now();
@@ -285,10 +265,7 @@ class Comments extends React.Component {
                     }
                 }
             }
-            // const deleteComment = this.comments.filter((ele) => { return ele.comment_id == comment_id })
             var index = this.comments.findIndex((comment) => { return comment.comment_id == comment_id })
-            console.log("index",index)
-            // this.commentList = this.commentList.sort((a, b) => { return a.time - b.time })
             this.commentList.splice(index, 1)
             this.comments.sort((a, b) => { return a.time - b.time })
             this.comments.splice(index, 1)
@@ -304,13 +281,10 @@ class Comments extends React.Component {
                     if(response.status === 200) {
                         this.setState({ isCommentDeleted: false })
                     }
-                }).catch((e) => {
-                    console.log(e)
+                }).catch(() => {
                 })
             }
-            catch (e) {
-                console.log(e)
-            }
+            catch (e) {/* error */}
         }
         else {
             this.showToast()
@@ -330,19 +304,16 @@ class Comments extends React.Component {
 
     //Handling scroll when textinput is focused
     focusHandler = () => {
-        // this.scrollViewRef.current.scrollTo({x: 0, y: 500, animated: true})
         this.scrollView.scrollToEnd();
     }
 
     render() {
         return (
             <View style={styles.container}>
-                {/* Comment content */}
                 <ScrollView
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingTop: 15 }}
                     ref={(scrollView) => { this.scrollView = scrollView }}
-                    // {this.scrollViewRef}
                     refreshControl={
                         <RefreshControl
                             refreshing={this.state.commentsRefresh}
@@ -381,7 +352,6 @@ class Comments extends React.Component {
                             name='send'
                             type={'MaterialIcons'}
                             active={this.state.addCommentText.length > 0 ? true : false}
-                            // style={styles.iconActive}
                             style={this.state.addCommentText.length > 0 ? styles.iconActive : styles.iconInactive} 
                             onPress={this.addComment}
                         />

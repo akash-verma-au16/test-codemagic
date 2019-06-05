@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // Components from React-Native
-import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Alert, Keyboard } from 'react-native';
+import { View, Text, TouchableOpacity, ToastAndroid, Alert } from 'react-native';
 // Components from Native Base
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -16,7 +16,7 @@ import { dev } from '../../store/actions'
 //Cusotm component
 import VisibilityModal from '../../containers/VisibilityModal'
 
-import { like_post, unlike_post, rewards_addon } from '../../services/post'
+import { like_post, unlike_post } from '../../services/post'
 //React navigation
 import { withNavigation } from 'react-navigation';
 
@@ -44,8 +44,6 @@ class Post extends Component {
             taggedAssociates: this.props.taggedAssociates
         }
         this.state = initalState
-        console.log("this.state.likes", this.state.likes)
-        console.log("this.state.comments", this.state.comments)
         this.postMessage = this.props.postMessage
         this.taggedAssociates = []
         //formatting update locale
@@ -112,7 +110,6 @@ class Post extends Component {
 
             if (value) {
                 // We have state!!
-                console.log('Post Like: ',value)
                 if(value==='true'){
                     this.setState({ isLiked: true,like:true})
                 }
@@ -146,20 +143,15 @@ class Post extends Component {
         }
         try {
             like_post(payload, this.headers).then((res) => {
-                console.log("Response", res)
                 if(res.status === 200) {
                     this.setState({ isLiked: true})
                     AsyncStorage.setItem(this.props.postId,'true')
                 }
                 
-            }).catch((e) => {
-                console.log(e)
+            }).catch(() => {
             })
         }
-        catch (e) {
-            console.log(e)
-
-        }
+        catch (e) {/* error */}
     }
 
     unlikePost = () => {
@@ -176,35 +168,27 @@ class Post extends Component {
         }
         try {
             unlike_post(payload, this.headers).then((res) => {
-                console.log("Unlike", res)
                 if (res.status === 200) {
                     this.setState({ isLiked: false })
                     AsyncStorage.setItem(this.props.postId,'false')
                 }
-            }).catch((e) => {
-                console.log(e)
+            }).catch(() => {
             })
         }
-        catch (e) {
-            console.log(e)
-
-        }
+        catch (e) {/* error */}
     }
 
     onLikeHnadler = () => {
         if(this.props.isConnected) {
-            console.log("postId",this.props.postId)
             this.setState({
                 like: !this.state.like
             }, () => {
                 if(this.state.like) {
                     this.setState({ isLiked: true, likes: this.state.likes + 1})
                     this.likePost()
-                    // setTimeout(() => this.likePost(), 3000)
                 } else {
                     this.setState({ isLiked: false, likes: this.state.likes > 0 ? this.state.likes - 1 : 0 })
                     this.unlikePost()
-                    // setTimeout(() => this.unlikePost(), 3000)                        
                 }
             })
         }
@@ -220,7 +204,6 @@ class Post extends Component {
     }
 
     onIconPresshandler = () => {
-        // console.log('PD', this.props.profileData)
         this.props.navigation.navigate('Profile', {
             associateId: this.props.postCreator_id,
             profileData: this.props.postCreator_id === this.props.associate_id ? this.props.profileData : {},
@@ -256,35 +239,10 @@ class Post extends Component {
     }
 
     rewardsAddon = () => {
-        console.log("this.props.walletBalance",this.props.walletBalance)
         if (this.props.walletBalance > 10) {
             if (this.props.isConnected) {
                 this.setState({ addOn: this.state.addOn + 10 })
-                const payload1 = {
-                    tenant_id: this.props.accountAlias,
-                    associate_id: this.props.associate_id,
-                    sub_type: this.props.strength,
-                    type: "addon",
-                    post_id: this.props.postId,
-                    points: "10"
-                }
-                console.log("Rewards payload", payload1)
 
-                // try {
-                //     rewards_addon(payload1, this.headers).then((res) => {
-                //         console.log("Addon", res)
-                //         const payload = {
-                //             walletBalance: this.props.walletBalance - 10
-                //         }
-                //         this.props.updateWallet(payload) 
-
-                //     }).catch((e) => {
-                //         console.log(e)
-                //     })
-                // }
-                // catch (e) {
-                //     console.log(e)
-                // }
             }
             else {
                 ToastAndroid.showWithGravityAndOffset(
@@ -309,7 +267,6 @@ class Post extends Component {
     }
 
     returnCount = (count) => {
-        console.log(count)
         this.setState({
             comments: count.count
         })
@@ -445,7 +402,7 @@ class Post extends Component {
                 <VisibilityModal 
                     enabled={this.state.modalVisible}
                     data={this.props.associate_id === this.props.associate ? this.data : this.otherData}
-                    onChangeListener={({text, name, key}) => {
+                    onChangeListener={({key}) => {
                         if(key == 'delete') {
                             Alert.alert(
                                 'Delete Post?',

@@ -21,7 +21,6 @@ class RangeScale extends React.Component {
         
         if(props.data.length===1){
             this.isSingleQuestion = true
-            console.log('isSingle')
         }else{
             this.isSingleQuestion = false
         }

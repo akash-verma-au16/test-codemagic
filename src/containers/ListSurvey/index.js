@@ -128,7 +128,6 @@ class ListSurvey extends React.Component {
                     )
                     if (item.type === "Daily-Questionnaire") {
                         this.MyPulse.push(card)
-                        console.log('MyPulse', this.MyPulse)
 
                     } else if (item.type === "Weekly-Questionnaire") {
                         this.OrgPulse.push(card)
@@ -367,7 +366,6 @@ class ListSurvey extends React.Component {
                             if (this.props.isConnected) {
                                 if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                     this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl})
-                                    console.log('Calling from Navigation Event')
                                     this.loadSurveys()
                                     this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
                                 }

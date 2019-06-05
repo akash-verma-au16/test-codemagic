@@ -115,7 +115,6 @@ class ListPost extends React.Component {
             }, async () => {
                 this.loadPosts()
                 this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
-                console.log('Data:', this.profileData)
                 this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': this.props.isConnected })
             })
         }
@@ -164,7 +163,6 @@ class ListPost extends React.Component {
                         const item = response.data.data.posts.Item
                         const commentCount = response.data.data.counts.commentCount
                         const likeCount = response.data.data.counts.likeCount
-                        console.log('Read Post:', response.data.data)
                         this.post=[]
                         this.post.push(
                             // Post Component

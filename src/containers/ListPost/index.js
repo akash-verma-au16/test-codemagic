@@ -118,7 +118,6 @@ class ListPost extends React.Component {
         }
         PushNotification.onNotification((notification) => {
             // Note that the notification object structure is different from Android and IOS
-            console.log('in app notification', notification);
 
             //Display notification
             this.props.showNotification({
@@ -163,18 +162,13 @@ class ListPost extends React.Component {
         }
         try {
             liked_post(payload,this.headers).then((res) => {
-                console.log("this.likes", this.likes)
                 if(res.status == "success") {
                     this.likes = res.data
-                    console.log("this.likes")
                 }
-            }).catch((e) => {
-                console.log(e)
+            }).catch(() => {
             })
         }
-        catch(e) {
-            console.log(e)
-        }
+        catch(e) {/* error */}
     }
 
     componentDidUpdate() {
@@ -260,7 +254,6 @@ class ListPost extends React.Component {
                 networkChanged: true
             }, async () => {
                 this.loadPosts()
-                console.log('Data:', this.profileData)
                 this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': this.props.isConnected })
             })
         }
@@ -309,13 +302,10 @@ class ListPost extends React.Component {
 
         if (payload.tenant_id !== "" && payload.associate_id !== "") {
             try {
-                console.log('Calling NEWS_FEED API')
                 news_feed(payload, this.headers).then((response) => {
-                    console.log("data", response.data.data)
                     /* take payload backup to check for changes later */
                     if (this.payloadBackup.length === response.data.data.posts.length) {
                         /* No change in payload hence do nothing */
-                        console.log("log1")
                         this.setState({ refreshing: false, networkChanged: false })
                         
                         /* Checking if any data is available */
@@ -368,9 +358,8 @@ class ListPost extends React.Component {
                         /* Create UI tiles to display */
                         this.createTiles(this.posts)
                     }
-                }).catch((error) => {
+                }).catch(() => {
                     this.setState({ refreshing: false, networkChanged: false })
-                    console.log(error)
                 })
             }
             catch (error) {
@@ -396,7 +385,6 @@ class ListPost extends React.Component {
 
     //Delete Post
     deletePost = async(postId) => {
-        console.log("Delete PostId", postId)
         if (this.props.isConnected) {
             this.setState({ isPostDeleted: true })
             const payload = {
@@ -409,7 +397,6 @@ class ListPost extends React.Component {
             }
 
             var index = this.posts.findIndex((post) => {return post.Item.post_id == postId})
-            console.log("Delete PostIndex", index)
             this.postList.splice(index, 1)
             this.posts.splice(index, 1)
             if(this.posts.length == 0) {
@@ -421,18 +408,11 @@ class ListPost extends React.Component {
                     if(res.status === 200) {
                         this.postList = []
                         this.createTiles(this.posts)
-                        // this.loadPosts()
-                        // this.setState({isPostDeleted: false})
                     }
-                    console.log('delete_post', res)
-                }).catch((e) => {
-                    console.log(e)
+                }).catch(() => {
                 })
             }
-            catch(e) {
-                console.log(e)
-            }
-            // this.setState({isPostDeleted: false})
+            catch(e) {/* error */}
 
         }
         else {
@@ -440,10 +420,8 @@ class ListPost extends React.Component {
         }
     }
     getProfile= async() => {
-        console.log("loadProfile")
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
         this.props.navigation.setParams({ 'profileData': this.profileData })
-        console.log("this.profileData.wallet_balance", this.profileData.wallet_balance)
         const payload = {
             walletBalance: this.profileData.wallet_balance
         }

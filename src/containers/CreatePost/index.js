@@ -35,7 +35,6 @@ import { list_associate } from '../../services/tenant'
 /* Components */
 import VisibilityModal from '../VisibilityModal'
 import LoadingModal from '../LoadingModal'
-import thumbnail from '../../assets/thumbnail.jpg'
 import Endorsement from '../../components/Endorsement'
 import Gratitude from '../../components/Gratitude'
 
@@ -98,9 +97,6 @@ class CreatePost extends React.Component {
             )
         };
     };
-    // componentWillMount() {
-    //     this.loadVisibility()
-    // }
 
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
@@ -120,7 +116,6 @@ class CreatePost extends React.Component {
     }
 
     loadVisibility = () => {
-        console.log('Calling loadVisibility')
         const payload = {
             email: this.props.emailAddress,
             tenant_id: this.props.accountAlias
@@ -134,7 +129,6 @@ class CreatePost extends React.Component {
         if(this.props.accountAlias !== undefined) {
             try {
                 get_visibility(payload, headers).then((response) => {
-                    console.log("Calling get_visibility API")
                     this.visibilityData = []
                     let iconName = ''
                     let text = ''
@@ -159,9 +153,7 @@ class CreatePost extends React.Component {
             } catch (error) {
                 this.setState({ isVisibilityLoading: false })
             }
-        } else {
-            console.log('get_visibility didnt call')
-        }
+        } 
         
     }
     _keyboardDidShow = () => {
@@ -207,12 +199,6 @@ class CreatePost extends React.Component {
 
         /* Check if collegue is selected */
         if (this.state.taggedAssociates.length === 0) {
-            // Toast.show({
-            //     text: 'Atleast tag a collegue',
-            //     type: 'danger',
-            //     duration: 3000
-            // })
-            // return
 
             ToastAndroid.showWithGravityAndOffset(
                 'Atleast tag a collegue',
@@ -226,12 +212,7 @@ class CreatePost extends React.Component {
 
         /* check if post type is selected */
         if (this.state.postType === '') {
-            // Toast.show({
-            //     text: 'Please select a post type',
-            //     type: 'danger',
-            //     duration: 3000
-            // })
-            // return
+
             ToastAndroid.showWithGravityAndOffset(
                 'Please select a post type',
                 ToastAndroid.SHORT,
@@ -247,12 +228,6 @@ class CreatePost extends React.Component {
 
             /* check if strength is selected */
             if (this.state.endorsementStrength === '') {
-                // Toast.show({
-                //     text: 'Select a strength',
-                //     type: 'danger',
-                //     duration: 3000
-                // })
-                // return
 
                 ToastAndroid.showWithGravityAndOffset(
                     'Select a strength',
@@ -279,12 +254,7 @@ class CreatePost extends React.Component {
 
             /* check if text is present */
             if (this.state.text.trim() === '') {
-                // Toast.show({
-                //     text: 'Please write someting',
-                //     type: 'danger',
-                //     duration: 3000
-                // })
-                // return
+
                 ToastAndroid.showWithGravityAndOffset(
                     'Please write someting',
                     ToastAndroid.SHORT,
@@ -329,7 +299,7 @@ class CreatePost extends React.Component {
                 tagged_associates: associateList,
                 privacy: {
                     type: this.state.visibilityKey,
-                    id: this.state.visibilityName == "" ? this.props.accountAlias : this.state.visibilityName //this.state.visibilityName
+                    id: this.state.visibilityName == "" ? this.props.accountAlias : this.state.visibilityName 
                 },
                 time: timestamp,
                 points: this.state.addPoints > 0 ? this.state.addPoints : 0
@@ -340,15 +310,9 @@ class CreatePost extends React.Component {
                 Authorization: this.props.idToken
             }
         }
-        // console.log(payload)
         this.setState({ isLoading: true })
         try {
             create_post(payload, headers).then(() => {
-                // Toast.show({
-                //     text: 'Post created. This may take 1 minute to update',
-                //     type: 'success',
-                //     duration: 3000
-                // })
                 this.setState({
                     isLoading: false,
                     text: ''
@@ -503,7 +467,6 @@ class CreatePost extends React.Component {
     // }
 
     loadMembers = () => {
-        console.log('Calling loadMembers')
         const headers = {
             headers: {
                 Authorization: this.props.idToken
@@ -515,7 +478,6 @@ class CreatePost extends React.Component {
             }, headers)
                 .then(response => {
                     /* Clear Garbage */
-                    console.log('calling list_associate API')
                     this.associateData = []
                     response.data.data.map(item => {
                         /* Create List items */
@@ -524,17 +486,13 @@ class CreatePost extends React.Component {
                         /* preventing self endorsing */
                         if (item.associate_id !== this.props.associate_id) {
                             this.associateData.push({ id: item.associate_id, name: fullName })
-                            console.log("Associate data",this.associateData)
                         }
                     })
                     this.setState({ isTagerLoading: false })
                 })
-                .catch((e) => {
-                    console.log(e)
+                .catch(() => {
                     this.setState({ isTagerLoading: false })
                 })
-        } else {
-            console.log('loadmembers didnt call')
         }
 
     }
@@ -744,18 +702,6 @@ const styles = StyleSheet.create({
     points:{
         color: '#1c92c4',
         fontSize: 16
-    },
-    buttonView: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 5,
-        paddingVertical: 10,
-        backgroundColor: '#1c92c4',
-        marginTop: 15
-    },
-    add: {
-        color: '#fff',
-        fontSize: 18
     }
 });
 

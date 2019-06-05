@@ -12,7 +12,7 @@ class LogoutAlert extends React.Component {
                 'Session expired',
                 'Please, login again to continue.',
                 [
-                    { text: 'OK', onPress: () => console.log('OK Pressed') },
+                    { text: 'OK', onPress: () => {} },
                 ],
                 { cancelable: false },
             )

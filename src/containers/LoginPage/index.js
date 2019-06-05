@@ -110,15 +110,12 @@ class LoginPage extends React.Component {
     getAssociateNames = async (tenantId) => {
         try {
             await get_associate_name({ tenant_id: tenantId }).then((res) => {
-                console.log('res', res)
                 res.data.data.map((item) => {
                     this.associateList[item.associate_id] = item.full_name
                 })
             })  
         }
-        catch(e) {
-            console.log(e)
-        }
+        catch(e) {/* error */}
     }
 
     forgotPasswordHandler=()=>{
@@ -142,7 +139,6 @@ class LoginPage extends React.Component {
                     platform : Platform.OS,
                     device_token : token
                 }
-                console.log('payload',payload_2)
                 register_device(payload_2)
                 //Send token to slack
                 slackLogger({
@@ -182,13 +178,11 @@ class LoginPage extends React.Component {
         }, () => {
             try {
                 if (this.state.accountAlias && this.state.email && this.state.password) {
-                    console.log("Log in")
                     login({
                         accountAlias: this.state.accountAlias,
                         email: this.state.email,
                         password: this.state.password
                     }).then((response) => {
-                        console.log("Login Response:", response)
                         /* Restricting Super Admin Access as no Tenant Name is available to fetch */
                         if (this.state.accountAlias.trim().toLowerCase() === 'default') {
                             Toast.show({
@@ -206,8 +200,6 @@ class LoginPage extends React.Component {
                             }
                         }).then(async(tenantRes) => {
                             await this.getAssociateNames(this.state.accountAlias)
-                            console.log("Get associate name", this.associateList)
-                            // console.log("Tenant Data", res)
                             // this.tenantName = tenantRes.data.data[0].tenant_name
                             if (tenantRes.data.data[0].is_disabled) {
                                 ToastAndroid.showWithGravityAndOffset(
@@ -226,7 +218,6 @@ class LoginPage extends React.Component {
                                         Authorization: response.data.payload.idToken.jwtToken
                                     }
                                 }).then(res => {
-                                    console.log("Login", res.data)
                                     let firstName = toSentenceCase(response.data.payload.idToken.payload.given_name);
                                     let lastName = toSentenceCase(response.data.payload.idToken.payload.family_name);
                                     const payload = {
@@ -241,11 +232,7 @@ class LoginPage extends React.Component {
                                         associateList: this.associateList
 
                                     };
-                                    console.log("Payload", payload)
-                                    // Toast.show({
-                                    //     text: 'Welcome ' + response.data.payload.idToken.payload.given_name + '!',
-                                    //     type: "success"
-                                    // })
+                                   
                                     this.props.authenticate(payload);
                                     //Activate Push Notofication
                                     this.handleImageDownload()
@@ -255,7 +242,6 @@ class LoginPage extends React.Component {
                                 }).catch((error) => {
                                     this.setState({ isSignInLoading: false });
                                     if (this.props.isConnected) {
-                                        console.log("Error", error)
                                         Toast.show({
                                             text: error.response.data.code,
                                             type: 'danger',
@@ -272,12 +258,10 @@ class LoginPage extends React.Component {
                                 })
                             }
 
-                        }).catch((e) => {
-                            console.log(e)
+                        }).catch(() => {
                         })
                     }).catch((error) => {
                         try {
-                            console.log("Logged in catch2")
 
                             switch (error.response.data.code) {
                             case "ForceChangePassword":
@@ -341,7 +325,6 @@ class LoginPage extends React.Component {
                     this.setState({ isSignInLoading: false })
                 }
             } catch (error) {
-                console.log("error")
                 Toast.show({
                     text: "Something went wrong, please try again later.",
                     type: "danger"
@@ -364,10 +347,7 @@ class LoginPage extends React.Component {
                     >
                         <Form style={styles.form}>
                             <Animated.View style={[{ transform: [{ translateY: logoShift }], opacity: logoFade, alignItems: 'center' }]}>
-                                {/* <Logo />
-                                <Animated.View style={{ opacity: sloganFade }}>
-                                    <Slogan style={{ marginBottom: 15 }} />
-                                </Animated.View> */}
+                                
                                 <Image 
                                     // source={require('../../assets/Logo_High_black.png')} 
                                     source={logo}
