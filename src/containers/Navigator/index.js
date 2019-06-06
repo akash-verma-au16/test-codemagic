@@ -18,6 +18,7 @@ import Comments from '../Comments/index'
 import EditPost from '../EditPost/index'
 import EditComment from '../EditComment/index'
 import ReadPost from '../ReadPost'
+import StrengthPosts from '../StrengthPosts'
 /* This stack will contain list of all pages */
 const RootStack = createStackNavigator(
     {
@@ -141,6 +142,21 @@ const RootStack = createStackNavigator(
                     height: 40
                 },
                 title: 'Edit Post',
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: 19,
+                    fontFamily: 'OpenSans-Regular'
+                }
+            }
+        },
+        'StrengthPosts': {
+            screen: StrengthPosts,
+            navigationOptions: {
+                headerStyle: {
+                    backgroundColor: '#1c92c4',
+                    height: 40
+                },
                 headerTintColor: '#fff',
                 headerTitleStyle: {
                     fontWeight: 'bold',

@@ -6,9 +6,13 @@ class Card extends Component {
         super(props);
     }
 
+    navigationHandler = () => {
+        this.props.postNavigationHandeler(this.props.strength)
+    }
+
     render() {
         return(
-            <TouchableOpacity style={styles.container} activeOpacity={0.9} key={this.props.key}>
+            <TouchableOpacity style={styles.container} activeOpacity={0.9} key={this.props.key} onPress={this.navigationHandler}>
                 <Image
                     source={this.props.image}
                     style={{ height: 75, aspectRatio: 1 / 1, borderRadius: 75, paddingBottom: 5 }}

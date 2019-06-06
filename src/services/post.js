@@ -39,6 +39,13 @@ export const read_post = (
     const endpoint = config.url.read_posts
     return axios.post(endpoint, payload, headers)
 }
+//Strenth Counts Posts
+export const strength_details = (
+    payload, headers
+) => {
+    const endpoint = config.url.strength_details
+    return axios.post(endpoint, payload, headers)
+}
 
 export const like_post = (
     payload, headers
