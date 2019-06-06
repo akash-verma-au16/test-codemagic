@@ -15,7 +15,7 @@ const HomeStack = createStackNavigator({
             headerTintColor: '#fff',
             headerTitleStyle: {
                 fontWeight: 'bold',
-                textAlign:"center",
+                textAlign: "center",
                 flex: 1
             }
         }
@@ -32,7 +32,7 @@ const CreatePostStack = createStackNavigator({
             headerTintColor: '#fff',
             headerTitleStyle: {
                 fontWeight: 'bold',
-                textAlign:"center",
+                textAlign: "center",
                 flex: 1
             }
         }
@@ -50,7 +50,7 @@ const ListSurveyStack = createStackNavigator({
             headerTintColor: '#fff',
             headerTitleStyle: {
                 fontWeight: 'bold',
-                textAlign:"center",
+                textAlign: "center",
                 flex: 1
             }
         }
@@ -58,7 +58,11 @@ const ListSurveyStack = createStackNavigator({
 });
 const TabNavigator = createBottomTabNavigator({
     Home: { screen: HomeStack },
-    CreatePost: { screen: CreatePostStack },
+    CreatePost: {
+        screen: CreatePostStack, navigationOptions: {
+            tabBarVisible: false
+        }
+    },
     ListSurvey: { screen: ListSurveyStack }
 },
 {

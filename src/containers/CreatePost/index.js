@@ -78,29 +78,19 @@ class CreatePost extends React.Component {
                 } onPress={navigation.getParam('postSubmitHandler')} />
             ),
             headerLeft: (
-                <TouchableOpacity
-                    onPress={() => navigation.navigate('Profile')}
-                    disabled={true}
-                >
-                    <Thumbnail
-                        source={{uri:navigation.getParam('imageUrl')}}
-
-                        style={
-                            {
-                                height: '70%',
-                                borderRadius: 50,
-                                margin: 10
-                            }}
-                        resizeMode='contain'
-                    />
-                </TouchableOpacity>
+                <Icon name='ios-arrow-back' type='Ionicons' style={
+                    {
+                        color: 'white',
+                        padding: 19
+                    }} onPress={navigation.getParam('goBack')} />
             )
         };
     };
 
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-        this.props.navigation.setParams({ postSubmitHandler: this.postSubmitHandler });
+        this.props.navigation.setParams({ postSubmitHandler: this.postSubmitHandler }); 
+        this.props.navigation.setParams({ goBack: this.goBack });
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             this.goBack()
             return true
