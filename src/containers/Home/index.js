@@ -368,6 +368,7 @@ class Home extends React.Component {
                         await this.summeryList.push(
                             <View key={index}>
                                 <Card
+                                    postNavigationHandeler={this.postNavigationHandeler}
                                     image={imageURI[0].source}
                                     count={item.count}
                                     strength={item.sub_type}
@@ -384,6 +385,15 @@ class Home extends React.Component {
             this.setState({ summaryRefreshing: false })
         }
         this.setState({ summaryRefreshing: false })
+    }
+
+    //Navigate to Posts for logged in User
+    postNavigationHandeler = (strengthType) => {
+        if(this.state.associate_id == this.props.associate_id) {
+            this.props.navigation.navigate('StrengthPosts', {
+                strengthType: strengthType
+            })
+        }
     }
 
     async handleEditProfile(){
