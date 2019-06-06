@@ -42,7 +42,7 @@ import { read_member, read_tenant } from '../../services/tenant'
 import toSentenceCase from '../../utilities/toSentenceCase'
 /* Push notification */
 import { register_device } from '../../services/pushNotification'
-import { get_associate_name } from '../../services/post'
+import { get_associate_name, liked_post } from '../../services/post'
 import slackLogger from '../../services/slackLogger'
 class LoginPage extends React.Component {
 
@@ -88,6 +88,17 @@ class LoginPage extends React.Component {
     _keyboardDidHide = () => {
         this.setState({ isShowingKeyboard: false })
     }
+    /* Restore Likes from the server */
+    likeSyncHandler = (payload) => {
+        liked_post(payload)
+            .then((response) => {
+                response.data.data.map((postId)=>{
+                    /* Store likes */
+                    AsyncStorage.setItem(postId,'true')
+                })
+            })
+            .catch(()=>{/* error */})
+    }
 
     componentWillUnmount() {
         this.backHandler.remove()
@@ -114,15 +125,6 @@ class LoginPage extends React.Component {
                 }
             )
         ]).start()
-        // Animated.timing(
-        //     this.state.sloganFade,
-        //     {
-        //         toValue: 1,
-        //         duration: 500,
-        //         useNativeDriver: true
-        //     }
-        // )
-        // ]).start()
     }
 
     getAssociateNames = async (tenantId) => {
@@ -250,7 +252,11 @@ class LoginPage extends React.Component {
                                         associateList: this.associateList
 
                                     };
-
+                                    
+                                    this.likeSyncHandler({
+                                        tenant_id: payload.accountAlias,
+                                        associate_id: payload.associate_id
+                                    })
                                     this.props.authenticate(payload);
                                     //Activate Push Notofication
                                     this.handleImageDownload()
@@ -385,7 +391,8 @@ class LoginPage extends React.Component {
                                     inputRef={input => this.textInputAccountAlias = input}
                                     onSubmitEditing={() => {
                                         this.textInputEmail._root.focus()
-                                        this.contentView._root.scrollToEnd()}}
+                                        this.contentView._root.scrollToEnd()
+                                    }}
                                     style={styles.color111}
                                 />
 
@@ -396,7 +403,8 @@ class LoginPage extends React.Component {
                                     inputRef={input => this.textInputEmail = input}
                                     onSubmitEditing={() => {
                                         this.textInputPassword._root.focus()
-                                        this.contentView._root.scrollToEnd()}}
+                                        this.contentView._root.scrollToEnd()
+                                    }}
                                     keyboardType={'email-address'}
                                     style={styles.color111}
                                 />

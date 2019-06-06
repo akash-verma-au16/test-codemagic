@@ -6,7 +6,8 @@ import {
     FlatList,
     Alert,
     BackHandler,
-    ToastAndroid
+    ToastAndroid,
+    AsyncStorage
 } from 'react-native';
 /* Redux */
 import { connect } from 'react-redux'
@@ -93,6 +94,26 @@ class Settings extends React.Component {
         }
     ]
 
+    clearLikeHandler=async()=>{
+        try {
+            // take backup of tokens
+            const pushNotificationToken = await AsyncStorage.getItem('token');
+            const redux = await AsyncStorage.getItem('reduxState');
+            // format the system
+            await AsyncStorage.clear()
+            // restore the tokens
+            if (pushNotificationToken) {
+                AsyncStorage.setItem('token',pushNotificationToken)
+            }
+            if(redux){
+                AsyncStorage.setItem('reduxState',redux)
+            }
+            // Signout
+            this.props.deAuthenticate()
+        } catch (error) {
+            // Error retrieving data
+        }
+    }
     signOut() {
         this.setState({ isLoading: true })
         const payload = {
@@ -104,8 +125,8 @@ class Settings extends React.Component {
             associate_id:this.props.associate_id
         }
         logout(payload).then(() => {
-            this.props.deAuthenticate()
-            
+
+            this.clearLikeHandler()
             unregister(payload_2)
             this.setState({ isLoading: false })
             // Toast.show({
