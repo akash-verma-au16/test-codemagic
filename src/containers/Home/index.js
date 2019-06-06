@@ -323,11 +323,11 @@ class Home extends React.Component {
 
     createTiles = (posts) => {
         this.homeDataList = []
-        posts.map((item, index) => {
+        posts.map((item) => {
             this.homeDataList.push(
                 // Post Component
                 <Post
-                    key={index}
+                    key={item.Item.post_id}
                     postId={item.Item.post_id}
                     postCreator={this.props.associateList[item.Item.associate_id]}
                     postCreator_id={item.Item.associate_id}

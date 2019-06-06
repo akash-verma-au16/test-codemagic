@@ -203,11 +203,11 @@ class ListPost extends React.Component {
         this.postList = []
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
         // this.props.update_wallet()
-        posts.map((item, index) => {
+        posts.map((item) => {
             this.postList.push(
                 // Post Component
                 <Post
-                    key={index}
+                    key={item.Item.post_id}
                     postId={item.Item.post_id}
                     postCreator={this.props.associateList[item.Item.associate_id]}
                     postCreator_id={item.Item.associate_id}
