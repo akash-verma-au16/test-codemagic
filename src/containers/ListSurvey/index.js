@@ -8,7 +8,8 @@ import {
     Dimensions,
     RefreshControl,
     ScrollView, 
-    ToastAndroid
+    ToastAndroid,
+    ActivityIndicator
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
 import { H2 } from 'native-base'
@@ -32,7 +33,6 @@ import nature2 from '../../assets/tileBackgrounds/nature2.jpg'
 import nature3 from '../../assets/tileBackgrounds/nature3.jpeg'
 import { list_survey } from '../../services/questionBank'
 /* Custom Components */
-import thumbnail from '../../assets/thumbnail.jpg'
 import { IndicatorViewPager } from 'rn-viewpager';
 
 class ListSurvey extends React.Component {
@@ -178,17 +178,26 @@ class ListSurvey extends React.Component {
                         }
                     }}
                 >
-                    <Thumbnail
-                        source={{uri:navigation.getParam('imageUrl')}}
-
-                        style={
-                            {
+                    {navigation.getParam('imageUrl') === '' ?
+                        <ActivityIndicator
+                            size='small'
+                            color='#fff'
+                            style={{
+                                borderRadius: 50,
+                                margin: 20
+                            }}
+                        />
+                        :
+                        <Thumbnail
+                            source={{ uri: navigation.getParam('imageUrl') }}
+                            style={{
                                 height: '70%',
                                 borderRadius: 50,
                                 margin: 10
                             }}
-                        resizeMode='contain'
-                    />
+                            resizeMode='contain'
+                        />
+                    }
                 </TouchableOpacity>
             )
         };

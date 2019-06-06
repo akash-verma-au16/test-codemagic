@@ -8,7 +8,8 @@ import {
     TouchableOpacity,
     Dimensions,
     BackHandler,
-    ToastAndroid
+    ToastAndroid,
+    ActivityIndicator
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
 import AsyncStorage from '@react-native-community/async-storage';
@@ -16,7 +17,7 @@ import Post from '../../components/Post/index'
 
 /* Redux */
 import { connect } from 'react-redux'
-import {user} from '../../store/actions'
+import { user } from '../../store/actions'
 import {
     Container,
     Icon,
@@ -32,7 +33,6 @@ import LoadingModal from '../LoadingModal'
 import { loadProfile } from '../Home/apicalls'
 /* Components */
 import { NavigationEvents } from 'react-navigation';
-import thumbnail from '../../assets/thumbnail.jpg'
 
 // push notification
 import { withInAppNotification } from 'react-native-in-app-notification'
@@ -93,15 +93,27 @@ class ListPost extends React.Component {
                         borderRadius: 50
                     }}
                 >
-                    <Thumbnail
-                        source={{ uri: navigation.getParam('imageUrl')}}
-                        style={{
-                            height: '70%',
-                            borderRadius: 50,
-                            margin: 10
-                        }}
-                        resizeMode='contain'
-                    />
+                    {navigation.getParam('imageUrl') === '' ?
+                        <ActivityIndicator
+                            size='small'
+                            color='#fff'
+                            style={{
+                                borderRadius: 50,
+                                margin: 20
+                            }}
+                        />
+                        :
+                        <Thumbnail
+                            source={{ uri: navigation.getParam('imageUrl') }}
+                            style={{
+                                height: '70%',
+                                borderRadius: 50,
+                                margin: 10
+                            }}
+                            resizeMode='contain'
+                        />
+                    }
+
                 </TouchableOpacity>
             )
         };
@@ -155,20 +167,20 @@ class ListPost extends React.Component {
         this.loadLikes()
     }
 
-    loadLikes = () =>{
+    loadLikes = () => {
         const payload = {
             tenant_id: this.props.accountAlias,
             associate_id: this.props.associate_id
         }
         try {
-            liked_post(payload,this.headers).then((res) => {
-                if(res.status == "success") {
+            liked_post(payload, this.headers).then((res) => {
+                if (res.status == "success") {
                     this.likes = res.data
                 }
             }).catch(() => {
             })
         }
-        catch(e) {/* error */}
+        catch (e) {/* error */ }
     }
 
     componentDidUpdate() {
@@ -221,35 +233,35 @@ class ListPost extends React.Component {
         }
     }
     //profile payload
-     payload = {
-         "tenant_id": this.props.accountAlias,
-         "associate_id": this.props.associate_id
-     }
-     async componentDidMount() {
-         if(this.props.isAuthenticate) {
-             this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
-         }
-         
-         this.interval = setInterval(() => this.loadPosts(), 10000);
-         //Detecting network connectivity change
-         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-         //Handling hardware backpress event
-         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-             this.goBack()
-         })
-         //  Loading profile
-         this.props.navigation.setParams({'profileData': this.profileData})
+    payload = {
+        "tenant_id": this.props.accountAlias,
+        "associate_id": this.props.associate_id
+    }
+    async componentDidMount() {
+        if (this.props.isAuthenticate) {
+            this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
+        }
 
-     }
+        this.interval = setInterval(() => this.loadPosts(), 10000);
+        //Detecting network connectivity change
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+        //Handling hardware backpress event
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            this.goBack()
+        })
+        //  Loading profile
+        this.props.navigation.setParams({ 'profileData': this.profileData })
 
-     componentWillUnmount() {
-         clearInterval(this.interval)
-         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
-         this.backHandler.remove()
-     } 
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval)
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+        this.backHandler.remove()
+    }
 
     handleConnectivityChange = (isConnected) => {
-        if(isConnected) {
+        if (isConnected) {
             this.setState({
                 networkChanged: true
             }, async () => {
@@ -294,7 +306,7 @@ class ListPost extends React.Component {
 
     //Loads news feed
     loadPosts = () => {
-        this.props.navigation.setParams({ 'imageUrl': this.props.imagelink}) 
+        this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
         const payload = {
             tenant_id: this.props.accountAlias,
             associate_id: this.props.associate_id
@@ -307,10 +319,10 @@ class ListPost extends React.Component {
                     if (this.payloadBackup.length === response.data.data.posts.length) {
                         /* No change in payload hence do nothing */
                         this.setState({ refreshing: false, networkChanged: false })
-                        
+
                         /* Checking if any data is available */
                         if (response.data.data.posts.length === 0) {
-                            this.setState({initalLoad: true})
+                            this.setState({ initalLoad: true })
                             this.postList = []
                             /* Update state to render warning */
                             this.setState({ refreshing: false, networkChanged: false })
@@ -319,7 +331,7 @@ class ListPost extends React.Component {
 
                     } else {
                         /* Change in payload */
-                        if(this.state.initalLoad) {
+                        if (this.state.initalLoad) {
                             this.setState({ initalLoad: false })
                         }
                         if (this.postList.length !== 0) {
@@ -371,20 +383,20 @@ class ListPost extends React.Component {
                 this.setState({ refreshing: false, networkChanged: false })
             }
         }
-    }   
+    }
 
     //Edit Post
     editPost = (postId, postMessage) => {
         this.posts.map((post) => {
             if (post.Item.post_id == postId) {
-                post.Item.message = postMessage 
+                post.Item.message = postMessage
             }
         })
         this.createTiles(this.posts)
     }
 
     //Delete Post
-    deletePost = async(postId) => {
+    deletePost = async (postId) => {
         if (this.props.isConnected) {
             this.setState({ isPostDeleted: true })
             const payload = {
@@ -396,39 +408,39 @@ class ListPost extends React.Component {
                 }
             }
 
-            var index = this.posts.findIndex((post) => {return post.Item.post_id == postId})
+            var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
             this.postList.splice(index, 1)
             this.posts.splice(index, 1)
-            if(this.posts.length == 0) {
+            if (this.posts.length == 0) {
                 this.setState({ initalLoad: true })
             }
             this.setState({ isPostDeleted: true })
             try {
                 await delete_post(payload, this.headers).then((res) => {
-                    if(res.status === 200) {
+                    if (res.status === 200) {
                         this.postList = []
                         this.createTiles(this.posts)
                     }
                 }).catch(() => {
                 })
             }
-            catch(e) {/* error */}
+            catch (e) {/* error */ }
 
         }
         else {
             this.showToast()
         }
     }
-    getProfile= async() => {
+    getProfile = async () => {
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
         this.props.navigation.setParams({ 'profileData': this.profileData })
         const payload = {
             walletBalance: this.profileData.wallet_balance
         }
-        this.props.updateWallet(payload)  
+        this.props.updateWallet(payload)
     }
 
-    createTiles = async(posts) => {
+    createTiles = async (posts) => {
         this.getProfile()
         await posts.map((item) => {
             this.postList.push(
@@ -439,14 +451,14 @@ class ListPost extends React.Component {
                     postCreator={this.props.associateList[item.Item.associate_id]}
                     postCreator_id={item.Item.associate_id}
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
-                    time= {item.Item.time} 
-                    postMessage={item.Item.message} 
-                    taggedAssociates={item.Item.tagged_associates} 
-                    strength={item.Item.sub_type} 
+                    time={item.Item.time}
+                    postMessage={item.Item.message}
+                    taggedAssociates={item.Item.tagged_associates}
+                    strength={item.Item.sub_type}
                     type={item.Item.type}
-                    associate={item.Item.associate_id} 
+                    associate={item.Item.associate_id}
                     likeCount={item.Item.likeCount}
-                    commentCount={item.Item.commentCount} 
+                    commentCount={item.Item.commentCount}
                     postDeleteHandler={this.deletePost}
                     editPostHandler={this.editPost}
                 />
@@ -467,7 +479,7 @@ class ListPost extends React.Component {
                             refreshing={this.state.refreshing} //this.props.isConnected
                             onRefresh={() => {
                                 /* Show loader when manual refresh is triggered */
-                                this.props.navigation.setParams({ 'imageUrl': this.props.imagelink})
+                                this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
                                 if (this.props.isConnected) {
                                     this.setState({ refreshing: true }, this.loadPosts())
                                 } else {
@@ -489,7 +501,7 @@ class ListPost extends React.Component {
                 >
 
                     {!this.state.initalLoad ? this.postList : (
-                        <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                             <Text style={{ margin: 10 }} key={0}>No post to display</Text>
                             <Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon</Text>
                         </View>)}
@@ -499,7 +511,7 @@ class ListPost extends React.Component {
                     onWillFocus={async () => {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                this.props.navigation.setParams({ 'imageUrl': this.props.imagelink})
+                                this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
                                 this.loadPosts()
                                 this.getProfile()
                             }
@@ -558,9 +570,9 @@ const mapStateToProps = (state) => {
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
         idToken: state.user.idToken,
-        imagelink:state.user.imageUrl,
-        tenant_name:state.user.tenant_name,
-        email:state.user.emailAddress
+        imagelink: state.user.imageUrl,
+        tenant_name: state.user.tenant_name,
+        email: state.user.emailAddress
     };
 }
 
