@@ -63,9 +63,9 @@ class LoginPage extends React.Component {
         this.textInputAccountAlias = React.createRef();
         this.textInputEmail = React.createRef();
         this.textInputPassword = React.createRef();
+        this.contentView = React.createRef()
         this.associateList = {}
         this.getAssociateNames = this.getAssociateNames.bind(this)
-
     }
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -82,11 +82,11 @@ class LoginPage extends React.Component {
     }
 
     _keyboardDidShow = () => {
-        this.setState({isShowingKeyboard:true})
+        this.setState({ isShowingKeyboard: true })
     }
 
     _keyboardDidHide = () => {
-        this.setState({isShowingKeyboard:false})
+        this.setState({ isShowingKeyboard: false })
     }
 
     componentWillUnmount() {
@@ -358,7 +358,9 @@ class LoginPage extends React.Component {
 
             <Container>
                 <Content
-                    contentContainerStyle={this.state.isShowingKeyboard?null:styles.container} >
+                    contentContainerStyle={this.state.isShowingKeyboard ? null : styles.container}
+                    ref={ref => this.contentView = ref}
+                >
                     <View
                         style={styles.image}
                         onLayout={this.loadComponents}
@@ -381,7 +383,9 @@ class LoginPage extends React.Component {
                                     value={this.state.accountAlias}
                                     onChangeText={(text) => this.setState({ accountAlias: text })}
                                     inputRef={input => this.textInputAccountAlias = input}
-                                    onSubmitEditing={() => this.textInputEmail._root.focus()}
+                                    onSubmitEditing={() => {
+                                        this.textInputEmail._root.focus()
+                                        this.contentView._root.scrollToEnd()}}
                                     style={styles.color111}
                                 />
 
@@ -390,7 +394,9 @@ class LoginPage extends React.Component {
                                     value={this.state.email}
                                     onChangeText={(text) => this.setState({ email: text })}
                                     inputRef={input => this.textInputEmail = input}
-                                    onSubmitEditing={() => this.textInputPassword._root.focus()}
+                                    onSubmitEditing={() => {
+                                        this.textInputPassword._root.focus()
+                                        this.contentView._root.scrollToEnd()}}
                                     keyboardType={'email-address'}
                                     style={styles.color111}
                                 />
