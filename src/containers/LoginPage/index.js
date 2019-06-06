@@ -16,13 +16,13 @@ import {
     Form,
     Container,
     Content,
-    Toast, 
+    Toast,
     Text,
     View
 } from 'native-base';
 
 import { file_download } from '../../services/profile'
-import {user} from '../../store/actions'
+import { user } from '../../store/actions'
 /* Redux */
 import { connect } from 'react-redux'
 import { auth } from '../../store/actions'
@@ -41,7 +41,7 @@ import { read_member, read_tenant } from '../../services/tenant'
 /* Utilities */
 import toSentenceCase from '../../utilities/toSentenceCase'
 /* Push notification */
-import {register_device} from '../../services/pushNotification'
+import { register_device } from '../../services/pushNotification'
 import { get_associate_name } from '../../services/post'
 import slackLogger from '../../services/slackLogger'
 class LoginPage extends React.Component {
@@ -65,16 +65,34 @@ class LoginPage extends React.Component {
         this.textInputPassword = React.createRef();
         this.associateList = {}
         this.getAssociateNames = this.getAssociateNames.bind(this)
-        
+
     }
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             return true
         })
+        this.keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            this._keyboardDidShow,
+        );
+        this.keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            this._keyboardDidHide,
+        );
+    }
+
+    _keyboardDidShow = () => {
+        this.setState({isShowingKeyboard:true})
+    }
+
+    _keyboardDidHide = () => {
+        this.setState({isShowingKeyboard:false})
     }
 
     componentWillUnmount() {
         this.backHandler.remove()
+        this.keyboardDidShowListener.remove();
+        this.keyboardDidHideListener.remove();
     }
     loadComponents = () => {
         // Animated.sequence([
@@ -113,14 +131,14 @@ class LoginPage extends React.Component {
                 res.data.data.map((item) => {
                     this.associateList[item.associate_id] = item.full_name
                 })
-            })  
+            })
         }
-        catch(e) {/* error */}
+        catch (e) {/* error */ }
     }
 
-    forgotPasswordHandler=()=>{
-        this.setState({password:''})
-        this.props.navigation.navigate('ForgotPassword',{
+    forgotPasswordHandler = () => {
+        this.setState({ password: '' })
+        this.props.navigation.navigate('ForgotPassword', {
             accountAlias: this.state.accountAlias,
             email: this.state.email
         })
@@ -134,10 +152,10 @@ class LoginPage extends React.Component {
             if (token) {
                 // We have token!!
                 const payload_2 = {
-                    tenant_id : payload.accountAlias,
-                    associate_id:payload.associate_id,
-                    platform : Platform.OS,
-                    device_token : token
+                    tenant_id: payload.accountAlias,
+                    associate_id: payload.associate_id,
+                    platform: Platform.OS,
+                    device_token: token
                 }
                 register_device(payload_2)
                 //Send token to slack
@@ -152,13 +170,13 @@ class LoginPage extends React.Component {
                 alert('We were unable to register your device for push notifications, Please restart the app and check for working internet connection.')
                 return false
             }
-            
+
         } catch (error) {
             // Error retrieving data
         }
     }
     /* Get image from S3 */
-    handleImageDownload = () => { 
+    handleImageDownload = () => {
         /* Request image*/
         const payload = {
             tenant_name: this.props.tenant_name + this.props.accountAlias,
@@ -194,11 +212,11 @@ class LoginPage extends React.Component {
                         }
                         read_tenant({
                             tenant_id: this.state.accountAlias.toLowerCase().trim()
-                        },{
+                        }, {
                             headers: {
                                 Authorization: response.data.payload.idToken.jwtToken
                             }
-                        }).then(async(tenantRes) => {
+                        }).then(async (tenantRes) => {
                             await this.getAssociateNames(this.state.accountAlias)
                             // this.tenantName = tenantRes.data.data[0].tenant_name
                             if (tenantRes.data.data[0].is_disabled) {
@@ -232,11 +250,11 @@ class LoginPage extends React.Component {
                                         associateList: this.associateList
 
                                     };
-                                   
+
                                     this.props.authenticate(payload);
                                     //Activate Push Notofication
                                     this.handleImageDownload()
-                                    if(!this.sendToken(payload))
+                                    if (!this.sendToken(payload))
                                         return
                                     this.props.navigation.navigate('TabNavigator')
                                 }).catch((error) => {
@@ -316,7 +334,7 @@ class LoginPage extends React.Component {
                         }
                         this.setState({ isSignInLoading: false })
                     })
-                
+
                 } else {
                     Toast.show({
                         text: 'All fields are required',
@@ -340,19 +358,18 @@ class LoginPage extends React.Component {
 
             <Container>
                 <Content
-                    contentContainerStyle={styles.container} >
+                    contentContainerStyle={this.state.isShowingKeyboard?null:styles.container} >
                     <View
                         style={styles.image}
                         onLayout={this.loadComponents}
                     >
                         <Form style={styles.form}>
                             <Animated.View style={[{ transform: [{ translateY: logoShift }], opacity: logoFade, alignItems: 'center' }]}>
-                                
-                                <Image 
-                                    // source={require('../../assets/Logo_High_black.png')} 
+
+                                <Image
                                     source={logo}
-                                    resizeMode= {'cover'}
-                                    style = {{height: 250, aspectRatio: 1 / 1}}
+                                    resizeMode={'cover'}
+                                    style={{ height: 250, aspectRatio: 1 / 1 }}
                                 />
 
                             </Animated.View>
@@ -364,7 +381,7 @@ class LoginPage extends React.Component {
                                     value={this.state.accountAlias}
                                     onChangeText={(text) => this.setState({ accountAlias: text })}
                                     inputRef={input => this.textInputAccountAlias = input}
-                                    onSubmitEditing={() => this.textInputEmail._root.focus()} 
+                                    onSubmitEditing={() => this.textInputEmail._root.focus()}
                                     style={styles.color111}
                                 />
 
@@ -374,7 +391,7 @@ class LoginPage extends React.Component {
                                     onChangeText={(text) => this.setState({ email: text })}
                                     inputRef={input => this.textInputEmail = input}
                                     onSubmitEditing={() => this.textInputPassword._root.focus()}
-                                    keyboardType={'email-address'} 
+                                    keyboardType={'email-address'}
                                     style={styles.color111}
                                 />
                                 <TextInput
@@ -382,7 +399,7 @@ class LoginPage extends React.Component {
                                     value={this.state.password}
                                     onChangeText={(text) => this.setState({ password: text })}
                                     inputRef={input => this.textInputPassword = input}
-                                    onSubmitEditing={this.signinHandler} 
+                                    onSubmitEditing={this.signinHandler}
                                     style={styles.color111}
                                     secureTextEntry
                                 />
@@ -390,7 +407,6 @@ class LoginPage extends React.Component {
                                     onPress={this.signinHandler}
                                     value='Sign In Now!'
                                     isLoading={this.state.isSignInLoading}
-                                    // isLight={true}
                                 />
                                 <TouchableOpacity onPress={this.forgotPasswordHandler}>
                                     <Text style={styles.navigationLink}>Forgot Password?</Text>
@@ -432,9 +448,9 @@ const mapStateToProps = (state) => {
     return {
         isAuthenticate: state.isAuthenticate,
         isConnected: state.system.isConnected,
-        imagelink:state.user.imageUrl,
-        tenant_name:state.user.tenant_name,
-        email:state.user.emailAddress,
+        imagelink: state.user.imageUrl,
+        tenant_name: state.user.tenant_name,
+        email: state.user.emailAddress,
         accountAlias: state.user.accountAlias
     };
 }
