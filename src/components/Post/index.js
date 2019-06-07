@@ -45,7 +45,6 @@ class Post extends Component {
             rewardsPoints: this.props.points
         }
         this.state = initalState
-        this.postMessage = this.props.postMessage
         this.taggedAssociates = []
         //formatting update locale
         Moment.globalMoment = moment;
@@ -287,9 +286,8 @@ class Post extends Component {
         this.setState({
             ...this.state,
             isEdit: true,
-            postMessage: data.message
+            editPostMessage: data.message
         })
-        this.props.editPostHandler(this.props.postId, data.message)
     }
 
     data = [

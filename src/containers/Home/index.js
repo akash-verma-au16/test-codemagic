@@ -228,16 +228,6 @@ class Home extends React.Component {
         catch(error) {/* error */}
     }
 
-    editPost = () => {
-        ToastAndroid.showWithGravityAndOffset(
-            'Coming soon',
-            ToastAndroid.LONG,
-            ToastAndroid.BOTTOM,
-            25,
-            100,
-        );
-    }
-
     deletePost = (postId) => {
         if (this.props.isConnected) {
             this.setState({ isPostDeleted: true })
@@ -335,12 +325,12 @@ class Home extends React.Component {
                     time={item.Item.time}
                     postMessage={item.Item.message}
                     taggedAssociates={item.Item.tagged_associates}
-                    strength={item.Item.sub_type}
+                    strength={item.Item.sub_type} 
+                    type={item.Item.type}
                     associate={item.Item.associate_id}
                     likeCount={item.Item.likeCount}
                     commentCount={item.Item.commentCount}
                     postDeleteHandler={this.deletePost}
-                    editPostHandler={this.editPost} 
                 />
             )
         })
