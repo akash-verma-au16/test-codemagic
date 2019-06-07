@@ -330,7 +330,6 @@ class ListPost extends React.Component {
                             return
                         }
 
-                        this.counts = response.data.data.counts
                         response.data.data.posts.map((item, index) => {
                             item.Item.likeCount = response.data.data.counts[index].likeCount
                             item.Item.commentCount = response.data.data.counts[index].commentCount
@@ -342,6 +341,9 @@ class ListPost extends React.Component {
                             this.createTiles(this.posts)
                         }
                         else {
+                            this.setState({
+                                refreshing: false 
+                            })
                             return
                         }
 
@@ -391,15 +393,14 @@ class ListPost extends React.Component {
         }
     }
 
-    //Edit Post
-    editPost = (postId, postMessage) => {
-        this.posts.map((post) => {
-            if (post.Item.post_id == postId) {
-                post.Item.message = postMessage
-            }
-        })
-        this.createTiles(this.posts)
-    }
+    // editPost = (postId, postMessage) => {
+    //     this.posts.map((post) => {
+    //         if (post.Item.post_id == postId) {
+    //             post.Item.message = postMessage
+    //         }
+    //     })
+    //     this.createTiles(this.posts)
+    // }
 
     //Delete Post
     deletePost = async (postId) => {
@@ -466,7 +467,6 @@ class ListPost extends React.Component {
                     likeCount={item.Item.likeCount}
                     commentCount={item.Item.commentCount}
                     postDeleteHandler={this.deletePost}
-                    editPostHandler={this.editPost} 
                     points={item.Item.points}
                 />
             )

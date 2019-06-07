@@ -6,7 +6,7 @@ import { Icon } from 'native-base'
 import Moment from 'react-moment'
 import moment from 'moment/min/moment-with-locales'
 //API methods
-
+import { edit_post } from '../../services/post'
 /* Redux */
 import { connect } from 'react-redux'
 
@@ -117,10 +117,17 @@ class EditPost extends React.Component {
         });
     }
 
+    //Authorization headers
+    headers = {
+        headers: {
+            Authorization: this.props.idToken
+        }
+    }
+
     editPostHandler = () => {
         if(this.props.isConnected){
             const payload = {
-                "Data": {
+                Data: {
                     post_id: this.props.navigation.getParam('postId'),
                     tenant_id: this.props.accountAlias,
                     associate_id: this.props.associate_id,
@@ -133,9 +140,31 @@ class EditPost extends React.Component {
                         type: "tenant",
                         id: this.props.accountAlias
                     },
-                    time: 1554888889
+                    time: this.state.epoch
                 }
             }
+            try {
+                edit_post(payload, this.headers).then((res) => {
+                    if (res.status === 200) {
+                        this.props.navigation.state.params.returnData({
+                            message: this.state.postMessage
+                        })
+                        this.props.navigation.goBack()
+                    }
+
+                }).catch((e) => {
+                })
+            }
+            catch(e) {}
+        }
+        else {
+            ToastAndroid.showWithGravityAndOffset(
+                'Please, connect to the internet.',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+                25,
+                100,
+            );
         }
 
     }
