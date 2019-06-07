@@ -329,21 +329,17 @@ class ListPost extends React.Component {
                             this.setState({ refreshing: false, networkChanged: false })
                             return
                         }
-                        // this.payloadBackup = response.data.data.posts
+
                         this.counts = response.data.data.counts
                         response.data.data.posts.map((item, index) => {
                             item.Item.likeCount = response.data.data.counts[index].likeCount
                             item.Item.commentCount = response.data.data.counts[index].commentCount
-                            // this.counts = response.data.data.counts.filter((elm) => {
-                            //     return elm.post_id == item.Item.post_id
-                            // })
-                            // item.Item.likeCount = this.counts[0].likeCount
-                            // item.Item.commentCount = this.counts[0].commentCount
+
                         })
                         if (JSON.stringify(this.posts) !== JSON.stringify(response.data.data.posts)) {
                             this.posts = response.data.data.posts
                             this.postList = []
-                            this.createTiles(response.data.data.posts)
+                            this.createTiles(this.posts)
                         }
                         else {
                             return
@@ -366,17 +362,12 @@ class ListPost extends React.Component {
                             return
                         }
 
-                        // /* Take Backup */
-                        this.payloadBackup = response.data.data.posts
-
                         this.posts = []
                         this.posts = response.data.data.posts
-                        this.posts.map((item) => {
-                            this.counts = response.data.data.counts.filter((elm) => {
-                                return elm.post_id == item.Item.post_id
-                            })
-                            item.Item.likeCount = this.counts[0].likeCount
-                            item.Item.commentCount = this.counts[0].commentCount
+                        this.counts = response.data.data.counts
+                        this.posts.map((item, index) => {
+                            item.Item.likeCount = this.counts[index].likeCount
+                            item.Item.commentCount = this.counts[index].commentCount
                         })
 
                         // /* Take Backup */
