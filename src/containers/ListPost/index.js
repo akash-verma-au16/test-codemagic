@@ -393,15 +393,6 @@ class ListPost extends React.Component {
         }
     }
 
-    // editPost = (postId, postMessage) => {
-    //     this.posts.map((post) => {
-    //         if (post.Item.post_id == postId) {
-    //             post.Item.message = postMessage
-    //         }
-    //     })
-    //     this.createTiles(this.posts)
-    // }
-
     //Delete Post
     deletePost = async (postId) => {
         if (this.props.isConnected) {
