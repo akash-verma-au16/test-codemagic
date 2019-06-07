@@ -118,13 +118,26 @@ class EditPost extends React.Component {
     }
 
     editPostHandler = () => {
-        ToastAndroid.showWithGravityAndOffset(
-            'Coming soon',
-            ToastAndroid.LONG,
-            ToastAndroid.BOTTOM,
-            25,
-            100,
-        );
+        if(this.props.isConnected){
+            const payload = {
+                "Data": {
+                    post_id: this.props.navigation.getParam('postId'),
+                    tenant_id: this.props.accountAlias,
+                    associate_id: this.props.associate_id,
+                    message: this.state.postMessage,
+                    type: this.props.navigation.getParam('type'),
+                    sub_type: this.props.navigation.getParam('strength'),
+                    ops: "edit_post",
+                    tagged_associates: this.state.taggedAssociates,
+                    privacy: {
+                        type: "tenant",
+                        id: this.props.accountAlias
+                    },
+                    time: 1554888889
+                }
+            }
+        }
+
     }
 
     async goBack() {

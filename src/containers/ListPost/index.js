@@ -38,6 +38,7 @@ import { NavigationEvents } from 'react-navigation';
 import { withInAppNotification } from 'react-native-in-app-notification'
 import PushNotification from '@aws-amplify/pushnotification'
 import notificationIcon from '../../assets/Logo_High_black.png'
+
 class ListPost extends React.Component {
     constructor(props) {
         super(props)
@@ -329,6 +330,21 @@ class ListPost extends React.Component {
                             return
                         }
 
+                        this.counts = response.data.data.counts
+                        response.data.data.posts.map((item, index) => {
+                            item.Item.likeCount = response.data.data.counts[index].likeCount
+                            item.Item.commentCount = response.data.data.counts[index].commentCount
+
+                        })
+                        if (JSON.stringify(this.posts) !== JSON.stringify(response.data.data.posts)) {
+                            this.posts = response.data.data.posts
+                            this.postList = []
+                            this.createTiles(this.posts)
+                        }
+                        else {
+                            return
+                        }
+
                     } else {
                         /* Change in payload */
                         if (this.state.initalLoad) {
@@ -346,18 +362,16 @@ class ListPost extends React.Component {
                             return
                         }
 
-                        // /* Take Backup */
-                        this.payloadBackup = response.data.data.posts
-
                         this.posts = []
                         this.posts = response.data.data.posts
-                        this.posts.map((item) => {
-                            this.counts = response.data.data.counts.filter((elm) => {
-                                return elm.post_id == item.Item.post_id
-                            })
-                            item.Item.likeCount = this.counts[0].likeCount
-                            item.Item.commentCount = this.counts[0].commentCount
+                        this.counts = response.data.data.counts
+                        this.posts.map((item, index) => {
+                            item.Item.likeCount = this.counts[index].likeCount
+                            item.Item.commentCount = this.counts[index].commentCount
                         })
+
+                        // /* Take Backup */
+                        this.payloadBackup = this.posts
                         this.postList = []
                         /* Create UI tiles to display */
                         this.createTiles(this.posts)
@@ -452,7 +466,8 @@ class ListPost extends React.Component {
                     likeCount={item.Item.likeCount}
                     commentCount={item.Item.commentCount}
                     postDeleteHandler={this.deletePost}
-                    editPostHandler={this.editPost}
+                    editPostHandler={this.editPost} 
+                    points={item.Item.points}
                 />
             )
         })
