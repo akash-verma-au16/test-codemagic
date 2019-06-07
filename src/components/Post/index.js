@@ -41,7 +41,8 @@ class Post extends Component {
             addOn: 0,
             likes: this.props.likeCount,
             comments: this.props.commentCount,
-            taggedAssociates: this.props.taggedAssociates
+            taggedAssociates: this.props.taggedAssociates,
+            rewardsPoints: this.props.points
         }
         this.state = initalState
         this.postMessage = this.props.postMessage
@@ -214,7 +215,7 @@ class Post extends Component {
     }
 
     onIconPresshandler = () => {
-        this.props.navigation.navigate('Profile', {
+        this.props.navigation.push('Profile', {
             associateId: this.props.postCreator_id,
             profileData: this.props.postCreator_id === this.props.associate_id ? this.props.profileData : {},
             isPost: this.props.postCreator_id === this.props.associate_id ? true : false
@@ -321,9 +322,9 @@ class Post extends Component {
                         <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>
                             {this.props.postCreator_id === this.props.associate_id ? this.props.userName : this.props.postCreator}
                         </Text>
-                        {this.state.addOn > 0 && this.props.postCreator_id !== this.props.associate_id ?
+                        {this.state.rewardsPoints > 0 ?
                             <View style={styles.addOnView}>
-                                <Text style={styles.addon}>+{this.state.addOn}</Text>
+                                <Text style={styles.addon}>+{this.state.rewardsPoints}</Text>
                             </View>
                             :
                             null
