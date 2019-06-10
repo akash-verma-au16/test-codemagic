@@ -111,6 +111,7 @@ class Home extends React.Component {
         this.transactionDataBackup = []
         this.homeDataBackup = []
         this.userData = this.state.associate_id == this.props.associate_id ? this.props.navigation.getParam('profileData') : {}
+        console.log("this.userData", this.userData)
         this.dataList = []
 
         Moment.globalMoment = moment;
@@ -141,6 +142,9 @@ class Home extends React.Component {
             // await this.setState({ loading: false })
         }
         else {
+            if(this.userData == {}) {
+                this.loadProfile()
+            }
             await this.loadData()
             // this.setState({ loading: false })
         }
@@ -534,6 +538,7 @@ class Home extends React.Component {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 this.setState({ refreshing: true })
                 await read_transaction(payload, this.headers).then(response => {
+                    console.log("Transaction", response)
                     if (this.transactionDataBackup.length === response.data.data.transaction_data) {
                         if (response.data.data.transaction_data.length == 0) {
                             this.transactionList = []
@@ -581,8 +586,12 @@ class Home extends React.Component {
                                         <Text style={styles.tText}>
                                             { 
                                                 (item.t_type == 'cr') ?
-                                                    'Points credited for: ' :
-                                                    'Points debited for: '
+                                                    'Points credited for ' 
+                                                    :
+                                                    'Points debited for '
+                                            }
+                                            {
+                                                item.sevice_name == 'endorse' ? 'Endorsement: ' : 'Gratitude: '
                                             }
                                             {item.sevice_sub_type}
                                         </Text>

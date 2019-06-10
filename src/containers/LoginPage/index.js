@@ -132,6 +132,7 @@ class LoginPage extends React.Component {
             await get_associate_name({ tenant_id: tenantId }).then((res) => {
                 res.data.data.map((item) => {
                     this.associateList[item.associate_id] = item.full_name
+                    // AsyncStorage.setItem(item.associate_id, item.full_name)
                 })
             })
         }

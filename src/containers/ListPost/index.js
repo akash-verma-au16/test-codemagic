@@ -239,6 +239,7 @@ class ListPost extends React.Component {
         "associate_id": this.props.associate_id
     }
     async componentDidMount() {
+        await this.getProfile()
         if (this.props.isAuthenticate) {
             this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
         }
@@ -430,12 +431,34 @@ class ListPost extends React.Component {
         }
     }
     getProfile = async () => {
-        this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
-        this.props.navigation.setParams({ 'profileData': this.profileData })
-        const payload = {
-            walletBalance: this.profileData.wallet_balance
-        }
-        this.props.updateWallet(payload)
+        console.log("Calling getProfile")
+        if(this.props.isAuthenticate) {
+            //Authorization headers
+            const headers = {
+                headers: {
+                    Authorization: this.props.idToken
+                }
+            }
+            //profile payload
+            const payload1 = {
+                tenant_id: this.props.accountAlias,
+                associate_id: this.props.associate_id
+            }
+            console.log("this.payload", payload1)
+            console.log("this.headers", headers)
+            this.profileData = await loadProfile(payload1,headers, this.props.isConnected);
+            console.log("this.profileData", this.profileData)
+            this.props.navigation.setParams({ 'profileData': this.profileData })
+            const payload = {
+                walletBalance: this.profileData.wallet_balance
+            }
+            this.props.updateWallet(payload)
+        }        
+    }
+
+    getName = async(associateId) => {
+        let name = await AsyncStorage.getItem(associateId)
+        return name
     }
 
     createTiles = async (posts) => {
@@ -447,6 +470,7 @@ class ListPost extends React.Component {
                     key={item.Item.post_id}
                     postId={item.Item.post_id}
                     postCreator={this.props.associateList[item.Item.associate_id]}
+                    // postCreator={this.getName(item.Item.associate_id)}
                     postCreator_id={item.Item.associate_id}
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time={item.Item.time}
@@ -510,8 +534,8 @@ class ListPost extends React.Component {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
-                                this.loadPosts()
                                 this.getProfile()
+                                this.loadPosts()
                             }
                         }
                     }}
