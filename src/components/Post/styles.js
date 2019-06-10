@@ -104,5 +104,27 @@ export const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 1,
         borderColor: '#1c92c4'
+    },
+    pointButtonView: {
+        flexDirection: 'row',
+        paddingHorizontal: 5,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%'
+    },
+    pointsView: {
+        width: '30%',
+        borderWidth: 1,
+        borderRadius: 3,
+        borderColor: '#1c92c4',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 10,
+        paddingVertical: 7
+    },
+    points: {
+        color: '#1c92c4',
+        fontSize: 16
     }
+
 })

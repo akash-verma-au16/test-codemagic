@@ -16,7 +16,7 @@ import { dev } from '../../store/actions'
 //Cusotm component
 import VisibilityModal from '../../containers/VisibilityModal'
 
-import { like_post, unlike_post, like_id } from '../../services/post'
+import { like_post, unlike_post, like_id, rewards_addon } from '../../services/post'
 //React navigation
 import { withNavigation } from 'react-navigation';
 
@@ -42,7 +42,8 @@ class Post extends Component {
             likes: this.props.likeCount,
             comments: this.props.commentCount,
             taggedAssociates: this.props.taggedAssociates,
-            rewardsPoints: this.props.points
+            rewardsPoints: this.props.points,
+            addonVisible: false
         }
         this.state = initalState
         this.taggedAssociates = []
@@ -251,7 +252,36 @@ class Post extends Component {
     rewardsAddon = () => {
         if (this.props.walletBalance > 10) {
             if (this.props.isConnected) {
-                this.setState({ addOn: this.state.addOn + 10 })
+                // this.setState({ addOn: this.state.addOn + 10 })
+                this.setState({addOn: this.state.addOn + 1})
+                console.log("this.state.addOn", this.state.addOn)
+                console.log("this.props.taggedAssociates.length", this.props.taggedAssociates.length)
+                let points =  this.state.addOn * this.props.taggedAssociates.length
+                const payload1 = {
+                    tenant_id: this.props.accountAlias,
+                    associate_id: this.props.associate_id,
+                    sub_type: this.props.strength,
+                    type: "addon",
+                    post_id: this.props.postId,
+                    points: points
+                }
+                console.log("Rewards payload", payload1)
+
+            // try {
+            //     rewards_addon(payload1, this.headers).then((res) => {
+            //         console.log("Addon", res)
+            //         const payload = {
+            //             walletBalance: this.props.walletBalance - 10
+            //         }
+            //         this.props.updateWallet(payload) 
+
+            //     }).catch((e) => {
+            //         console.log(e)
+            //     })
+            // }
+            // catch (e) {
+            //     console.log(e)
+            // }
 
             }
             else {
@@ -401,13 +431,31 @@ class Post extends Component {
                     </TouchableOpacity>
                     {
                         (this.props.postCreator_id !== this.props.associate_id) ?
-                            <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={this.rewardsAddon}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={() => this.setState({addonVisible: true})}>
                                 <Icon name='md-add' type={'Ionicons'} style={this.state.addOn > 0 ? { color: '#1c92c4', fontSize: 19 } : { color: '#bababa', fontSize: 19 }} />
                                 <Text style={this.state.addOn > 0 ? styles.footerTextActive : styles.footerTextInactive}>Add-on</Text>
                             </TouchableOpacity>
                             : null
                     }
                 </View>
+                {this.state.addonVisible ?
+                    <React.Fragment>
+                        <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>
+                        <View style={styles.pointButtonView}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => {this.rewardsAddon(1)}}>
+                                <Text style={styles.points}>+1</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => { this.rewardsAddon(1)}}>
+                                <Text style={styles.points}>+5</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => { this.rewardsAddon(1)}}>
+                                <Text style={styles.points}>+10</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </React.Fragment>
+                    :
+                    null}
+
                 <VisibilityModal
                     enabled={this.state.modalVisible}
                     data={this.props.associate_id === this.props.associate ? this.data : this.otherData}
