@@ -295,7 +295,7 @@ class CreatePost extends React.Component {
                 points: this.state.addPoints > 0 ? this.state.addPoints * this.state.taggedAssociates.length : 0
             }
         }
-        console.log("Create Post", payload)
+
         const headers = {
             headers: {
                 Authorization: this.props.idToken

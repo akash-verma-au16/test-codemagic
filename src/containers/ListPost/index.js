@@ -228,7 +228,6 @@ class ListPost extends React.Component {
     }
 
     getAssociateNames = async () => {
-        console.log("calling this.getAssociateNames")
         try {
             await get_associate_name({ tenant_id: this.props.accountAlias }).then((res) => {
                 res.data.data.map((item) => {
@@ -451,7 +450,6 @@ class ListPost extends React.Component {
         }
     }
     getProfile = async () => {
-        console.log("Calling getProfile")
         if(this.props.isAuthenticate) {
             //Authorization headers
             const headers = {
@@ -464,10 +462,7 @@ class ListPost extends React.Component {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id
             }
-            console.log("this.payload", payload1)
-            console.log("this.headers", headers)
             this.profileData = await loadProfile(payload1,headers, this.props.isConnected);
-            console.log("this.profileData", this.profileData)
             this.props.navigation.setParams({ 'profileData': this.profileData })
             const payload = {
                 walletBalance: this.profileData.wallet_balance
