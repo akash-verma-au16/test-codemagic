@@ -229,7 +229,7 @@ class CreatePost extends React.Component {
                 return
             }
         } 
-        if (this.state.addPoints > this.profileData.wallet_balance) {
+        if ((this.state.addPoints * this.state.taggedAssociates.length) > this.profileData.wallet_balance) {
             ToastAndroid.showWithGravityAndOffset(
                 'You have insufficient wallet balance ' + this.profileData.wallet_balance +' points.',
                 ToastAndroid.SHORT,
@@ -292,9 +292,10 @@ class CreatePost extends React.Component {
                     id: this.state.visibilityName == "" ? this.props.accountAlias : this.state.visibilityName 
                 },
                 time: timestamp,
-                points: this.state.addPoints > 0 ? this.state.addPoints : 0
+                points: this.state.addPoints > 0 ? this.state.addPoints * this.state.taggedAssociates.length : 0
             }
         }
+        console.log("Create Post", payload)
         const headers = {
             headers: {
                 Authorization: this.props.idToken

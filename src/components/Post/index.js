@@ -215,7 +215,7 @@ class Post extends Component {
     }
 
     onIconPresshandler = () => {
-        this.props.navigation.push('Profile', {
+        this.props.navigation.navigate('Profile', {
             associateId: this.props.postCreator_id,
             profileData: this.props.postCreator_id === this.props.associate_id ? this.props.profileData : {},
             isPost: this.props.postCreator_id === this.props.associate_id ? true : false
@@ -349,6 +349,7 @@ class Post extends Component {
                         </View>
                         <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>
                             {this.props.postCreator_id === this.props.associate_id ? this.props.userName : this.props.postCreator}
+                            {/* {AsyncStorage.getItem(this.props.postCreator_id)} */}
                         </Text>
                         {this.state.rewardsPoints > 0 ?
                             <View style={styles.addOnView}>
@@ -433,7 +434,7 @@ class Post extends Component {
                         (this.props.postCreator_id !== this.props.associate_id) ?
                             <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={() => this.setState({addonVisible: true})}>
                                 <Icon name='md-add' type={'Ionicons'} style={this.state.addOn > 0 ? { color: '#1c92c4', fontSize: 19 } : { color: '#bababa', fontSize: 19 }} />
-                                <Text style={this.state.addOn > 0 ? styles.footerTextActive : styles.footerTextInactive}>Add-on</Text>
+                                <Text style={this.state.addonVisible ? styles.footerTextActive : styles.footerTextInactive}>Add-on</Text>
                             </TouchableOpacity>
                             : null
                     }
@@ -442,13 +443,13 @@ class Post extends Component {
                     <React.Fragment>
                         <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>
                         <View style={styles.pointButtonView}>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => {this.rewardsAddon(1)}}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => {this.rewardsAddon}}>
                                 <Text style={styles.points}>+1</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => { this.rewardsAddon(1)}}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => { this.rewardsAddon}}>
                                 <Text style={styles.points}>+5</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => { this.rewardsAddon(1)}}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => { this.rewardsAddon}}>
                                 <Text style={styles.points}>+10</Text>
                             </TouchableOpacity>
                         </View>

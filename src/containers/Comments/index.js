@@ -227,7 +227,7 @@ class Comments extends React.Component {
 
     loadComments = async(data) => {
         var inputData = data.sort((a,b) => {return a.time -b.time})
-        // this.commentList = []
+        this.commentList = []
         await inputData.map((item, index) => {
             this.commentList.push(
                 <Comment
@@ -244,7 +244,7 @@ class Comments extends React.Component {
             )
         })
         this.props.navigation.setParams({ commentCount: this.commentCount})
-        this.setState({ commentsRefresh: false, isCommentDeleted: false, initialLoad: false })
+        this.setState({ commentsRefresh: false, initialLoad: false })
     }
 
     deleteComment = (comment_id, comment) => {
