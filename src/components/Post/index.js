@@ -38,12 +38,13 @@ class Post extends Component {
             likeId: "",
             isEdit: false,
             editPostMessage: "",
-            addOn: 0,
+            addOn: "",
             likes: this.props.likeCount,
             comments: this.props.commentCount,
             taggedAssociates: this.props.taggedAssociates,
             rewardsPoints: this.props.points,
-            addonVisible: false
+            addonVisible: false,
+            postCreatorName: ""
         }
         this.state = initalState
         this.taggedAssociates = []
@@ -74,8 +75,19 @@ class Post extends Component {
 
     }
 
+    getName = async () => {
+        try {
+            let name = await AsyncStorage.getItem(this.props.postCreator_id)
+            this.setState({postCreatorName: name})
+        }
+        catch {
+            //Error retriving data
+        }
+    }
+
     componentWillMount() {
         this.restoreLikes()
+        this.getName()
     }
 
     componentWillReceiveProps(nextProps) {
@@ -250,38 +262,45 @@ class Post extends Component {
     }
 
     rewardsAddon = () => {
-        if (this.props.walletBalance > 10) {
+        if (this.props.walletBalance > this.state.addOn * this.props.taggedAssociates.length) {
             if (this.props.isConnected) {
-                // this.setState({ addOn: this.state.addOn + 10 })
-                this.setState({addOn: this.state.addOn + 1})
-                console.log("this.state.addOn", this.state.addOn)
-                console.log("this.props.taggedAssociates.length", this.props.taggedAssociates.length)
-                let points =  this.state.addOn * this.props.taggedAssociates.length
                 const payload1 = {
                     tenant_id: this.props.accountAlias,
                     associate_id: this.props.associate_id,
                     sub_type: this.props.strength,
                     type: "addon",
                     post_id: this.props.postId,
-                    points: points
+                    points: this.state.addOn * this.props.taggedAssociates.length
                 }
-                console.log("Rewards payload", payload1)
+                try {
+                    rewards_addon(payload1, this.headers).then(async(res) => {
+                        if(res.status == 200) {
+                            let points = this.state.addOn * this.props.taggedAssociates.length
+                            let walletBalance = this.props.walletBalance - points
+                            const payload = {
+                                walletBalance: walletBalance
+                            }
+                            //Update Wallet
+                            await this.props.updateWallet(payload) 
+                            ToastAndroid.showWithGravityAndOffset(
+                                'You gifted '+points+ ' points',
+                                ToastAndroid.SHORT,
+                                ToastAndroid.BOTTOM,
+                                25,
+                                100,
+                            );
+                            this.setState({addOn: "", addonVisible: !this.state.addonVisible})
+                        }
 
-            // try {
-            //     rewards_addon(payload1, this.headers).then((res) => {
-            //         console.log("Addon", res)
-            //         const payload = {
-            //             walletBalance: this.props.walletBalance - 10
-            //         }
-            //         this.props.updateWallet(payload) 
-
-            //     }).catch((e) => {
-            //         console.log(e)
-            //     })
-            // }
-            // catch (e) {
-            //     console.log(e)
-            // }
+                    }).catch((e) => {
+                        //Error retriving data
+                        this.setState({ addonVisible: false })
+                    })
+                }
+                catch (e) {
+                    //Error retriving data
+                    this.setState({ addonVisible: false })
+                }
 
             }
             else {
@@ -296,14 +315,13 @@ class Post extends Component {
         }
         else {
             ToastAndroid.showWithGravityAndOffset(
-                'You have insufficient points',
+                'You have insufficient points ' + this.props.walletBalance,
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
                 100,
             )
         }
-        this.setState({ addOn: 0 })
     }
 
     returnCount = (count) => {
@@ -348,7 +366,7 @@ class Post extends Component {
                             <Icon name='person' style={{ fontSize: 25, color: 'white' }} />
                         </View>
                         <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>
-                            {this.props.postCreator_id === this.props.associate_id ? this.props.userName : this.props.postCreator}
+                            {this.props.postCreator_id === this.props.associate_id ? this.props.userName : this.state.postCreatorName}
                             {/* {AsyncStorage.getItem(this.props.postCreator_id)} */}
                         </Text>
                         {this.state.rewardsPoints > 0 ?
@@ -432,8 +450,8 @@ class Post extends Component {
                     </TouchableOpacity>
                     {
                         (this.props.postCreator_id !== this.props.associate_id) ?
-                            <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={() => this.setState({addonVisible: true})}>
-                                <Icon name='md-add' type={'Ionicons'} style={this.state.addOn > 0 ? { color: '#1c92c4', fontSize: 19 } : { color: '#bababa', fontSize: 19 }} />
+                            <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={() => this.setState({addonVisible: !this.state.addonVisible})}>
+                                <Icon name='md-add' type={'Ionicons'} style={this.state.addonVisible ? { color: '#1c92c4', fontSize: 19 } : { color: '#bababa', fontSize: 19 }} />
                                 <Text style={this.state.addonVisible ? styles.footerTextActive : styles.footerTextInactive}>Add-on</Text>
                             </TouchableOpacity>
                             : null
@@ -443,13 +461,13 @@ class Post extends Component {
                     <React.Fragment>
                         <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>
                         <View style={styles.pointButtonView}>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => {this.rewardsAddon}}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={async() => {await this.setState({addOn: "1"}, () => this.rewardsAddon())}}>
                                 <Text style={styles.points}>+1</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => { this.rewardsAddon}}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "5" }, () => this.rewardsAddon())}}>
                                 <Text style={styles.points}>+5</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => { this.rewardsAddon}}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "10" }, () => this.rewardsAddon())}}>
                                 <Text style={styles.points}>+10</Text>
                             </TouchableOpacity>
                         </View>

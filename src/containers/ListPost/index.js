@@ -25,7 +25,7 @@ import {
     Thumbnail
 } from 'native-base';
 /* Services */
-import { news_feed, delete_post, liked_post } from '../../services/post'
+import { news_feed, delete_post, liked_post, get_associate_name } from '../../services/post'
 import { dev } from '../../store/actions'
 //Loading Modal
 import LoadingModal from '../LoadingModal'
@@ -227,6 +227,18 @@ class ListPost extends React.Component {
         return true
     }
 
+    getAssociateNames = async () => {
+        try {
+            await get_associate_name({ tenant_id: this.props.accountAlias }).then((res) => {
+                res.data.data.map((item) => {
+                    // this.associateList[item.associate_id] = item.full_name
+                    AsyncStorage.setItem(item.associate_id, item.full_name)
+                })
+            })
+        }
+        catch (e) {/* error */ }
+    }
+
     //Authorization headers
     headers = {
         headers: {
@@ -244,7 +256,14 @@ class ListPost extends React.Component {
             this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
         }
 
-        this.interval = setInterval(() => this.loadPosts(), 10000);
+        this.interval = setInterval(() => {
+            this.loadPosts()
+        }, 10000);
+
+        this.interval1 = setInterval(() => {
+            this.getAssociateNames()
+        }, 9000);
+
         //Detecting network connectivity change
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
         //Handling hardware backpress event
@@ -257,7 +276,7 @@ class ListPost extends React.Component {
     }
 
     componentWillUnmount() {
-        clearInterval(this.interval)
+        clearInterval(this.interval, this.interval1)
         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
         this.backHandler.remove()
     }
@@ -268,7 +287,7 @@ class ListPost extends React.Component {
                 networkChanged: true
             }, async () => {
                 this.loadPosts()
-                this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': this.props.isConnected })
+                this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': true })
             })
         }
         else {
@@ -431,7 +450,6 @@ class ListPost extends React.Component {
         }
     }
     getProfile = async () => {
-        console.log("Calling getProfile")
         if(this.props.isAuthenticate) {
             //Authorization headers
             const headers = {
@@ -444,10 +462,7 @@ class ListPost extends React.Component {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id
             }
-            console.log("this.payload", payload1)
-            console.log("this.headers", headers)
             this.profileData = await loadProfile(payload1,headers, this.props.isConnected);
-            console.log("this.profileData", this.profileData)
             this.props.navigation.setParams({ 'profileData': this.profileData })
             const payload = {
                 walletBalance: this.profileData.wallet_balance
@@ -456,21 +471,15 @@ class ListPost extends React.Component {
         }        
     }
 
-    getName = async(associateId) => {
-        let name = await AsyncStorage.getItem(associateId)
-        return name
-    }
-
     createTiles = async (posts) => {
         this.getProfile()
-        await posts.map((item) => {
+        await posts.map(async(item) => {
             this.postList.push(
                 // Post Component
                 <Post
                     key={item.Item.post_id}
                     postId={item.Item.post_id}
-                    postCreator={this.props.associateList[item.Item.associate_id]}
-                    // postCreator={this.getName(item.Item.associate_id)}
+                    // postCreator={this.props.associateList[item.Item.associate_id]}
                     postCreator_id={item.Item.associate_id}
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time={item.Item.time}
