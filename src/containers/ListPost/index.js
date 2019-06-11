@@ -286,7 +286,6 @@ class ListPost extends React.Component {
             this.setState({
                 networkChanged: true
             }, async () => {
-                this.loadPosts()
                 this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': true })
             })
         }
@@ -336,6 +335,7 @@ class ListPost extends React.Component {
         if (payload.tenant_id !== "" && payload.associate_id !== "") {
             try {
                 news_feed(payload, this.headers).then((response) => {
+                    console.log('called')
                     /* take payload backup to check for changes later */
                     if (this.payloadBackup.length === response.data.data.posts.length) {
                         /* No change in payload hence do nothing */
@@ -523,7 +523,7 @@ class ListPost extends React.Component {
                                 /* Show loader when manual refresh is triggered */
                                 this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
                                 if (this.props.isConnected) {
-                                    this.setState({ refreshing: true }, this.loadPosts())
+                                    this.setState({ refreshing: true },()=> this.loadPosts())
                                 } else {
                                     this.setState({ refreshing: false }, () => {
                                         Toast.show({
