@@ -76,7 +76,6 @@ class ListSurvey extends React.Component {
                 associate_id: this.props.associate_id
             }
             this.profileData = await loadProfile(payload1, headers, this.props.isConnected);
-            console.log("this.profileData", this.profileData)
             this.props.navigation.setParams({
                 'profileData': this.profileData,
                 'isConnected': this.props.isConnected,

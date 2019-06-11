@@ -5,22 +5,14 @@ import {
     BackHandler,
     RefreshControl,
     ToastAndroid,
-    ScrollView,
-    StyleSheet,
-    Dimensions
+    ScrollView
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
 
-//Native base 
-import { Icon } from 'native-base'
-
 import { list_likes } from '../../services/post'
+import Like from '../../components/Like/index'
 //Custom Data
 // import { data } from './data'
-
-//Moment.js
-import Moment from 'react-moment'
-import moment from 'moment/min/moment-with-locales'
 
 //redux
 import { connect } from 'react-redux'
@@ -36,36 +28,11 @@ class Likes extends React.Component {
         this.peopleList = []
         this.people = []
         this.loadPeople = this.loadPeople.bind(this)
-
-        //formatting update locale
-        Moment.globalMoment = moment;
-        moment.updateLocale('en', {
-            relativeTime: {
-                past: function (input) {
-                    return input === 'just now'
-                        ? input
-                        : input + ' ago'
-                },
-                s: 'just now',
-                future: "in %s",
-                ss: '%ds',
-                m: "%dm",
-                mm: "%dm",
-                h: "%dh",
-                hh: "%dh",
-                d: "%dd",
-                dd: "%dd",
-                M: "%dm",
-                MM: "%dm",
-                y: "%dy",
-                yy: "%dy"
-            }
-        });
     }
 
     componentWillMount() {
-        this.setState({ peopleListrefresh: true })
         this.fetchPeopleList()
+        this.setState({ peopleListrefresh: true })
     }
 
     componentDidMount() {
@@ -147,22 +114,13 @@ class Likes extends React.Component {
 
     loadPeople = (data) => {
         this.peopleList = []
-        data.map((item, index) => {
+        data.map(async(item, index) => {
             this.peopleList.push(
-                <View style={styles.tileContainer} key={index}>
-                    <View style={styles.tileView}>
-                        <View style={{alignItems: 'center', justifyContent: 'center', width: '20%'}}>
-                            <View style={styles.iconView}>
-                                <Icon name='person' style={{ fontSize: 26, color: 'white' }} />
-                            </View>
-                        </View>
-                        <View style={styles.textViewWrapper}>
-                            <Text style={styles.name}>{this.props.associateList[item.associate_id]}</Text>
-                            <Moment style={{ fontSize: 14, paddingVertical: 3 }} element={Text} fromNow>{item.time * 1000}</Moment>
-                        </View>
-                    </View>
-                    <View style={{ flexDirection: 'row', height: 1/3, backgroundColor: '#c9cacc', marginTop: 5 }}></View>
-                </View>
+                <Like 
+                    index={index} 
+                    associateId = {item.associate_id} 
+                    time= {item.time}
+                />
             )
         })
         this.setState({ peopleListrefresh: false })
@@ -200,46 +158,6 @@ class Likes extends React.Component {
         )
     }
 }
-
-const styles = StyleSheet.create({
-    tileContainer: {
-        width: Dimensions.get('window').width
-    },
-    tileView: {
-        width: '100%',
-        flexDirection: 'row',
-        padding: 10,
-        flexWrap: 'nowrap',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    iconView: {
-        flexDirection: 'column',
-        borderRadius: 50,
-        backgroundColor: '#1c92c4',
-        height: 50,
-        aspectRatio: 1/1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 5
-    },
-    textViewWrapper: {
-        flexDirection: 'row',
-        flexWrap: 'nowrap',
-        width: '80%',
-        padding: 10,
-        paddingHorizontal: 10,
-        alignItems: 'flex-start', 
-        justifyContent: 'space-between'
-    },
-    name: {
-        textAlign: 'left',
-        fontFamily: "OpenSans-Regular",
-        fontSize: 17,
-        fontWeight: 'bold',
-        color: '#111'
-    }
-})
 
 const mapStateToProps = (state) => {
     return {

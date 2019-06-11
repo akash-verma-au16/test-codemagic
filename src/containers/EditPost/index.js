@@ -25,6 +25,7 @@ class EditPost extends React.Component {
             isChanged: false,
             isTagerLoading: false
         }
+        this.associateData = []
         this.associateList=[]
         //formatting update locale
         Moment.globalMoment = moment;
@@ -50,6 +51,9 @@ class EditPost extends React.Component {
                 yy: "%dy"
             }
         });
+    }
+    componentWillMount() {
+        this.loadMembers()
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -117,7 +121,6 @@ class EditPost extends React.Component {
             this.goBack()
             return true;
         });
-        this.loadMembers()
     }
 
     //Authorization headers
@@ -129,6 +132,16 @@ class EditPost extends React.Component {
 
     editPostHandler = () => {
         if(this.props.isConnected){
+            this.state.taggedAssociates.map(id => {
+                /* complete collection of names and ids */
+                this.associateData.map(item => {
+                    if (id === item.id) {
+                        this.associateList.push({ associate_id: item.id, associate_name: item.name })
+                        return
+                    }
+                })
+
+            })
             const payload = {
                 Data: {
                     post_id: this.props.navigation.getParam('postId'),
@@ -138,11 +151,8 @@ class EditPost extends React.Component {
                     type: this.props.navigation.getParam('type'),
                     sub_type: this.props.navigation.getParam('strength'),
                     ops: "edit_post",
-                    tagged_associates: this.state.taggedAssociates,
-                    privacy: {
-                        type: "tenant",
-                        id: this.props.accountAlias
-                    },
+                    tagged_associates: this.associateList,
+                    privacy: this.props.navigation.getParam('privacy'),
                     time: this.state.epoch
                 }
             }
@@ -150,15 +160,19 @@ class EditPost extends React.Component {
                 edit_post(payload, this.headers).then((res) => {
                     if (res.status === 200) {
                         this.props.navigation.state.params.returnData({
-                            message: this.state.postMessage
+                            message: this.state.postMessage,
+                            taggedAssociates: this.associateList
                         })
                         this.props.navigation.goBack()
                     }
 
                 }).catch((e) => {
+                //Error Retriving Data
                 })
             }
-            catch(e) {}
+            catch(e) {
+                //Error Retriving Data
+            }
         }
         else {
             ToastAndroid.showWithGravityAndOffset(
@@ -172,11 +186,12 @@ class EditPost extends React.Component {
 
     }
 
-    onSelectedItemsChange = taggedAssociates => {
-        console.log("taggedAssociates", taggedAssociates)
-        this.setState({ 
-            taggedAssociates
+    onSelectedItemsChange = async(taggedAssociates) => {
+        await this.setState({ 
+            taggedAssociates: taggedAssociates,
+            isChanged: true
         });
+        this.props.navigation.setParams({ isChanged: true }); 
     }
 
     async goBack() {
@@ -237,7 +252,6 @@ class EditPost extends React.Component {
                             this.associateData.push({ id: item.associate_id, name: fullName })
                         }
                     })
-                    console.log("this.associateData",this.associateData)
                     this.setState({ isTagerLoading: false })
                 })
                 .catch(() => {
@@ -248,7 +262,6 @@ class EditPost extends React.Component {
     }
 
     render() {
-        this.associateList = []
         return(
             <View style={styles.container}>
                 <ScrollView
@@ -275,58 +288,57 @@ class EditPost extends React.Component {
                     
                     <View style={styles.horizontalLine}></View>
 
-                    {/* <Text style={styles.postText}>
-                        {this.state.taggedAssociates.map((associate, index) => {
-                            this.associateList.push((<Text style={styles.associate} key={index}>@{associate.associate_name + " "}</Text>))
-                        })}
-                        {this.associateList}
-                    </Text> */}
-                    {/* <View style={styles.horizontalLine}></View> */}
+                    <View style={{
+                        alignItems: 'center',
+                        width: '90%',
+                        borderRadius: 10,
+                        backgroundColor: '#fff',
+                        shadowOffset: { width: 5, height: 5 },
+                        shadowColor: 'black',
+                        shadowOpacity: 0.2,
+                        elevation: 2
+                    }}>
 
-                    <View style={{ backgroundColor: '#1c92c4', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '90%' }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Icon name='md-person-add' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
-                            <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Tag your colleagues</Text>
-                        </View>
-
-                        {this.state.taggedAssociates.length > 0 ?
-                            <Icon name='md-close' style={{ padding: 10, fontSize: 18, color: '#fff' }} onPress={() => {
-                                this.setState({ taggedAssociates: [] })
-                                // this.props.associateTagHandler([])
-                            }} />
-                            : null}
-
-                    </View>
-                    <View style={{ width: '100%', paddingHorizontal: 20, marginTop: 10, marginBottom: 10 }}>
-
-                        <MultiSelect
-                            hideTags
-                            items={this.associateData}
-                            uniqueKey='id'
-                            ref={(component) => { this.multiSelect = component }}
-                            onSelectedItemsChange={this.onSelectedItemsChange}
-                            selectedItems={this.state.taggedAssociates}
-                            selectText='Select colleagues'
-                            searchInputPlaceholderText='Search colleagues...'
-                            tagRemoveIconColor='#1c92c4'
-                            tagBorderColor='#1c92c4'
-                            tagTextColor='#1c92c4'
-                            selectedItemTextColor='#1c92c4'
-                            selectedItemIconColor='#1c92c4'
-                            itemTextColor='#000'
-                            displayKey='name'
-                            searchInputStyle={{ color: '#1c92c4' }}
-                            submitButtonColor='#1c92c4'
-                            submitButtonText='Submit'
-                        />
-                        {/* {this.state.isShowingKeyboard ?
-                            null
-                            : */}
-                            <View>
-                                {this.multiSelect && this.multiSelect.getSelectedItemsExt(this.associateList)}
+                        <View style={{ backgroundColor: '#1c92c4', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Icon name='md-person-add' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
+                                <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Edit your colleagues</Text>
                             </View>
-                        {/* } */}
 
+                            {this.state.taggedAssociates.length > 0 ?
+                                <Icon name='md-close' style={{ padding: 10, fontSize: 18, color: '#fff' }} onPress={() => {
+                                    this.setState({ taggedAssociates: [] })
+                                    // this.props.associateTagHandler([])
+                                }} />
+                                : null}
+
+                        </View>
+                        <View style={{ width: '100%', paddingHorizontal: 20, marginTop: 10, marginBottom: 10 }}>
+
+                            <MultiSelect
+                                hideTags
+                                items={this.associateData}
+                                uniqueKey='id'
+                                ref={(component) => { this.multiSelect = component }}
+                                onSelectedItemsChange={this.onSelectedItemsChange}
+                                selectedItems={this.state.taggedAssociates}
+                                selectText='Select colleagues'
+                                searchInputPlaceholderText='Search colleagues...'
+                                tagRemoveIconColor='#1c92c4'
+                                tagBorderColor='#1c92c4'
+                                tagTextColor='#1c92c4'
+                                selectedItemTextColor='#1c92c4'
+                                selectedItemIconColor='#1c92c4'
+                                itemTextColor='#000'
+                                displayKey='name'
+                                searchInputStyle={{ color: '#1c92c4' }}
+                                submitButtonColor='#1c92c4'
+                                submitButtonText='Submit'
+                            />
+                            <View>
+                                {this.multiSelect && this.multiSelect.getSelectedItemsExt(this.state.taggedAssociates)}
+                            </View>
+                        </View>
                     </View>
                     <View style={{
                         flex: 1,
@@ -363,7 +375,7 @@ class EditPost extends React.Component {
 const styles =  StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 5
+        paddingTop: 5 
     },
     scroll: {
         alignItems: 'center',

@@ -57,13 +57,15 @@ class CreatePost extends React.Component {
             taggedAssociates: [],
             postType: '',
             endorsementStrength: '',
-            addPoints: 0
+            addPoints: 0,
+            isProject: false
         }
         this.state = this.initialState
         this.inputTextRef = React.createRef();
         this.profileData = {}
         this.visibilityData = []
-        this.associateData = []
+        this.associateData = [] 
+        this.projectAssociateData = []
     }
     // Navigation options
     static navigationOptions = ({ navigation }) => {
@@ -418,7 +420,7 @@ class CreatePost extends React.Component {
 
                     <MultiSelect
                         hideTags
-                        items={this.associateData}
+                        items={this.state.isProject ? this.projectAssociateData : this.associateData}
                         uniqueKey='id'
                         ref={(component) => { this.multiSelect = component }}
                         onSelectedItemsChange={this.onSelectedItemsChange}
@@ -452,9 +454,13 @@ class CreatePost extends React.Component {
         this.setState({ taggedAssociates });
     }
 
-    visibilityChangeListener = (text, name, key) => {
-        if (text == 'project') {
-            
+    visibilityChangeListener = ({text, name, key}) => {
+        if (text !== 'Organization' || text !== 'Private') {
+            this.setState({ visibilitySelection: text, visibilityName: name, visibilityKey: key })
+            this.loadProjectMembers(name)
+        }
+        else {
+            this.setState({ visibilitySelection: text, visibilityName: name, visibilityKey: key, isProject: false })
         }
     }
 
@@ -478,10 +484,10 @@ class CreatePost extends React.Component {
 
                         /* preventing self endorsing */
                         if (item.associate_id !== this.props.associate_id) {
-                            this.associateData.push({ id: item.associate_id, name: fullName })
+                            this.projectAssociateData.push({ id: item.associate_id, name: fullName })
                         }
                     })
-                    this.setState({ isTagerLoading: false })
+                    this.setState({ isTagerLoading: false, isProject: true })
                 })
                 .catch(() => {
                     this.setState({ isTagerLoading: false })
@@ -632,7 +638,7 @@ class CreatePost extends React.Component {
                     enabled={this.state.visibilityModal}
                     data={this.visibilityData}
                     onChangeListener={({text, name,key}) => {
-                        this.setState({ visibilitySelection: text, visibilityName: name , visibilityKey:key })
+                        this.visibilityChangeListener({ text, name, key })
                     }}
                     visibilityDisableHandler={() => {
                         this.setState({ visibilityModal: false })
