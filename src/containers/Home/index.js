@@ -43,7 +43,6 @@ import Post from '../../components/Post/index'
 import Card from '../../components/Card/index'
 
 import VisibilityModal from '../../containers/VisibilityModal/index'
-import axios from 'axios';
 
 import ImageCropPicker from 'react-native-image-crop-picker';
 
@@ -95,7 +94,6 @@ class Home extends React.Component {
         this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id || this.state.associate_id == undefined })
         this.loadProfile = this.loadProfile.bind(this)
         this.loadTransactions = this.loadTransactions.bind(this)
-        this.loadData = this.loadData.bind(this)
         this.loadHome = this.loadHome.bind(this)
         this.loadSummary = this.loadSummary.bind(this)
         this.showToast = this.showToast.bind(this)
@@ -139,14 +137,11 @@ class Home extends React.Component {
                 this.loadSummary()
             }
             await this.loadProfile()
-            // await this.setState({ loading: false })
         }
         else {
             if(this.userData == {}) {
                 this.loadProfile()
             }
-            await this.loadData()
-            // this.setState({ loading: false })
         }
     }
 
@@ -191,10 +186,6 @@ class Home extends React.Component {
             type: 'success',
             duration: 3000
         })
-    }
-
-    async loadData() {
-        await this.loadHome()            
     }
 
     headers = {
@@ -277,6 +268,7 @@ class Home extends React.Component {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 
                 await list_posts(payload, this.headers).then((response) => {
+                    console.log('called')
                     if(this.homeDataBackup.length === response.data.data.posts.length) {
                         if(response.data.data.posts === 0) {
                             this.homeDataRowList = []
@@ -305,7 +297,7 @@ class Home extends React.Component {
                         
                         this.createTiles(this.posts)
                     }
-                }).catch((e) => {
+                }).catch(() => {
                     this.setState({ homeRefreshing: false })
                 })
             }
@@ -451,11 +443,11 @@ class Home extends React.Component {
                             25,
                             100,
                         );
-                        await update_profile(payload,this.headers).then((res) => {
+                        await update_profile(payload,this.headers).then(() => {
                             if(this.state.photo !== null) {
                                 this.setState({ imageUrl: this.state.photo }, () => this.handleUploadImage())   
                             }
-                        }).catch((e) => {
+                        }).catch(() => {
                         })
                     }
                     else {

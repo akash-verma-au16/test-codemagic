@@ -335,7 +335,6 @@ class ListPost extends React.Component {
         if (payload.tenant_id !== "" && payload.associate_id !== "") {
             try {
                 news_feed(payload, this.headers).then((response) => {
-                    console.log('called')
                     /* take payload backup to check for changes later */
                     if (this.payloadBackup.length === response.data.data.posts.length) {
                         /* No change in payload hence do nothing */
