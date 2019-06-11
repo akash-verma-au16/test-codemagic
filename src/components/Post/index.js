@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // Components from React-Native
-import { View, Text, TouchableOpacity, ToastAndroid, Alert } from 'react-native';
+import { View, Text, TouchableOpacity,TouchableWithoutFeedback, ToastAndroid, Alert } from 'react-native';
 // Components from Native Base
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -26,7 +26,7 @@ import { connect } from 'react-redux'
 // Components from Moment.js
 import Moment from 'react-moment'
 import moment from 'moment/min/moment-with-locales'
-
+import * as Animatable from 'react-native-animatable';
 class Post extends Component {
     constructor(props) {
         super(props);
@@ -73,12 +73,13 @@ class Post extends Component {
             }
         });
 
+        this.likeButtonRef = React.createRef();
     }
 
     getName = async () => {
         try {
             let name = await AsyncStorage.getItem(this.props.postCreator_id)
-            this.setState({postCreatorName: name})
+            this.setState({ postCreatorName: name })
         }
         catch {
             //Error retriving data
@@ -103,7 +104,7 @@ class Post extends Component {
             this.setState({
                 likes: this.state.likes
             })
-            
+
         }
         else {
             this.setState({
@@ -199,12 +200,14 @@ class Post extends Component {
                 }).catch(() => {
                 })
             }).catch(() => {
-            })  
+            })
         }
         catch (e) {/* error */ }
     }
 
     onLikeHnadler = () => {
+        console.log(this.likeButtonRef)
+        this.likeButtonRef.current.bounceIn(800)
         if (this.props.isConnected) {
             this.setState({
                 like: !this.state.like
@@ -275,9 +278,9 @@ class Post extends Component {
                     post_id: this.props.postId,
                     points: this.state.addOn * this.props.taggedAssociates.length
                 }
-                
+
                 try {
-                    rewards_addon(payload1, this.headers).then(async() => {
+                    rewards_addon(payload1, this.headers).then(async () => {
                         let points = this.state.addOn * this.props.taggedAssociates.length
                         ToastAndroid.showWithGravityAndOffset(
                             'You gifted ' + points + ' points',
@@ -291,8 +294,8 @@ class Post extends Component {
                             walletBalance: walletBalance
                         }
                         //Update Wallet
-                        await this.props.updateWallet(payload) 
-                        this.setState({addOn: "", addonVisible: !this.state.addonVisible})
+                        await this.props.updateWallet(payload)
+                        this.setState({ addOn: "", addonVisible: !this.state.addonVisible })
                     }).catch((e) => {
                         //Error retriving data
                         this.setState({ addonVisible: false })
@@ -357,7 +360,7 @@ class Post extends Component {
                     style={styles.container}
                 >
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 3 }}>
-                        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center'}} onPress={() => this.onIconPresshandler}>
+                        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={() => this.onIconPresshandler}>
                             <View name='image' style={{
                                 borderRadius: 30,
                                 backgroundColor: '#1c92c4',
@@ -439,10 +442,12 @@ class Post extends Component {
                         justifyContent: 'space-around',
                         padding: 3
                     }}>
-                    <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={this.onLikeHnadler}>
-                        <Icon name='md-thumbs-up' style={this.state.like ? styles.like : styles.unlike} />
-                        <Text style={this.state.like ? styles.footerTextActive : styles.footerTextInactive}>Like</Text>
-                    </TouchableOpacity>
+                    <TouchableWithoutFeedback activeOpacity={0.8} style={styles.footerConetntView} onPress={this.onLikeHnadler}>
+                        <Animatable.View useNativeDriver ref={this.likeButtonRef} style={styles.footerConetntView}>
+                            <Icon name='md-thumbs-up' style={this.state.like ? styles.like : styles.unlike} />
+                            <Text style={this.state.like ? styles.footerTextActive : styles.footerTextInactive}>Like</Text>
+                        </Animatable.View>
+                    </TouchableWithoutFeedback>
                     <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={() => this.props.navigation.navigate('Comments', {
                         isComment: true,
                         postId: this.props.postId,
@@ -453,7 +458,7 @@ class Post extends Component {
                     </TouchableOpacity>
                     {
                         (this.props.postCreator_id !== this.props.associate_id) ?
-                            <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={() => this.setState({addonVisible: !this.state.addonVisible})}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={() => this.setState({ addonVisible: !this.state.addonVisible })}>
                                 <Icon name='md-add' type={'Ionicons'} style={this.state.addonVisible ? { color: '#1c92c4', fontSize: 19 } : { color: '#bababa', fontSize: 19 }} />
                                 <Text style={this.state.addonVisible ? styles.footerTextActive : styles.footerTextInactive}>Add-on</Text>
                             </TouchableOpacity>
@@ -464,13 +469,13 @@ class Post extends Component {
                     <React.Fragment>
                         <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>
                         <View style={styles.pointButtonView}>
-                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async() => {await this.setState({addOn: "1"}, () => this.rewardsAddon())}}>
+                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "1" }, () => this.rewardsAddon()) }}>
                                 <Text style={styles.points}>+1</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "5" }, () => this.rewardsAddon())}}>
+                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "5" }, () => this.rewardsAddon()) }}>
                                 <Text style={styles.points}>+5</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "10" }, () => this.rewardsAddon())}}>
+                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "10" }, () => this.rewardsAddon()) }}>
                                 <Text style={styles.points}>+10</Text>
                             </TouchableOpacity>
                         </View>
