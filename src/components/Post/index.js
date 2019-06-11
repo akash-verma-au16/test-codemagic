@@ -274,8 +274,7 @@ class Post extends Component {
                 }
                 
                 try {
-                    rewards_addon(payload1, this.headers).then(async(res) => {
-                        console.log("Addon", res)
+                    rewards_addon(payload1, this.headers).then(async() => {
                         let points = this.state.addOn * this.props.taggedAssociates.length
                         ToastAndroid.showWithGravityAndOffset(
                             'You gifted ' + points + ' points',
@@ -293,13 +292,11 @@ class Post extends Component {
                         this.setState({addOn: "", addonVisible: !this.state.addonVisible})
                     }).catch((e) => {
                         //Error retriving data
-                        console.log(e)
                         this.setState({ addonVisible: false })
                     })
                 }
                 catch (e) {
                     //Error retriving data
-                    console.log(e)
                     this.setState({ addonVisible: false })
                 }
 
@@ -335,7 +332,8 @@ class Post extends Component {
         this.setState({
             ...this.state,
             isEdit: true,
-            editPostMessage: data.message
+            editPostMessage: data.message,
+            taggedAssociates: data.taggedAssociates
         })
     }
 
@@ -356,7 +354,7 @@ class Post extends Component {
                     style={styles.container}
                 >
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 3 }}>
-                        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center'}} onPress={this.onIconPresshandler}>
+                        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center'}} onPress={() => this.onIconPresshandler}>
                             <View name='image' style={{
                                 borderRadius: 30,
                                 backgroundColor: '#1c92c4',
@@ -367,10 +365,10 @@ class Post extends Component {
                             }}>
                                 <Icon name='person' style={{ fontSize: 25, color: 'white' }} />
                             </View>
+                            <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>
+                                {this.props.postCreator_id === this.props.associate_id ? this.props.userName : this.state.postCreatorName}
+                            </Text>
                         </TouchableOpacity>
-                        <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>
-                            {this.props.postCreator_id === this.props.associate_id ? this.props.userName : this.state.postCreatorName}
-                        </Text>
                         {this.state.rewardsPoints > 0 ?
                             <View style={styles.addOnView}>
                                 <Text style={styles.addon}>+{this.state.rewardsPoints}</Text>
@@ -394,7 +392,7 @@ class Post extends Component {
                 <View name='content' style={{ flex: 2, paddingVertical: 10 }}>
                     <Text style={styles.postText}>
 
-                        {this.props.taggedAssociates.map((associate, index) => {
+                        {this.state.taggedAssociates.map((associate, index) => {
                             this.associateList.push((
                                 <Text
                                     style={styles.associate}
@@ -502,11 +500,12 @@ class Post extends Component {
                                 returnData: this.returnData.bind(this),
                                 associate: this.props.userName,
                                 postMessage: this.props.postMessage.replace(this.props.strength.toLowerCase(), ''),
-                                taggedAssociates: this.props.taggedAssociates,
+                                taggedAssociates: this.props.taggedAssociates.map((item) => { return item.associate_id }),
                                 strength: this.props.strength,
                                 time: this.props.time,
                                 postId: this.props.postId,
-                                type: this.props.type
+                                type: this.props.type,
+                                privacy: this.props.privacy
                             })
                         }
                         else {

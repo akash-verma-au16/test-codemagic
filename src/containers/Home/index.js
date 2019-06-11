@@ -322,7 +322,7 @@ class Home extends React.Component {
                 <Post
                     key={item.Item.post_id}
                     postId={item.Item.post_id}
-                    postCreator={this.props.associateList[item.Item.associate_id]}
+                    privacy={item.Item.privacy}
                     postCreator_id={item.Item.associate_id}
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time={item.Item.time}
@@ -333,7 +333,8 @@ class Home extends React.Component {
                     associate={item.Item.associate_id}
                     likeCount={item.Item.likeCount}
                     commentCount={item.Item.commentCount}
-                    postDeleteHandler={this.deletePost}
+                    postDeleteHandler={this.deletePost} 
+                    points={item.Item.points}
                 />
             )
         })
