@@ -94,7 +94,7 @@ class Settings extends React.Component {
         }
     ]
 
-    clearLikeHandler=async()=>{
+    clearLikeHandler = async () => {
         try {
             // take backup of tokens
             const pushNotificationToken = await AsyncStorage.getItem('token');
@@ -103,13 +103,11 @@ class Settings extends React.Component {
             await AsyncStorage.clear()
             // restore the tokens
             if (pushNotificationToken) {
-                AsyncStorage.setItem('token',pushNotificationToken)
+                AsyncStorage.setItem('token', pushNotificationToken)
             }
-            if(redux){
-                AsyncStorage.setItem('reduxState',redux)
+            if (redux) {
+                AsyncStorage.setItem('reduxState', redux)
             }
-            // Signout
-            this.props.deAuthenticate()
         } catch (error) {
             // Error retrieving data
         }
@@ -121,18 +119,15 @@ class Settings extends React.Component {
             email: this.props.email
         }
         const payload_2 = {
-            tenant_id : this.props.accountAlias,
-            associate_id:this.props.associate_id
+            tenant_id: this.props.accountAlias,
+            associate_id: this.props.associate_id
         }
         logout(payload).then(() => {
-
+            // Signout
+            this.props.deAuthenticate()
             this.clearLikeHandler()
             unregister(payload_2)
             this.setState({ isLoading: false })
-            // Toast.show({
-            //     text: 'Signed out Successfully',
-            //     type: "success"
-            // })
             ToastAndroid.showWithGravityAndOffset(
                 'Signed out Successfully',
                 ToastAndroid.SHORT,
@@ -147,12 +142,8 @@ class Settings extends React.Component {
             this.props.navigation.dispatch(resetAction);
             return
         }).catch(() => {
-            if(!this.props.isConnected) {
+            if (!this.props.isConnected) {
                 this.setState({ isLoading: false })
-                // Toast.show({
-                //     text: 'Please, connect to the internet',
-                //     type: "danger"
-                // })
                 ToastAndroid.showWithGravityAndOffset(
                     'Please, connect to the internet',
                     ToastAndroid.SHORT,
@@ -160,13 +151,9 @@ class Settings extends React.Component {
                     25,
                     100,
                 );
-            
+
             } else {
                 this.setState({ isLoading: false })
-                // Toast.show({
-                //     text: 'Unable to communicate with server',
-                //     type: "danger"
-                // })
                 ToastAndroid.showWithGravityAndOffset(
                     'Unable to communicate with server',
                     ToastAndroid.SHORT,
@@ -174,7 +161,7 @@ class Settings extends React.Component {
                     25,
                     100,
                 );
-                
+
             }
         })
     }
@@ -189,11 +176,11 @@ class Settings extends React.Component {
                     style: 'cancel'
                 },
                 {
-                    text: 'Yes', onPress: () => {this.signOut()}
+                    text: 'Yes', onPress: () => { this.signOut() }
                 }
             ],
             { cancelable: false },
-        ) 
+        )
     }
     render() {
 
