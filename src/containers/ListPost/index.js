@@ -362,7 +362,7 @@ class ListPost extends React.Component {
                         }
                         else {
                             this.setState({
-                                refreshing: false 
+                                refreshing: false
                             })
                             return
                         }
@@ -429,7 +429,7 @@ class ListPost extends React.Component {
             var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
             this.postList.splice(index, 1)
             this.postList = []
-            
+
             if (this.posts.length == 0) {
                 this.setState({ initalLoad: true })
             }
@@ -450,7 +450,7 @@ class ListPost extends React.Component {
         }
     }
     getProfile = async () => {
-        if(this.props.isAuthenticate) {
+        if (this.props.isAuthenticate) {
             //Authorization headers
             const headers = {
                 headers: {
@@ -462,30 +462,40 @@ class ListPost extends React.Component {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id
             }
-            this.profileData = await loadProfile(payload1,headers, this.props.isConnected);
+            this.profileData = await loadProfile(payload1, headers, this.props.isConnected);
             this.props.navigation.setParams({ 'profileData': this.profileData })
             const payload = {
                 walletBalance: this.profileData.wallet_balance
             }
             this.props.updateWallet(payload)
-        }        
+        }
     }
 
     createTiles = async (posts) => {
         this.getProfile()
-        await posts.map(async(item) => {
+        await posts.map(async (item) => {
+
+            // Get tagged associate Names
+            let associateList = []
+            item.Item.tagged_associates.map(async (item) => {
+                let name = await AsyncStorage.getItem(item.associate_id)
+                associateList.push({
+                    associate_id: item.associate_id,
+                    associate_name: name
+                })
+            })
             this.postList.push(
                 // Post Component
                 <Post
                     key={item.Item.post_id}
-                    postId={item.Item.post_id} 
+                    postId={item.Item.post_id}
                     privacy={item.Item.privacy}
                     // postCreator={this.props.associateList[item.Item.associate_id]}
                     postCreator_id={item.Item.associate_id}
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time={item.Item.time}
                     postMessage={item.Item.message}
-                    taggedAssociates={item.Item.tagged_associates}
+                    taggedAssociates={associateList}
                     strength={item.Item.sub_type}
                     type={item.Item.type}
                     associate={item.Item.associate_id}
