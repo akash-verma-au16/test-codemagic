@@ -96,11 +96,14 @@ class Post extends Component {
                 likes: nextProps.likeCount,
                 comments: nextProps.commentCount
             })
+
+            this.restoreLikes()
         }
         else if (this.state.likes > this.props.likeCount) {
             this.setState({
                 likes: this.state.likes
             })
+            
         }
         else {
             this.setState({

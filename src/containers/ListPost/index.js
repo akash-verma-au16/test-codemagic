@@ -286,7 +286,6 @@ class ListPost extends React.Component {
             this.setState({
                 networkChanged: true
             }, async () => {
-                this.loadPosts()
                 this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': true })
             })
         }
@@ -523,7 +522,7 @@ class ListPost extends React.Component {
                                 /* Show loader when manual refresh is triggered */
                                 this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
                                 if (this.props.isConnected) {
-                                    this.setState({ refreshing: true }, this.loadPosts())
+                                    this.setState({ refreshing: true },()=> this.loadPosts())
                                 } else {
                                     this.setState({ refreshing: false }, () => {
                                         Toast.show({
