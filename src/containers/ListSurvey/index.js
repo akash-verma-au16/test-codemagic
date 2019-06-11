@@ -48,6 +48,7 @@ class ListSurvey extends React.Component {
         this.pager = React.createRef();
         //Profile Data
         this.profileData = {}
+        this.getProfile = this.getProfile.bind(this)
     }
 
     //Authorization headers
@@ -55,22 +56,33 @@ class ListSurvey extends React.Component {
         headers: {
             Authorization: this.props.idToken
         }
-    }
-
-    //profile payload
-    payload = {
-        "tenant_id": this.props.accountAlias,
-        "associate_id": this.props.associate_id
-    }
-    
+    }  
     async componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-        this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
-        this.props.navigation.setParams({ 
-            'profileData': this.profileData, 
-            'isConnected': this.props.isConnected,
-            'associateId': this.props.associate_id 
-        })
+        await this.getProfile()
+    }
+
+    getProfile = async () => {
+        if (this.props.isAuthenticate) {
+            //Authorization headers
+            const headers = {
+                headers: {
+                    Authorization: this.props.idToken
+                }
+            }
+            //profile payload
+            const payload1 = {
+                tenant_id: this.props.accountAlias,
+                associate_id: this.props.associate_id
+            }
+            this.profileData = await loadProfile(payload1, headers, this.props.isConnected);
+            console.log("this.profileData", this.profileData)
+            this.props.navigation.setParams({
+                'profileData': this.profileData,
+                'isConnected': this.props.isConnected,
+                'associateId': this.props.associate_id
+            })
+        }
     }
 
     componentWillUnmount() {
@@ -80,8 +92,7 @@ class ListSurvey extends React.Component {
     handleConnectivityChange = async (isConnected) => {
         if (isConnected) {
             this.loadSurveys()
-            this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
-            this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': true })
+            await this.getProfile()
         }
         else {
             this.props.navigation.setParams({ 'isConnected': false })
@@ -376,7 +387,7 @@ class ListSurvey extends React.Component {
                                 if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                     this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl})
                                     this.loadSurveys()
-                                    this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
+                                    await this.getProfile()
                                 }
                             }
                         }}

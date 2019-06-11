@@ -7,8 +7,11 @@ import Moment from 'react-moment'
 import moment from 'moment/min/moment-with-locales'
 //API methods
 import { edit_post } from '../../services/post'
+import { list_associate } from '../../services/tenant'
 /* Redux */
 import { connect } from 'react-redux'
+//Tagged associate componet
+import MultiSelect from 'react-native-multiple-select'
 
 class EditPost extends React.Component {
     constructor(props) {
@@ -19,10 +22,10 @@ class EditPost extends React.Component {
             taggedAssociates: this.props.navigation.getParam('taggedAssociates'),
             strength: this.props.navigation.getParam('strength'),
             epoch: this.props.navigation.getParam('time'),
-            isChanged: false
+            isChanged: false,
+            isTagerLoading: false
         }
         this.associateList=[]
-
         //formatting update locale
         Moment.globalMoment = moment;
         moment.updateLocale('en', {
@@ -47,7 +50,6 @@ class EditPost extends React.Component {
                 yy: "%dy"
             }
         });
-
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -115,6 +117,7 @@ class EditPost extends React.Component {
             this.goBack()
             return true;
         });
+        this.loadMembers()
     }
 
     //Authorization headers
@@ -169,6 +172,13 @@ class EditPost extends React.Component {
 
     }
 
+    onSelectedItemsChange = taggedAssociates => {
+        console.log("taggedAssociates", taggedAssociates)
+        this.setState({ 
+            taggedAssociates
+        });
+    }
+
     async goBack() {
         if(this.state.isChanged) {
             Alert.alert(
@@ -205,6 +215,38 @@ class EditPost extends React.Component {
         this.backHandler.remove();
     }
 
+    loadMembers = () => {
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
+        if (this.props.accountAlias !== undefined) {
+            list_associate({
+                tenant_id: this.props.accountAlias
+            }, headers)
+                .then(response => {
+                    /* Clear Garbage */
+                    this.associateData = []
+                    response.data.data.map(item => {
+                        /* Create List items */
+                        const fullName = item.first_name + ' ' + item.last_name
+
+                        /* preventing self endorsing */
+                        if (item.associate_id !== this.props.associate_id) {
+                            this.associateData.push({ id: item.associate_id, name: fullName })
+                        }
+                    })
+                    console.log("this.associateData",this.associateData)
+                    this.setState({ isTagerLoading: false })
+                })
+                .catch(() => {
+                    this.setState({ isTagerLoading: false })
+                })
+        }
+
+    }
+
     render() {
         this.associateList = []
         return(
@@ -233,6 +275,59 @@ class EditPost extends React.Component {
                     
                     <View style={styles.horizontalLine}></View>
 
+                    {/* <Text style={styles.postText}>
+                        {this.state.taggedAssociates.map((associate, index) => {
+                            this.associateList.push((<Text style={styles.associate} key={index}>@{associate.associate_name + " "}</Text>))
+                        })}
+                        {this.associateList}
+                    </Text> */}
+                    {/* <View style={styles.horizontalLine}></View> */}
+
+                    <View style={{ backgroundColor: '#1c92c4', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '90%' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Icon name='md-person-add' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
+                            <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Tag your colleagues</Text>
+                        </View>
+
+                        {this.state.taggedAssociates.length > 0 ?
+                            <Icon name='md-close' style={{ padding: 10, fontSize: 18, color: '#fff' }} onPress={() => {
+                                this.setState({ taggedAssociates: [] })
+                                // this.props.associateTagHandler([])
+                            }} />
+                            : null}
+
+                    </View>
+                    <View style={{ width: '100%', paddingHorizontal: 20, marginTop: 10, marginBottom: 10 }}>
+
+                        <MultiSelect
+                            hideTags
+                            items={this.associateData}
+                            uniqueKey='id'
+                            ref={(component) => { this.multiSelect = component }}
+                            onSelectedItemsChange={this.onSelectedItemsChange}
+                            selectedItems={this.state.taggedAssociates}
+                            selectText='Select colleagues'
+                            searchInputPlaceholderText='Search colleagues...'
+                            tagRemoveIconColor='#1c92c4'
+                            tagBorderColor='#1c92c4'
+                            tagTextColor='#1c92c4'
+                            selectedItemTextColor='#1c92c4'
+                            selectedItemIconColor='#1c92c4'
+                            itemTextColor='#000'
+                            displayKey='name'
+                            searchInputStyle={{ color: '#1c92c4' }}
+                            submitButtonColor='#1c92c4'
+                            submitButtonText='Submit'
+                        />
+                        {/* {this.state.isShowingKeyboard ?
+                            null
+                            : */}
+                            <View>
+                                {this.multiSelect && this.multiSelect.getSelectedItemsExt(this.associateList)}
+                            </View>
+                        {/* } */}
+
+                    </View>
                     <View style={{
                         flex: 1,
                         flexDirection: 'row',
@@ -241,13 +336,8 @@ class EditPost extends React.Component {
                         justifyContent: 'flex-start',
                         width: "100%",
                         padding: 10,
-                        paddingHorizontal: 15}}>
-                        <Text style={styles.postText}>
-                            {this.state.taggedAssociates.map((associate, index) => {
-                                this.associateList.push((<Text style={styles.associate} key={index}>@{associate.associate_name + " "}</Text>))
-                            })}
-                            {this.associateList}
-                        </Text>
+                        paddingHorizontal: 15
+                    }}>
                         <TextInput
                             placeholder='Edit your message here...'
                             placeholderTextColor='#444'

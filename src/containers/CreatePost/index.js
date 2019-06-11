@@ -31,7 +31,7 @@ import { create_post, get_visibility } from '../../services/post'
 import toSentenceCase from '../../utilities/toSentenceCase'
 import uuid from 'uuid'
 import MultiSelect from 'react-native-multiple-select'
-import { list_associate } from '../../services/tenant'
+import { list_associate, list_project_members } from '../../services/tenant'
 /* Components */
 import VisibilityModal from '../VisibilityModal'
 import LoadingModal from '../LoadingModal'
@@ -450,12 +450,45 @@ class CreatePost extends React.Component {
     )
     onSelectedItemsChange = taggedAssociates => {
         this.setState({ taggedAssociates });
-
     }
 
-    // visibilityChangeListener = (text, name, key) => {
-    //     if(text == '')
-    // }
+    visibilityChangeListener = (text, name, key) => {
+        if (text == 'project') {
+            
+        }
+    }
+
+    loadProjectMembers = (projectId) => {
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
+        if (this.props.accountAlias !== undefined) {
+            list_project_members({
+                tenant_id: this.props.accountAlias,
+                project_id: projectId
+            }, headers)
+                .then(response => {
+                    /* Clear Garbage */
+                    this.projectAssociateData = []
+                    response.data.data.map(item => {
+                        /* Create List items */
+                        const fullName = item.first_name + ' ' + item.last_name
+
+                        /* preventing self endorsing */
+                        if (item.associate_id !== this.props.associate_id) {
+                            this.associateData.push({ id: item.associate_id, name: fullName })
+                        }
+                    })
+                    this.setState({ isTagerLoading: false })
+                })
+                .catch(() => {
+                    this.setState({ isTagerLoading: false })
+                })
+        }
+
+    }
 
     loadMembers = () => {
         const headers = {
