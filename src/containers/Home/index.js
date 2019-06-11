@@ -268,7 +268,6 @@ class Home extends React.Component {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 
                 await list_posts(payload, this.headers).then((response) => {
-                    console.log('called')
                     if(this.homeDataBackup.length === response.data.data.posts.length) {
                         if(response.data.data.posts === 0) {
                             this.homeDataRowList = []
