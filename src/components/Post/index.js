@@ -272,33 +272,34 @@ class Post extends Component {
                     post_id: this.props.postId,
                     points: this.state.addOn * this.props.taggedAssociates.length
                 }
+                
                 try {
                     rewards_addon(payload1, this.headers).then(async(res) => {
-                        if(res.status == 200) {
-                            let points = this.state.addOn * this.props.taggedAssociates.length
-                            let walletBalance = this.props.walletBalance - points
-                            const payload = {
-                                walletBalance: walletBalance
-                            }
-                            //Update Wallet
-                            await this.props.updateWallet(payload) 
-                            ToastAndroid.showWithGravityAndOffset(
-                                'You gifted '+points+ ' points',
-                                ToastAndroid.SHORT,
-                                ToastAndroid.BOTTOM,
-                                25,
-                                100,
-                            );
-                            this.setState({addOn: "", addonVisible: !this.state.addonVisible})
+                        console.log("Addon", res)
+                        let points = this.state.addOn * this.props.taggedAssociates.length
+                        ToastAndroid.showWithGravityAndOffset(
+                            'You gifted ' + points + ' points',
+                            ToastAndroid.SHORT,
+                            ToastAndroid.BOTTOM,
+                            25,
+                            100,
+                        );
+                        let walletBalance = this.props.walletBalance - points
+                        const payload = {
+                            walletBalance: walletBalance
                         }
-
+                        //Update Wallet
+                        await this.props.updateWallet(payload) 
+                        this.setState({addOn: "", addonVisible: !this.state.addonVisible})
                     }).catch((e) => {
                         //Error retriving data
+                        console.log(e)
                         this.setState({ addonVisible: false })
                     })
                 }
                 catch (e) {
                     //Error retriving data
+                    console.log(e)
                     this.setState({ addonVisible: false })
                 }
 
@@ -316,7 +317,7 @@ class Post extends Component {
         else {
             ToastAndroid.showWithGravityAndOffset(
                 'You have insufficient points ' + this.props.walletBalance,
-                ToastAndroid.LONG,
+                ToastAndroid.SHORT,
                 ToastAndroid.BOTTOM,
                 25,
                 100,
@@ -354,20 +355,21 @@ class Post extends Component {
                 <View name='header'
                     style={styles.container}
                 >
-                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 3 }} onPress={this.onIconPresshandler}>
-                        <View name='image' style={{
-                            borderRadius: 30,
-                            backgroundColor: '#1c92c4',
-                            height: 35,
-                            aspectRatio: 1 / 1,
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }}>
-                            <Icon name='person' style={{ fontSize: 25, color: 'white' }} />
-                        </View>
+                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 3 }}>
+                        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center'}} onPress={this.onIconPresshandler}>
+                            <View name='image' style={{
+                                borderRadius: 30,
+                                backgroundColor: '#1c92c4',
+                                height: 35,
+                                aspectRatio: 1 / 1,
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}>
+                                <Icon name='person' style={{ fontSize: 25, color: 'white' }} />
+                            </View>
+                        </TouchableOpacity>
                         <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>
                             {this.props.postCreator_id === this.props.associate_id ? this.props.userName : this.state.postCreatorName}
-                            {/* {AsyncStorage.getItem(this.props.postCreator_id)} */}
                         </Text>
                         {this.state.rewardsPoints > 0 ?
                             <View style={styles.addOnView}>
@@ -461,13 +463,13 @@ class Post extends Component {
                     <React.Fragment>
                         <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>
                         <View style={styles.pointButtonView}>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={async() => {await this.setState({addOn: "1"}, () => this.rewardsAddon())}}>
+                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async() => {await this.setState({addOn: "1"}, () => this.rewardsAddon())}}>
                                 <Text style={styles.points}>+1</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "5" }, () => this.rewardsAddon())}}>
+                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "5" }, () => this.rewardsAddon())}}>
                                 <Text style={styles.points}>+5</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "10" }, () => this.rewardsAddon())}}>
+                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "10" }, () => this.rewardsAddon())}}>
                                 <Text style={styles.points}>+10</Text>
                             </TouchableOpacity>
                         </View>
@@ -529,7 +531,8 @@ const mapStateToProps = (state) => {
         userName: state.user.firstName + " " + state.user.lastName,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
-        isConnected: state.system.isConnected
+        isConnected: state.system.isConnected,
+        idToken: state.user.idToken
     };
 }
 
