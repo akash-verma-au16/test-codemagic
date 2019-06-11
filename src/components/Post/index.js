@@ -73,7 +73,8 @@ class Post extends Component {
             }
         });
 
-        this.likeButtonRef = React.createRef();
+        this.likeButtonRef = React.createRef()
+        this.addonButtonRef = React.createRef();
     }
 
     getName = async () => {
@@ -355,7 +356,7 @@ class Post extends Component {
     render() {
         this.associateList = []
         return (
-            <View style={styles.card} key={this.props.key}>
+            <Animatable.View useNativeDriver animation='fadeInDown' delay={0.1} style={styles.card} key={this.props.key}>
                 <View name='header'
                     style={styles.container}
                 >
@@ -458,10 +459,12 @@ class Post extends Component {
                     </TouchableOpacity>
                     {
                         (this.props.postCreator_id !== this.props.associate_id) ?
-                            <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={() => this.setState({ addonVisible: !this.state.addonVisible })}>
-                                <Icon name='md-add' type={'Ionicons'} style={this.state.addonVisible ? { color: '#1c92c4', fontSize: 19 } : { color: '#bababa', fontSize: 19 }} />
-                                <Text style={this.state.addonVisible ? styles.footerTextActive : styles.footerTextInactive}>Add-on</Text>
-                            </TouchableOpacity>
+                            <TouchableWithoutFeedback activeOpacity={0.8} style={styles.footerConetntView} onPress={() => {this.setState({ addonVisible: !this.state.addonVisible });this.addonButtonRef.current.bounceIn(800)} }>
+                                <Animatable.View useNativeDriver ref={this.addonButtonRef} style={styles.footerConetntView}>
+                                    <Icon name='md-add' type={'Ionicons'} style={this.state.addonVisible ? { color: '#1c92c4', fontSize: 19 } : { color: '#bababa', fontSize: 19 }} />
+                                    <Text style={this.state.addonVisible ? styles.footerTextActive : styles.footerTextInactive}>Add-on</Text>
+                                </Animatable.View>
+                            </TouchableWithoutFeedback>
                             : null
                     }
                 </View>
@@ -527,7 +530,7 @@ class Post extends Component {
                         this.setState({ modalVisible: false })
                     }}
                 />
-            </View>
+            </Animatable.View>
         );
     }
 }
