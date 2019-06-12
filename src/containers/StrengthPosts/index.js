@@ -167,7 +167,6 @@ class StrengthPosts extends React.Component {
                     key={item.Item.post_id} 
                     postSource = 'StrengthCount'
                     postId={item.Item.post_id}
-                    postCreator={this.associateList[item.Item.associate_id]}
                     postCreator_id={item.Item.associate_id}
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time={item.Item.time}

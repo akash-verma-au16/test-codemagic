@@ -188,7 +188,8 @@ class ListPost extends React.Component {
                                 strength={item.sub_type}
                                 associate={item.associate_id}
                                 likeCount={likeCount}
-                                commentCount={commentCount}
+                                commentCount={commentCount} 
+                                points={item.Item.points} 
                             />
                         )
 
