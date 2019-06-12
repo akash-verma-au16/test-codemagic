@@ -207,7 +207,6 @@ class Post extends Component {
     }
 
     onLikeHnadler = () => {
-        console.log(this.likeButtonRef)
         this.likeButtonRef.current.bounceIn(800)
         if (this.props.isConnected) {
             this.setState({
@@ -297,7 +296,7 @@ class Post extends Component {
                         //Update Wallet
                         await this.props.updateWallet(payload)
                         this.setState({ addOn: "", addonVisible: !this.state.addonVisible })
-                    }).catch((e) => {
+                    }).catch(() => {
                         //Error retriving data
                         this.setState({ addonVisible: false })
                     })
@@ -469,7 +468,7 @@ class Post extends Component {
                     }
                 </View>
                 {this.state.addonVisible ?
-                    <React.Fragment>
+                    <Animatable.View animation='zoomIn' useNativeDriver>
                         <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>
                         <View style={styles.pointButtonView}>
                             <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "1" }, () => this.rewardsAddon()) }}>
@@ -482,7 +481,7 @@ class Post extends Component {
                                 <Text style={styles.points}>+10</Text>
                             </TouchableOpacity>
                         </View>
-                    </React.Fragment>
+                    </Animatable.View>
                     :
                     null}
 
