@@ -63,7 +63,7 @@ class ListPost extends React.Component {
         this.scrollPosition = 0
         //Carry Profile Data
         this.profileData = {}
-        this.counts = []
+        this.counts = [] 
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -474,6 +474,7 @@ class ListPost extends React.Component {
     }
 
     createTiles = async (posts) => {
+        console.log('Creating tiles')
         this.getProfile()
         await posts.map(async (item) => {
 
