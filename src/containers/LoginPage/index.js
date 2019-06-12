@@ -65,7 +65,6 @@ class LoginPage extends React.Component {
         this.textInputPassword = React.createRef();
         this.contentView = React.createRef()
         this.associateList = {}
-        this.getAssociateNames = this.getAssociateNames.bind(this)
     }
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -92,12 +91,12 @@ class LoginPage extends React.Component {
     likeSyncHandler = (payload) => {
         liked_post(payload)
             .then((response) => {
-                response.data.data.map((postId)=>{
+                response.data.data.map((postId) => {
                     /* Store likes */
-                    AsyncStorage.setItem(postId,'true')
+                    AsyncStorage.setItem(postId, 'true')
                 })
             })
-            .catch(()=>{/* error */})
+            .catch(() => {/* error */ })
     }
 
     componentWillUnmount() {
@@ -125,18 +124,6 @@ class LoginPage extends React.Component {
                 }
             )
         ]).start()
-    }
-
-    getAssociateNames = async (tenantId) => {
-        try {
-            await get_associate_name({ tenant_id: tenantId }).then((res) => {
-                res.data.data.map((item) => {
-                    // this.associateList[item.associate_id] = item.full_name
-                    AsyncStorage.setItem(item.associate_id, item.full_name)
-                })
-            })
-        }
-        catch (e) {/* error */ }
     }
 
     forgotPasswordHandler = () => {
@@ -219,9 +206,7 @@ class LoginPage extends React.Component {
                             headers: {
                                 Authorization: response.data.payload.idToken.jwtToken
                             }
-                        }).then(async (tenantRes) => {
-                            await this.getAssociateNames(this.state.accountAlias)
-                            // this.tenantName = tenantRes.data.data[0].tenant_name
+                        }).then((tenantRes) => {
                             if (tenantRes.data.data[0].is_disabled) {
                                 ToastAndroid.showWithGravityAndOffset(
                                     'No Internet Connection',
@@ -252,7 +237,7 @@ class LoginPage extends React.Component {
                                         idToken: response.data.payload.idToken.jwtToken,
                                         associateList: this.associateList
                                     };
-                                    
+
                                     this.likeSyncHandler({
                                         tenant_id: payload.accountAlias,
                                         associate_id: payload.associate_id
@@ -262,7 +247,15 @@ class LoginPage extends React.Component {
                                     this.handleImageDownload()
                                     if (!this.sendToken(payload))
                                         return
-                                    this.props.navigation.navigate('TabNavigator')
+                                    try {
+                                        get_associate_name({ tenant_id: payload.accountAlias }).then((res) => {
+                                            res.data.data.map((item) => {
+                                                AsyncStorage.setItem(item.associate_id, item.full_name)
+                                            })
+                                            this.props.navigation.navigate('TabNavigator')
+                                        })
+                                    }
+                                    catch (e) {/* error */ }
                                 }).catch((error) => {
                                     this.setState({ isSignInLoading: false });
                                     if (this.props.isConnected) {
