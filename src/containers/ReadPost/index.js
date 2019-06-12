@@ -180,7 +180,6 @@ class ListPost extends React.Component {
                             <Post
                                 key={0}
                                 postId={item.post_id}
-                                postCreator={this.associateList[item.associate_id]}
                                 postCreator_id={item.associate_id}
                                 profileData={item.associate_id == this.props.associate_id ? this.profileData : {}}
                                 time={item.time}

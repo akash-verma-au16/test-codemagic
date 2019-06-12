@@ -231,7 +231,17 @@ class CreatePost extends React.Component {
                 return
             }
         } 
-        if ((this.state.addPoints * this.state.taggedAssociates.length) > this.profileData.wallet_balance) {
+        if (Number.isInteger(Number(this.state.addPoints)) == false ) {
+            ToastAndroid.showWithGravityAndOffset(
+                'Please enter valid points',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+                25,
+                100,
+            );
+            return
+        }
+        if ((this.state.addPoints * this.state.taggedAssociates.length) >= this.profileData.wallet_balance) {
             ToastAndroid.showWithGravityAndOffset(
                 'You have insufficient wallet balance ' + this.profileData.wallet_balance +' points.',
                 ToastAndroid.SHORT,
@@ -736,6 +746,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
+        walletBalance: state.user.walletBalance,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         firstName: state.user.firstName,

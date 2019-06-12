@@ -6,8 +6,9 @@ import { Icon } from 'native-base'
 import Moment from 'react-moment'
 import moment from 'moment/min/moment-with-locales'
 //API methods
-import { edit_post } from '../../services/post'
+import { edit_post, edit_post_addon, new_associate_notify } from '../../services/post'
 import { list_associate } from '../../services/tenant'
+import { dev } from '../../store/actions'
 /* Redux */
 import { connect } from 'react-redux'
 //Tagged associate componet
@@ -16,17 +17,20 @@ import MultiSelect from 'react-native-multiple-select'
 class EditPost extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {
-            postCreator: this.props.navigation.getParam('associate'),
-            postMessage: this.props.navigation.getParam('postMessage'),
-            taggedAssociates: this.props.navigation.getParam('taggedAssociates'),
-            strength: this.props.navigation.getParam('strength'),
-            epoch: this.props.navigation.getParam('time'),
+        this.initialState = {
+            postCreator: '',
+            postMessage: '',
+            taggedAssociates: [],
+            strength: '',
+            epoch: "",
             isChanged: false,
-            isTagerLoading: false
+            isTagerLoading: false,
+            editAddon: 0
         }
+        this.state = this.initialState
         this.associateData = []
-        this.associateList=[]
+        this.associateList=[] 
+        this.newAssociate = []
         //formatting update locale
         Moment.globalMoment = moment;
         moment.updateLocale('en', {
@@ -52,7 +56,15 @@ class EditPost extends React.Component {
             }
         });
     }
-    componentWillMount() {
+    async componentWillMount() {
+        await this.setState({
+            ...this.state,
+            postCreator: this.props.navigation.getParam('associate'),
+            postMessage: this.props.navigation.getParam('postMessage'),
+            taggedAssociates: this.props.navigation.getParam('taggedAssociates'),
+            strength: this.props.navigation.getParam('strength'),
+            epoch: this.props.navigation.getParam('time')
+        })
         this.loadMembers()
     }
 
@@ -60,14 +72,14 @@ class EditPost extends React.Component {
         return {
 
             headerRight: (
-                navigation.getParam('isChanged') ?
+                navigation.getParam('isChanged') ? 
                     <Icon name='md-checkmark' type='Ionicons' style={
                         {
                             color: 'white',
                             margin: 19
                         }
                     } onPress={navigation.getParam('editPostHandler')}
-                    />
+                    /> 
                     : <View style={{ magin: 19 }}></View>
             ),
             headerLeft: (
@@ -130,8 +142,19 @@ class EditPost extends React.Component {
         }
     }
 
-    editPostHandler = () => {
+    editPostHandler = async() => {
         if(this.props.isConnected){
+            this.newAssociateList = []
+            this.newAssociate = this.state.taggedAssociates
+            this.inputAssociate = this.props.navigation.getParam('taggedAssociates')
+            this.newAssociate = await this.newAssociate.filter((item) => {
+                if (!this.inputAssociate.includes(item)) {
+                    return item
+                }
+            })
+            let base = this.props.navigation.getParam('points') / this.inputAssociate.length
+            let points = base * this.newAssociate.length
+
             this.state.taggedAssociates.map(id => {
                 /* complete collection of names and ids */
                 this.associateData.map(item => {
@@ -142,37 +165,75 @@ class EditPost extends React.Component {
                 })
 
             })
-            const payload = {
-                Data: {
-                    post_id: this.props.navigation.getParam('postId'),
-                    tenant_id: this.props.accountAlias,
-                    associate_id: this.props.associate_id,
-                    message: this.state.postMessage,
-                    type: this.props.navigation.getParam('type'),
-                    sub_type: this.props.navigation.getParam('strength'),
-                    ops: "edit_post",
-                    tagged_associates: this.associateList,
-                    privacy: this.props.navigation.getParam('privacy'),
-                    time: this.state.epoch
+
+            if(points <= this.props.walletBalance) {
+                const payload = {
+                    Data: {
+                        post_id: this.props.navigation.getParam('postId'),
+                        tenant_id: this.props.accountAlias,
+                        associate_id: this.props.associate_id,
+                        message: this.state.postMessage,
+                        type: this.props.navigation.getParam('type'),
+                        sub_type: this.props.navigation.getParam('strength'),
+                        ops: "edit_post",
+                        tagged_associates: this.associateList,
+                        privacy: this.props.navigation.getParam('privacy'),
+                        time: this.state.epoch,
+                        points: this.state.taggedAssociates.length * this.props.navigation.getParam('points')
+                    }
                 }
-            }
-            try {
-                edit_post(payload, this.headers).then((res) => {
-                    if (res.status === 200) {
+                try {
+                    edit_post(payload, this.headers).then(async () => {
+                        if (this.newAssociate.length > 0) {
+                            this.newAssociate.map((item) => {
+                                this.newAssociateList.push({ associate_id: item })
+                            })
+                            if (this.props.navigation.getParam('points') > 0) {
+                                if (this.props.walletBalance >= points) {
+                                    this.newAssociateAddon(this.newAssociateList, points)
+                                    this.newUserNotify(this.newAssociateList)
+                                }
+                                else {
+                                    ToastAndroid.showWithGravityAndOffset(
+                                        'You have insufficient points ' + this.props.walletBalance,
+                                        ToastAndroid.SHORT,
+                                        ToastAndroid.BOTTOM,
+                                        25,
+                                        100,
+                                    )
+                                    return
+                                }
+                            }
+                            else {
+                                this.newUserNotify(this.newAssociateList)
+                            }
+                        }
+
                         this.props.navigation.state.params.returnData({
                             message: this.state.postMessage,
-                            taggedAssociates: this.associateList
+                            taggedAssociates: this.associateList,
+                            editAddon: this.state.editAddon
                         })
                         this.props.navigation.goBack()
-                    }
 
-                }).catch((e) => {
-                //Error Retriving Data
-                })
+                    }).catch(() => {
+                        //Error Retriving Data
+                    })
+                }
+                catch (e) {
+                    //Error Retriving Data
+                }
             }
-            catch(e) {
-                //Error Retriving Data
+            else {
+                ToastAndroid.showWithGravityAndOffset(
+                    'You have insufficient wallet balance',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                    25,
+                    100,
+                );
             }
+            
         }
         else {
             ToastAndroid.showWithGravityAndOffset(
@@ -184,6 +245,66 @@ class EditPost extends React.Component {
             );
         }
 
+    }
+
+    newAssociateAddon = (newAssociateList, points) => {
+        const payload = {
+            tenant_id: this.props.accountAlias,
+            associate_id: this.props.associate_id,
+            tagged_associates: newAssociateList,
+            sub_type: this.props.navigation.getParam('strength'),
+            type: this.props.navigation.getParam('type'),
+            post_id: this.props.navigation.getParam('postId'),
+            points: points
+        }
+        this.setState({ editAddon: this.state.editAddon + points })
+        try {
+            edit_post_addon(payload).then(async() => {
+                let walletBalance = this.props.walletBalance - points
+                const payload = {
+                    walletBalance: walletBalance
+                }
+                //Update Wallet
+                await this.props.updateWallet(payload)
+                ToastAndroid.showWithGravityAndOffset(
+                    'You gifted ' + points + ' points',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                    25,
+                    100,
+                );
+            }).catch((e) => {
+            // error retriving data
+
+            })
+        }
+        catch {
+            // error retriving data
+        }
+    }
+
+    newUserNotify = (newAssociateList) => {
+        const payload = {
+            post_id: this.props.navigation.getParam('postId'),
+            tenant_id: this.props.accountAlias,
+            associate_id: this.props.associate_id,
+            message: this.state.postMessage,
+            type: this.props.navigation.getParam('type'),
+            sub_type: this.props.navigation.getParam('strength'),
+            tagged_associates: newAssociateList,
+            privacy: this.props.navigation.getParam('privacy'),
+            time: this.state.epoch
+        }
+        try {
+            new_associate_notify(payload).then(() => {
+
+            }).catch(() => {
+                //Error retriving data
+            })
+        }
+        catch {
+            //Error retriving data
+        }
     }
 
     onSelectedItemsChange = async(taggedAssociates) => {
@@ -214,6 +335,7 @@ class EditPost extends React.Component {
                                 25,
                                 100,
                             );
+                            this.setState(this.initialState)
                             this.props.navigation.goBack()
                         }
                     }
@@ -431,8 +553,15 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        idToken: state.user.idToken,
+        walletBalance: state.user.walletBalance
     };
 }
 
-export default connect(mapStateToProps, null)(EditPost)
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditPost)

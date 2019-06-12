@@ -285,13 +285,12 @@ class Home extends React.Component {
                     } else {
                         this.posts = []
                         this.homeDataBackup = response.data.data.posts
-                        this.posts = response.data.data.posts
-                        this.posts.map((item) => {
-                            this.counts = response.data.data.counts.filter((elm) => {
-                                return elm.post_id == item.Item.post_id
-                            })
-                            item.Item.likeCount = this.counts[0].likeCount
-                            item.Item.commentCount = this.counts[0].commentCount
+                        this.posts = response.data.data.posts 
+                        this.counts = response.data.data.counts
+                        this.posts.map((item, index) => {
+                            item.Item.likeCount = this.counts[index].likeCount
+                            item.Item.commentCount = this.counts[index].commentCount
+                            item.Item.addOnPoints = this.counts[index].addOnPoints
                         })
                         
                         this.createTiles(this.posts)
@@ -335,7 +334,8 @@ class Home extends React.Component {
                     likeCount={item.Item.likeCount}
                     commentCount={item.Item.commentCount}
                     postDeleteHandler={this.deletePost} 
-                    points={item.Item.points}
+                    points={item.Item.points} 
+                    addOn={item.Item.addOnPoints}
                 />
             )
         })
