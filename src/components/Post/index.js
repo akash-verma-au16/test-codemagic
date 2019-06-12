@@ -92,10 +92,12 @@ class Post extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.likeCount !== this.props.likeCount || nextProps.commentCount !== this.props.commentCount) {
+        if (nextProps.likeCount !== this.props.likeCount || nextProps.commentCount !== this.props.commentCount || nextProps.taggedAssociates !== this.props.taggedAssociates || nextProps.points !== this.props.points) {
             this.setState({
                 likes: nextProps.likeCount,
-                comments: nextProps.commentCount
+                comments: nextProps.commentCount,
+                taggedAssociates: nextProps.taggedAssociates,
+                rewardsPoints: nextProps.points + nextProps.addOn
             })
         }
         else if (this.state.likes > this.props.likeCount) {
@@ -273,16 +275,22 @@ class Post extends Component {
     }
 
     rewardsAddon = () => {
-        if (this.props.walletBalance > this.state.addOn * this.props.taggedAssociates.length) {
+        if (this.props.walletBalance >= this.state.addOn * this.props.taggedAssociates.length) {
             if (this.props.isConnected) {
+                this.taggedAssociates = []
+                this.props.taggedAssociates.map((item) => {
+                    this.taggedAssociates.push({associate_id: item.associate_id})
+                })
                 const payload1 = {
                     tenant_id: this.props.accountAlias,
                     associate_id: this.props.associate_id,
                     sub_type: this.props.strength,
                     type: "add_on",
                     post_id: this.props.postId,
-                    points: this.state.addOn * this.props.taggedAssociates.length
+                    points: this.state.addOn * this.props.taggedAssociates.length,
+                    tagged_associates: this.taggedAssociates
                 }
+
                 this.taggedAssociatesRewards = this.props.taggedAssociates.filter((item) => {
                     return item.associate_id !== this.props.associate_id
                 })

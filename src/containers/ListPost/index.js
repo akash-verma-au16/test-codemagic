@@ -356,7 +356,8 @@ class ListPost extends React.Component {
                             item.Item.addOnPoints = response.data.data.counts[index].addOnPoints
 
                         })
-                        if (JSON.stringify(this.posts) !== JSON.stringify(response.data.data.posts)) {
+                        if (JSON.stringify(this.posts) !== JSON.stringify(response.data.data.posts)) { 
+
                             this.posts = response.data.data.posts
                             this.postList = []
                             this.createTiles(this.posts)

@@ -179,9 +179,10 @@ class EditPost extends React.Component {
                         tagged_associates: this.associateList,
                         privacy: this.props.navigation.getParam('privacy'),
                         time: this.state.epoch,
-                        points: this.state.taggedAssociates.length * this.props.navigation.getParam('points')
+                        points: this.state.taggedAssociates.length * base
                     }
                 }
+
                 try {
                     edit_post(payload, this.headers).then(async () => {
                         if (this.newAssociate.length > 0) {
