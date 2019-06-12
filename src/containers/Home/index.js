@@ -16,6 +16,7 @@ import {
     ToastAndroid
 } from 'react-native';
 
+import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from "@react-native-community/netinfo"
 import { user } from '../../store/actions'
 import {
@@ -42,7 +43,6 @@ import Post from '../../components/Post/index'
 import Card from '../../components/Card/index'
 
 import VisibilityModal from '../../containers/VisibilityModal/index'
-import axios from 'axios';
 
 import ImageCropPicker from 'react-native-image-crop-picker';
 
@@ -94,7 +94,6 @@ class Home extends React.Component {
         this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id || this.state.associate_id == undefined })
         this.loadProfile = this.loadProfile.bind(this)
         this.loadTransactions = this.loadTransactions.bind(this)
-        this.loadData = this.loadData.bind(this)
         this.loadHome = this.loadHome.bind(this)
         this.loadSummary = this.loadSummary.bind(this)
         this.showToast = this.showToast.bind(this)
@@ -138,14 +137,11 @@ class Home extends React.Component {
                 this.loadSummary()
             }
             await this.loadProfile()
-            // await this.setState({ loading: false })
         }
         else {
             if(this.userData == {}) {
                 this.loadProfile()
             }
-            await this.loadData()
-            // this.setState({ loading: false })
         }
     }
 
@@ -190,10 +186,6 @@ class Home extends React.Component {
             type: 'success',
             duration: 3000
         })
-    }
-
-    async loadData() {
-        await this.loadHome()            
     }
 
     headers = {
@@ -303,7 +295,7 @@ class Home extends React.Component {
                         
                         this.createTiles(this.posts)
                     }
-                }).catch((e) => {
+                }).catch(() => {
                     this.setState({ homeRefreshing: false })
                 })
             }
@@ -316,6 +308,15 @@ class Home extends React.Component {
     createTiles = (posts) => {
         this.homeDataList = []
         posts.map((item) => {
+            // Get tagged associate Names
+            let associateList = []
+            item.Item.tagged_associates.map(async (item) => {
+                let name = await AsyncStorage.getItem(item.associate_id)
+                associateList.push({
+                    associate_id: item.associate_id,
+                    associate_name: name
+                })
+            })
             this.homeDataList.push(
                 // Post Component
                 <Post
@@ -326,7 +327,7 @@ class Home extends React.Component {
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time={item.Item.time}
                     postMessage={item.Item.message}
-                    taggedAssociates={item.Item.tagged_associates}
+                    taggedAssociates={associateList}
                     strength={item.Item.sub_type} 
                     type={item.Item.type}
                     associate={item.Item.associate_id}
@@ -441,11 +442,11 @@ class Home extends React.Component {
                             25,
                             100,
                         );
-                        await update_profile(payload,this.headers).then((res) => {
+                        await update_profile(payload,this.headers).then(() => {
                             if(this.state.photo !== null) {
                                 this.setState({ imageUrl: this.state.photo }, () => this.handleUploadImage())   
                             }
-                        }).catch((e) => {
+                        }).catch(() => {
                         })
                     }
                     else {

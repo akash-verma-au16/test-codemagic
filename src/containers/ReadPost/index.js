@@ -16,7 +16,7 @@ import {
     Toast
 } from 'native-base';
 /* Services */
-import {  read_post } from '../../services/post'
+import { read_post } from '../../services/post'
 
 //Prefetch profile data
 import { loadProfile } from '../Home/apicalls'
@@ -72,7 +72,7 @@ class ListPost extends React.Component {
         }
 
     }
-    
+
     goBack() {
         return true
     }
@@ -158,14 +158,23 @@ class ListPost extends React.Component {
         }
         if (payload.tenant_id !== "" && payload.associate_id !== "") {
             try {
-                
+
                 read_post(read_post_payload, this.headers)
                     .then((response) => {
                         this.setState({ refreshing: false, networkChanged: false })
                         const item = response.data.data.posts.Item
                         const commentCount = response.data.data.counts.commentCount
                         const likeCount = response.data.data.counts.likeCount
-                        this.post=[]
+                        this.post = []
+                        // Get tagged associate Names
+                        let associateList = []
+                        item.tagged_associates.map(async (item) => {
+                            let name = await AsyncStorage.getItem(item.associate_id)
+                            associateList.push({
+                                associate_id: item.associate_id,
+                                associate_name: name
+                            })
+                        })
                         this.post.push(
                             // Post Component
                             <Post
@@ -173,22 +182,22 @@ class ListPost extends React.Component {
                                 postId={item.post_id}
                                 postCreator_id={item.associate_id}
                                 profileData={item.associate_id == this.props.associate_id ? this.profileData : {}}
-                                time= {item.time} 
-                                postMessage={item.message} 
-                                taggedAssociates={item.tagged_associates} 
-                                strength={item.sub_type} 
-                                associate={item.associate_id} 
+                                time={item.time}
+                                postMessage={item.message}
+                                taggedAssociates={associateList}
+                                strength={item.sub_type}
+                                associate={item.associate_id}
                                 likeCount={likeCount}
                                 commentCount={commentCount} 
                                 points={item.Item.points} 
                             />
                         )
-                        
+
                     }).catch(() => {
                         this.setState({ refreshing: false, networkChanged: false })
                         alert('Invalid post')
                     })
-                
+
             }
             catch (error) {
                 Toast.show({
@@ -271,7 +280,7 @@ class ListPost extends React.Component {
                         }
                     }}
                 />
-                
+
             </Container>
 
         );

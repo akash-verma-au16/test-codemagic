@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // Components from React-Native
-import { View, Text, TouchableOpacity, ToastAndroid, Alert } from 'react-native';
+import { View, Text, TouchableOpacity,TouchableWithoutFeedback, ToastAndroid, Alert } from 'react-native';
 // Components from Native Base
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -26,7 +26,7 @@ import { connect } from 'react-redux'
 // Components from Moment.js
 import Moment from 'react-moment'
 import moment from 'moment/min/moment-with-locales'
-
+import * as Animatable from 'react-native-animatable';
 class Post extends Component {
     constructor(props) {
         super(props);
@@ -74,12 +74,14 @@ class Post extends Component {
             }
         });
 
+        this.likeButtonRef = React.createRef()
+        this.addonButtonRef = React.createRef();
     }
 
     getName = async () => {
         try {
             let name = await AsyncStorage.getItem(this.props.postCreator_id)
-            this.setState({postCreatorName: name})
+            this.setState({ postCreatorName: name })
         }
         catch {
             //Error retriving data
@@ -99,11 +101,14 @@ class Post extends Component {
                 taggedAssociates: nextProps.taggedAssociates,
                 rewardsPoints: nextProps.points + nextProps.addOn
             })
+
+            this.restoreLikes()
         }
         else if (this.state.likes > this.props.likeCount) {
             this.setState({
                 likes: this.state.likes
             })
+
         }
         else {
             this.setState({
@@ -200,12 +205,13 @@ class Post extends Component {
                 }).catch(() => {
                 })
             }).catch(() => {
-            })  
+            })
         }
         catch (e) {/* error */ }
     }
 
     onLikeHnadler = () => {
+        this.likeButtonRef.current.bounceIn(800)
         if (this.props.isConnected) {
             this.setState({
                 like: !this.state.like
@@ -372,7 +378,7 @@ class Post extends Component {
     render() {
         this.associateList = []
         return (
-            <View style={styles.card} key={this.props.key}>
+            <Animatable.View useNativeDriver animation='fadeInDown' style={styles.card} key={this.props.key}>
                 <View name='header'
                     style={styles.container}
                 >
@@ -459,10 +465,12 @@ class Post extends Component {
                         justifyContent: 'space-around',
                         padding: 3
                     }}>
-                    <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={this.onLikeHnadler}>
-                        <Icon name='md-thumbs-up' style={this.state.like ? styles.like : styles.unlike} />
-                        <Text style={this.state.like ? styles.footerTextActive : styles.footerTextInactive}>Like</Text>
-                    </TouchableOpacity>
+                    <TouchableWithoutFeedback activeOpacity={0.8} style={styles.footerConetntView} onPress={this.onLikeHnadler}>
+                        <Animatable.View useNativeDriver ref={this.likeButtonRef} style={styles.footerConetntView}>
+                            <Icon name='md-thumbs-up' style={this.state.like ? styles.like : styles.unlike} />
+                            <Text style={this.state.like ? styles.footerTextActive : styles.footerTextInactive}>Like</Text>
+                        </Animatable.View>
+                    </TouchableWithoutFeedback>
                     <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={() => this.props.navigation.navigate('Comments', {
                         isComment: true,
                         postId: this.props.postId,
@@ -473,28 +481,30 @@ class Post extends Component {
                     </TouchableOpacity>
                     {
                         (this.props.postCreator_id !== this.props.associate_id) ?
-                            <TouchableOpacity activeOpacity={0.8} style={styles.footerConetntView} onPress={() => this.setState({addonVisible: !this.state.addonVisible})}>
-                                <Icon name='md-add' type={'Ionicons'} style={this.state.addonVisible ? { color: '#1c92c4', fontSize: 19 } : { color: '#bababa', fontSize: 19 }} />
-                                <Text style={this.state.addonVisible ? styles.footerTextActive : styles.footerTextInactive}>Add-on</Text>
-                            </TouchableOpacity>
+                            <TouchableWithoutFeedback activeOpacity={0.8} style={styles.footerConetntView} onPress={() => {this.setState({ addonVisible: !this.state.addonVisible });this.addonButtonRef.current.bounceIn(800)} }>
+                                <Animatable.View useNativeDriver ref={this.addonButtonRef} style={styles.footerConetntView}>
+                                    <Icon name='md-add' type={'Ionicons'} style={this.state.addonVisible ? { color: '#1c92c4', fontSize: 19 } : { color: '#bababa', fontSize: 19 }} />
+                                    <Text style={this.state.addonVisible ? styles.footerTextActive : styles.footerTextInactive}>Add-on</Text>
+                                </Animatable.View>
+                            </TouchableWithoutFeedback>
                             : null
                     }
                 </View>
                 {this.state.addonVisible ?
-                    <React.Fragment>
+                    <Animatable.View animation='zoomIn' useNativeDriver>
                         <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>
                         <View style={styles.pointButtonView}>
-                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async() => {await this.setState({addOn: "1"}, () => this.rewardsAddon())}}>
+                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "1" }, () => this.rewardsAddon()) }}>
                                 <Text style={styles.points}>+1</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "5" }, () => this.rewardsAddon())}}>
+                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "5" }, () => this.rewardsAddon()) }}>
                                 <Text style={styles.points}>+5</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "10" }, () => this.rewardsAddon())}}>
+                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "10" }, () => this.rewardsAddon()) }}>
                                 <Text style={styles.points}>+10</Text>
                             </TouchableOpacity>
                         </View>
-                    </React.Fragment>
+                    </Animatable.View>
                     :
                     null}
 
@@ -543,7 +553,7 @@ class Post extends Component {
                         this.setState({ modalVisible: false })
                     }}
                 />
-            </View>
+            </Animatable.View>
         );
     }
 }

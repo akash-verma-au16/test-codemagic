@@ -282,7 +282,7 @@ class CreatePost extends React.Component {
             /* complete collection of names and ids */
             this.associateData.map(item => {
                 if (id === item.id) {
-                    associateList.push({ associate_id: item.id, associate_name: item.name })
+                    associateList.push({ associate_id: item.id })
                     return
                 }
             })
@@ -293,7 +293,6 @@ class CreatePost extends React.Component {
                 post_id: id,
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id,
-                associate_name: fullName,
                 message: this.state.text,
                 type: this.state.postType,
                 sub_type: this.state.endorsementStrength,
