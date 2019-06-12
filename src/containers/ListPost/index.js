@@ -489,9 +489,8 @@ class ListPost extends React.Component {
                     key={item.Item.post_id}
                     postId={item.Item.post_id}
                     privacy={item.Item.privacy}
-                    // postCreator={this.props.associateList[item.Item.associate_id]}
                     postCreator_id={item.Item.associate_id}
-                    profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
+                    profileData={this.profileData}
                     time={item.Item.time}
                     postMessage={item.Item.message}
                     taggedAssociates={associateList}
