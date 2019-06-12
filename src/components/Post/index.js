@@ -355,7 +355,7 @@ class Post extends Component {
     render() {
         this.associateList = []
         return (
-            <Animatable.View useNativeDriver animation='fadeInUp' delay={0.1} style={styles.card} key={this.props.key}>
+            <Animatable.View useNativeDriver animation='fadeInDown' style={styles.card} key={this.props.key}>
                 <View name='header'
                     style={styles.container}
                 >
