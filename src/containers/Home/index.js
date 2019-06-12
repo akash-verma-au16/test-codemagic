@@ -1053,7 +1053,7 @@ class Home extends React.Component {
                                 <VisibilityModal
                                     enabled={this.state.visibilityModalVisible}
                                     data={ this.data }
-                                    onChangeListener={({ text, name, key }) => {
+                                    onChangeListener={({ key }) => {
                                         if(key == 'open') {
                                             this.handleChoosePhotoFromCamera()
                                         }

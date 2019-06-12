@@ -255,7 +255,7 @@ class Post extends Component {
         if (this.props.isConnected) {
             this.props.navigation.push('Profile', {
                 associateId: associateId,
-                profileData: this.props.postCreator_id === this.props.associate_id ? this.props.profileData : {}
+                profileData:  this.props.profileData
             })
         } else {
             ToastAndroid.showWithGravityAndOffset(
