@@ -271,7 +271,7 @@ class ListPost extends React.Component {
             this.goBack()
         })
         //  Loading profile
-        this.props.navigation.setParams({ 'profileData': this.profileData })
+        this.props.navigation.setParams({ 'profileData': this.profileData, walletBalance: this.profileData.walletBalance })
 
     }
 
@@ -352,7 +352,8 @@ class ListPost extends React.Component {
 
                         response.data.data.posts.map((item, index) => {
                             item.Item.likeCount = response.data.data.counts[index].likeCount
-                            item.Item.commentCount = response.data.data.counts[index].commentCount
+                            item.Item.commentCount = response.data.data.counts[index].commentCount 
+                            item.Item.addOnPoints = response.data.data.counts[index].addOnPoints
 
                         })
                         if (JSON.stringify(this.posts) !== JSON.stringify(response.data.data.posts)) {
@@ -390,6 +391,7 @@ class ListPost extends React.Component {
                         this.posts.map((item, index) => {
                             item.Item.likeCount = this.counts[index].likeCount
                             item.Item.commentCount = this.counts[index].commentCount
+                            item.Item.addOnPoints = this.counts[index].addOnPoints
                         })
 
                         // /* Take Backup */
@@ -462,12 +464,12 @@ class ListPost extends React.Component {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id
             }
-            this.profileData = await loadProfile(payload1,headers, this.props.isConnected);
-            this.props.navigation.setParams({ 'profileData': this.profileData })
+            this.profileData = await loadProfile(payload1, headers, this.props.isConnected);
             const payload = {
                 walletBalance: this.profileData.wallet_balance
             }
             this.props.updateWallet(payload)
+            this.props.navigation.setParams({ 'profileData': this.profileData, walletBalance: this.props.walletBalance })
         }        
     }
 
@@ -492,7 +494,8 @@ class ListPost extends React.Component {
                     likeCount={item.Item.likeCount}
                     commentCount={item.Item.commentCount}
                     postDeleteHandler={this.deletePost}
-                    points={item.Item.points}
+                    points={item.Item.points} 
+                    addOn={item.Item.addOnPoints}
                 />
             )
         })
@@ -604,7 +607,8 @@ const mapStateToProps = (state) => {
         idToken: state.user.idToken,
         imagelink: state.user.imageUrl,
         tenant_name: state.user.tenant_name,
-        email: state.user.emailAddress
+        email: state.user.emailAddress,
+        walletBalance: state.user.walletBalance
     };
 }
 

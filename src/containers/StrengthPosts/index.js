@@ -135,13 +135,12 @@ class StrengthPosts extends React.Component {
                     .then((response) => {
                         this.posts = []
                         this.counts = []
-                        this.posts = response.data.data.posts
-                        this.posts.map((item) => {
-                            this.counts = response.data.data.counts.filter((elm) => {
-                                return elm.post_id == item.Item.post_id
-                            })
-                            item.Item.likeCount = this.counts[0].likeCount
-                            item.Item.commentCount = this.counts[0].commentCount
+                        this.posts = response.data.data.posts 
+                        this.counts = response.data.data.counts
+                        this.posts.map((item, index) => {
+                            item.Item.likeCount = this.counts[index].likeCount
+                            item.Item.commentCount = this.counts[index].commentCount 
+                            item.Item.addOnPoints = this.counts[index].addOnPoints
                         })
                         this.createTiles(this.posts)
                     }).catch(() => {
@@ -165,7 +164,8 @@ class StrengthPosts extends React.Component {
             this.postList.push(
                 // Post Component
                 <Post
-                    key={item.Item.post_id}
+                    key={item.Item.post_id} 
+                    postSource = 'StrengthCount'
                     postId={item.Item.post_id}
                     postCreator={this.associateList[item.Item.associate_id]}
                     postCreator_id={item.Item.associate_id}
@@ -176,7 +176,9 @@ class StrengthPosts extends React.Component {
                     strength={item.Item.sub_type}
                     associate={item.Item.associate_id}
                     likeCount={item.Item.likeCount}
-                    commentCount={item.Item.commentCount}
+                    commentCount={item.Item.commentCount} 
+                    points={item.Item.points} 
+                    addOn={item.Item.addOnPoints}
                 />
             )
         })

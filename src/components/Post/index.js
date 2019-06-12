@@ -42,7 +42,8 @@ class Post extends Component {
             likes: this.props.likeCount,
             comments: this.props.commentCount,
             taggedAssociates: this.props.taggedAssociates,
-            rewardsPoints: this.props.points,
+            points: this.props.points,
+            rewardsPoints: this.props.points + (this.props.addOn == null ? 0 : this.props.addOn),
             addonVisible: false,
             postCreatorName: ""
         }
@@ -115,6 +116,7 @@ class Post extends Component {
         headers: {
             Authorization: this.props.idToken
         }
+
     }
     restoreLikes = async () => {
         try {
@@ -226,12 +228,21 @@ class Post extends Component {
         }
     }
 
-    onIconPresshandler = () => {
-        this.props.navigation.navigate('Profile', {
-            associateId: this.props.postCreator_id,
-            profileData: this.props.postCreator_id === this.props.associate_id ? this.props.profileData : {},
-            isPost: this.props.postCreator_id === this.props.associate_id ? true : false
-        })
+    onIconPresshandler = (associateId) => {
+        if (this.props.postSource == 'StrengthCount') {
+            this.props.navigation.push('Profile', {
+                associateId: associateId,
+                profileData: {},
+                isPost: false
+            })
+        }
+        else {
+            this.props.navigation.navigate('Profile', {
+                associateId: associateId,
+                profileData: associateId === this.props.associate_id ? this.props.profileData : {},
+                isPost: associateId === this.props.associate_id ? true : false
+            })
+        }
     }
 
     onAssociateTaphandler = (associateId) => {
@@ -268,14 +279,17 @@ class Post extends Component {
                     tenant_id: this.props.accountAlias,
                     associate_id: this.props.associate_id,
                     sub_type: this.props.strength,
-                    type: "addon",
+                    type: "add_on",
                     post_id: this.props.postId,
                     points: this.state.addOn * this.props.taggedAssociates.length
                 }
-                
+                this.taggedAssociatesRewards = this.props.taggedAssociates.filter((item) => {
+                    return item.associate_id !== this.props.associate_id
+                })
                 try {
                     rewards_addon(payload1, this.headers).then(async() => {
-                        let points = this.state.addOn * this.props.taggedAssociates.length
+                        this.setState({ addonVisible: !this.state.addonVisible})
+                        let points = this.state.addOn * this.taggedAssociatesRewards.length
                         ToastAndroid.showWithGravityAndOffset(
                             'You gifted ' + points + ' points',
                             ToastAndroid.SHORT,
@@ -289,8 +303,8 @@ class Post extends Component {
                         }
                         //Update Wallet
                         await this.props.updateWallet(payload) 
-                        this.setState({addOn: "", addonVisible: !this.state.addonVisible})
-                    }).catch((e) => {
+                        this.setState({ addOn: "", rewardsPoints: this.state.rewardsPoints + points})
+                    }).catch(() => {
                         //Error retriving data
                         this.setState({ addonVisible: false })
                     })
@@ -313,7 +327,7 @@ class Post extends Component {
         }
         else {
             ToastAndroid.showWithGravityAndOffset(
-                'You have insufficient points ' + this.props.walletBalance,
+                'You have insufficient points: ' + this.props.walletBalance + ' points',
                 ToastAndroid.SHORT,
                 ToastAndroid.BOTTOM,
                 25,
@@ -333,7 +347,8 @@ class Post extends Component {
             ...this.state,
             isEdit: true,
             editPostMessage: data.message,
-            taggedAssociates: data.taggedAssociates
+            taggedAssociates: data.taggedAssociates,
+            rewardsPoints: this.state.rewardsPoints + data.editAddon
         })
     }
 
@@ -354,7 +369,7 @@ class Post extends Component {
                     style={styles.container}
                 >
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 3 }}>
-                        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center'}} onPress={() => this.onIconPresshandler}>
+                        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center'}} onPress={() => this.onIconPresshandler(this.props.postCreator_id)}>
                             <View name='image' style={{
                                 borderRadius: 30,
                                 backgroundColor: '#1c92c4',
@@ -505,7 +520,8 @@ class Post extends Component {
                                 time: this.props.time,
                                 postId: this.props.postId,
                                 type: this.props.type,
-                                privacy: this.props.privacy
+                                privacy: this.props.privacy,
+                                points: this.props.points
                             })
                         }
                         else {
