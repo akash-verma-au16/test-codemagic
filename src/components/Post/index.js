@@ -27,6 +27,7 @@ import { connect } from 'react-redux'
 import Moment from 'react-moment'
 import moment from 'moment/min/moment-with-locales'
 import * as Animatable from 'react-native-animatable';
+
 class Post extends Component {
     constructor(props) {
         super(props);
@@ -79,6 +80,7 @@ class Post extends Component {
     }
 
     getName = async () => {
+        console.log('calling getname')
         try {
             let name = await AsyncStorage.getItem(this.props.postCreator_id)
             this.setState({ postCreatorName: name })
@@ -96,6 +98,7 @@ class Post extends Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.likeCount !== this.props.likeCount || nextProps.commentCount !== this.props.commentCount || nextProps.taggedAssociates !== this.props.taggedAssociates || nextProps.points !== this.props.points) {
             this.setState({
+                ...this.state,
                 likes: nextProps.likeCount,
                 comments: nextProps.commentCount,
                 taggedAssociates: nextProps.taggedAssociates,
@@ -300,32 +303,43 @@ class Post extends Component {
                 this.taggedAssociatesRewards = this.props.taggedAssociates.filter((item) => {
                     return item.associate_id !== this.props.associate_id
                 })
-                try {
-                    rewards_addon(payload1, this.headers).then(async() => {
-                        this.setState({ addonVisible: !this.state.addonVisible})
-                        let points = this.state.addOn * this.taggedAssociatesRewards.length
-                        ToastAndroid.showWithGravityAndOffset(
-                            'You gifted ' + points + ' points',
-                            ToastAndroid.SHORT,
-                            ToastAndroid.BOTTOM,
-                            25,
-                            100,
-                        );
-                        let walletBalance = this.props.walletBalance - points
-                        const payload = {
-                            walletBalance: walletBalance
-                        }
-                        //Update Wallet
-                        await this.props.updateWallet(payload) 
-                        this.setState({ addOn: "", rewardsPoints: this.state.rewardsPoints + points})
-                    }).catch(() => {
+                if(this.taggedAssociatesRewards.length > 0) {
+                    try {
+                        rewards_addon(payload1, this.headers).then(async () => {
+                            this.setState({ addonVisible: !this.state.addonVisible })
+                            let points = this.state.addOn * this.taggedAssociatesRewards.length
+                            ToastAndroid.showWithGravityAndOffset(
+                                'You gifted ' + points + ' points',
+                                ToastAndroid.SHORT,
+                                ToastAndroid.BOTTOM,
+                                25,
+                                100,
+                            );
+                            let walletBalance = this.props.walletBalance - points
+                            const payload = {
+                                walletBalance: walletBalance
+                            }
+                            //Update Wallet
+                            await this.props.updateWallet(payload)
+                            this.setState({ addOn: "", rewardsPoints: this.state.rewardsPoints + points })
+                        }).catch(() => {
+                            //Error retriving data
+                            this.setState({ addonVisible: false })
+                        })
+                    }
+                    catch (e) {
                         //Error retriving data
                         this.setState({ addonVisible: false })
-                    })
+                    }
                 }
-                catch (e) {
-                    //Error retriving data
-                    this.setState({ addonVisible: false })
+                else {
+                    ToastAndroid.showWithGravityAndOffset(
+                        'You cant reward',
+                        ToastAndroid.LONG,
+                        ToastAndroid.BOTTOM,
+                        25,
+                        100,
+                    );
                 }
 
             }
