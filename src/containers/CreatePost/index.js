@@ -18,7 +18,6 @@ import {
     Container,
     Icon,
     Toast,
-    Thumbnail,
     Spinner
 } from 'native-base';
 /* Redux */
@@ -241,7 +240,7 @@ class CreatePost extends React.Component {
             );
             return
         }
-        if ((this.state.addPoints * this.state.taggedAssociates.length) >= this.profileData.wallet_balance) {
+        if ((this.state.addPoints * this.state.taggedAssociates.length) > this.profileData.wallet_balance) {
             ToastAndroid.showWithGravityAndOffset(
                 'You have insufficient wallet balance ' + this.profileData.wallet_balance +' points.',
                 ToastAndroid.SHORT,
