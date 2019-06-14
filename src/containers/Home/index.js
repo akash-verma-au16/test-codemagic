@@ -556,7 +556,7 @@ class Home extends React.Component {
                         this.createTransactionTile(response.data.data.transaction_data)
                         this.setState({ refreshing: false })
                     }
-                }).catch(() => {
+                }).catch((e) => {
                     this.setState({ refreshing: false })
                 })
             }
@@ -581,7 +581,7 @@ class Home extends React.Component {
                                 {
                                     item.sevice_name == 'survey_reward' ?
                                         <Text style={styles.surveryText}>
-                                        You have been rewarded for filling up Survey</Text>
+                                            You have been rewarded for filling up Survey: {item.sevice_sub_type}</Text>
                                         :
                                         <Text style={styles.tText}>
                                             { 
