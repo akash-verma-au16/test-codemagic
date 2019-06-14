@@ -187,7 +187,7 @@ class CreatePost extends React.Component {
 
     // Submitting post handler function
     postSubmitHandler = () => {
-        
+
         this.closeSelectionDrawer()
         /* Check if collegue is selected */
         if (this.state.taggedAssociates.length === 0) {
@@ -441,6 +441,7 @@ class CreatePost extends React.Component {
 
                     <MultiSelect
                         hideTags
+                        hideSubmitButton
                         items={this.state.isProject ? this.projectAssociateData : this.associateData}
                         uniqueKey='id'
                         ref={(component) => { this.multiSelect = component }}
@@ -639,13 +640,13 @@ class CreatePost extends React.Component {
                             />
                         </View>
                         <View style={styles.pointButtonView}>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 10 })}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 10 },()=>this.closeSelectionDrawer())}>
                                 <Text style={styles.points}>+10</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 15 })}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 15 },()=>this.closeSelectionDrawer())}>
                                 <Text style={styles.points}>+15</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 25 })}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 25 },()=>this.closeSelectionDrawer())}>
                                 <Text style={styles.points}>+25</Text>
                             </TouchableOpacity>
                         </View>
