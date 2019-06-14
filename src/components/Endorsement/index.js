@@ -152,7 +152,7 @@ class Endorsement extends Component {
                             style={{ height: 100, margin: 10, aspectRatio: 1 / 1 }}
                         />
                         <Text style={{ fontSize: 18, marginBottom: 10 }}>
-                            {this.state.selectedStrength}
+                            {'#'+this.state.selectedStrength}
                         </Text>
 
                         <TextInput
@@ -171,8 +171,11 @@ class Endorsement extends Component {
                                 this.setState({ text })
                                 this.props.endorsementHandler(this.state.selectedStrength, text)
                             }}
-                            autoFocus
                         />
+                        
+                        <Text style={{ fontSize: 12, marginBottom: 10 }}>
+                            You can edit the above message
+                        </Text>
                     </View>
                 }
 

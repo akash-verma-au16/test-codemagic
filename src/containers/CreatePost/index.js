@@ -619,6 +619,18 @@ class CreatePost extends React.Component {
                         />
                         : null}
                     <View style={styles.addPointsContainer}>
+                        <View style={{ backgroundColor: '#1c92c4', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Icon name='md-people' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
+                                <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Give Rewards</Text>
+                            </View>
+                            {this.state.addPoints!=''?
+                                <Icon name='md-close' style={{ padding: 10, fontSize: 18, color: '#fff' }} onPress={() => this.setState({ addPoints: '' }, () => this.closeSelectionDrawer())} />
+                                :
+                                null
+                            }
+                            
+                        </View>
                         <View style={{ alignItems: 'center', justifyContent: 'center', paddingHorizontal: 7, width: '100%' }}>
                             <TextInput
                                 placeholder='Add points'
@@ -632,19 +644,16 @@ class CreatePost extends React.Component {
                             />
                         </View>
                         <View style={styles.pointButtonView}>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 10 },()=>this.closeSelectionDrawer())}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 10 }, () => this.closeSelectionDrawer())}>
                                 <Text style={styles.points}>+10</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 15 },()=>this.closeSelectionDrawer())}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 15 }, () => this.closeSelectionDrawer())}>
                                 <Text style={styles.points}>+15</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 25 },()=>this.closeSelectionDrawer())}>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 25 }, () => this.closeSelectionDrawer())}>
                                 <Text style={styles.points}>+25</Text>
                             </TouchableOpacity>
                         </View>
-                        {/* <TouchableOpacity style={styles.buttonView}>
-                            <Text style={styles.add}>ADD</Text>
-                        </TouchableOpacity> */}
 
                     </View>
                 </ScrollView>
@@ -716,12 +725,11 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: '#fff',
         marginVertical: 10,
-        paddingVertical: 20,
-        paddingHorizontal: 5,
         shadowOffset: { width: 5, height: 5 },
         shadowColor: 'black',
         shadowOpacity: 0.2,
-        elevation: 2
+        elevation: 2,
+        alignItems: 'center'
     },
     addPoints: {
         width: "100%",
@@ -734,8 +742,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
         alignItems: 'center',
         justifyContent: 'space-between',
-        width: '100%',
-        marginTop: 15
+        width: '90%',
+        margin:10
+
     },
     pointsView: {
         width: '30%',
