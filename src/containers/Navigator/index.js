@@ -169,8 +169,14 @@ const RootStack = createStackNavigator(
             screen: ReadPost,
             navigationOptions: {
                 headerStyle: {
-                    backgroundColor: '#1c92c4',
-                    height: 40
+                    backgroundColor: '#1c92c4'
+                },
+                title: 'Your tagged post',
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                    textAlign: "center",
+                    flex: 1
                 }
             }
         },
