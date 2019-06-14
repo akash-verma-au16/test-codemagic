@@ -14,8 +14,7 @@ import Post from '../../components/Post/index'
 import { connect } from 'react-redux'
 import {
     Container,
-    Toast,
-    Icon
+    Toast
 } from 'native-base';
 /* Services */
 import { read_post } from '../../services/post'
