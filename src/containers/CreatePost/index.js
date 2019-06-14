@@ -27,7 +27,6 @@ import { NavigationEvents } from 'react-navigation';
 /* Services */
 import { loadProfile } from '../Home/apicalls'
 import { create_post, get_visibility } from '../../services/post'
-import toSentenceCase from '../../utilities/toSentenceCase'
 import uuid from 'uuid'
 import MultiSelect from 'react-native-multiple-select'
 import { list_associate, list_project_members } from '../../services/tenant'
@@ -440,7 +439,6 @@ class CreatePost extends React.Component {
                 <View style={{ width: '100%', paddingHorizontal: 20, marginTop: 10, marginBottom: 10 }}>
 
                     <MultiSelect
-                        hideTags
                         hideSubmitButton
                         items={this.state.isProject ? this.projectAssociateData : this.associateData}
                         uniqueKey='id'
@@ -459,14 +457,8 @@ class CreatePost extends React.Component {
                         searchInputStyle={{ color: '#1c92c4' }}
                         submitButtonColor='#1c92c4'
                         submitButtonText='Submit'
+                        autoFocusInput={false}
                     />
-                    {this.state.isShowingKeyboard ?
-                        null
-                        :
-                        <View>
-                            {this.multiSelect && this.multiSelect.getSelectedItemsExt(this.state.taggedAssociates)}
-                        </View>
-                    }
 
                 </View>
             }
