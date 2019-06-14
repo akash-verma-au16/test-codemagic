@@ -385,7 +385,6 @@ class CreatePost extends React.Component {
             }}>
                 <TouchableOpacity style={styles.button} onPress={() => {
                     this.setState({ EndorseModalVisibility: true, postType: 'endorse' })
-                    console.log(this.multiSelect)
                     this.closeSelectionDrawer()
 
                 }}>
