@@ -46,7 +46,8 @@ class Post extends Component {
             points: this.props.points,
             rewardsPoints: this.props.points + (this.props.addOn == null ? 0 : this.props.addOn),
             addonVisible: false,
-            postCreatorName: ""
+            postCreatorName: "",
+            isDataAvailable:false
         }
         this.state = initalState
         this.taggedAssociates = []
@@ -117,6 +118,22 @@ class Post extends Component {
                 likes: this.state.likes,
                 comments: this.state.comments
             })
+        }
+        /* Check if data is available */
+        if(this.props.taggedAssociates.length!==0){
+            this.associateList = []
+            this.state.taggedAssociates.map((associate, index) => {
+                this.associateList.push((
+                    <Text
+                        style={styles.associate}
+                        key={index}
+                        onPress={() => this.onAssociateTaphandler(associate.associate_id)}
+                    >
+                        @{associate.associate_name + " "}
+                    </Text>
+                ))
+            })
+            this.setState({isDataAvailable:true})
         }
     }
 
@@ -389,7 +406,8 @@ class Post extends Component {
     ]
 
     render() {
-        this.associateList = []
+        if(!this.state.isDataAvailable)
+            return null
         return (
             <Animatable.View useNativeDriver animation='fadeInDown' style={styles.card} key={this.props.key}>
                 <View name='header'
@@ -434,17 +452,6 @@ class Post extends Component {
                 <View name='content' style={{ flex: 2, paddingVertical: 10 }}>
                     <Text style={styles.postText}>
 
-                        {this.state.taggedAssociates.map((associate, index) => {
-                            this.associateList.push((
-                                <Text
-                                    style={styles.associate}
-                                    key={index}
-                                    onPress={() => this.onAssociateTaphandler(associate.associate_id)}
-                                >
-                                    @{associate.associate_name + " "}
-                                </Text>
-                            ))
-                        })}
                         {this.associateList}
                         {this.state.isEdit ? this.state.editPostMessage : this.props.postMessage}
 
