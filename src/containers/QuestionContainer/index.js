@@ -41,9 +41,9 @@ class QuestionContainer extends React.Component {
             
             answerSet: {}
         }
-        this.pager = React.createRef();
-        
+        this.pager = React.createRef();  
     }
+    
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             this.goBack()
@@ -165,13 +165,13 @@ class QuestionContainer extends React.Component {
                         answer_set: this.answerSet
                     }
                     save_answers(payload, this.headers).then(() => {
-
                         /* Give rewards */
                         give_rewards(
                             {
                                 "tenant_id" : this.props.tenant_id,
                                 "associate_id" : this.props.associate_id,
-                                "event_id" : "a675055e-2d11-42e1-8938-57a4f5fc037b"
+                                "event_id" : "a675055e-2d11-42e1-8938-57a4f5fc037b",
+                                "survey_name": this.questionData.survey.name
                             }, this.headers).then((res) => {
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: res.data.points

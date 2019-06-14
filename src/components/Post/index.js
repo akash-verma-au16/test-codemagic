@@ -80,7 +80,6 @@ class Post extends Component {
     }
 
     getName = async () => {
-        console.log('calling getname')
         try {
             let name = await AsyncStorage.getItem(this.props.postCreator_id)
             this.setState({ postCreatorName: name })

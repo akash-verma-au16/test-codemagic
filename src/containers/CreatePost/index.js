@@ -266,9 +266,7 @@ class CreatePost extends React.Component {
                 return
             }
         }
-
-        /* formating name */
-        const fullName = toSentenceCase(this.props.firstName) + ' ' + toSentenceCase(this.props.lastName)
+        
         /* unique id generation */
         const id = uuid.v4()
         /* epoch time calculation */
