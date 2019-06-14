@@ -9,7 +9,8 @@ import {
     ScrollView,
     Alert,
     ToastAndroid,
-    TextInput
+    TextInput,
+    ActivityIndicator
 } from 'react-native';
 
 import NetInfo from "@react-native-community/netinfo"
@@ -56,11 +57,11 @@ class CreatePost extends React.Component {
             postType: '',
             endorsementStrength: '',
             addPoints: 0,
-            isProject: false
+            isProject: false,
+            profileData: null
         }
         this.state = this.initialState
         this.inputTextRef = React.createRef();
-        this.profileData = {}
         this.visibilityData = []
         this.associateData = []
         this.projectAssociateData = []
@@ -240,9 +241,9 @@ class CreatePost extends React.Component {
             );
             return
         }
-        if ((this.state.addPoints * this.state.taggedAssociates.length) > this.profileData.wallet_balance) {
+        if ((this.state.addPoints * this.state.taggedAssociates.length) > this.state.profileData.wallet_balance) {
             ToastAndroid.showWithGravityAndOffset(
-                'You have insufficient wallet balance ' + this.profileData.wallet_balance + ' points.',
+                'You have insufficient wallet balance',
                 ToastAndroid.SHORT,
                 ToastAndroid.BOTTOM,
                 25,
@@ -621,39 +622,67 @@ class CreatePost extends React.Component {
                     <View style={styles.addPointsContainer}>
                         <View style={{ backgroundColor: '#1c92c4', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Icon name='md-people' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
-                                <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Give Rewards</Text>
+                                <Icon name='md-medal' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
+                                <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Balance :</Text>
+                                {this.state.profileData ?
+                                    <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>
+                                        {' ' + this.state.profileData.wallet_balance}
+                                    </Text>
+                                    :
+                                    <ActivityIndicator
+                                        size='small'
+                                        color='#fff'
+                                        style={{
+                                            marginHorizontal: 5
+                                        }}
+                                    />
+                                }
                             </View>
-                            {this.state.addPoints!=''?
+                            {this.state.addPoints != '' ?
                                 <Icon name='md-close' style={{ padding: 10, fontSize: 18, color: '#fff' }} onPress={() => this.setState({ addPoints: '' }, () => this.closeSelectionDrawer())} />
                                 :
                                 null
                             }
-                            
+
                         </View>
-                        <View style={{ alignItems: 'center', justifyContent: 'center', paddingHorizontal: 7, width: '100%' }}>
-                            <TextInput
-                                placeholder='Add points'
-                                placeholderTextColor='#777'
-                                style={styles.addPoints}
-                                value={this.state.addPoints == 0 ? "" : this.state.addPoints.toString()}
-                                selectionColor='#1c92c4'
-                                onChangeText={(text) => this.setState({ addPoints: text })}
-                                keyboardType='number-pad'
-                                underlineColorAndroid='#1c92c4'
-                            />
-                        </View>
-                        <View style={styles.pointButtonView}>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 10 }, () => this.closeSelectionDrawer())}>
-                                <Text style={styles.points}>+10</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 15 }, () => this.closeSelectionDrawer())}>
-                                <Text style={styles.points}>+15</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 25 }, () => this.closeSelectionDrawer())}>
-                                <Text style={styles.points}>+25</Text>
-                            </TouchableOpacity>
-                        </View>
+                        {this.state.profileData ?
+                            <React.Fragment>
+                                {this.state.addPoints && this.state.taggedAssociates.length > 1 ?
+                                    <React.Fragment>
+                                        <Text style={{marginTop:5}}>You have tagged {this.state.taggedAssociates.length} colleagues</Text>
+                                        <Text style={{marginTop:5}}>Total Deduction will be {this.state.addPoints} x {this.state.taggedAssociates.length} that is <Text style={{fontSize:18,fontWeight:'500',color:'#1c92c4'}}>{this.state.taggedAssociates.length * this.state.addPoints}</Text></Text>
+                                    </React.Fragment>
+                                    : null
+                                }
+                                {this.state.addPoints * this.state.taggedAssociates.length > this.state.profileData.wallet_balance?
+                                    <Text style={{marginTop:5 ,color:'red'}}>Insufficient Balance</Text>
+                                    : null
+                                }
+                                <View style={{ alignItems: 'center', justifyContent: 'center', paddingHorizontal: 7, width: '100%' }}>
+                                    <TextInput
+                                        placeholder='Add points'
+                                        placeholderTextColor='#777'
+                                        style={styles.addPoints}
+                                        value={this.state.addPoints == 0 ? "" : this.state.addPoints.toString()}
+                                        selectionColor='#1c92c4'
+                                        onChangeText={(text) => this.setState({ addPoints: text.replace(/[^0-9]/g, '') })}
+                                        keyboardType='number-pad'
+                                        underlineColorAndroid='#1c92c4'
+                                    />
+                                </View>
+                                <View style={styles.pointButtonView}>
+                                    <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 10 }, () => this.closeSelectionDrawer())}>
+                                        <Text style={styles.points}>+10</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 15 }, () => this.closeSelectionDrawer())}>
+                                        <Text style={styles.points}>+15</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 25 }, () => this.closeSelectionDrawer())}>
+                                        <Text style={styles.points}>+25</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </React.Fragment>
+                            : null}
 
                     </View>
                 </ScrollView>
@@ -684,14 +713,17 @@ class CreatePost extends React.Component {
                                 this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl })
                                 this.loadVisibility()
                                 this.loadMembers()
-                                this.profileData = await loadProfile({
-                                    "tenant_id": this.props.accountAlias,
-                                    "associate_id": this.props.associate_id
-                                }, {
-                                    headers: {
-                                        Authorization: this.props.idToken
-                                    }
-                                }, this.props.isConnected);
+                                this.setState({
+                                    profileData: await loadProfile({
+                                        "tenant_id": this.props.accountAlias,
+                                        "associate_id": this.props.associate_id
+                                    }, {
+                                        headers: {
+                                            Authorization: this.props.idToken
+                                        }
+                                    }, this.props.isConnected)
+                                })
+
                             }
                         }
                     }}
@@ -743,7 +775,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         width: '90%',
-        margin:10
+        margin: 10
 
     },
     pointsView: {
