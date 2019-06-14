@@ -4,7 +4,8 @@ import {
     ScrollView,
     RefreshControl,
     Dimensions,
-    BackHandler
+    BackHandler,
+    View
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
 import AsyncStorage from '@react-native-community/async-storage';
@@ -13,7 +14,8 @@ import Post from '../../components/Post/index'
 import { connect } from 'react-redux'
 import {
     Container,
-    Toast
+    Toast,
+    Icon
 } from 'native-base';
 /* Services */
 import { read_post } from '../../services/post'
@@ -58,6 +60,13 @@ class ListPost extends React.Component {
         this.associateList = this.props.associateList
         this.counts = []
         this.postId = this.props.navigation.getParam('id')
+    }
+    static navigationOptions = () => {
+        return {
+            headerRight: (
+                <View style={{magin: 20}}></View>
+            )
+        }
     }
 
     componentWillMount() {
@@ -189,13 +198,13 @@ class ListPost extends React.Component {
                                 associate={item.associate_id}
                                 likeCount={likeCount}
                                 commentCount={commentCount} 
-                                points={item.Item.points} 
+                                points={item.points} 
                             />
                         )
 
                     }).catch(() => {
                         this.setState({ refreshing: false, networkChanged: false })
-                        alert('Invalid post')
+                        alert('Opps! something went wrong, No worries the can be seen on home page.')
                     })
 
             }
