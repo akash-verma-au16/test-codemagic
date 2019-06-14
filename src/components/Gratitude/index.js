@@ -30,6 +30,7 @@ class Gratitude extends Component {
                 <TouchableOpacity style={styles.template} key={index} onPress={() => {
                     this.setState({ text: item, showTemplates: false })
                     this.props.gratitudeHandler(item)
+                    this.props.closeSelectionDrawer()
                 }}>
 
                     <Text style={styles.templateText}>

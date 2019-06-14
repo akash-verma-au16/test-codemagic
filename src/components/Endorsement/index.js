@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, TextInput,
 import { Icon, Content } from 'native-base'
 import EndorsementMessage from './EndorsementMessage'
 
-
 class Endorsement extends Component {
     constructor(props) {
         super(props);
@@ -58,6 +57,7 @@ class Endorsement extends Component {
         const message = responseMessages[rindex]
         this.setState({ showTemplates: false, selectedStrength: name, selectedSource: source, text: message })
         this.props.endorsementHandler(name, message)
+        this.props.closeSelectionDrawer()
     }
 
     createEndorsementTemplate = () => {

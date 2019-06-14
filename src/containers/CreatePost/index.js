@@ -187,7 +187,8 @@ class CreatePost extends React.Component {
 
     // Submitting post handler function
     postSubmitHandler = () => {
-
+        
+        this.closeSelectionDrawer()
         /* Check if collegue is selected */
         if (this.state.taggedAssociates.length === 0) {
 
@@ -349,10 +350,20 @@ class CreatePost extends React.Component {
 
     closeEndorseModal = () => {
         this.setState({ EndorseModalVisibility: false, postType: '', endorsementStrength: '', text: '' })
+        this.closeSelectionDrawer()
     }
 
     closeGratitudeModal = () => {
         this.setState({ GratitudeModalVisibility: false, postType: '', endorsementStrength: '', text: '' })
+        this.closeSelectionDrawer()
+    }
+
+    closeSelectionDrawer = () => {
+        /* check if drawer is open */
+        if (this.multiSelect.state.selector) {
+            /* close the expanded list, clear search term */
+            this.multiSelect._submitSelection()
+        }
     }
 
     toggleButton = () => {
@@ -374,8 +385,9 @@ class CreatePost extends React.Component {
             }}>
                 <TouchableOpacity style={styles.button} onPress={() => {
                     this.setState({ EndorseModalVisibility: true, postType: 'endorse' })
-                    /* close the expanded list of associates */
-                    this.multiSelect._toggleSelector()
+                    console.log(this.multiSelect)
+                    this.closeSelectionDrawer()
+
                 }}>
                     <Icon name='md-people' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
                     <Text style={[styles.buttonText, { fontSize: fontSize, color: '#1c92c4' }]}>Endorse</Text>
@@ -387,8 +399,7 @@ class CreatePost extends React.Component {
                 }} />
                 <TouchableOpacity style={styles.button} onPress={() => {
                     this.setState({ GratitudeModalVisibility: true, postType: 'gratitude' })
-                    /* close the expanded list of associates */
-                    this.multiSelect._toggleSelector()
+                    this.closeSelectionDrawer()
                 }}>
                     <Icon name='md-thumbs-up' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
                     <Text style={[styles.buttonText, { fontSize: fontSize, color: '#1c92c4' }]}>Thanks</Text>
@@ -418,7 +429,7 @@ class CreatePost extends React.Component {
                 {this.state.taggedAssociates.length > 0 ?
                     <Icon name='md-close' style={{ padding: 10, fontSize: 18, color: '#fff' }} onPress={() => {
                         this.setState({ taggedAssociates: [] })
-                        // this.props.associateTagHandler([])
+                        this.closeSelectionDrawer()
                     }} />
                     : null}
 
@@ -604,12 +615,14 @@ class CreatePost extends React.Component {
                         <Endorsement
                             closeEndorseModal={this.closeEndorseModal}
                             endorsementHandler={this.endorsementHandler}
+                            closeSelectionDrawer={this.closeSelectionDrawer}
                         />
                         : null}
                     {this.state.GratitudeModalVisibility ?
                         <Gratitude
                             closeGratitudeModal={this.closeGratitudeModal}
                             gratitudeHandler={this.gratitudeHandler}
+                            closeSelectionDrawer={this.closeSelectionDrawer}
                         />
                         : null}
                     <View style={styles.addPointsContainer}>
@@ -649,9 +662,11 @@ class CreatePost extends React.Component {
                     data={this.visibilityData}
                     onChangeListener={({ text, name, key }) => {
                         this.visibilityChangeListener({ text, name, key })
+                        this.closeSelectionDrawer()
                     }}
                     visibilityDisableHandler={() => {
                         this.setState({ visibilityModal: false })
+                        this.closeSelectionDrawer()
                     }}
                     state={this.state.visibilitySelection}
                 />
