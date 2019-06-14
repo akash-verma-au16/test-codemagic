@@ -30,6 +30,7 @@ class Gratitude extends Component {
                 <TouchableOpacity style={styles.template} key={index} onPress={() => {
                     this.setState({ text: item, showTemplates: false })
                     this.props.gratitudeHandler(item)
+                    this.props.closeSelectionDrawer()
                 }}>
 
                     <Text style={styles.templateText}>
@@ -50,6 +51,9 @@ class Gratitude extends Component {
                 width: '90%'
 
             }} />
+            <Text style={{ fontSize: 12, marginVertical: 10 }}>
+                Suggestions
+            </Text>
             <Content contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
 
                 {this.endorsementTemplate}
@@ -120,12 +124,15 @@ class Gratitude extends Component {
                             this.setState({ text: text, showTemplates: false })
                         this.props.gratitudeHandler(text)
                     }}
-                    autoFocus
                 />
 
                 {this.state.showTemplates ?
                     <this.suggestionSection />
-                    : null}
+                    :
+                    <Text style={{ fontSize: 12, marginBottom: 10 }}>
+                        You can edit the above message
+                    </Text>
+                }
 
             </View>
         );

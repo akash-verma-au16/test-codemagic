@@ -9,7 +9,8 @@ import {
     ScrollView,
     Alert,
     ToastAndroid,
-    TextInput
+    TextInput,
+    ActivityIndicator
 } from 'react-native';
 
 import NetInfo from "@react-native-community/netinfo"
@@ -25,9 +26,8 @@ import { connect } from 'react-redux'
 // React Navigation
 import { NavigationEvents } from 'react-navigation';
 /* Services */
-import { loadProfile } from '../Home/apicalls' 
+import { loadProfile } from '../Home/apicalls'
 import { create_post, get_visibility } from '../../services/post'
-import toSentenceCase from '../../utilities/toSentenceCase'
 import uuid from 'uuid'
 import MultiSelect from 'react-native-multiple-select'
 import { list_associate, list_project_members } from '../../services/tenant'
@@ -44,7 +44,7 @@ class CreatePost extends React.Component {
         this.initialState = {
             visibilityModal: false,
             visibilitySelection: 'Organization',
-            visibilityKey:'tenant',
+            visibilityKey: 'tenant',
             visibilityName: props.accountAlias,
             text: '',
             isLoading: false,
@@ -57,13 +57,13 @@ class CreatePost extends React.Component {
             postType: '',
             endorsementStrength: '',
             addPoints: 0,
-            isProject: false
+            isProject: false,
+            profileData: null
         }
         this.state = this.initialState
         this.inputTextRef = React.createRef();
-        this.profileData = {}
         this.visibilityData = []
-        this.associateData = [] 
+        this.associateData = []
         this.projectAssociateData = []
     }
     // Navigation options
@@ -90,7 +90,7 @@ class CreatePost extends React.Component {
 
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-        this.props.navigation.setParams({ postSubmitHandler: this.postSubmitHandler }); 
+        this.props.navigation.setParams({ postSubmitHandler: this.postSubmitHandler });
         this.props.navigation.setParams({ goBack: this.goBack });
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             this.goBack()
@@ -117,7 +117,7 @@ class CreatePost extends React.Component {
             }
         }
         this.setState({ isVisibilityLoading: true })
-        if(this.props.accountAlias !== undefined) {
+        if (this.props.accountAlias !== undefined) {
             try {
                 get_visibility(payload, headers).then((response) => {
                     this.visibilityData = []
@@ -144,8 +144,8 @@ class CreatePost extends React.Component {
             } catch (error) {
                 this.setState({ isVisibilityLoading: false })
             }
-        } 
-        
+        }
+
     }
     _keyboardDidShow = () => {
         this.setState({ isShowingKeyboard: true })
@@ -188,6 +188,7 @@ class CreatePost extends React.Component {
     // Submitting post handler function
     postSubmitHandler = () => {
 
+        this.closeSelectionDrawer()
         /* Check if collegue is selected */
         if (this.state.taggedAssociates.length === 0) {
 
@@ -229,8 +230,8 @@ class CreatePost extends React.Component {
                 );
                 return
             }
-        } 
-        if (Number.isInteger(Number(this.state.addPoints)) == false ) {
+        }
+        if (Number.isInteger(Number(this.state.addPoints)) == false) {
             ToastAndroid.showWithGravityAndOffset(
                 'Please enter valid points',
                 ToastAndroid.SHORT,
@@ -240,9 +241,9 @@ class CreatePost extends React.Component {
             );
             return
         }
-        if ((this.state.addPoints * this.state.taggedAssociates.length) > this.profileData.wallet_balance) {
+        if ((this.state.addPoints * this.state.taggedAssociates.length) > this.state.profileData.wallet_balance) {
             ToastAndroid.showWithGravityAndOffset(
-                'You have insufficient wallet balance ' + this.profileData.wallet_balance +' points.',
+                'You have insufficient wallet balance',
                 ToastAndroid.SHORT,
                 ToastAndroid.BOTTOM,
                 25,
@@ -266,7 +267,7 @@ class CreatePost extends React.Component {
                 return
             }
         }
-        
+
         /* unique id generation */
         const id = uuid.v4()
         /* epoch time calculation */
@@ -297,7 +298,7 @@ class CreatePost extends React.Component {
                 tagged_associates: associateList,
                 privacy: {
                     type: this.state.visibilityKey,
-                    id: this.state.visibilityName == "" ? this.props.accountAlias : this.state.visibilityName 
+                    id: this.state.visibilityName == "" ? this.props.accountAlias : this.state.visibilityName
                 },
                 time: timestamp,
                 points: this.state.addPoints > 0 ? this.state.addPoints * this.state.taggedAssociates.length : 0
@@ -349,10 +350,20 @@ class CreatePost extends React.Component {
 
     closeEndorseModal = () => {
         this.setState({ EndorseModalVisibility: false, postType: '', endorsementStrength: '', text: '' })
+        this.closeSelectionDrawer()
     }
 
     closeGratitudeModal = () => {
         this.setState({ GratitudeModalVisibility: false, postType: '', endorsementStrength: '', text: '' })
+        this.closeSelectionDrawer()
+    }
+
+    closeSelectionDrawer = () => {
+        /* check if drawer is open */
+        if (this.multiSelect.state.selector) {
+            /* close the expanded list, clear search term */
+            this.multiSelect._submitSelection()
+        }
     }
 
     toggleButton = () => {
@@ -374,6 +385,8 @@ class CreatePost extends React.Component {
             }}>
                 <TouchableOpacity style={styles.button} onPress={() => {
                     this.setState({ EndorseModalVisibility: true, postType: 'endorse' })
+                    this.closeSelectionDrawer()
+
                 }}>
                     <Icon name='md-people' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
                     <Text style={[styles.buttonText, { fontSize: fontSize, color: '#1c92c4' }]}>Endorse</Text>
@@ -385,6 +398,7 @@ class CreatePost extends React.Component {
                 }} />
                 <TouchableOpacity style={styles.button} onPress={() => {
                     this.setState({ GratitudeModalVisibility: true, postType: 'gratitude' })
+                    this.closeSelectionDrawer()
                 }}>
                     <Icon name='md-thumbs-up' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
                     <Text style={[styles.buttonText, { fontSize: fontSize, color: '#1c92c4' }]}>Thanks</Text>
@@ -414,7 +428,7 @@ class CreatePost extends React.Component {
                 {this.state.taggedAssociates.length > 0 ?
                     <Icon name='md-close' style={{ padding: 10, fontSize: 18, color: '#fff' }} onPress={() => {
                         this.setState({ taggedAssociates: [] })
-                        // this.props.associateTagHandler([])
+                        this.closeSelectionDrawer()
                     }} />
                     : null}
 
@@ -425,7 +439,7 @@ class CreatePost extends React.Component {
                 <View style={{ width: '100%', paddingHorizontal: 20, marginTop: 10, marginBottom: 10 }}>
 
                     <MultiSelect
-                        hideTags
+                        hideSubmitButton
                         items={this.state.isProject ? this.projectAssociateData : this.associateData}
                         uniqueKey='id'
                         ref={(component) => { this.multiSelect = component }}
@@ -443,14 +457,8 @@ class CreatePost extends React.Component {
                         searchInputStyle={{ color: '#1c92c4' }}
                         submitButtonColor='#1c92c4'
                         submitButtonText='Submit'
+                        autoFocusInput={false}
                     />
-                    {this.state.isShowingKeyboard ?
-                        null
-                        :
-                        <View>
-                            {this.multiSelect && this.multiSelect.getSelectedItemsExt(this.state.taggedAssociates)}
-                        </View>
-                    }
 
                 </View>
             }
@@ -460,7 +468,7 @@ class CreatePost extends React.Component {
         this.setState({ taggedAssociates });
     }
 
-    visibilityChangeListener = ({text, name, key}) => {
+    visibilityChangeListener = ({ text, name, key }) => {
         if (text !== 'Organization' || text !== 'Private') {
             this.setState({ visibilitySelection: text, visibilityName: name, visibilityKey: key })
             this.loadProjectMembers(name)
@@ -600,54 +608,96 @@ class CreatePost extends React.Component {
                         <Endorsement
                             closeEndorseModal={this.closeEndorseModal}
                             endorsementHandler={this.endorsementHandler}
+                            closeSelectionDrawer={this.closeSelectionDrawer}
                         />
                         : null}
                     {this.state.GratitudeModalVisibility ?
                         <Gratitude
                             closeGratitudeModal={this.closeGratitudeModal}
                             gratitudeHandler={this.gratitudeHandler}
+                            closeSelectionDrawer={this.closeSelectionDrawer}
                         />
                         : null}
                     <View style={styles.addPointsContainer}>
-                        <View style={{alignItems: 'center', justifyContent: 'center', paddingHorizontal: 7, width:'100%'}}>
-                            <TextInput
-                                placeholder='Add points'
-                                placeholderTextColor='#777'
-                                style={styles.addPoints} 
-                                value={this.state.addPoints == 0 ? "" : this.state.addPoints.toString()}
-                                selectionColor='#1c92c4'
-                                onChangeText={(text) => this.setState({ addPoints: text })}
-                                keyboardType='number-pad'
-                                underlineColorAndroid='#1c92c4'
-                            />
+                        <View style={{ backgroundColor: '#1c92c4', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Icon name='md-medal' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
+                                <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Balance :</Text>
+                                {this.state.profileData ?
+                                    <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>
+                                        {' ' + this.state.profileData.wallet_balance}
+                                    </Text>
+                                    :
+                                    <ActivityIndicator
+                                        size='small'
+                                        color='#fff'
+                                        style={{
+                                            marginHorizontal: 5
+                                        }}
+                                    />
+                                }
+                            </View>
+                            {this.state.addPoints != '' ?
+                                <Icon name='md-close' style={{ padding: 10, fontSize: 18, color: '#fff' }} onPress={() => this.setState({ addPoints: '' }, () => this.closeSelectionDrawer())} />
+                                :
+                                null
+                            }
+
                         </View>
-                        <View style={styles.pointButtonView}>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 10 })}>
-                                <Text style={styles.points}>+10</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 15 })}>
-                                <Text style={styles.points}>+15</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 25 })}>
-                                <Text style={styles.points}>+25</Text>
-                            </TouchableOpacity>
-                        </View>
-                        {/* <TouchableOpacity style={styles.buttonView}>
-                            <Text style={styles.add}>ADD</Text>
-                        </TouchableOpacity> */}
+                        {this.state.profileData ?
+                            <React.Fragment>
+                                {this.state.addPoints>0 && this.state.taggedAssociates.length > 1 ?
+                                    <React.Fragment>
+                                        <Text style={{marginTop:5}}>You have tagged {this.state.taggedAssociates.length} colleagues</Text>
+                                        <Text style={{marginTop:5}}>Total Deduction will be {this.state.addPoints} x {this.state.taggedAssociates.length} that is <Text style={{fontSize:18,fontWeight:'500',color:'#1c92c4'}}>{this.state.taggedAssociates.length * this.state.addPoints}</Text></Text>
+                                    </React.Fragment>
+                                    : null
+                                }
+                                {this.state.addPoints * this.state.taggedAssociates.length > this.state.profileData.wallet_balance?
+                                    <Text style={{marginTop:5 ,color:'red'}}>Insufficient Balance</Text>
+                                    : null
+                                }
+                                <View style={{ alignItems: 'center', justifyContent: 'center', paddingHorizontal: 7, width: '100%' }}>
+                                    <TextInput
+                                        placeholder='Add points'
+                                        placeholderTextColor='#777'
+                                        style={styles.addPoints}
+                                        value={this.state.addPoints == 0 ? "" : this.state.addPoints.toString()}
+                                        selectionColor='#1c92c4'
+                                        onChangeText={(text) => this.setState({ addPoints: text.replace(/[^0-9]/g, '') })}
+                                        keyboardType='number-pad'
+                                        underlineColorAndroid='#1c92c4'
+                                        maxLength={3}
+                                    />
+                                </View>
+                                <View style={styles.pointButtonView}>
+                                    <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 10 }, () => this.closeSelectionDrawer())}>
+                                        <Text style={styles.points}>+10</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 15 }, () => this.closeSelectionDrawer())}>
+                                        <Text style={styles.points}>+15</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 25 }, () => this.closeSelectionDrawer())}>
+                                        <Text style={styles.points}>+25</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </React.Fragment>
+                            : null}
 
                     </View>
                 </ScrollView>
 
-                <VisibilityModal 
-                    header = 'Visibility'
+                <VisibilityModal
+                    header='Visibility'
                     enabled={this.state.visibilityModal}
                     data={this.visibilityData}
-                    onChangeListener={({text, name,key}) => {
+                    onChangeListener={({ text, name, key }) => {
                         this.visibilityChangeListener({ text, name, key })
+                        this.closeSelectionDrawer()
                     }}
                     visibilityDisableHandler={() => {
                         this.setState({ visibilityModal: false })
+                        this.closeSelectionDrawer()
                     }}
                     state={this.state.visibilitySelection}
                 />
@@ -657,20 +707,23 @@ class CreatePost extends React.Component {
                 />
 
                 <NavigationEvents
-                    onWillFocus={async() => {
+                    onWillFocus={async () => {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl})
+                                this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl })
                                 this.loadVisibility()
                                 this.loadMembers()
-                                this.profileData = await loadProfile({
-                                    "tenant_id": this.props.accountAlias,
-                                    "associate_id": this.props.associate_id
-                                }, {
-                                    headers: {
-                                        Authorization: this.props.idToken
-                                    }
-                                }, this.props.isConnected);
+                                this.setState({
+                                    profileData: await loadProfile({
+                                        "tenant_id": this.props.accountAlias,
+                                        "associate_id": this.props.associate_id
+                                    }, {
+                                        headers: {
+                                            Authorization: this.props.idToken
+                                        }
+                                    }, this.props.isConnected)
+                                })
+
                             }
                         }
                     }}
@@ -699,17 +752,16 @@ const styles = StyleSheet.create({
         textAlign: 'center'
 
     },
-    addPointsContainer: { 
-        width: '90%', 
-        borderRadius: 10, 
-        backgroundColor: '#fff', 
-        marginVertical: 10, 
-        paddingVertical: 20,
-        paddingHorizontal: 5,
+    addPointsContainer: {
+        width: '90%',
+        borderRadius: 10,
+        backgroundColor: '#fff',
+        marginVertical: 10,
         shadowOffset: { width: 5, height: 5 },
         shadowColor: 'black',
         shadowOpacity: 0.2,
-        elevation: 2
+        elevation: 2,
+        alignItems: 'center'
     },
     addPoints: {
         width: "100%",
@@ -722,8 +774,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
         alignItems: 'center',
         justifyContent: 'space-between',
-        width: '100%', 
-        marginTop: 15
+        width: '90%',
+        margin: 10
+
     },
     pointsView: {
         width: '30%',
@@ -735,7 +788,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 7
     },
-    points:{
+    points: {
         color: '#1c92c4',
         fontSize: 16
     }
@@ -753,7 +806,7 @@ const mapStateToProps = (state) => {
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
         idToken: state.user.idToken,
-        imageUrl:state.user.imageUrl
+        imageUrl: state.user.imageUrl
     };
 }
 
