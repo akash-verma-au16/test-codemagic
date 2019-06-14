@@ -25,7 +25,7 @@ import { connect } from 'react-redux'
 // React Navigation
 import { NavigationEvents } from 'react-navigation';
 /* Services */
-import { loadProfile } from '../Home/apicalls' 
+import { loadProfile } from '../Home/apicalls'
 import { create_post, get_visibility } from '../../services/post'
 import toSentenceCase from '../../utilities/toSentenceCase'
 import uuid from 'uuid'
@@ -44,7 +44,7 @@ class CreatePost extends React.Component {
         this.initialState = {
             visibilityModal: false,
             visibilitySelection: 'Organization',
-            visibilityKey:'tenant',
+            visibilityKey: 'tenant',
             visibilityName: props.accountAlias,
             text: '',
             isLoading: false,
@@ -63,7 +63,7 @@ class CreatePost extends React.Component {
         this.inputTextRef = React.createRef();
         this.profileData = {}
         this.visibilityData = []
-        this.associateData = [] 
+        this.associateData = []
         this.projectAssociateData = []
     }
     // Navigation options
@@ -90,7 +90,7 @@ class CreatePost extends React.Component {
 
     componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-        this.props.navigation.setParams({ postSubmitHandler: this.postSubmitHandler }); 
+        this.props.navigation.setParams({ postSubmitHandler: this.postSubmitHandler });
         this.props.navigation.setParams({ goBack: this.goBack });
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             this.goBack()
@@ -117,7 +117,7 @@ class CreatePost extends React.Component {
             }
         }
         this.setState({ isVisibilityLoading: true })
-        if(this.props.accountAlias !== undefined) {
+        if (this.props.accountAlias !== undefined) {
             try {
                 get_visibility(payload, headers).then((response) => {
                     this.visibilityData = []
@@ -144,8 +144,8 @@ class CreatePost extends React.Component {
             } catch (error) {
                 this.setState({ isVisibilityLoading: false })
             }
-        } 
-        
+        }
+
     }
     _keyboardDidShow = () => {
         this.setState({ isShowingKeyboard: true })
@@ -229,8 +229,8 @@ class CreatePost extends React.Component {
                 );
                 return
             }
-        } 
-        if (Number.isInteger(Number(this.state.addPoints)) == false ) {
+        }
+        if (Number.isInteger(Number(this.state.addPoints)) == false) {
             ToastAndroid.showWithGravityAndOffset(
                 'Please enter valid points',
                 ToastAndroid.SHORT,
@@ -242,7 +242,7 @@ class CreatePost extends React.Component {
         }
         if ((this.state.addPoints * this.state.taggedAssociates.length) > this.profileData.wallet_balance) {
             ToastAndroid.showWithGravityAndOffset(
-                'You have insufficient wallet balance ' + this.profileData.wallet_balance +' points.',
+                'You have insufficient wallet balance ' + this.profileData.wallet_balance + ' points.',
                 ToastAndroid.SHORT,
                 ToastAndroid.BOTTOM,
                 25,
@@ -266,7 +266,7 @@ class CreatePost extends React.Component {
                 return
             }
         }
-        
+
         /* unique id generation */
         const id = uuid.v4()
         /* epoch time calculation */
@@ -297,7 +297,7 @@ class CreatePost extends React.Component {
                 tagged_associates: associateList,
                 privacy: {
                     type: this.state.visibilityKey,
-                    id: this.state.visibilityName == "" ? this.props.accountAlias : this.state.visibilityName 
+                    id: this.state.visibilityName == "" ? this.props.accountAlias : this.state.visibilityName
                 },
                 time: timestamp,
                 points: this.state.addPoints > 0 ? this.state.addPoints * this.state.taggedAssociates.length : 0
@@ -374,6 +374,8 @@ class CreatePost extends React.Component {
             }}>
                 <TouchableOpacity style={styles.button} onPress={() => {
                     this.setState({ EndorseModalVisibility: true, postType: 'endorse' })
+                    /* close the expanded list of associates */
+                    this.multiSelect._toggleSelector()
                 }}>
                     <Icon name='md-people' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
                     <Text style={[styles.buttonText, { fontSize: fontSize, color: '#1c92c4' }]}>Endorse</Text>
@@ -385,6 +387,8 @@ class CreatePost extends React.Component {
                 }} />
                 <TouchableOpacity style={styles.button} onPress={() => {
                     this.setState({ GratitudeModalVisibility: true, postType: 'gratitude' })
+                    /* close the expanded list of associates */
+                    this.multiSelect._toggleSelector()
                 }}>
                     <Icon name='md-thumbs-up' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
                     <Text style={[styles.buttonText, { fontSize: fontSize, color: '#1c92c4' }]}>Thanks</Text>
@@ -460,7 +464,7 @@ class CreatePost extends React.Component {
         this.setState({ taggedAssociates });
     }
 
-    visibilityChangeListener = ({text, name, key}) => {
+    visibilityChangeListener = ({ text, name, key }) => {
         if (text !== 'Organization' || text !== 'Private') {
             this.setState({ visibilitySelection: text, visibilityName: name, visibilityKey: key })
             this.loadProjectMembers(name)
@@ -609,11 +613,11 @@ class CreatePost extends React.Component {
                         />
                         : null}
                     <View style={styles.addPointsContainer}>
-                        <View style={{alignItems: 'center', justifyContent: 'center', paddingHorizontal: 7, width:'100%'}}>
+                        <View style={{ alignItems: 'center', justifyContent: 'center', paddingHorizontal: 7, width: '100%' }}>
                             <TextInput
                                 placeholder='Add points'
                                 placeholderTextColor='#777'
-                                style={styles.addPoints} 
+                                style={styles.addPoints}
                                 value={this.state.addPoints == 0 ? "" : this.state.addPoints.toString()}
                                 selectionColor='#1c92c4'
                                 onChangeText={(text) => this.setState({ addPoints: text })}
@@ -639,11 +643,11 @@ class CreatePost extends React.Component {
                     </View>
                 </ScrollView>
 
-                <VisibilityModal 
-                    header = 'Visibility'
+                <VisibilityModal
+                    header='Visibility'
                     enabled={this.state.visibilityModal}
                     data={this.visibilityData}
-                    onChangeListener={({text, name,key}) => {
+                    onChangeListener={({ text, name, key }) => {
                         this.visibilityChangeListener({ text, name, key })
                     }}
                     visibilityDisableHandler={() => {
@@ -657,10 +661,10 @@ class CreatePost extends React.Component {
                 />
 
                 <NavigationEvents
-                    onWillFocus={async() => {
+                    onWillFocus={async () => {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl})
+                                this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl })
                                 this.loadVisibility()
                                 this.loadMembers()
                                 this.profileData = await loadProfile({
@@ -699,11 +703,11 @@ const styles = StyleSheet.create({
         textAlign: 'center'
 
     },
-    addPointsContainer: { 
-        width: '90%', 
-        borderRadius: 10, 
-        backgroundColor: '#fff', 
-        marginVertical: 10, 
+    addPointsContainer: {
+        width: '90%',
+        borderRadius: 10,
+        backgroundColor: '#fff',
+        marginVertical: 10,
         paddingVertical: 20,
         paddingHorizontal: 5,
         shadowOffset: { width: 5, height: 5 },
@@ -722,7 +726,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
         alignItems: 'center',
         justifyContent: 'space-between',
-        width: '100%', 
+        width: '100%',
         marginTop: 15
     },
     pointsView: {
@@ -735,7 +739,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 7
     },
-    points:{
+    points: {
         color: '#1c92c4',
         fontSize: 16
     }
@@ -753,7 +757,7 @@ const mapStateToProps = (state) => {
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
         idToken: state.user.idToken,
-        imageUrl:state.user.imageUrl
+        imageUrl: state.user.imageUrl
     };
 }
 
