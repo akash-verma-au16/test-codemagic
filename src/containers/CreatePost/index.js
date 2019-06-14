@@ -647,7 +647,7 @@ class CreatePost extends React.Component {
                         </View>
                         {this.state.profileData ?
                             <React.Fragment>
-                                {this.state.addPoints && this.state.taggedAssociates.length > 1 ?
+                                {this.state.addPoints>0 && this.state.taggedAssociates.length > 1 ?
                                     <React.Fragment>
                                         <Text style={{marginTop:5}}>You have tagged {this.state.taggedAssociates.length} colleagues</Text>
                                         <Text style={{marginTop:5}}>Total Deduction will be {this.state.addPoints} x {this.state.taggedAssociates.length} that is <Text style={{fontSize:18,fontWeight:'500',color:'#1c92c4'}}>{this.state.taggedAssociates.length * this.state.addPoints}</Text></Text>
@@ -668,6 +668,7 @@ class CreatePost extends React.Component {
                                         onChangeText={(text) => this.setState({ addPoints: text.replace(/[^0-9]/g, '') })}
                                         keyboardType='number-pad'
                                         underlineColorAndroid='#1c92c4'
+                                        maxLength={3}
                                     />
                                 </View>
                                 <View style={styles.pointButtonView}>
