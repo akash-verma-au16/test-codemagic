@@ -163,7 +163,7 @@ class CreatePost extends React.Component {
     }
 
     goBack = () => {
-        if (JSON.stringify(this.state) === JSON.stringify(this.initialState))
+        if (JSON.stringify({...this.state,profileData:null}) === JSON.stringify(this.initialState))
             this.props.navigation.navigate('home')
         else
             Alert.alert(
@@ -241,24 +241,10 @@ class CreatePost extends React.Component {
             );
             return
         }
-        if ((this.state.addPoints * this.state.taggedAssociates.length) > this.state.profileData.wallet_balance) {
-            ToastAndroid.showWithGravityAndOffset(
-                'You have insufficient wallet balance',
-                ToastAndroid.SHORT,
-                ToastAndroid.BOTTOM,
-                25,
-                100,
-            );
-            return
-        }
-        else {
-            /* if gratitude is selected */
-
-            /* check if text is present */
-            if (this.state.text.trim() === '') {
-
+        if(this.state.profileData)
+            if ((this.state.addPoints * this.state.taggedAssociates.length) > this.state.profileData.wallet_balance) {
                 ToastAndroid.showWithGravityAndOffset(
-                    'Please write someting',
+                    'You have insufficient wallet balance',
                     ToastAndroid.SHORT,
                     ToastAndroid.BOTTOM,
                     25,
@@ -266,7 +252,22 @@ class CreatePost extends React.Component {
                 );
                 return
             }
-        }
+            else {
+            /* if gratitude is selected */
+
+                /* check if text is present */
+                if (this.state.text.trim() === '') {
+
+                    ToastAndroid.showWithGravityAndOffset(
+                        'Please write someting',
+                        ToastAndroid.SHORT,
+                        ToastAndroid.BOTTOM,
+                        25,
+                        100,
+                    );
+                    return
+                }
+            }
 
         /* unique id generation */
         const id = uuid.v4()
