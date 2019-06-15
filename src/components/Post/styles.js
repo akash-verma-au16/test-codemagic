@@ -96,7 +96,7 @@ export const styles = StyleSheet.create({
         fontFamily: 'Opensans-Regular',
         fontWeight: '400'
     },
-    addOnView: {
+    rewardsView: {
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 10,
@@ -104,6 +104,12 @@ export const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 1,
         borderColor: '#1c92c4'
+    },
+    addOnView: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 5,
+        paddingVertical: 1
     },
     pointButtonView: {
         flexDirection: 'row',

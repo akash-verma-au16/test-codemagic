@@ -16,7 +16,8 @@ import { dev } from '../../store/actions'
 //Cusotm component
 import VisibilityModal from '../../containers/VisibilityModal'
 
-import { like_post, unlike_post, like_id, rewards_addon } from '../../services/post'
+import { like_post, unlike_post, like_id, rewards_addon } from '../../services/post' 
+import { get_balance } from '../../services/profile'
 //React navigation
 import { withNavigation } from 'react-navigation';
 
@@ -39,12 +40,12 @@ class Post extends Component {
             likeId: "",
             isEdit: false,
             editPostMessage: "",
+            addOnPoints: (this.props.addOn == null ? 0 : this.props.addOn), 
             addOn: "",
             likes: this.props.likeCount,
             comments: this.props.commentCount,
             taggedAssociates: this.props.taggedAssociates,
-            points: this.props.points,
-            rewardsPoints: this.props.points + (this.props.addOn == null ? 0 : this.props.addOn),
+            rewardsPoints: this.props.points,
             addonVisible: false,
             postCreatorName: "",
             isDataAvailable:false
@@ -299,84 +300,99 @@ class Post extends Component {
         );
     }
 
-    rewardsAddon = () => {
-        if (this.props.walletBalance >= this.state.addOn * this.props.taggedAssociates.length) {
-            if (this.props.isConnected) {
-                this.taggedAssociates = []
-                this.props.taggedAssociates.map((item) => {
-                    this.taggedAssociates.push({associate_id: item.associate_id})
-                })
+    rewardsAddon = async () => {
+        // const getBalancePayload = {
+        //     associate_id: this.props.associate_id
+        // }
+        // console.log('payload', getBalancePayload)
+        // try {
+        //     get_balance(getBalancePayload).then((res) => {
+        //         console.log('balance', res.data.total_points)
+        //     })
+        // }
+        // catch {
+
+        // }
+        
+        if (this.props.isConnected) {
+            this.taggedAssociates = []
+            await this.props.taggedAssociates.map((item) => {
+                if (item.associate_id !== this.props.associate_id) {
+                    this.taggedAssociates.push({ associate_id: item.associate_id })
+                }
+            })
+
+            if (this.taggedAssociates.length == 0) { 
+                ToastAndroid.showWithGravityAndOffset(
+                    'You cant addon to yourself',
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM,
+                    25,
+                    100,
+                );
+                this.setState({ addonVisible: !this.state.addonVisible })
+                return
+            }
+            if (this.props.walletBalance >= this.state.addOn * this.taggedAssociates.length) {
                 const payload1 = {
                     tenant_id: this.props.accountAlias,
                     associate_id: this.props.associate_id,
                     sub_type: this.props.strength,
                     type: "add_on",
                     post_id: this.props.postId,
-                    points: this.state.addOn * this.props.taggedAssociates.length,
+                    points: this.state.addOn * this.taggedAssociates.length,
                     tagged_associates: this.taggedAssociates
                 }
+                try {
+                    rewards_addon(payload1, this.headers).then(async () => {
+                        this.setState({ addonVisible: !this.state.addonVisible })
+                        let points = this.state.addOn * this.taggedAssociates.length
+                        let walletBalance = this.props.walletBalance - points
+                        const payload = {
+                            walletBalance: walletBalance
+                        }
+                        //Update Wallet
+                        this.props.updateWallet(payload)
+                        ToastAndroid.showWithGravityAndOffset(
+                            'You gifted ' + points + ' points',
+                            ToastAndroid.SHORT,
+                            ToastAndroid.BOTTOM,
+                            25,
+                            100,
+                        );
 
-                this.taggedAssociatesRewards = this.props.taggedAssociates.filter((item) => {
-                    return item.associate_id !== this.props.associate_id
-                })
-                if(this.taggedAssociatesRewards.length > 0) {
-                    try {
-                        rewards_addon(payload1, this.headers).then(async () => {
-                            this.setState({ addonVisible: !this.state.addonVisible })
-                            let points = this.state.addOn * this.taggedAssociatesRewards.length
-                            ToastAndroid.showWithGravityAndOffset(
-                                'You gifted ' + points + ' points',
-                                ToastAndroid.SHORT,
-                                ToastAndroid.BOTTOM,
-                                25,
-                                100,
-                            );
-                            let walletBalance = this.props.walletBalance - points
-                            const payload = {
-                                walletBalance: walletBalance
-                            }
-                            //Update Wallet
-                            await this.props.updateWallet(payload)
-                            this.setState({ addOn: "", rewardsPoints: this.state.rewardsPoints + points })
-                        }).catch(() => {
-                            //Error retriving data
-                            this.setState({ addonVisible: false })
-                        })
-                    }
-                    catch (e) {
+                        this.setState({ addOn: "", addOnPoints: this.state.addOnPoints + points })
+                    }).catch((e) => {
                         //Error retriving data
                         this.setState({ addonVisible: false })
-                    }
+                    })
                 }
-                else {
-                    ToastAndroid.showWithGravityAndOffset(
-                        'You cant reward',
-                        ToastAndroid.LONG,
-                        ToastAndroid.BOTTOM,
-                        25,
-                        100,
-                    );
+                catch (e) {
+                    //Error retriving data
+                    this.setState({ addonVisible: false })
                 }
-
             }
             else {
                 ToastAndroid.showWithGravityAndOffset(
-                    'No Internet Connection',
-                    ToastAndroid.LONG,
+                    'You have insufficient points: ' + this.props.walletBalance + ' points',
+                    ToastAndroid.SHORT,
                     ToastAndroid.BOTTOM,
                     25,
                     100,
-                );
+                )
+                this.setState({ addonVisible: !this.state.addonVisible })
             }
+
         }
         else {
             ToastAndroid.showWithGravityAndOffset(
-                'You have insufficient points: ' + this.props.walletBalance + ' points',
-                ToastAndroid.SHORT,
+                'No Internet Connection',
+                ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
                 100,
-            )
+            );
+            this.setState({ addonVisible: !this.state.addonVisible })
         }
     }
 
@@ -430,7 +446,7 @@ class Post extends Component {
                             </Text>
                         </TouchableOpacity>
                         {this.state.rewardsPoints > 0 ?
-                            <View style={styles.addOnView}>
+                            <View style={styles.rewardsView}>
                                 <Text style={styles.addon}>+{this.state.rewardsPoints}</Text>
                             </View>
                             :
@@ -473,6 +489,16 @@ class Post extends Component {
                                 <Text style={styles.infoText}>{this.props.commentCount > 1 ? 'Comments' : 'Comment'}</Text>
                             </TouchableOpacity>
                         </View>
+                        {this.state.addOnPoints > 0 ?
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginRight: 20}}>
+                                <View style={[styles.addOnView]}>
+                                    <Text style={[styles.addon, { fontSize: 12 }]}>+{this.state.addOnPoints}</Text>
+                                </View>
+                                <Text style={styles.infoText}>Addons</Text>
+                            </View>
+                            :
+                            null
+                        }
                     </View>
                 </View>
                 <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>

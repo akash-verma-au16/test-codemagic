@@ -268,8 +268,9 @@ class Home extends React.Component {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 
                 await list_posts(payload, this.headers).then((response) => {
+                    console.log('list_posts', response.data.data)
                     if(this.homeDataBackup.length === response.data.data.posts.length) {
-                        if(response.data.data.posts === 0) {
+                        if(response.data.data.posts.length === 0) {
                             this.homeDataRowList = []
                             if (this.state.associate_id !== this.props.associate_id) {
                                 this.homeDataRowList.push(<Text style={{ margin: 10 }} key={0}>No posts found for this User.</Text>)
@@ -292,7 +293,7 @@ class Home extends React.Component {
                             item.Item.commentCount = this.counts[index].commentCount
                             item.Item.addOnPoints = this.counts[index].addOnPoints
                         })
-                        
+                        this.homeDataList = []
                         this.createTiles(this.posts)
                     }
                 }).catch(() => {
@@ -306,7 +307,6 @@ class Home extends React.Component {
     }
 
     createTiles = (posts) => {
-        this.homeDataList = []
         posts.map((item) => {
             // Get tagged associate Names
             let associateList = []
@@ -849,7 +849,7 @@ class Home extends React.Component {
                             style={styles.viewPager}
                             onPageSelected={(page) => this.setState({ selectedTab: page.position })}
                         >
-                            <View>
+                            <View style={{flex:1}}>
                                 <ScrollView
                                     showsVerticalScrollIndicator={false}
                                     contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingTop: 3, backgroundColor: '#eee' }}
@@ -868,7 +868,7 @@ class Home extends React.Component {
                                             }}
                                         />
                                     }>
-                                    {this.homeDataList.length === 0 ? this.homeDataRowList : this.homeDataList}
+                                    {this.homeDataList}
                                 </ScrollView>
                             </View>
                             {

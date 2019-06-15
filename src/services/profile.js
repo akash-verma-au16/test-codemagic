@@ -9,10 +9,10 @@ export const read_transaction = (
 }
 
 export const get_balance = (
-    payload, headers
+    payload
 ) => {
     const endpoint = config.url.get_balance
-    return axios.post(endpoint, payload, headers)
+    return axios.post(endpoint, payload)
 }
 
 export const user_profile = (
