@@ -571,7 +571,9 @@ class CreatePost extends React.Component {
 
                     borderRadius: 5,
                     alignItems: 'center'
-                }}>
+                }}
+                keyboardShouldPersistTaps='handled'
+                >
 
                     <TouchableOpacity
                         style={{
