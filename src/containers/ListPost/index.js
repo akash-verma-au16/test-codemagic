@@ -430,7 +430,6 @@ class ListPost extends React.Component {
             
             try {
                 await delete_post(payload, this.headers).then((res) => {
-                    console.log('delete_post', res)
                     if (res.status === 200) {
                         var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
                         this.postList.splice(index, 1)
