@@ -517,8 +517,6 @@ class ListPost extends React.Component {
                 />
             )
         })
-        this.setState({ refreshing: false, networkChanged: false, isPostDeleted: false })
-
     }
     render() {
 
