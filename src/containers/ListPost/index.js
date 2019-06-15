@@ -427,18 +427,19 @@ class ListPost extends React.Component {
                     associate_id: this.props.associate_id
                 }
             }
-
-            var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
-            this.postList.splice(index, 1)
-            this.postList = []
-
-            if (this.posts.length == 0) {
-                this.setState({ initalLoad: true })
-            }
+            
             try {
                 await delete_post(payload, this.headers).then((res) => {
+                    console.log('delete_post', res)
                     if (res.status === 200) {
+                        var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
+                        this.postList.splice(index, 1)
                         this.posts.splice(index, 1)
+                        if (this.posts.length == 0) {
+                            this.setState({ initalLoad: true })
+                        }
+                        // this.setState()
+                        this.postList = []
                         this.createTiles(this.posts)
                     }
                 }).catch(() => {
