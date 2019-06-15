@@ -105,7 +105,7 @@ class Home extends React.Component {
         this.pager = React.createRef();
         this.posts = []
         this.counts = []
-        this.homeDataList = []
+        this.homeDataList = [] 
         this.homeDataRowList = []
         this.projectList = []
         this.transactionList = []
@@ -277,19 +277,28 @@ class Home extends React.Component {
                     if(this.homeDataBackup.length === response.data.data.posts.length) {
                         if(response.data.data.posts.length === 0) {
                             this.homeDataRowList = []
-                            if (this.state.associate_id !== this.props.associate_id) {
-                                this.homeDataRowList.push(<Text style={{ margin: 10 }} key={0}>No posts found for this User.</Text>)
-                            }
-                            else {
-                                this.homeDataRowList.push(<Text style={{ margin: 10 }} key={0}>No post to display</Text>)
-                                this.homeDataRowList.push(<Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon on <Text style={{ fontWeight: 'bold', fontStyle: 'italic' }}>Home</Text></Text>)
-                            }
-
+                            this.homeDataRowList.push(<Text style={{ margin: 10 }} key={0}>No posts found.</Text>)
+                            this.setState({ homeRefreshing: false })
+                            return
                         }
-                        this.setState({ homeRefreshing: false })
-                        return
+                        response.data.data.posts.map((item, index) => {
+                            item.Item.likeCount = response.data.data.counts[index].likeCount
+                            item.Item.commentCount = response.data.data.counts[index].commentCount
+                            item.Item.addOnPoints = response.data.data.counts[index].addOnPoints
+
+                        })
+                        if (JSON.stringify(this.posts) !== JSON.stringify(response.data.data.posts)) {
+                            this.posts = response.data.data.posts
+                            this.createTiles(this.posts)
+                        }
+                        else {
+                            this.setState({
+                                homeRefreshing: false
+                            })
+                            return
+                        }
+
                     } else {
-                        this.posts = []
                         this.homeDataBackup = response.data.data.posts
                         this.posts = response.data.data.posts
                         this.counts = response.data.data.counts
@@ -872,7 +881,7 @@ class Home extends React.Component {
                             style={styles.viewPager}
                             onPageSelected={(page) => this.setState({ selectedTab: page.position })}
                         >
-                            <View style={{ flex: 1 }}>
+                            <View style={{ flex: 1, backgroundColor: '#efefef' }}>
                                 <ScrollView
                                     showsVerticalScrollIndicator={false}
                                     contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingTop: 3, backgroundColor: '#eee' }}
@@ -891,12 +900,12 @@ class Home extends React.Component {
                                             }}
                                         />
                                     }>
-                                    {this.homeDataList}
+                                    {this.homeDataList.length > 0 ? this.homeDataList : this.homeDataRowList}
                                 </ScrollView>
                             </View>
                             {
                                 this.state.associate_id === this.props.associate_id ?
-                                    <View>
+                                    <View style={{ flex: 1, backgroundColor: '#efefef' }}>
                                         <ScrollView
                                             showsVerticalScrollIndicator={false}
                                             contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', backgroundColor: '#eee' }}
@@ -943,8 +952,6 @@ class Home extends React.Component {
                                         />
                                     }>
                                     {this.summeryList.length > 0 ? this.summeryList : this.summeryRawList}
-                                    {/* <Icon name='worker' type={'MaterialCommunityIcons'} style={{ fontSize: 22, color: '#8a8b8c' }} />
-                                                            <Text style={{ color: '#8a8b8c', textAlign: 'center', marginTop: 15, width: '80%' }}>This page is under Development for Future Releases.</Text> */}
                                 </ScrollView>
                             </View>
                         </IndicatorViewPager>

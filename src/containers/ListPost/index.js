@@ -384,8 +384,6 @@ class ListPost extends React.Component {
                             // this.setState({ isPostDeleted: false })
                             return
                         }
-
-                        this.posts = []
                         this.posts = response.data.data.posts
                         this.counts = response.data.data.counts
                         this.posts.map((item, index) => {
