@@ -169,7 +169,7 @@ class ListPost extends React.Component {
 
                 read_post(read_post_payload, this.headers)
                     .then(async (response) => {
-                        
+
                         const item = response.data.data.posts.Item
                         const commentCount = response.data.data.counts.commentCount
                         const likeCount = response.data.data.counts.likeCount
@@ -195,11 +195,13 @@ class ListPost extends React.Component {
                         this.post.push(
                             // Post Component
                             <Post
-                                key={0}
+                                key={item.post_id}
                                 postId={item.post_id}
+                                privacy={item.privacy}
                                 postCreator_id={item.associate_id}
                                 profileData={item.associate_id == this.props.associate_id ? this.profileData : {}}
                                 time={item.time}
+                                type={item.type}
                                 postMessage={item.message}
                                 taggedAssociates={associateObjectList}
                                 strength={item.sub_type}
@@ -207,6 +209,8 @@ class ListPost extends React.Component {
                                 likeCount={likeCount}
                                 commentCount={commentCount}
                                 points={item.points}
+                                postDeleteHandler={this.deletePost}
+                                addOn={item.addOnPoints}
                             />
                         )
                         this.setState({ refreshing: false, networkChanged: false })
