@@ -671,13 +671,13 @@ class CreatePost extends React.Component {
                                     />
                                 </View>
                                 <View style={styles.pointButtonView}>
-                                    <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 10 }, () => this.closeSelectionDrawer())}>
+                                    <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 10 })}>
                                         <Text style={styles.points}>+10</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 15 }, () => this.closeSelectionDrawer())}>
+                                    <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 15 })}>
                                         <Text style={styles.points}>+15</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 25 }, () => this.closeSelectionDrawer())}>
+                                    <TouchableOpacity activeOpacity={0.8} style={styles.pointsView} onPress={() => this.setState({ addPoints: 25 })}>
                                         <Text style={styles.points}>+25</Text>
                                     </TouchableOpacity>
                                 </View>
