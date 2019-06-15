@@ -105,7 +105,7 @@ class Home extends React.Component {
         this.homeDataRowList = []
         this.projectList = []
         this.transactionList = []
-        this.summeryList = [] 
+        this.summeryList = []
         this.summeryRawList = []
         this.transactionDataBackup = []
         this.homeDataBackup = []
@@ -117,19 +117,19 @@ class Home extends React.Component {
     static navigationOptions = ({ navigation }) => {
         return {
             headerRight: (
-                navigation.getParam('id') ? 
+                navigation.getParam('id') ?
                     <Icon name='md-settings' style={
                         {
                             color: 'white',
                             margin: 20
                         }
-                    } onPress={() => navigation.navigate('settings')} /> 
-                    : 
-                    <View style={{magin: 20}}></View>
+                    } onPress={() => navigation.navigate('settings')} />
+                    :
+                    <View style={{ magin: 20 }}></View>
             )
         };
     };
-    
+
     async componentWillMount() {
         if (this.state.associate_id !== this.props.associate_id) {
             if (this.state.associate_id == undefined || this.state.associate_id == "") {
@@ -139,22 +139,22 @@ class Home extends React.Component {
             await this.loadProfile()
         }
         else {
-            if(this.userData == {}) {
+            if (this.userData == {}) {
                 this.loadProfile()
             }
         }
     }
 
     async componentDidMount() {
-        if(this.props.navigation.getParam('isPost')) {
+        if (this.props.navigation.getParam('isPost')) {
             await this.loadProfile()
         }
         this.loadSummary()
-        if (this.state.associate_id === this.props.associate_id){
+        if (this.state.associate_id === this.props.associate_id) {
             this.handleImageDownload()
         }
-        if(this.state.associate_id === this.props.associate_id) {
-        // Calling transaction list API after render method
+        if (this.state.associate_id === this.props.associate_id) {
+            // Calling transaction list API after render method
             this.loadTransactions()
         }
 
@@ -205,7 +205,7 @@ class Home extends React.Component {
                     this.userData = response.data.data
                     if (this.state.associate_id !== this.props.associate_id) {
                         this.handleImageDownload()
-                    } 
+                    }
                     if (this.userData.length === 0) {
                         this.projectList = []
                         this.projectList.push('No Projects')
@@ -220,7 +220,7 @@ class Home extends React.Component {
                 })
             }
         }
-        catch(error) {/* error */}
+        catch (error) {/* error */ }
     }
 
     deletePost = (postId) => {
@@ -244,12 +244,12 @@ class Home extends React.Component {
             try {
                 delete_post(payload, this.headers).then((res) => {
                     if (res.status === 200) {
-                        this.setState({isPostDeleted: false})
+                        this.setState({ isPostDeleted: false })
                     }
                 }).catch(() => {
                 })
             }
-            catch (e) {/* error */}
+            catch (e) {/* error */ }
         }
         else {
             this.showToast()
@@ -266,27 +266,27 @@ class Home extends React.Component {
         }
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
-                
+
                 await list_posts(payload, this.headers).then((response) => {
                     console.log('list_posts', response.data.data)
-                    if(this.homeDataBackup.length === response.data.data.posts.length) {
-                        if(response.data.data.posts.length === 0) {
+                    if (this.homeDataBackup.length === response.data.data.posts.length) {
+                        if (response.data.data.posts.length === 0) {
                             this.homeDataRowList = []
                             if (this.state.associate_id !== this.props.associate_id) {
                                 this.homeDataRowList.push(<Text style={{ margin: 10 }} key={0}>No posts found for this User.</Text>)
-                            } 
+                            }
                             else {
                                 this.homeDataRowList.push(<Text style={{ margin: 10 }} key={0}>No post to display</Text>)
                                 this.homeDataRowList.push(<Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon on <Text style={{ fontWeight: 'bold', fontStyle: 'italic' }}>Home</Text></Text>)
                             }
-                           
+
                         }
                         this.setState({ homeRefreshing: false })
                         return
                     } else {
                         this.posts = []
                         this.homeDataBackup = response.data.data.posts
-                        this.posts = response.data.data.posts 
+                        this.posts = response.data.data.posts
                         this.counts = response.data.data.counts
                         this.posts.map((item, index) => {
                             item.Item.likeCount = this.counts[index].likeCount
@@ -301,22 +301,32 @@ class Home extends React.Component {
                 })
             }
         }
-        catch(error) {
+        catch (error) {
             this.setState({ homeRefreshing: false })
         }
     }
 
     createTiles = (posts) => {
-        posts.map((item) => {
-            // Get tagged associate Names
+        posts.map(async (item) => {
+
+            /* Convert Array of objects to array of strings */
             let associateList = []
-            item.Item.tagged_associates.map(async (item) => {
-                let name = await AsyncStorage.getItem(item.associate_id)
-                associateList.push({
-                    associate_id: item.associate_id,
-                    associate_name: name
+            item.Item.tagged_associates.map((item) => {
+                associateList.push(item.associate_id)
+            })
+
+            /* retrive names in bulk */
+            let fetchedNameList = await AsyncStorage.multiGet(associateList)
+
+            /* Convert to Array of objects */
+            let associateObjectList = []
+            fetchedNameList.map(item => {
+                associateObjectList.push({
+                    associate_id: item[0],
+                    associate_name: item[1]
                 })
             })
+
             this.homeDataList.push(
                 // Post Component
                 <Post
@@ -327,14 +337,14 @@ class Home extends React.Component {
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time={item.Item.time}
                     postMessage={item.Item.message}
-                    taggedAssociates={associateList}
-                    strength={item.Item.sub_type} 
+                    taggedAssociates={associateObjectList}
+                    strength={item.Item.sub_type}
                     type={item.Item.type}
                     associate={item.Item.associate_id}
                     likeCount={item.Item.likeCount}
                     commentCount={item.Item.commentCount}
-                    postDeleteHandler={this.deletePost} 
-                    points={item.Item.points} 
+                    postDeleteHandler={this.deletePost}
+                    points={item.Item.points}
                     addOn={item.Item.addOnPoints}
                 />
             )
@@ -343,16 +353,16 @@ class Home extends React.Component {
     }
 
     loadSummary = () => {
-        this.setState({summaryRefreshing: true})
+        this.setState({ summaryRefreshing: true })
         const payload = {
             "tenant_id": this.props.accountAlias,
             "associate_id": this.state.associate_id
         }
         try {
             strength_counts(payload, this.headers).then((response) => {
-                if(response.data.data.length == 0) {
+                if (response.data.data.length == 0) {
                     this.summeryRawList = []
-                    this.summeryRawList.push(<Text key={0} style={{textAlign: 'center', width: '100%', alignItems: 'center', justifyContent: 'center'}}>No strengths to display.</Text>)
+                    this.summeryRawList.push(<Text key={0} style={{ textAlign: 'center', width: '100%', alignItems: 'center', justifyContent: 'center' }}>No strengths to display.</Text>)
                 }
                 else {
                     this.summeryList = []
@@ -376,7 +386,7 @@ class Home extends React.Component {
                 this.setState({ summaryRefreshing: false })
             })
         }
-        catch(e){
+        catch (e) {
             this.setState({ summaryRefreshing: false })
         }
         this.setState({ summaryRefreshing: false })
@@ -384,32 +394,32 @@ class Home extends React.Component {
 
     //Navigate to Posts for logged in User
     postNavigationHandeler = (strengthType) => {
-        if(this.state.associate_id == this.props.associate_id) {
+        if (this.state.associate_id == this.props.associate_id) {
             this.props.navigation.navigate('StrengthPosts', {
                 strengthType: strengthType
             })
         }
     }
 
-    async handleEditProfile(){
+    async handleEditProfile() {
         Keyboard.dismiss()
-        if(this.state.isEdit) {
-            this.setState({isEdit: false})
-            if(this.state.firstName == "") {
+        if (this.state.isEdit) {
+            this.setState({ isEdit: false })
+            if (this.state.firstName == "") {
                 Toast.show({
                     text: 'Please enter First Name',
                     type: 'danger',
                     duration: 2000
                 })
             }
-            else if(this.state.lastName == "") {
+            else if (this.state.lastName == "") {
                 Toast.show({
                     text: 'Please enter Last Name',
                     type: 'danger',
                     duration: 2000
                 })
             }
-            else if(this.state.email == "" || /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.state.email) == false) {
+            else if (this.state.email == "" || /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.state.email) == false) {
                 Toast.show({
                     text: 'Please enter valid Email',
                     type: 'danger',
@@ -425,7 +435,7 @@ class Home extends React.Component {
             }
             else {
                 try {
-                    if(this.props.isConnected) {
+                    if (this.props.isConnected) {
                         const payload = {
                             "tenant_id": this.props.accountAlias,
                             "associate_id": this.props.associate_id,
@@ -433,7 +443,7 @@ class Home extends React.Component {
                             "last_name": this.state.lastName,
                             "email": this.state.email,
                             "phone_number": "+91" + this.state.phoneNo
-                            
+
                         }
                         ToastAndroid.showWithGravityAndOffset(
                             'Updating',
@@ -442,9 +452,9 @@ class Home extends React.Component {
                             25,
                             100,
                         );
-                        await update_profile(payload,this.headers).then(() => {
-                            if(this.state.photo !== null) {
-                                this.setState({ imageUrl: this.state.photo }, () => this.handleUploadImage())   
+                        await update_profile(payload, this.headers).then(() => {
+                            if (this.state.photo !== null) {
+                                this.setState({ imageUrl: this.state.photo }, () => this.handleUploadImage())
                             }
                         }).catch(() => {
                         })
@@ -461,8 +471,8 @@ class Home extends React.Component {
                         return
                     }
                 }
-                    
-                catch(e) {/* error */}
+
+                catch (e) {/* error */ }
                 //Updating redux state
                 const payload = {
                     firstName: this.state.firstName,
@@ -473,7 +483,7 @@ class Home extends React.Component {
                 this.props.updateUser(payload)
                 await this.loadProfile()
                 await this.loadHome()
-                
+
                 this.setState({ submit: false, isEdit: false })
                 this.setModalVisible(false)
             }
@@ -492,7 +502,7 @@ class Home extends React.Component {
     }
 
     requestCloseModal = () => {
-        if(this.state.isEdit) {
+        if (this.state.isEdit) {
             Alert.alert(
                 'Unsaved changes',
                 'You have not saved changes. Are you sure that you want to cancel?',
@@ -504,7 +514,7 @@ class Home extends React.Component {
                     {
                         text: 'Yes', onPress: () => {
                             this.setModalVisible(false)
-                            this.setState({isEdit: false})
+                            this.setState({ isEdit: false })
                         }
                     }
                 ],
@@ -561,7 +571,7 @@ class Home extends React.Component {
                 })
             }
         }
-        catch(error) {
+        catch (error) {
             this.setState({ refreshing: false })
         }
     }
@@ -570,10 +580,10 @@ class Home extends React.Component {
         data.map((item, index) => {
             this.transactionList.push(
                 <View style={{ backgroundColor: '#FFF', width: Dimensions.get('window').width }} key={index}>
-                    <View style= {styles.transactionContainer}>
+                    <View style={styles.transactionContainer}>
                         <View style={styles.iconView}>
-                            <View style={{backgroundColor: '#1c92c4', borderRadius: 40, height: 40, width: 40, alignItems: 'center', justifyContent: 'center'}}>
-                                <Icon name='ios-trophy' type={'Ionicons'} style={{fontSize: 18, color: '#eee'}}/>
+                            <View style={{ backgroundColor: '#1c92c4', borderRadius: 40, height: 40, width: 40, alignItems: 'center', justifyContent: 'center' }}>
+                                <Icon name='ios-trophy' type={'Ionicons'} style={{ fontSize: 18, color: '#eee' }} />
                             </View>
                         </View>
                         <View style={styles.transactionView}>
@@ -584,9 +594,9 @@ class Home extends React.Component {
                                             You have been rewarded for filling up Survey: {item.sevice_sub_type}</Text>
                                         :
                                         <Text style={styles.tText}>
-                                            { 
+                                            {
                                                 (item.t_type == 'cr') ?
-                                                    'Points credited for ' 
+                                                    'Points credited for '
                                                     :
                                                     'Points debited for '
                                             }
@@ -596,21 +606,21 @@ class Home extends React.Component {
                                             {item.sevice_sub_type}
                                         </Text>
                                 }
-                                <View style={{flexDirection: 'row', flexWrap: 'nowrap', width: "100%", alignItems: 'center', justifyContent: "space-between"}}>
-                                    <View style={{alignItems: 'center',justifyContent: 'center'}}>
+                                <View style={{ flexDirection: 'row', flexWrap: 'nowrap', width: "100%", alignItems: 'center', justifyContent: "space-between" }}>
+                                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                                         {item.sevice_name !== 'survey_reward' ? <Text style={styles.fromTo}>{item.t_type == 'cr' ? 'From' : 'To'}: {item.t_type == 'cr' ? item.from_associate_details.associate_name : item.to_associate_details.associate_name}</Text> : null}
                                     </View>
-                                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingRight: 6}}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingRight: 6 }}>
                                         <Moment style={item.sevice_name == 'survey_reward' ? styles.timeStampS : styles.timeStamp} element={Text} format='D MMM YYYY' withTitle>
                                             {item.created_at}
                                         </Moment>
                                     </View>
-                                    
+
                                     {/* <Text style={[styles.timeStamp, {paddingRight: 20}]}>{item.created_at}</Text> */}
                                 </View>
                             </View>
                             <View style={styles.pointsView}>
-                                <Text style={item.t_type == 'cr' ? styles.credit : styles.debit}>{item.t_type == 'cr' ? "+ " + item.points : "- " + item.points }</Text>
+                                <Text style={item.t_type == 'cr' ? styles.credit : styles.debit}>{item.t_type == 'cr' ? "+ " + item.points : "- " + item.points}</Text>
                             </View>
                         </View>
                     </View>
@@ -618,7 +628,7 @@ class Home extends React.Component {
                 </View>
             )
         })
-        this.setState({refreshing: false})
+        this.setState({ refreshing: false })
     }
     //Visibilty input data
     data = [
@@ -667,7 +677,7 @@ class Home extends React.Component {
         file_download(payload).then((response) => {
             /* Store the image */
             this.setState({ isImageLoading: false, imageUrl: response.data.data['download-signed-url'] })
-            if(payload.associate_email===this.props.email)
+            if (payload.associate_email === this.props.email)
                 this.props.imageUrl(response.data.data['download-signed-url'])
 
         }).catch(() => {
@@ -731,21 +741,21 @@ class Home extends React.Component {
     }
 
     render() {
-        if(this.state.loading) {
+        if (this.state.loading) {
             return (
-                <View style={{alignItems: 'center', justifyContent: 'flex-start', marginTop: 25}}>
+                <View style={{ alignItems: 'center', justifyContent: 'flex-start', marginTop: 25 }}>
                     <ActivityIndicator size='large' color='#1c92c4' />
                 </View>
             )
         }
         return (
 
-            <Container style={{flex:1}}>
+            <Container style={{ flex: 1 }}>
                 {/* { this.state.loading ? */}
                 <ScrollView
                     showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ flex: 1, alignItems: 'center' }} 
-                    // scrollEnabled={true}
+                    contentContainerStyle={{ flex: 1, alignItems: 'center' }}
+                // scrollEnabled={true}
                 >
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: "100%", padding: 15 }}>
                         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '35%' }}>
@@ -759,7 +769,7 @@ class Home extends React.Component {
                                     :
                                     <ActivityIndicator size='small' color='#1c92c4' />
                                 }
-                                
+
                             </View>
                             {
                                 this.state.associate_id === this.props.associate_id ?
@@ -769,14 +779,14 @@ class Home extends React.Component {
                                     :
                                     null
                             }
-                            
+
                         </View>
-                        <View style={{ alignItems: 'flex-start', width: '65%', paddingLeft: 5}}>
+                        <View style={{ alignItems: 'flex-start', width: '65%', paddingLeft: 5 }}>
                             {
-                                this.state.associate_id === this.props.associate_id ? 
+                                this.state.associate_id === this.props.associate_id ?
                                     <Text style={[styles.textLeft, styles.userName]} allowFontScaling numberOfLines={2}>{this.props.firstName + " " + this.props.lastName}</Text>
                                     :
-                                    <Text style={[styles.textLeft, styles.userName]} allowFontScaling numberOfLines={2}>{this.userData.first_name + " " + this.userData.last_name}</Text> 
+                                    <Text style={[styles.textLeft, styles.userName]} allowFontScaling numberOfLines={2}>{this.userData.first_name + " " + this.userData.last_name}</Text>
 
                             }
                             <Text style={[styles.coloredText, styles.textLeft]} allowFontScaling numberOfLines={2}>{this.userData.email}</Text>
@@ -786,7 +796,7 @@ class Home extends React.Component {
                     </View>
 
                     {
-                        this.state.associate_id === this.props.associate_id ? 
+                        this.state.associate_id === this.props.associate_id ?
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', width: "100%", padding: 3 }}>
                                 <TouchableOpacity onPress={() => this.pager.setPage(0)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
                                     <Text style={styles.text}>Home</Text>
@@ -816,7 +826,7 @@ class Home extends React.Component {
                                 </TouchableOpacity>
                             </View>
                     }
-                        
+
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
                         {
                             this.state.associate_id === this.props.associate_id ?
@@ -838,18 +848,18 @@ class Home extends React.Component {
                                     </TouchableOpacity>
                                     <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                                     <TouchableOpacity onPress={() => this.pager.setPage(1)} style={styles.iconTouch}>
-                                        <Icon name='list-alt' type={'FontAwesome'} style={this.state.selectedTab === 1 ? [styles.iconActive, {fontSize: 24}] : [styles.iconInactive, {fontSize: 23}] } />
+                                        <Icon name='list-alt' type={'FontAwesome'} style={this.state.selectedTab === 1 ? [styles.iconActive, { fontSize: 24 }] : [styles.iconInactive, { fontSize: 23 }]} />
                                     </TouchableOpacity>
                                 </View>
                         }
-                        
+
                         <IndicatorViewPager
                             initialPage={0}
                             ref={ref => this.pager = ref}
                             style={styles.viewPager}
                             onPageSelected={(page) => this.setState({ selectedTab: page.position })}
                         >
-                            <View style={{flex:1}}>
+                            <View style={{ flex: 1 }}>
                                 <ScrollView
                                     showsVerticalScrollIndicator={false}
                                     contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingTop: 3, backgroundColor: '#eee' }}
@@ -872,7 +882,7 @@ class Home extends React.Component {
                                 </ScrollView>
                             </View>
                             {
-                                this.state.associate_id === this.props.associate_id ? 
+                                this.state.associate_id === this.props.associate_id ?
                                     <View>
                                         <ScrollView
                                             showsVerticalScrollIndicator={false}
@@ -898,8 +908,8 @@ class Home extends React.Component {
                                     :
                                     null
                             }
-                            
-                            <View style={{ flex: 1, backgroundColor: '#efefef'}}>
+
+                            <View style={{ flex: 1, backgroundColor: '#efefef' }}>
                                 <ScrollView
                                     showsVerticalScrollIndicator={false}
                                     contentContainerStyle={styles.cardContainer}
@@ -927,14 +937,14 @@ class Home extends React.Component {
                         </IndicatorViewPager>
                     </View>
                 </ScrollView>
-                
+
                 <Modal
                     animationType='slide'
-                    transparent={false} 
+                    transparent={false}
                     hardwareAccelerated={true}
                     visible={this.state.modalVisible}
                     onRequestClose={this.requestCloseModal}>
-                    <KeyboardAvoidingView style={{ flex: 1 }} 
+                    <KeyboardAvoidingView style={{ flex: 1 }}
                         keyboardVerticalOffset={-290}
                         behavior='padding'
                         enabled
@@ -942,54 +952,54 @@ class Home extends React.Component {
                         <Root>
                             <View style={[styles.modalCaontainer]}>
                                 <View style={styles.headerContainer}>
-                                    <View style={{width: '15%', alignItems: 'center', justifyContent: 'center'}}>
+                                    <View style={{ width: '15%', alignItems: 'center', justifyContent: 'center' }}>
                                         <Icon name='close' type={'AntDesign'}
                                             style={{ color: '#000', padding: 5, fontSize: 26 }}
                                             onPress={this.requestCloseModal}
                                         />
                                     </View>
 
-                                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 10, width: "85%"}}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 10, width: "85%" }}>
                                         <Text style={styles.headerText}>Edit Profile</Text>
-                                        <TouchableOpacity style={{height: 35, borderRadius: 30, aspectRatio: 1/1}} onPress={this.handleEditProfile}>
-                                            <Icon name='check' type={'MaterialIcons'} 
+                                        <TouchableOpacity style={{ height: 35, borderRadius: 30, aspectRatio: 1 / 1 }} onPress={this.handleEditProfile}>
+                                            <Icon name='check' type={'MaterialIcons'}
                                                 style={this.state.isEdit ? { color: '#1c92c4', padding: 5, fontSize: 27 } : { color: '#ccc', padding: 5, fontSize: 27 }}
                                             />
                                         </TouchableOpacity>
                                     </View>
                                 </View>
-                                <View style={{flex: 1, width: "100%"}}>
+                                <View style={{ flex: 1, width: "100%" }}>
                                     <ScrollView
-                                        contentContainerStyle={{ padding: 20, width:"100%"}} 
+                                        contentContainerStyle={{ padding: 20, width: "100%" }}
                                         showsVerticalScrollIndicator={false}
                                         scrollEnabled={true}
                                     >
-                                        <View style={{alignItems: 'center', justifyContent: 'center', padding: 20}}>
+                                        <View style={{ alignItems: 'center', justifyContent: 'center', padding: 20 }}>
                                             <View style={styles.imageWrapper}>
-                                                
+
                                                 {!this.state.isImageLoading ? (
                                                     <Image
-                                                        source={{ uri: this.state.photo !== null ? this.state.photo : this.state.imageUrl}}
+                                                        source={{ uri: this.state.photo !== null ? this.state.photo : this.state.imageUrl }}
                                                         style={styles.profilePic}
                                                     />
                                                 ) : (
                                                     <ActivityIndicator size='large' color='#1c92c4' />
                                                 )
-                                                }    
+                                                }
                                             </View>
-                                            <TouchableOpacity onPress={() => this.setState({ visibilityModalVisible: true})}>
+                                            <TouchableOpacity onPress={() => this.setState({ visibilityModalVisible: true })}>
                                                 <Text style={styles.changePicText}>Change Profile Photo</Text>
                                             </TouchableOpacity>
                                         </View>
                                         <View style={styles.textInputWraper}>
-                                            <Text style={styles.fieldText}>First Name <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold'}}>*</Text></Text>
+                                            <Text style={styles.fieldText}>First Name <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
                                             <TextInput
                                                 style={styles.textInput}
-                                                value={this.state.firstName} 
-                                                placeholder='First Name' 
-                                                underlineColorAndroid= '#1c92c4'
-                                                placeholderTextColor= '#ccc'
-                                                onChangeText = {(text) => {
+                                                value={this.state.firstName}
+                                                placeholder='First Name'
+                                                underlineColorAndroid='#1c92c4'
+                                                placeholderTextColor='#ccc'
+                                                onChangeText={(text) => {
                                                     this.setState({
                                                         firstName: text,
                                                         isEdit: true
@@ -1001,10 +1011,10 @@ class Home extends React.Component {
                                             <Text style={styles.fieldText}>Last Name <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
                                             <TextInput
                                                 style={styles.textInput}
-                                                value={this.state.lastName} 
-                                                placeholder='Last Name' 
-                                                underlineColorAndroid= '#1c92c4'
-                                                placeholderTextColor= '#ccc' 
+                                                value={this.state.lastName}
+                                                placeholder='Last Name'
+                                                underlineColorAndroid='#1c92c4'
+                                                placeholderTextColor='#ccc'
                                                 onChangeText={(text) => {
                                                     this.setState({
                                                         lastName: text,
@@ -1017,12 +1027,12 @@ class Home extends React.Component {
                                             <Text style={styles.fieldText}>Email <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
                                             <TextInput
                                                 style={styles.textInput}
-                                                value={this.state.email} 
+                                                value={this.state.email}
                                                 editable={false}
                                                 placeholder='Email'
-                                                underlineColorAndroid='#1c92c4' 
+                                                underlineColorAndroid='#1c92c4'
                                                 keyboardType='email-address'
-                                                placeholderTextColor= '#ccc' 
+                                                placeholderTextColor='#ccc'
                                                 onChangeText={(text) => {
                                                     this.setState({
                                                         email: text,
@@ -1036,10 +1046,10 @@ class Home extends React.Component {
                                             <TextInput
                                                 style={styles.textInput}
                                                 value={this.state.phoneNo}
-                                                placeholder='Phone Number' 
+                                                placeholder='Phone Number'
                                                 keyboardType='phone-pad'
-                                                underlineColorAndroid= '#1c92c4'
-                                                placeholderTextColor= '#ccc' 
+                                                underlineColorAndroid='#1c92c4'
+                                                placeholderTextColor='#ccc'
                                                 onChangeText={(text) => {
                                                     this.setState({
                                                         phoneNo: text,
@@ -1052,9 +1062,9 @@ class Home extends React.Component {
                                 </View>
                                 <VisibilityModal
                                     enabled={this.state.visibilityModalVisible}
-                                    data={ this.data }
+                                    data={this.data}
                                     onChangeListener={({ key }) => {
-                                        if(key == 'open') {
+                                        if (key == 'open') {
                                             this.handleChoosePhotoFromCamera()
                                         }
                                         else {

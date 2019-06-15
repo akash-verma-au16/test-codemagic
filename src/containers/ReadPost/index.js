@@ -63,7 +63,7 @@ class ListPost extends React.Component {
     static navigationOptions = () => {
         return {
             headerRight: (
-                <View style={{magin: 20}}></View>
+                <View style={{ magin: 20 }}></View>
             )
         }
     }
@@ -168,19 +168,28 @@ class ListPost extends React.Component {
             try {
 
                 read_post(read_post_payload, this.headers)
-                    .then((response) => {
-                        this.setState({ refreshing: false, networkChanged: false })
+                    .then(async (response) => {
+                        
                         const item = response.data.data.posts.Item
                         const commentCount = response.data.data.counts.commentCount
                         const likeCount = response.data.data.counts.likeCount
                         this.post = []
-                        // Get tagged associate Names
+
+                        /* Convert Array of objects to array of strings */
                         let associateList = []
-                        item.tagged_associates.map(async (item) => {
-                            let name = await AsyncStorage.getItem(item.associate_id)
-                            associateList.push({
-                                associate_id: item.associate_id,
-                                associate_name: name
+                        item.tagged_associates.map((item) => {
+                            associateList.push(item.associate_id)
+                        })
+
+                        /* retrive names in bulk */
+                        let fetchedNameList = await AsyncStorage.multiGet(associateList)
+
+                        /* Convert to Array of objects */
+                        let associateObjectList = []
+                        fetchedNameList.map(item => {
+                            associateObjectList.push({
+                                associate_id: item[0],
+                                associate_name: item[1]
                             })
                         })
                         this.post.push(
@@ -192,18 +201,18 @@ class ListPost extends React.Component {
                                 profileData={item.associate_id == this.props.associate_id ? this.profileData : {}}
                                 time={item.time}
                                 postMessage={item.message}
-                                taggedAssociates={associateList}
+                                taggedAssociates={associateObjectList}
                                 strength={item.sub_type}
                                 associate={item.associate_id}
                                 likeCount={likeCount}
-                                commentCount={commentCount} 
-                                points={item.points} 
+                                commentCount={commentCount}
+                                points={item.points}
                             />
                         )
-
+                        this.setState({ refreshing: false, networkChanged: false })
                     }).catch(() => {
                         this.setState({ refreshing: false, networkChanged: false })
-                        alert('Opps! something went wrong, No worries the can be seen on home page.')
+                        alert('Opps! something went wrong, No worries the post can be seen on home page.')
                     })
 
             }
@@ -217,32 +226,7 @@ class ListPost extends React.Component {
             }
         }
     }
-    createTiles = async (posts) => {
-        // this.setState({ refreshing: true })
-        this.postList = []
-        this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
-        // this.props.update_wallet()
-        posts.map((item) => {
-            this.postList.push(
-                // Post Component
-                <Post
-                    key={item.Item.post_id}
-                    postId={item.Item.post_id}
-                    postCreator={this.props.associateList[item.Item.associate_id]}
-                    postCreator_id={item.Item.associate_id}
-                    profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
-                    time={item.Item.time}
-                    postMessage={item.Item.message}
-                    taggedAssociates={item.Item.tagged_associates}
-                    strength={item.Item.sub_type}
-                    associate={item.Item.associate_id}
-                    likeCount={item.Item.likeCount}
-                    commentCount={item.Item.commentCount}
-                />
-            )
-        })
-        this.setState({ refreshing: false, networkChanged: false })
-    }
+
     render() {
 
         return (
@@ -278,17 +262,6 @@ class ListPost extends React.Component {
 
                     {this.post}
                 </ScrollView>
-
-                <NavigationEvents
-                    onWillFocus={async () => {
-                        if (this.props.isConnected) {
-                            if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                this.loadPosts()
-                            }
-                        }
-                    }}
-                />
-
             </Container>
 
         );
