@@ -475,6 +475,7 @@ class ListPost extends React.Component {
     createTiles = async (posts) => {
         this.postList = []
         this.getProfile()
+        this.postList = []
         await posts.map(async (item) => {
 
             /* Convert Array of objects to array of strings */
@@ -520,7 +521,6 @@ class ListPost extends React.Component {
             if (posts.length == this.postList.length) {
                 setTimeout(() => this.setState({ refreshing: false}), 1500)
             }
-
         })
     }
     render() {
