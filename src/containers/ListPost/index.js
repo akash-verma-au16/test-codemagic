@@ -257,7 +257,9 @@ class ListPost extends React.Component {
         }
 
         this.interval = setInterval(() => {
-            this.loadPosts()
+            if(!this.state.isPostDeleted) {
+                this.loadPosts()
+            }
         }, 10000);
 
         this.interval1 = setInterval(() => {
@@ -424,18 +426,19 @@ class ListPost extends React.Component {
                     associate_id: this.props.associate_id
                 }
             }
+            var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
+            this.postList.splice(index, 1)
+            this.posts.splice(index, 1)
+            if (this.posts.length == 0) {
+                this.setState({ initalLoad: true })
+                return
+            }
+            this.createTiles(this.posts)
             
             try {
                 await delete_post(payload, this.headers).then((res) => {
                     if (res.status === 200) {
-                        var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
-                        this.postList.splice(index, 1)
-                        this.posts.splice(index, 1)
-                        if (this.posts.length == 0) {
-                            this.setState({ initalLoad: true })
-                        }
                         this.setState({ isPostDeleted: false })
-                        this.createTiles(this.posts)
                     }
                 }).catch(() => {
                 })
@@ -470,6 +473,7 @@ class ListPost extends React.Component {
     }
 
     createTiles = async (posts) => {
+        this.postList = []
         this.getProfile()
         this.postList = []
         await posts.map(async (item) => {
@@ -513,6 +517,10 @@ class ListPost extends React.Component {
                     addOn={item.Item.addOnPoints}
                 />
             )
+
+            if (posts.length == this.postList.length) {
+                setTimeout(() => this.setState({ refreshing: false}), 1500)
+            }
         })
     }
     render() {
