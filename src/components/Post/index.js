@@ -17,7 +17,6 @@ import { dev } from '../../store/actions'
 import VisibilityModal from '../../containers/VisibilityModal'
 
 import { like_post, unlike_post, like_id, rewards_addon } from '../../services/post' 
-import { get_balance } from '../../services/profile'
 //React navigation
 import { withNavigation } from 'react-navigation';
 
@@ -97,13 +96,19 @@ class Post extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.likeCount !== this.props.likeCount || nextProps.commentCount !== this.props.commentCount || nextProps.taggedAssociates !== this.props.taggedAssociates || nextProps.points !== this.props.points) {
+        if (nextProps.likeCount !== this.props.likeCount
+             || nextProps.commentCount !== this.props.commentCount
+             || nextProps.taggedAssociates !== this.props.taggedAssociates 
+             || nextProps.points !== this.props.points 
+             || nextProps.addOn !== this.props.addOn) 
+        {
             this.setState({
                 ...this.state,
                 likes: nextProps.likeCount,
                 comments: nextProps.commentCount,
                 taggedAssociates: nextProps.taggedAssociates,
-                rewardsPoints: nextProps.points + nextProps.addOn
+                rewardsPoints: nextProps.points,
+                addOnPoints: nextProps.addOn
             })
 
             this.restoreLikes()
@@ -116,6 +121,7 @@ class Post extends Component {
         }
         else {
             this.setState({
+                ...this.state,
                 likes: this.state.likes,
                 comments: this.state.comments
             })
@@ -301,19 +307,6 @@ class Post extends Component {
     }
 
     rewardsAddon = async () => {
-        // const getBalancePayload = {
-        //     associate_id: this.props.associate_id
-        // }
-        // console.log('payload', getBalancePayload)
-        // try {
-        //     get_balance(getBalancePayload).then((res) => {
-        //         console.log('balance', res.data.total_points)
-        //     })
-        // }
-        // catch {
-
-        // }
-        
         if (this.props.isConnected) {
             this.taggedAssociates = []
             await this.props.taggedAssociates.map((item) => {
@@ -324,7 +317,7 @@ class Post extends Component {
 
             if (this.taggedAssociates.length == 0) { 
                 ToastAndroid.showWithGravityAndOffset(
-                    'You cant addon to yourself',
+                    'You can not give Add-On points to yourself',
                     ToastAndroid.LONG,
                     ToastAndroid.BOTTOM,
                     25,
@@ -353,8 +346,9 @@ class Post extends Component {
                         }
                         //Update Wallet
                         this.props.updateWallet(payload)
+                        let pString = points > 1 ? ' points' : ' point'
                         ToastAndroid.showWithGravityAndOffset(
-                            'You gifted ' + points + ' points',
+                            'You gifted ' + points + pString,
                             ToastAndroid.SHORT,
                             ToastAndroid.BOTTOM,
                             25,

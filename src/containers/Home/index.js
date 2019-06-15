@@ -49,6 +49,8 @@ import ImageCropPicker from 'react-native-image-crop-picker';
 /* For uploading Image to S3 */
 import RNFetchBlob from 'rn-fetch-blob'
 
+import { NavigationEvents } from 'react-navigation';
+
 /* Redux */
 import { connect } from 'react-redux'
 import { dev } from '../../store/actions'
@@ -89,7 +91,9 @@ class Home extends React.Component {
             isImageLoading: false,
             photo: null,
             imageUrl: null,
-            isPostDeleted: false
+            isPostDeleted: false,
+            walletBalance: "0",
+            strengthCount: "0"
         }
         this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id || this.state.associate_id == undefined })
         this.loadProfile = this.loadProfile.bind(this)
@@ -149,13 +153,16 @@ class Home extends React.Component {
         if(this.props.navigation.getParam('isPost')) {
             await this.loadProfile()
         }
+
+        this.interval = setInterval(() => {
+            // Calling transaction list API after render method
+            this.loadTransactions()
+            this.loadHome()
+            this.loadSummary()
+        }, 10000);
         this.loadSummary()
         if (this.state.associate_id === this.props.associate_id){
             this.handleImageDownload()
-        }
-        if(this.state.associate_id === this.props.associate_id) {
-        // Calling transaction list API after render method
-            this.loadTransactions()
         }
 
         // Hardware backpress handle
@@ -168,6 +175,7 @@ class Home extends React.Component {
     }
 
     componentWillUnmount() {
+        clearInterval(this.interval)
         this.backHandler.remove();
         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
     }
@@ -179,13 +187,6 @@ class Home extends React.Component {
             this.loadHome()
             this.loadSummary()
         }
-    }
-    comingSoon() {
-        Toast.show({
-            text: 'Coming soon',
-            type: 'success',
-            duration: 3000
-        })
     }
 
     headers = {
@@ -268,7 +269,6 @@ class Home extends React.Component {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 
                 await list_posts(payload, this.headers).then((response) => {
-                    console.log('list_posts', response.data.data)
                     if(this.homeDataBackup.length === response.data.data.posts.length) {
                         if(response.data.data.posts.length === 0) {
                             this.homeDataRowList = []
@@ -350,6 +350,7 @@ class Home extends React.Component {
         }
         try {
             strength_counts(payload, this.headers).then((response) => {
+                this.setState({ strengthCount: response.data.data.length})
                 if(response.data.data.length == 0) {
                     this.summeryRawList = []
                     this.summeryRawList.push(<Text key={0} style={{textAlign: 'center', width: '100%', alignItems: 'center', justifyContent: 'center'}}>No strengths to display.</Text>)
@@ -531,39 +532,46 @@ class Home extends React.Component {
 
     // Get Transaction list API Handler
     async loadTransactions() {
-        const payload = {
-            "tenant_id": this.props.accountAlias,
-            "associate_id": this.props.associate_id
-        }
-        try {
-            if (payload.tenant_id !== "" && payload.associate_id !== "") {
-                this.setState({ refreshing: true })
-                await read_transaction(payload, this.headers).then(response => {
-                    if (this.transactionDataBackup.length === response.data.data.transaction_data) {
-                        if (response.data.data.transaction_data.length == 0) {
-                            this.transactionList = []
-                            this.transactionList.push(
-                                <Text style={{ flex: 1, alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingTop: 20 }} key={0}>No recent transactios found.</Text>
-                            )
+        if (this.props.associate_id == this.state.associate_id) {
+            const payload = {
+                "tenant_id": this.props.accountAlias,
+                "associate_id": this.props.associate_id
+            }
+            try {
+                if (payload.tenant_id !== "" && payload.associate_id !== "") {
+                    this.setState({ refreshing: true })
+                    await read_transaction(payload, this.headers).then(response => {
+                        this.setState({
+                            walletBalance: response.data.data.wallet_balance
+                        })
+                        if (this.transactionDataBackup.length === response.data.data.transaction_data) {
+                            if (response.data.data.transaction_data.length == 0) {
+                                this.transactionList = []
+                                this.transactionList.push(
+                                    <Text style={{ flex: 1, alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingTop: 20 }} key={0}>No recent transactios found.</Text>
+                                )
+                            }
+                            this.setState({ refreshing: false })
+                            return
+                        } else {
+                            //Change in Payload
+                            this.transactionDataBackup = response.data.data.transaction_data
+                            if (this.transactionList.length !== 0) {
+                                this.transactionList = []
+                            }
+                            this.createTransactionTile(response.data.data.transaction_data)
+                            this.setState({ refreshing: false })
                         }
+                    }).catch(() => {
                         this.setState({ refreshing: false })
-                    } else {
-                        //Change in Payload
-                        this.transactionDataBackup = response.data.data.transaction_data
-                        if (this.transactionList.length !== 0) {
-                            this.transactionList = []
-                        }
-                        this.createTransactionTile(response.data.data.transaction_data)
-                        this.setState({ refreshing: false })
-                    }
-                }).catch((e) => {
-                    this.setState({ refreshing: false })
-                })
+                    })
+                }
+            }
+            catch (error) {
+                this.setState({ refreshing: false })
             }
         }
-        catch(error) {
-            this.setState({ refreshing: false })
-        }
+         
     }
 
     createTransactionTile = (data) => {
@@ -795,12 +803,12 @@ class Home extends React.Component {
                                 <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                                 <TouchableOpacity onPress={() => this.pager.setPage(1)} style={{ alignItems: 'center', justifyContent: 'space-around', width: '33%' }}>
                                     <Text style={styles.text}>Rewards</Text>
-                                    <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.userData.wallet_balance}</H3>
+                                    <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.state.walletBalance}</H3>
                                 </TouchableOpacity>
                                 <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                                 <TouchableOpacity onPress={() => this.pager.setPage(2)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
                                     <Text style={styles.text}>Strengths</Text>
-                                    <H3 style={this.state.selectedTab == 2 ? styles.textActive : styles.textInactive}>{this.summeryList.length}</H3>
+                                    <H3 style={this.state.selectedTab == 2 ? styles.textActive : styles.textInactive}>{this.state.strengthCount}</H3>
                                 </TouchableOpacity>
                             </View>
                             :
@@ -812,7 +820,7 @@ class Home extends React.Component {
                                 <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                                 <TouchableOpacity onPress={() => this.pager.setPage(1)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
                                     <Text style={styles.text}>Strengths</Text>
-                                    <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.summeryList.length}</H3>
+                                    <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.state.strengthCount}</H3>
                                 </TouchableOpacity>
                             </View>
                     }
@@ -1072,6 +1080,16 @@ class Home extends React.Component {
                         </Root>
                     </KeyboardAvoidingView>
                 </Modal>
+                <NavigationEvents
+                    onWillFocus={async () => {
+                        if (this.props.isConnected) {
+                            this.loadHome()
+                            this.loadSummary()
+                            this.loadTransactions()
+                        }
+                    }
+                    }
+                />
                 <LoadingModal
                     enabled={this.state.isPostDeleted}
                 />

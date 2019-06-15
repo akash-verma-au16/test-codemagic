@@ -26,10 +26,6 @@ class InAppNotifier extends React.Component {
         this.notificationList = []
     }
 
-    componentWillMount() {
-        this.loadNotifications()
-    }
-
     loadNotifications = () => {
         const payload = {
             associate_id: this.props.associate_id,

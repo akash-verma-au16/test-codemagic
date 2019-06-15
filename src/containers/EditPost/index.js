@@ -178,6 +178,17 @@ class EditPost extends React.Component {
                 return
             }
 
+            if(this.state.postMessage.length == 0) {
+                ToastAndroid.showWithGravityAndOffset(
+                    "We don't mind if you write something..",
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                    25,
+                    100,
+                );
+                return
+            }
+
             if(points <= this.props.walletBalance) {
                 const payload = {
                     Data: {
