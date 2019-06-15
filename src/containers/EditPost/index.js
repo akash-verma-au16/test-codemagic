@@ -166,11 +166,21 @@ class EditPost extends React.Component {
                 })
 
             })
-            console.log('this.associateList', this.associateList)
 
             if(this.state.taggedAssociates.length == 0) {
                 ToastAndroid.showWithGravityAndOffset(
                     'At lease tag one associate',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                    25,
+                    100,
+                );
+                return
+            }
+
+            if(this.state.postMessage.length == 0) {
+                ToastAndroid.showWithGravityAndOffset(
+                    "We don't mind if you write something..",
                     ToastAndroid.SHORT,
                     ToastAndroid.BOTTOM,
                     25,
@@ -203,7 +213,6 @@ class EditPost extends React.Component {
                                 this.newAssociateList.push({ associate_id: item })
                             })
                             if (this.props.navigation.getParam('points') > 0) {
-                                console.log('if')
                                 if (this.props.walletBalance >= points) {
                                     this.newAssociateAddon(this.newAssociateList, points)
                                     this.newUserNotify(this.newAssociateList)
@@ -220,7 +229,6 @@ class EditPost extends React.Component {
                                 }
                             }
                             else {
-                                console.log('else')
                                 this.newUserNotify(this.newAssociateList)
                             }
                         }
@@ -273,11 +281,9 @@ class EditPost extends React.Component {
             post_id: this.props.navigation.getParam('postId'),
             points: points
         }
-        console.log('edit_post_addon payload', payload)
         this.setState({ editAddon: this.state.editAddon + points })
         try {
             edit_post_addon(payload).then(async() => {
-                console.log('calling edit_post_addon')
                 let walletBalance = this.props.walletBalance - points
                 const payload = {
                     walletBalance: walletBalance
@@ -293,7 +299,6 @@ class EditPost extends React.Component {
                 );
             }).catch((e) => {
             // error retriving data
-                console.log(e)
             })
         }
         catch {
@@ -315,7 +320,6 @@ class EditPost extends React.Component {
         }
         try {
             new_associate_notify(payload).then(() => {
-                console.log('calling new_associate_notify')
             }).catch(() => {
                 //Error retriving data
             })
