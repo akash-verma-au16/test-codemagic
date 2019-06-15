@@ -129,42 +129,6 @@ class ListPost extends React.Component {
             this.props.navigation.navigate('LoginPage')
             return
         }
-        PushNotification.onNotification((notification) => {
-            // Note that the notification object structure is different from Android and IOS
-
-            //Display notification
-            this.props.showNotification({
-                title: notification.title,
-                message: notification.body,
-                icon: notificationIcon,
-                onPress: () => {
-                    const url = notification.data['pinpoint.deeplink']
-                    let data = ''
-                    if (url)
-                        data = url.split('/')
-                    else
-                        return
-                    if (data[2] === 'endorsement') {
-                        if (data[3])
-                            this.props.navigation.navigate('ReadPost', { id: data[3] })
-                    }
-                    else if (data[2] == 'gratitude') {
-                        if (data[3])
-                            this.props.navigation.navigate('ReadPost', { id: data[3] })
-                    }
-                    else if (data[2] == 'survey') {
-                        if (data[3])
-                            this.props.navigation.navigate('SurveyIntro', {
-                                surveyId: data[3],
-                                surveyName: 'Daily-Questionnaire',
-                                surveyDescription: 'Daily Survey',
-                                surveyNote: 'note',
-                                surveyLevel: 'beginner'
-                            })
-                    }
-                }
-            })
-        })
         this.loadLikes()
     }
 
@@ -251,6 +215,41 @@ class ListPost extends React.Component {
         "associate_id": this.props.associate_id
     }
     async componentDidMount() {
+        PushNotification.onNotification((notification) => {
+            // Note that the notification object structure is different from Android and IOS
+            //Display notification
+            this.props.showNotification({
+                title: notification.title,
+                message: notification.body,
+                icon: notificationIcon,
+                onPress: () => {
+                    const url = notification.data['pinpoint.deeplink']
+                    let data = ''
+                    if (url)
+                        data = url.split('/')
+                    else
+                        return
+                    if (data[2] === 'endorsement') {
+                        if (data[3])
+                            this.props.navigation.navigate('ReadPost', { id: data[3] })
+                    }
+                    else if (data[2] == 'gratitude') {
+                        if (data[3])
+                            this.props.navigation.navigate('ReadPost', { id: data[3] })
+                    }
+                    else if (data[2] == 'survey') {
+                        if (data[3])
+                            this.props.navigation.navigate('SurveyIntro', {
+                                surveyId: data[3],
+                                surveyName: 'Daily-Questionnaire',
+                                surveyDescription: 'Daily Survey',
+                                surveyNote: 'note',
+                                surveyLevel: 'beginner'
+                            })
+                    }
+                }
+            })
+        })
         await this.getProfile()
         if (this.props.isAuthenticate) {
             this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
