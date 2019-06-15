@@ -343,7 +343,6 @@ class ListPost extends React.Component {
                         /* Checking if any data is available */
                         if (response.data.data.posts.length === 0) {
                             this.setState({ initalLoad: true })
-                            this.postList = []
                             /* Update state to render warning */
                             this.setState({ refreshing: false, networkChanged: false })
                             return
@@ -358,7 +357,6 @@ class ListPost extends React.Component {
                         if (JSON.stringify(this.posts) !== JSON.stringify(response.data.data.posts)) { 
 
                             this.posts = response.data.data.posts
-                            this.postList = []
                             this.createTiles(this.posts)
                         }
                         else {
@@ -396,7 +394,6 @@ class ListPost extends React.Component {
 
                         // /* Take Backup */
                         this.payloadBackup = this.posts
-                        this.postList = []
                         /* Create UI tiles to display */
                         this.createTiles(this.posts)
                     }
@@ -437,8 +434,7 @@ class ListPost extends React.Component {
                         if (this.posts.length == 0) {
                             this.setState({ initalLoad: true })
                         }
-                        // this.setState()
-                        this.postList = []
+                        this.setState({ isPostDeleted: false })
                         this.createTiles(this.posts)
                     }
                 }).catch(() => {
@@ -475,6 +471,7 @@ class ListPost extends React.Component {
 
     createTiles = async (posts) => {
         this.getProfile()
+        this.postList = []
         await posts.map(async (item) => {
 
             /* Convert Array of objects to array of strings */
