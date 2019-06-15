@@ -29,7 +29,7 @@ class EditPost extends React.Component {
         }
         this.state = this.initialState
         this.associateData = []
-        this.associateList=[] 
+        this.associateList = []
         this.newAssociate = []
         //formatting update locale
         Moment.globalMoment = moment;
@@ -72,23 +72,23 @@ class EditPost extends React.Component {
         return {
 
             headerRight: (
-                navigation.getParam('isChanged') ? 
+                navigation.getParam('isChanged') ?
                     <Icon name='md-checkmark' type='Ionicons' style={
                         {
                             color: 'white',
                             margin: 19
                         }
                     } onPress={navigation.getParam('editPostHandler')}
-                    /> 
+                    />
                     : <View style={{ magin: 19 }}></View>
             ),
             headerLeft: (
                 <Icon name='ios-arrow-back' type='Ionicons' style={
                     {
                         color: 'white',
-                        padding: 19 
+                        padding: 19
                     }
-                } 
+                }
                 onPress={() => {
                     if (navigation.getParam('isChanged')) {
                         Alert.alert(
@@ -126,7 +126,7 @@ class EditPost extends React.Component {
     }
 
     componentDidMount() {
-        this.props.navigation.setParams({ isChanged: this.state.isChanged, editPostHandler: this.editPostHandler }); 
+        this.props.navigation.setParams({ isChanged: this.state.isChanged, editPostHandler: this.editPostHandler });
         // Hardware backpress handle
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             Keyboard.dismiss()
@@ -142,8 +142,8 @@ class EditPost extends React.Component {
         }
     }
 
-    editPostHandler = async() => {
-        if(this.props.isConnected){
+    editPostHandler = async () => {
+        if (this.props.isConnected) {
             //new associate data
             this.newAssociateList = []
             this.newAssociate = this.state.taggedAssociates
@@ -167,7 +167,7 @@ class EditPost extends React.Component {
 
             })
 
-            if(this.state.taggedAssociates.length == 0) {
+            if (this.state.taggedAssociates.length == 0) {
                 ToastAndroid.showWithGravityAndOffset(
                     'At lease tag one associate',
                     ToastAndroid.SHORT,
@@ -178,7 +178,7 @@ class EditPost extends React.Component {
                 return
             }
 
-            if(this.state.postMessage.length == 0) {
+            if (this.state.postMessage.length == 0) {
                 ToastAndroid.showWithGravityAndOffset(
                     "We don't mind if you write something..",
                     ToastAndroid.SHORT,
@@ -189,7 +189,7 @@ class EditPost extends React.Component {
                 return
             }
 
-            if(points <= this.props.walletBalance) {
+            if (points <= this.props.walletBalance) {
                 const payload = {
                     Data: {
                         post_id: this.props.navigation.getParam('postId'),
@@ -257,7 +257,7 @@ class EditPost extends React.Component {
                     100,
                 );
             }
-            
+
         }
         else {
             ToastAndroid.showWithGravityAndOffset(
@@ -283,7 +283,7 @@ class EditPost extends React.Component {
         }
         this.setState({ editAddon: this.state.editAddon + points })
         try {
-            edit_post_addon(payload).then(async() => {
+            edit_post_addon(payload).then(async () => {
                 let walletBalance = this.props.walletBalance - points
                 const payload = {
                     walletBalance: walletBalance
@@ -298,7 +298,7 @@ class EditPost extends React.Component {
                     100,
                 );
             }).catch((e) => {
-            // error retriving data
+                // error retriving data
             })
         }
         catch {
@@ -329,16 +329,16 @@ class EditPost extends React.Component {
         }
     }
 
-    onSelectedItemsChange = async(taggedAssociates) => {
-        await this.setState({ 
+    onSelectedItemsChange = async (taggedAssociates) => {
+        await this.setState({
             taggedAssociates: taggedAssociates,
             isChanged: true
         });
-        this.props.navigation.setParams({ isChanged: true }); 
+        this.props.navigation.setParams({ isChanged: true });
     }
 
     async goBack() {
-        if(this.state.isChanged) {
+        if (this.state.isChanged) {
             Alert.alert(
                 'Discard Changes?',
                 'Are you sure you want to discard the changes?',
@@ -406,11 +406,11 @@ class EditPost extends React.Component {
     }
 
     render() {
-        return(
+        return (
             <View style={styles.container}>
                 <ScrollView
-                    contentContainerStyle={styles.scroll} 
-                    keyboardShouldPersistTaps= 'handled'
+                    contentContainerStyle={styles.scroll}
+                    keyboardShouldPersistTaps='handled'
                 >
                     <View style={styles.headerContainer}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 3 }}>
@@ -429,7 +429,7 @@ class EditPost extends React.Component {
                         <Moment style={{ fontSize: 12 }} element={Text} fromNow>{this.state.epoch * 1000}</Moment>
 
                     </View>
-                    
+
                     <View style={styles.horizontalLine}></View>
 
                     <View style={{
@@ -460,7 +460,7 @@ class EditPost extends React.Component {
                         <View style={{ width: '100%', paddingHorizontal: 20, marginTop: 10, marginBottom: 10 }}>
 
                             <MultiSelect
-                                hideTags
+                                hideSubmitButton
                                 items={this.associateData}
                                 uniqueKey='id'
                                 ref={(component) => { this.multiSelect = component }}
@@ -478,10 +478,8 @@ class EditPost extends React.Component {
                                 searchInputStyle={{ color: '#1c92c4' }}
                                 submitButtonColor='#1c92c4'
                                 submitButtonText='Submit'
+                                autoFocusInput={false}
                             />
-                            <View>
-                                {this.multiSelect && this.multiSelect.getSelectedItemsExt(this.state.taggedAssociates)}
-                            </View>
                         </View>
                     </View>
                     <View style={{
@@ -498,13 +496,13 @@ class EditPost extends React.Component {
                             placeholder='Edit your message here...'
                             placeholderTextColor='#444'
                             value={this.state.postMessage}
-                            autoFocus= {true}
+                            autoFocus={true}
                             style={styles.editPost}
                             multiline={true}
                             selectionColor='#1c92c4'
                             onChangeText={(text) => {
                                 this.setState({ postMessage: text, isChanged: true })
-                                this.props.navigation.setParams({ isChanged: true });    
+                                this.props.navigation.setParams({ isChanged: true });
                             }}
                         />
                         <Text style={styles.strength}> #{this.state.strength}</Text>
@@ -516,10 +514,10 @@ class EditPost extends React.Component {
     }
 }
 
-const styles =  StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 5 
+        paddingTop: 5
     },
     scroll: {
         alignItems: 'center',
