@@ -257,7 +257,9 @@ class ListPost extends React.Component {
         }
 
         this.interval = setInterval(() => {
-            this.loadPosts()
+            if(!this.state.isPostDeleted) {
+                this.loadPosts()
+            }
         }, 10000);
 
         this.interval1 = setInterval(() => {
@@ -343,7 +345,6 @@ class ListPost extends React.Component {
                         /* Checking if any data is available */
                         if (response.data.data.posts.length === 0) {
                             this.setState({ initalLoad: true })
-                            this.postList = []
                             /* Update state to render warning */
                             this.setState({ refreshing: false, networkChanged: false })
                             return
@@ -358,7 +359,6 @@ class ListPost extends React.Component {
                         if (JSON.stringify(this.posts) !== JSON.stringify(response.data.data.posts)) { 
 
                             this.posts = response.data.data.posts
-                            this.postList = []
                             this.createTiles(this.posts)
                         }
                         else {
@@ -396,7 +396,6 @@ class ListPost extends React.Component {
 
                         // /* Take Backup */
                         this.payloadBackup = this.posts
-                        this.postList = []
                         /* Create UI tiles to display */
                         this.createTiles(this.posts)
                     }
@@ -427,19 +426,19 @@ class ListPost extends React.Component {
                     associate_id: this.props.associate_id
                 }
             }
+            var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
+            this.postList.splice(index, 1)
+            this.posts.splice(index, 1)
+            if (this.posts.length == 0) {
+                this.setState({ initalLoad: true })
+                return
+            }
+            this.createTiles(this.posts)
             
             try {
                 await delete_post(payload, this.headers).then((res) => {
                     if (res.status === 200) {
-                        var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
-                        this.postList.splice(index, 1)
-                        this.posts.splice(index, 1)
-                        if (this.posts.length == 0) {
-                            this.setState({ initalLoad: true })
-                        }
-                        // this.setState()
-                        this.postList = []
-                        this.createTiles(this.posts)
+                        this.setState({ isPostDeleted: false })
                     }
                 }).catch(() => {
                 })
@@ -474,6 +473,7 @@ class ListPost extends React.Component {
     }
 
     createTiles = async (posts) => {
+        this.postList = []
         this.getProfile()
         await posts.map(async (item) => {
 
@@ -516,9 +516,12 @@ class ListPost extends React.Component {
                     addOn={item.Item.addOnPoints}
                 />
             )
-        })
-        this.setState({ refreshing: false, networkChanged: false, isPostDeleted: false })
 
+            if (posts.length == this.postList.length) {
+                setTimeout(() => this.setState({ refreshing: false}), 1500)
+            }
+
+        })
     }
     render() {
 

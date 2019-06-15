@@ -157,7 +157,10 @@ class Home extends React.Component {
         this.interval = setInterval(() => {
             // Calling transaction list API after render method
             this.loadTransactions()
-            this.loadHome()
+            if(!this.state.isPostDeleted) {
+                // avoid collision between two methods
+                this.loadHome()
+            }
             this.loadSummary()
         }, 10000);
         this.loadSummary()
@@ -242,8 +245,10 @@ class Home extends React.Component {
             if (this.posts.length == 0) {
                 this.setState({ initalLoad: true })
             }
+            this.createTiles(this.posts)
+
             try {
-                delete_post(payload, this.headers).then((res) => {
+                delete_post(payload, this.headers).then(async(res) => {
                     if (res.status === 200) {
                         this.setState({ isPostDeleted: false })
                     }
@@ -293,7 +298,6 @@ class Home extends React.Component {
                             item.Item.commentCount = this.counts[index].commentCount
                             item.Item.addOnPoints = this.counts[index].addOnPoints
                         })
-                        this.homeDataList = []
                         this.createTiles(this.posts)
                     }
                 }).catch(() => {
@@ -307,8 +311,8 @@ class Home extends React.Component {
     }
 
     createTiles = (posts) => {
+        this.homeDataList = []
         posts.map(async (item) => {
-
             /* Convert Array of objects to array of strings */
             let associateList = []
             item.Item.tagged_associates.map((item) => {
@@ -348,8 +352,10 @@ class Home extends React.Component {
                     addOn={item.Item.addOnPoints}
                 />
             )
+            if(posts.length == this.homeDataList.length) {
+                setTimeout(() => this.setState({ homeRefreshing: false}), 1500)
+            }
         })
-        this.setState({ homeRefreshing: false, isPostDeleted: false })
     }
 
     loadSummary = () => {
