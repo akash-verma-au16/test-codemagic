@@ -72,7 +72,6 @@ class StrengthPosts extends React.Component {
     }
 
     async componentDidMount() {
-        this.loadPosts()
         //Detecting network connectivity change
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
         //Handling hardware backpress event
@@ -80,19 +79,22 @@ class StrengthPosts extends React.Component {
             this.props.navigation.goBack()
             return true
         })
+        this.interval = setInterval(() => {
+            this.loadPosts()
+        }, 10000);
 
     }
     componentWillMount() {
-        this.setState({refreshing: true})
+        this.setState({ refreshing: true })
     }
 
     componentWillUnmount() {
-
+        clearInterval(this.interval)
         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
         this.backHandler.remove()
     }
 
-    handleConnectivityChange = async(isConnected) => {
+    handleConnectivityChange = async (isConnected) => {
         if (isConnected) {
             this.loadPosts()
             this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
@@ -135,16 +137,16 @@ class StrengthPosts extends React.Component {
                     .then((response) => {
                         this.posts = []
                         this.counts = []
-                        this.posts = response.data.data.posts 
+                        this.posts = response.data.data.posts
                         this.counts = response.data.data.counts
                         this.posts.map((item, index) => {
                             item.Item.likeCount = this.counts[index].likeCount
-                            item.Item.commentCount = this.counts[index].commentCount 
+                            item.Item.commentCount = this.counts[index].commentCount
                             item.Item.addOnPoints = this.counts[index].addOnPoints
                         })
                         this.createTiles(this.posts)
                     }).catch(() => {
-                        this.setState({ refreshing: false})
+                        this.setState({ refreshing: false })
                     })
 
             }
@@ -158,39 +160,55 @@ class StrengthPosts extends React.Component {
             }
         }
     }
-    createTiles = (posts) => {
+    createTiles = async(posts) => {
         this.postList = []
-        posts.map((item) => {
-            // Get tagged associate Names
+        await posts.map(async (item) => {
+
+            /* Convert Array of objects to array of strings */
             let associateList = []
-            item.Item.tagged_associates.map(async (item) => {
-                let name = await AsyncStorage.getItem(item.associate_id)
-                associateList.push({
-                    associate_id: item.associate_id,
-                    associate_name: name
+            item.Item.tagged_associates.map((item)=>{
+                associateList.push(item.associate_id)
+            })
+
+            /* retrive names in bulk */
+            let fetchedNameList= await AsyncStorage.multiGet(associateList)
+
+            /* Convert to Array of objects */
+            let associateObjectList =[]
+            fetchedNameList.map(item=>{
+                associateObjectList.push({
+                    associate_id: item[0],
+                    associate_name: item[1]
                 })
             })
+
             this.postList.push(
                 // Post Component
                 <Post
                     key={item.Item.post_id} 
-                    postSource = 'StrengthCount'
                     postId={item.Item.post_id}
+                    postSource = 'StrengthCount'
+                    privacy={item.Item.privacy}
                     postCreator_id={item.Item.associate_id}
-                    profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
+                    profileData={this.profileData}
                     time={item.Item.time}
                     postMessage={item.Item.message}
-                    taggedAssociates={associateList}
+                    taggedAssociates={associateObjectList}
                     strength={item.Item.sub_type}
+                    type={item.Item.type}
                     associate={item.Item.associate_id}
                     likeCount={item.Item.likeCount}
-                    commentCount={item.Item.commentCount} 
+                    commentCount={item.Item.commentCount}
+                    postDeleteHandler={this.deletePost}
                     points={item.Item.points} 
                     addOn={item.Item.addOnPoints}
                 />
             )
+
+            if (posts.length == this.postList.length) {
+                setTimeout(() => this.setState({ refreshing: false}), 1500)
+            }
         })
-        this.setState({ refreshing: false})
     }
 
     render() {
