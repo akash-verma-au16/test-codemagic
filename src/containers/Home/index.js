@@ -566,6 +566,7 @@ class Home extends React.Component {
                 if (payload.tenant_id !== "" && payload.associate_id !== "") {
                     this.setState({ refreshing: true })
                     await read_transaction(payload, this.headers).then(response => {
+                        console.log('read_transaction',response.data.data.transaction_data)
                         this.setState({
                             walletBalance: response.data.data.wallet_balance
                         })
@@ -623,7 +624,10 @@ class Home extends React.Component {
                                                     'Points debited for '
                                             }
                                             {
-                                                item.sevice_name == 'endorse' ? 'Endorsement: ' : 'Gratitude: '
+                                                item.sevice_name == "add_on" ? 'Addon- ' : '' 
+                                            }
+                                            {
+                                                item.sevice_sub_type == 'Kudos' ? 'Gratitude: ' : 'Endorsement: '
                                             }
                                             {item.sevice_sub_type}
                                         </Text>

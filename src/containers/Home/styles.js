@@ -130,7 +130,7 @@ export const styles = StyleSheet.create({
     tText: {
         paddingBottom: 10,
         fontFamily: "OpenSans-Regular",
-        fontSize: 15
+        fontSize: 14
     },
     pointsView: {
         height: 30,
