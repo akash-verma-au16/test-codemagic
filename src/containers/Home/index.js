@@ -140,7 +140,6 @@ class Home extends React.Component {
                 this.setState({ associate_id: this.props.associate_id })
                 this.loadSummary()
             }
-            await this.loadProfile()
         }
         else {
             if (this.userData == {}) {
@@ -694,7 +693,7 @@ class Home extends React.Component {
         const payload = {
             tenant_name: this.props.tenantName + this.props.accountAlias,
             file_name: 'logo.png',
-            associate_email: this.userData.email || this.props.navigation.getParam('profileData').email
+            associate_email: this.userData.email || this.props.email
         }
         file_download(payload).then((response) => {
             /* Store the image */
@@ -703,6 +702,7 @@ class Home extends React.Component {
                 this.props.imageUrl(response.data.data['download-signed-url'])
 
         }).catch(() => {
+            //Error retriving data
         })
     }
 
