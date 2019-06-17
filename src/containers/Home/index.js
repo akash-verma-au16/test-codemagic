@@ -342,7 +342,8 @@ class Home extends React.Component {
             this.homeDataList.push(
                 // Post Component
                 <Post
-                    key={item.Item.post_id}
+                    key={item.Item.post_id} 
+                    postSource= 'Profile'
                     postId={item.Item.post_id}
                     privacy={item.Item.privacy}
                     postCreator_id={item.Item.associate_id}

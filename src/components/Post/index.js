@@ -254,6 +254,9 @@ class Post extends Component {
                 isPost: false
             })
         }
+        else if (this.props.postSource == 'Profile') {
+            return
+        }
         else {
             this.props.navigation.navigate('Profile', {
                 associateId: associateId,
