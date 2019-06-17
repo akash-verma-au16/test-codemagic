@@ -135,6 +135,7 @@ class Home extends React.Component {
     };
 
     async componentWillMount() {
+        this.setState({homeRefreshing: true})
         if (this.state.associate_id !== this.props.associate_id) {
             if (this.state.associate_id == undefined || this.state.associate_id == "") {
                 this.setState({ associate_id: this.props.associate_id })
@@ -142,6 +143,7 @@ class Home extends React.Component {
             }
         }
         else {
+            this.setState({refreshing: true})
             if (this.userData == {}) {
                 this.loadProfile()
             }
@@ -262,9 +264,6 @@ class Home extends React.Component {
     }
 
     async loadHome() {
-        this.setState({
-            homeRefreshing: true
-        })
         const payload = {
             "tenant_id": this.props.accountAlias,
             "associate_id": this.state.associate_id
@@ -564,7 +563,6 @@ class Home extends React.Component {
             }
             try {
                 if (payload.tenant_id !== "" && payload.associate_id !== "") {
-                    this.setState({ refreshing: true })
                     await read_transaction(payload, this.headers).then(response => {
                         console.log('read_transaction',response.data.data.transaction_data)
                         this.setState({
@@ -618,13 +616,15 @@ class Home extends React.Component {
                                         :
                                         <Text style={styles.tText}>
                                             {
-                                                (item.t_type == 'cr') ?
-                                                    'Points credited for '
+                                                (item.sevice_name == "add_on") ? 
+                                                    item.t_type == 'cr' ?
+                                                        'You have been gifted points for ' :
+                                                        'You have gifted points for '
                                                     :
-                                                    'Points debited for '
-                                            }
-                                            {
-                                                item.sevice_name == "add_on" ? 'Addon- ' : '' 
+                                                    item.t_type == 'cr' ?
+                                                        'Points credited for '
+                                                        :
+                                                        'Points debited for '
                                             }
                                             {
                                                 item.sevice_sub_type == 'Kudos' ? 'Gratitude: ' : 'Endorsement: '
