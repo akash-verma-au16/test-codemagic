@@ -263,7 +263,7 @@ class ListPost extends React.Component {
 
         this.interval1 = setInterval(() => {
             this.getAssociateNames()
-        }, 9000);
+        }, 15000);
 
         //Detecting network connectivity change
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
@@ -336,6 +336,7 @@ class ListPost extends React.Component {
         if (payload.tenant_id !== "" && payload.associate_id !== "") {
             try {
                 news_feed(payload, this.headers).then((response) => {
+                    console.log('Calling news_feed')
                     /* take payload backup to check for changes later */
                     if (this.payloadBackup.length === response.data.data.posts.length) {
                         /* No change in payload hence do nothing */
@@ -435,7 +436,7 @@ class ListPost extends React.Component {
             try {
                 await delete_post(payload, this.headers).then((res) => {
                     if (res.status === 200) {
-                        this.setState({ isPostDeleted: false })
+                        setTimeout(() => this.setState({ isPostDeleted: false }), 2000)
                     }
                 }).catch(() => {
                 })
@@ -472,7 +473,6 @@ class ListPost extends React.Component {
     createTiles = async (posts) => {
         this.postList = []
         this.getProfile()
-        this.postList = []
         await posts.map(async (item) => {
 
             /* Convert Array of objects to array of strings */
