@@ -564,7 +564,6 @@ class Home extends React.Component {
             try {
                 if (payload.tenant_id !== "" && payload.associate_id !== "") {
                     await read_transaction(payload, this.headers).then(response => {
-                        console.log('read_transaction',response.data.data.transaction_data)
                         this.setState({
                             walletBalance: response.data.data.wallet_balance
                         })
