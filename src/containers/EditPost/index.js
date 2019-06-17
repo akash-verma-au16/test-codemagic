@@ -178,7 +178,7 @@ class EditPost extends React.Component {
                 return
             }
 
-            if (this.state.postMessage.length == 0) {
+            if (this.state.postMessage.length == 0 || !this.state.postMessage.replace(/\s/g, '').length) {
                 ToastAndroid.showWithGravityAndOffset(
                     "We don't mind if you write something..",
                     ToastAndroid.SHORT,
@@ -202,10 +202,10 @@ class EditPost extends React.Component {
                         tagged_associates: this.associateList,
                         privacy: this.props.navigation.getParam('privacy'),
                         time: this.state.epoch,
-                        points: this.state.taggedAssociates.length * base
+                        points: this.props.navigation.getParam('points') + points
                     }
                 }
-
+                
                 try {
                     edit_post(payload, this.headers).then(async () => {
                         if (this.newAssociate.length > 0) {
@@ -290,8 +290,9 @@ class EditPost extends React.Component {
                 }
                 //Update Wallet
                 await this.props.updateWallet(payload)
+                let pString = points > 1 ? ' points' : ' point'
                 ToastAndroid.showWithGravityAndOffset(
-                    'You gifted ' + points + ' points',
+                    'You have given ' + points + pString,
                     ToastAndroid.SHORT,
                     ToastAndroid.BOTTOM,
                     25,
