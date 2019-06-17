@@ -1,11 +1,11 @@
 import React from 'react';
-import { StyleSheet, Dimensions } from 'react-native'
+import { StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native'
 import { Text, Toast, View } from 'native-base';
 import Slider from 'react-native-slider'
 
 class RangeScale extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.data = {}
         props.data.map((item) => {
             this.data = {
@@ -18,10 +18,10 @@ class RangeScale extends React.Component {
             data: this.data
         }
         this.props.answerHandler(this.state.questionId, this.state.data)
-        
-        if(props.data.length===1){
+        this.sliderRef = React.createRef()
+        if (props.data.length === 1) {
             this.isSingleQuestion = true
-        }else{
+        } else {
             this.isSingleQuestion = false
         }
     }
@@ -40,27 +40,45 @@ class RangeScale extends React.Component {
         }
     }
     scaleComponent = (props) => {
-        const title =props.title?props.title:''
-        let start=props.start.value
+        const title = props.title ? props.title : ''
+        let start = props.start.value
         let end = props.end.value
         let startUnit = ''
-        let endUnit= ''
-        if(props.unit !=='NA'){
-            startUnit=' ' + props.unit
+        let endUnit = ''
+        if (props.unit !== 'NA') {
+            startUnit = ' ' + props.unit
             endUnit = ' ' + props.unit + 's'
         }
-        const startText=props.start.text?props.start.text:''
-        
-        const endText=props.end.text?props.end.text:''
-        const index=props.index
-        const step =props.step
-        const defaultValue=props.default_value
+        const startText = props.start.text ? props.start.text : ''
+        const endText = props.end.text ? props.end.text : ''
+        const index = props.index
+        const step = props.step
+        const onValueChangeHandler = (value) => {
+            this.setState({
+                data: {
+                    ...this.state.data,
+                    [title]: value
+                }
+            }, () => {
+                this.props.answerHandler(this.state.questionId, this.state.data)
+            })
+
+        }
+        const trackTouchHandler=(event)=>{
+            let containerWidth = this.sliderRef._containerSize.width
+            let touchLocation = event.nativeEvent.locationX
+            let percentage = (touchLocation / containerWidth) * 100
+            let offset = (end * percentage)/ 100
+            let roundOff = Math.floor(offset)
+            let removeOverflow = roundOff > end ? end : roundOff
+            onValueChangeHandler(removeOverflow)
+        }
         return (
             <View
                 style={styles.option}
                 key={index}
             >
-                {this.isSingleQuestion?
+                {this.isSingleQuestion ?
                     null
                     :
                     <Text
@@ -80,38 +98,33 @@ class RangeScale extends React.Component {
                     <Text>
                         {start + startUnit}
                     </Text>
-                    
+
                     <Text>
                         {this.state.data[title]}
                     </Text>
-                    
+
                     <Text>
                         {end + endUnit}
                     </Text>
                 </View>
-                <Slider
-                    style={{
-                        marginHorizontal: 15
-                    }}
-                    minimumValue={start}
-                    maximumValue={end}
-                    step={step}
-                    trackStyle={styles.track}
-                    thumbStyle={styles.thumb}
-                    minimumTrackTintColor='#1c92c4'
-                    value={defaultValue}
-                    onValueChange={(value) => {
-                        this.setState({
-                            data: {
-                                ...this.state.data,
-                                [title]: value
-                            }
-                        }, () => {
-                            this.props.answerHandler(this.state.questionId, this.state.data)
-                        })
+                <TouchableWithoutFeedback 
+                    onPressIn={trackTouchHandler} >
+                    <Slider
+                        style={{
+                            marginHorizontal: 15
+                        }}
+                        minimumValue={start}
+                        maximumValue={end}
+                        step={step}
+                        ref={ref=>this.sliderRef=ref}
+                        trackStyle={styles.track}
+                        thumbStyle={styles.thumb}
+                        minimumTrackTintColor='#1c92c4'
+                        value={this.state.data[title]}
+                        onValueChange={onValueChangeHandler}
+                    />
+                </TouchableWithoutFeedback>
 
-                    }}
-                />
                 <View
                     style={{
                         flexDirection: 'row',
@@ -123,7 +136,7 @@ class RangeScale extends React.Component {
                     <Text>
                         {startText}
                     </Text>
-                    
+
                     <Text>
                         {endText}
                     </Text>
