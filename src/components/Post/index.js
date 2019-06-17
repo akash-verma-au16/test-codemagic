@@ -473,11 +473,11 @@ class Post extends Component {
                         <View style={{ flexDirection: 'row', width: "50%", alignItems: 'center' }}>
                             <TouchableOpacity activeOpacity={0.8} underlayColor='#111' style={styles.navBar} onPress={() => this.props.navigation.navigate('Likes', { postId: this.props.postId })}>
                                 <Text style={styles.infoNo}>{this.state.likes}</Text>
-                                <Text style={styles.infoText}>{this.props.likeCount > 1 ? "Likes" : "Like"}</Text>
+                                <Text style={styles.infoText}>{this.state.likes > 1 ? "Likes" : "Like"}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.navBar} underlayColor='#111' activeOpacity={0.8} onPress={() => this.props.navigation.navigate('Comments', { postId: this.props.postId, returnCount: this.returnCount })}>
                                 <Text style={styles.infoNo}>{this.state.comments}</Text>
-                                <Text style={styles.infoText}>{this.props.commentCount > 1 ? 'Comments' : 'Comment'}</Text>
+                                <Text style={styles.infoText}>{this.state.comments > 1 ? 'Comments' : 'Comment'}</Text>
                             </TouchableOpacity>
                         </View>
                         {this.state.addOnPoints > 0 ?

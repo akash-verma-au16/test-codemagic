@@ -19,6 +19,9 @@ import uuid from 'uuid'
 //Comment API methods
 import { add_comment, list_comments, delete_comment } from '../../services/comments'
 
+//Loading Modal
+import LoadingModal from '../LoadingModal'
+
 //Redux
 import { connect } from 'react-redux'
 
@@ -74,7 +77,11 @@ class Comments extends React.Component {
         });
         //Add network Connectivity Listener
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange)
-        this.interval = setInterval(() => { this.fetchComments() }, 10000);
+        this.interval = setInterval(() => {
+            if (!this.state.isCommentDeleted) {
+                this.fetchComments()
+            } 
+        }, 10000);
         this.props.navigation.setParams({ commentCount: this.commentCount })
     }
 
@@ -122,12 +129,10 @@ class Comments extends React.Component {
                     }
                     else {
                         this.setState({ initialLoad: false})
-                        this.commentList = [] 
                         if (this.comments.length == 0 && !this.state.isCommentDeleted) {
                             this.comments = response.data.data.Items
                         }
 
-                        // this.commentList = []
                         if (this.comments.length !== response.data.data.Items.length) {
                             if (this.comments.length > response.data.data.Items.length) {
                                 return
@@ -186,7 +191,6 @@ class Comments extends React.Component {
                         time: payload.Data.comment.time
                     })
                     this.props.navigation.setParams({ commentCount: this.comments.length })
-                    this.commentList=[]
                     this.loadComments(this.comments)
                     Keyboard.dismiss()
                     // this.setState({ commentsRefresh: true })
@@ -228,10 +232,10 @@ class Comments extends React.Component {
     loadComments = async(data) => {
         var inputData = data.sort((a,b) => {return a.time -b.time})
         this.commentList = []
-        await inputData.map((item, index) => {
+        await inputData.map((item) => {
             this.commentList.push(
                 <Comment
-                    key={index} 
+                    key={item.comment_id} 
                     comment_id={item.comment_id} 
                     post_id={item.post_id}
                     associate={this.props.associateList[item.associate_id]} 
@@ -249,6 +253,7 @@ class Comments extends React.Component {
 
     deleteComment = (comment_id, comment) => {
         if(this.props.isConnected) {
+            this.setState({ isCommentDeleted: true })
             /* epoch time calculation */
             const dateTime = Date.now();
             const timestamp = Math.floor(dateTime / 1000);
@@ -270,18 +275,19 @@ class Comments extends React.Component {
             this.comments.sort((a, b) => { return a.time - b.time })
             this.comments.splice(index, 1)
             if(this.comments.length == 0) {
-                this.setState({ initialLoad: true, isCommentDeleted: true })
+                this.setState({ initialLoad: true })
             }
             else {
-                this.setState({ isCommentDeleted: true })
                 this.loadComments(this.comments)
             }
             try {
                 delete_comment(payload, this.headers).then(async(response) => {
                     if(response.status === 200) {
-                        this.setState({ isCommentDeleted: false })
+                        setTimeout(() => this.setState({ isCommentDeleted: false }), 2000)
                     }
                 }).catch(() => {
+                    //Error retriving data
+                    this.setState({ isCommentDeleted: false })
                 })
             }
             catch (e) {/* error */}
@@ -357,6 +363,9 @@ class Comments extends React.Component {
                         />
                     </View>
                 </View>
+                <LoadingModal
+                    enabled={this.state.isCommentDeleted}
+                />
             </View>
         )
     }
