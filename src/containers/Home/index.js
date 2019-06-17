@@ -92,7 +92,7 @@ class Home extends React.Component {
             photo: null,
             imageUrl: null,
             isPostDeleted: false,
-            walletBalance: "0",
+            walletBalance: "",
             strengthCount: "0"
         }
         this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id || this.state.associate_id == undefined })
@@ -135,6 +135,7 @@ class Home extends React.Component {
     };
 
     async componentWillMount() {
+        this.setState({homeRefreshing: true})
         if (this.state.associate_id !== this.props.associate_id) {
             if (this.state.associate_id == undefined || this.state.associate_id == "") {
                 this.setState({ associate_id: this.props.associate_id })
@@ -142,6 +143,7 @@ class Home extends React.Component {
             }
         }
         else {
+            this.setState({refreshing: true})
             if (this.userData == {}) {
                 this.loadProfile()
             }
@@ -262,9 +264,6 @@ class Home extends React.Component {
     }
 
     async loadHome() {
-        this.setState({
-            homeRefreshing: true
-        })
         const payload = {
             "tenant_id": this.props.accountAlias,
             "associate_id": this.state.associate_id
@@ -564,8 +563,8 @@ class Home extends React.Component {
             }
             try {
                 if (payload.tenant_id !== "" && payload.associate_id !== "") {
-                    this.setState({ refreshing: true })
                     await read_transaction(payload, this.headers).then(response => {
+                        console.log('read_transaction',response.data.data.transaction_data)
                         this.setState({
                             walletBalance: response.data.data.wallet_balance
                         })
@@ -617,13 +616,18 @@ class Home extends React.Component {
                                         :
                                         <Text style={styles.tText}>
                                             {
-                                                (item.t_type == 'cr') ?
-                                                    'Points credited for '
+                                                (item.sevice_name == "add_on") ? 
+                                                    item.t_type == 'cr' ?
+                                                        'You have been gifted points for ' :
+                                                        'You have gifted points for '
                                                     :
-                                                    'Points debited for '
+                                                    item.t_type == 'cr' ?
+                                                        'Points credited for '
+                                                        :
+                                                        'Points debited for '
                                             }
                                             {
-                                                item.sevice_name == 'endorse' ? 'Endorsement: ' : 'Gratitude: '
+                                                item.sevice_sub_type == 'Kudos' ? 'Gratitude: ' : 'Endorsement: '
                                             }
                                             {item.sevice_sub_type}
                                         </Text>
@@ -828,7 +832,18 @@ class Home extends React.Component {
                                 <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                                 <TouchableOpacity onPress={() => this.pager.setPage(1)} style={{ alignItems: 'center', justifyContent: 'space-around', width: '33%' }}>
                                     <Text style={styles.text}>Rewards</Text>
-                                    <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.state.walletBalance}</H3>
+                                    {
+                                        this.state.walletBalance == "" ?
+                                            <ActivityIndicator
+                                                size='small'
+                                                color='#1c92c4'
+                                                style={{
+                                                    marginHorizontal: 5
+                                                }}
+                                            /> 
+                                            :
+                                            <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.state.walletBalance}</H3>
+                                    }
                                 </TouchableOpacity>
                                 <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                                 <TouchableOpacity onPress={() => this.pager.setPage(2)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
