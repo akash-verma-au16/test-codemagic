@@ -21,8 +21,6 @@ import { read_post } from '../../services/post'
 
 //Prefetch profile data
 import { loadProfile } from '../Home/apicalls'
-/* Components */
-import { NavigationEvents } from 'react-navigation';
 // push notification
 import Auth from '@aws-amplify/auth';
 import Analytics from '@aws-amplify/analytics';
@@ -216,7 +214,11 @@ class ListPost extends React.Component {
                         this.setState({ refreshing: false, networkChanged: false })
                     }).catch(() => {
                         this.setState({ refreshing: false, networkChanged: false })
-                        alert('Opps! something went wrong, No worries the post can be seen on home page.')
+                        Toast.show({
+                            text: 'This post is unavailable',
+                            type: 'danger',
+                            duration: 2000
+                        })
                     })
 
             }
