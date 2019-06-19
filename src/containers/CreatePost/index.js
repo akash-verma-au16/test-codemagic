@@ -92,10 +92,8 @@ class CreatePost extends React.Component {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
         this.props.navigation.setParams({ postSubmitHandler: this.postSubmitHandler });
         this.props.navigation.setParams({ goBack: this.goBack });
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            this.goBack()
-            return true
-        })
+        // Hardware backpress handle
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.goBack)
         this.keyboardDidShowListener = Keyboard.addListener(
             'keyboardDidShow',
             this._keyboardDidShow,
@@ -162,10 +160,12 @@ class CreatePost extends React.Component {
         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange)
     }
 
-    goBack = () => {
-        if (JSON.stringify({...this.state,profileData:null}) === JSON.stringify(this.initialState))
-            this.props.navigation.navigate('home')
-        else
+    goBack = async() => {
+        if (JSON.stringify({...this.state,profileData:null}) === JSON.stringify(this.initialState)) {
+            await this.props.navigation.navigate('home')
+            return true
+        }
+        else {
             Alert.alert(
                 'Are you sure?',
                 'Note will not be saved',
@@ -178,13 +178,15 @@ class CreatePost extends React.Component {
                         text: 'OK', onPress: () => {
                             this.setState(this.initialState)
                             this.props.navigation.navigate('home')
+                            return true
                         }
                     }
                 ],
                 { cancelable: false },
             )
+        }  
+        return true
     }
-
     // Submitting post handler function
     postSubmitHandler = () => {
 

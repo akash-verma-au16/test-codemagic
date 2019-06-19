@@ -8,7 +8,8 @@ import {
     BackHandler,
     ToastAndroid,
     AsyncStorage,
-    Platform
+    Platform,
+    Alert
 } from 'react-native';
 
 /* Native Base */
@@ -67,9 +68,7 @@ class LoginPage extends React.Component {
         this.associateList = {}
     }
     componentDidMount() {
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            return true
-        })
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress',this.goBack )
         this.keyboardDidShowListener = Keyboard.addListener(
             'keyboardDidShow',
             this._keyboardDidShow,
@@ -97,6 +96,26 @@ class LoginPage extends React.Component {
                 })
             })
             .catch(() => {/* error */ })
+    }
+
+    goBack() {
+        Alert.alert(
+            'Exit App?',
+            'Are you sure you want to exit the app?',
+            [
+                {
+                    text: 'No',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Yes', onPress: () => {
+                        BackHandler.exitApp()
+                    }
+                }
+            ],
+            { cancelable: false },
+        )
+        return true
     }
 
     componentWillUnmount() {
