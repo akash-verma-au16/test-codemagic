@@ -205,7 +205,7 @@ class EditPost extends React.Component {
                         points: this.props.navigation.getParam('points') + points
                     }
                 }
-                
+
                 try {
                     edit_post(payload, this.headers).then(async () => {
                         if (this.newAssociate.length > 0) {
@@ -270,7 +270,13 @@ class EditPost extends React.Component {
         }
 
     }
-
+    closeSelectionDrawer = () => {
+        /* check if drawer is open */
+        if (this.multiSelect.state.selector) {
+            /* close the expanded list, clear search term */
+            this.multiSelect._submitSelection()
+        }
+    }
     newAssociateAddon = (newAssociateList, points) => {
         const payload = {
             tenant_id: this.props.accountAlias,
@@ -298,7 +304,7 @@ class EditPost extends React.Component {
                     25,
                     100,
                 );
-            }).catch((e) => {
+            }).catch(() => {
                 // error retriving data
             })
         }
@@ -503,10 +509,16 @@ class EditPost extends React.Component {
                             selectionColor='#1c92c4'
                             onChangeText={(text) => {
                                 this.setState({ postMessage: text, isChanged: true })
-                                this.props.navigation.setParams({ isChanged: true });
+                                this.props.navigation.setParams({ isChanged: true })
+                                this.closeSelectionDrawer()
+                            }}
+                            onFocus={() => {
+                                this.closeSelectionDrawer()
                             }}
                         />
-                        <Text style={styles.strength}> #{this.state.strength}</Text>
+                        <Text style={styles.strength} onPress={() => {
+                            this.closeSelectionDrawer()
+                        }}> #{this.state.strength}</Text>
                     </View>
                 </ScrollView>
 
