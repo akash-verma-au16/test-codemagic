@@ -186,28 +186,27 @@ class ListSurvey extends React.Component {
                                 associateId: navigation.getParam('associateId')
                             })
                         }
-                    }}
+                    }} 
+                    style={{marginLeft: 13, alignItems: 'center', justifyContent: 'center'}}
                 >
-                    {navigation.getParam('imageUrl') === '' ?
-                        <ActivityIndicator
-                            size='small'
-                            color='#fff'
-                            style={{
-                                borderRadius: 50,
-                                margin: 20
-                            }}
-                        />
-                        :
-                        <Thumbnail
-                            source={{ uri: navigation.getParam('imageUrl') }}
-                            style={{
-                                height: '70%',
-                                borderRadius: 50,
-                                margin: 10
-                            }}
-                            resizeMode='contain'
-                        />
-                    }
+                    <View style={styles.navImageWrapper}>
+                        {navigation.getParam('imageUrl') === '' ?
+                            <ActivityIndicator
+                                size='small'
+                                color='#1c92c4'
+                            />
+                            :
+                            <Thumbnail
+                                source={{ uri: navigation.getParam('imageUrl') }}
+                                style={{
+                                    height: 40,
+                                    width: 40,
+                                    borderRadius: 20
+                                }}
+                                resizeMode='cover'
+                            />
+                        }
+                    </View>
                 </TouchableOpacity>
             )
         };
@@ -419,6 +418,14 @@ const styles = StyleSheet.create({
     tileText: { 
         textAlign: 'center',
         color: '#fff' 
+    },
+    navImageWrapper: {
+        backgroundColor: '#eee', 
+        height: 40, 
+        width: 40, 
+        borderRadius: 20, 
+        alignItems: 'center', 
+        justifyContent: 'center'
     }
 })
 

@@ -9,7 +9,8 @@ import {
     Dimensions,
     BackHandler,
     ToastAndroid,
-    ActivityIndicator
+    ActivityIndicator,
+    Alert
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
 import AsyncStorage from '@react-native-community/async-storage';
@@ -48,11 +49,12 @@ class ListPost extends React.Component {
             isConnected: this.props.isConnected,
             networkChanged: false,
             isPostDeleted: false,
-            initalLoad: false
+            initalLoad: false,
+            isFocused: false
         }
         this.loadLikes = this.loadLikes.bind(this)
         this.loadPosts = this.loadPosts.bind(this);
-        this.getProfile = this.getProfile.bind(this)
+        this.getProfile = this.getProfile.bind(this) 
         this.likes = []
         this.posts = []
         this.postList = []
@@ -89,38 +91,32 @@ class ListPost extends React.Component {
                         }
                     }}
                     style={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: 50
+                        marginLeft: 13, alignItems: 'center', justifyContent: 'center'
                     }}
                 >
-                    {navigation.getParam('imageUrl') === '' ?
-                        <ActivityIndicator
-                            size='small'
-                            color='#fff'
-                            style={{
-                                borderRadius: 50,
-                                margin: 20
-                            }}
-                        />
-                        :
-                        <Thumbnail
-                            source={{ uri: navigation.getParam('imageUrl') }}
-                            style={{
-                                height: '70%',
-                                borderRadius: 50,
-                                margin: 10
-                            }}
-                            resizeMode='contain'
-                        />
-                    }
-
+                    <View style={styles.navImageWrapper}>
+                        {navigation.getParam('imageUrl') === '' ?
+                            <ActivityIndicator
+                                size='small'
+                                color='#1c92c4'
+                            />
+                            :
+                            <Thumbnail
+                                source={{ uri: navigation.getParam('imageUrl') }}
+                                style={{
+                                    height: 40,
+                                    width: 40,
+                                    borderRadius: 20
+                                }}
+                                resizeMode='cover'
+                            />
+                        }
+                    </View>
                 </TouchableOpacity>
             )
         };
     };
     componentWillMount() {
-
         this.props.navigation.setParams({ commingSoon: this.commingSoon });
         if (this.props.isFreshInstall) {
             this.props.navigation.navigate('TermsAndConditions')
@@ -187,8 +183,27 @@ class ListPost extends React.Component {
             // Error retrieving data
         }
     }
-    goBack() {
-        return true
+    goBack(isFocused) {
+        if(isFocused) {
+            Alert.alert(
+                'Exit App?',
+                'Are you sure you want to exit the app?',
+                [
+                    {
+                        text: 'No',
+                        style: 'cancel'
+                    },
+                    {
+                        text: 'Yes', onPress: () => {
+                            BackHandler.exitApp()
+                            return true
+                        }
+                    }
+                ],
+                { cancelable: false },
+            )
+            return true
+        }
     }
 
     getAssociateNames = async () => {
@@ -267,10 +282,9 @@ class ListPost extends React.Component {
 
         //Detecting network connectivity change
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-        //Handling hardware backpress event
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            this.goBack()
-        })
+        // Handling hardware backpress event
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.goBack(this.state.isFocused))
+        
         //  Loading profile
         this.props.navigation.setParams({ 'profileData': this.profileData, walletBalance: this.profileData.walletBalance })
 
@@ -336,7 +350,6 @@ class ListPost extends React.Component {
         if (payload.tenant_id !== "" && payload.associate_id !== "") {
             try {
                 news_feed(payload, this.headers).then((response) => {
-                    console.log('Calling news_feed')
                     /* take payload backup to check for changes later */
                     if (this.payloadBackup.length === response.data.data.posts.length) {
                         /* No change in payload hence do nothing */
@@ -561,7 +574,8 @@ class ListPost extends React.Component {
                 </ScrollView>
 
                 <NavigationEvents
-                    onWillFocus={async () => {
+                    onWillFocus={async() => {
+                        await this.setState({ isFocused: this.props.navigation.isFocused()})
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
@@ -569,6 +583,9 @@ class ListPost extends React.Component {
                                 this.loadPosts()
                             }
                         }
+                    }} 
+                    onWillBlur = {async() => {
+                        await this.setState({ isFocused: this.props.navigation.isFocused() }) 
                     }}
                 />
                 {this.state.newPostVisibility ?
@@ -611,6 +628,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#eee',
         paddingTop: 3
+    },
+    navImageWrapper: {
+        backgroundColor: '#eee',
+        height: 40,
+        width: 40,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 });
 

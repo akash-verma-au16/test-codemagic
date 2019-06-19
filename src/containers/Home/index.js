@@ -92,7 +92,7 @@ class Home extends React.Component {
             photo: null,
             imageUrl: null,
             isPostDeleted: false,
-            walletBalance: "",
+            walletBalance: this.props.navigation.getParam('profileData').wallet_balance,
             strengthCount: "0"
         }
         this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id || this.state.associate_id == undefined })
@@ -788,9 +788,9 @@ class Home extends React.Component {
                             <View style={styles.tbWrapper}>
                                 {!this.state.isImageLoading ?
                                     <Image
-                                        style={{ borderRadius: 90, width: 90, height: 90, aspectRatio: 1 / 1, margin: 10 }}
+                                        style={{ borderRadius: 45, width: 90, height: 90 }}
                                         source={{ uri: this.state.imageUrl }}
-                                        resizeMode='stretch'
+                                        resizeMode='cover'
                                     />
                                     :
                                     <ActivityIndicator size='small' color='#1c92c4' />
@@ -831,18 +831,7 @@ class Home extends React.Component {
                                 <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                                 <TouchableOpacity onPress={() => this.pager.setPage(1)} style={{ alignItems: 'center', justifyContent: 'space-around', width: '33%' }}>
                                     <Text style={styles.text}>Rewards</Text>
-                                    {
-                                        this.state.walletBalance == "" ?
-                                            <ActivityIndicator
-                                                size='small'
-                                                color='#1c92c4'
-                                                style={{
-                                                    marginHorizontal: 5
-                                                }}
-                                            /> 
-                                            :
-                                            <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.state.walletBalance}</H3>
-                                    }
+                                    <H3 style={this.state.selectedTab == 1 ? styles.textActive : styles.textInactive}>{this.state.walletBalance}</H3>
                                 </TouchableOpacity>
                                 <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                                 <TouchableOpacity onPress={() => this.pager.setPage(2)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
