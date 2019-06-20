@@ -21,6 +21,7 @@ class Likes extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            peopleList: [],
             postId: this.props.navigation.getParam('postId'),
             peopleListrefresh: false,
             noData: false
@@ -31,7 +32,6 @@ class Likes extends React.Component {
     }
 
     componentWillMount() {
-        this.fetchPeopleList()
         this.setState({ peopleListrefresh: true })
     }
 
@@ -114,16 +114,18 @@ class Likes extends React.Component {
 
     loadPeople = (data) => {
         this.peopleList = []
-        data.map(async(item, index) => {
+        data.map((item) => {
             this.peopleList.push(
                 <Like 
-                    index={index} 
+                    key={item.like_id} 
                     associateId = {item.associate_id} 
                     time= {item.time}
                 />
             )
         })
-        this.setState({ peopleListrefresh: false })
+        if(data.length == this.peopleList.length) {
+            this.setState({ peopleList: this.peopleList, peopleListrefresh: false })
+        }
     }
 
     render() {
@@ -147,7 +149,7 @@ class Likes extends React.Component {
                             }}
                         />
                     }>
-                    {!this.state.noData ? this.peopleList : <View style={{
+                    {!this.state.noData ? this.state.peopleList : <View style={{
                         alignItems: 'center',
                         justifyContent:'center'
                     }}>

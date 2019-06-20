@@ -57,7 +57,7 @@ export default class Like extends Component {
 
     render() {
         return(
-            <View style={styles.tileContainer} key={this.props.index}>
+            <View style={styles.tileContainer}>
                 <View style={styles.tileView}>
                     <View style={{ alignItems: 'center', justifyContent: 'center', width: '20%' }}>
                         <View style={styles.iconView}>
