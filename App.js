@@ -103,8 +103,6 @@ export default class App extends Component {
 
     }
     componentWillUnmount() {
-        this.notificationListener();
-        this.notificationOpenedListener();
         //Removing connection change listener
         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
     }

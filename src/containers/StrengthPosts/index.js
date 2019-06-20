@@ -42,7 +42,6 @@ class StrengthPosts extends React.Component {
             refreshing: false,
             newPostVisibility: false
         }
-        this.loadPosts = this.loadPosts.bind(this);
         this.post = []
         this.postList = []
         this.scrollViewRef = React.createRef();

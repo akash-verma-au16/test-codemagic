@@ -72,6 +72,8 @@ class Home extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            postList: [],
+            noPost: false,
             associate_id: this.props.navigation.getParam('associateId'),
             homeRefreshing: false,
             refreshing: false,
@@ -244,14 +246,14 @@ class Home extends React.Component {
             this.homeDataList.splice(index, 1)
             this.posts.splice(index, 1)
             if (this.posts.length == 0) {
-                this.setState({ initalLoad: true })
+                this.setState({ noData: true })
             }
-            this.createTiles(this.posts)
+            this.setState({postList: this.homeDataList})
 
             try {
                 delete_post(payload, this.headers).then(async(res) => {
                     if (res.status === 200) {
-                        this.setState({ isPostDeleted: false })
+                        setTimeout(() => this.setState({ isPostDeleted: false }), 2000)
                     }
                 }).catch(() => {
                 })
@@ -274,9 +276,7 @@ class Home extends React.Component {
                 await list_posts(payload, this.headers).then((response) => {
                     if(this.homeDataBackup.length === response.data.data.posts.length) {
                         if(response.data.data.posts.length === 0) {
-                            this.homeDataRowList = []
-                            this.homeDataRowList.push(<Text style={{ margin: 10 }} key={0}>No posts found.</Text>)
-                            this.setState({ homeRefreshing: false })
+                            this.setState({ noPost: true, homeRefreshing: false })
                             return
                         }
                         response.data.data.posts.map((item, index) => {
@@ -297,6 +297,7 @@ class Home extends React.Component {
                         }
 
                     } else {
+                        this.setState({noPost: false})
                         this.homeDataBackup = response.data.data.posts
                         this.posts = response.data.data.posts
                         this.counts = response.data.data.counts
@@ -361,7 +362,7 @@ class Home extends React.Component {
                 />
             )
             if(posts.length == this.homeDataList.length) {
-                setTimeout(() => this.setState({ homeRefreshing: false}), 1500)
+                setTimeout(() => this.setState({ homeRefreshing: false, postList: this.homeDataList }), 1500)
             }
         })
     }
@@ -461,7 +462,7 @@ class Home extends React.Component {
 
                         }
                         ToastAndroid.showWithGravityAndOffset(
-                            'Updating',
+                            'Updating...',
                             ToastAndroid.LONG,
                             ToastAndroid.BOTTOM,
                             25,
@@ -904,7 +905,9 @@ class Home extends React.Component {
                                             }}
                                         />
                                     }>
-                                    {this.homeDataList.length > 0 ? this.homeDataList : this.homeDataRowList}
+                                    {!this.state.noData ? this.state.postList : 
+                                        <Text key={0} style={{ textAlign: 'center', width: '100%', alignItems: 'center', justifyContent: 'center' }}>No posts found.</Text>
+                                    }
                                 </ScrollView>
                             </View>
                             {

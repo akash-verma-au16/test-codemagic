@@ -35,6 +35,7 @@ class Comments extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            commentList: [],
             initialLoad: false,
             commentsRefresh: false,
             addCommentText: "",
@@ -66,7 +67,6 @@ class Comments extends React.Component {
 
     componentWillMount() {
         this.setState({ commentsRefresh: true})
-        this.fetchComments()
     }
 
     componentDidMount() {
@@ -248,7 +248,7 @@ class Comments extends React.Component {
             )
         })
         this.props.navigation.setParams({ commentCount: this.commentCount})
-        this.setState({ commentsRefresh: false, initialLoad: false })
+        this.setState({ commentsRefresh: false, initialLoad: false, commentList: this.commentList })
     }
 
     deleteComment = (comment_id, comment) => {
@@ -278,7 +278,7 @@ class Comments extends React.Component {
                 this.setState({ initialLoad: true })
             }
             else {
-                this.loadComments(this.comments)
+                this.setState({commentList: this.commentList})
             }
             try {
                 delete_comment(payload, this.headers).then(async(response) => {
@@ -335,7 +335,7 @@ class Comments extends React.Component {
                             }}
                         />
                     }>
-                    {!this.state.initialLoad ? this.commentList : (<View style={{alignItems: 'center', justifyContent: 'center'}}>
+                    {!this.state.initialLoad ? this.state.commentList : (<View style={{alignItems: 'center', justifyContent: 'center'}}>
                         <Text style={{ margin: 10 }} key={0}>No Comments</Text>
                         <Text key={1}>Add Comment to start Conversation</Text>
                     </View>)}

@@ -44,13 +44,14 @@ class ListPost extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            initialLoad: false,
             refreshing: true,
             newPostVisibility: false,
             isConnected: this.props.isConnected,
             networkChanged: false,
             isPostDeleted: false,
-            initalLoad: false,
-            isFocused: false
+            isFocused: false,
+            postList:[]
         }
         this.loadLikes = this.loadLikes.bind(this)
         this.loadPosts = this.loadPosts.bind(this);
@@ -347,7 +348,7 @@ class ListPost extends React.Component {
             associate_id: this.props.associate_id
         }
 
-        if (payload.tenant_id !== "" && payload.associate_id !== "") {
+        if (payload.tenant_id !== "" && payload.associate_id !== "" && this.state.isFocused) {
             try {
                 news_feed(payload, this.headers).then((response) => {
                     /* take payload backup to check for changes later */
@@ -357,9 +358,8 @@ class ListPost extends React.Component {
 
                         /* Checking if any data is available */
                         if (response.data.data.posts.length === 0) {
-                            this.setState({ initalLoad: true })
                             /* Update state to render warning */
-                            this.setState({ refreshing: false, networkChanged: false })
+                            this.setState({ refreshing: false, networkChanged: false, initialLoad: true })
                             return
                         }
 
@@ -382,10 +382,10 @@ class ListPost extends React.Component {
                         }
 
                     } else {
-                        /* Change in payload */
-                        if (this.state.initalLoad) {
-                            this.setState({ initalLoad: false })
+                        if(this.state.initialLoad) {
+                            this.setState({ initialLoad: false })
                         }
+                        /* Change in payload */
                         if (this.postList.length !== 0) {
 
                             if (this.scrollPosition > 150) {
@@ -440,18 +440,15 @@ class ListPost extends React.Component {
             var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
             this.postList.splice(index, 1)
             this.posts.splice(index, 1)
-            if (this.posts.length == 0) {
-                this.setState({ initalLoad: true })
-                return
-            }
-            this.createTiles(this.posts)
-            
+            this.setState({ postList: this.postList })         
             try {
                 await delete_post(payload, this.headers).then((res) => {
                     if (res.status === 200) {
-                        setTimeout(() => this.setState({ isPostDeleted: false }), 2000)
+                        setTimeout(() => this.setState({ isPostDeleted: false }), 2500)
                     }
                 }).catch(() => {
+                    //Error deleting Post
+                    this.setState({ isPostDeleted: false })
                 })
             }
             catch (e) {/* error */ }
@@ -529,7 +526,7 @@ class ListPost extends React.Component {
             )
 
             if (posts.length == this.postList.length) {
-                setTimeout(() => this.setState({ refreshing: false}), 1500)
+                setTimeout(() => this.setState({ refreshing: false, postList: this.postList}), 1500)
             }
         })
     }
@@ -566,7 +563,7 @@ class ListPost extends React.Component {
                     onScroll={(event) => { this.scrollHandler(event) }}
                 >
 
-                    {!this.state.initalLoad ? this.postList : (
+                    {!this.state.initialLoad ? this.state.postList : (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                             <Text style={{ margin: 10 }} key={0}>No post to display</Text>
                             <Text style={{ margin: 10 }} key={1}>Create a new post by clicking on + icon</Text>
