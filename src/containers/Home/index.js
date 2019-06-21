@@ -94,7 +94,7 @@ class Home extends React.Component {
             photo: null,
             imageUrl: null,
             isPostDeleted: false,
-            walletBalance: this.props.navigation.getParam('profileData').wallet_balance,
+            walletBalance: this.props.walletBalance,
             strengthCount: "0"
         }
         this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id || this.state.associate_id == undefined })
@@ -1141,7 +1141,8 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         idToken: state.user.idToken,
-        tenantName: state.user.tenant_name
+        tenantName: state.user.tenant_name,
+        walletBalance: state.user.walletBalance
     };
 }
 

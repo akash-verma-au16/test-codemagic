@@ -295,7 +295,6 @@ class Comments extends React.Component {
         else {
             this.showToast()
         }
-        
     }
 
     showToast() {

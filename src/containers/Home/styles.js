@@ -125,7 +125,7 @@ export const styles = StyleSheet.create({
     },
     surveryText: {
         fontFamily: "OpenSans-Regular",
-        fontSize: 15
+        fontSize: 14
     },
     tText: {
         paddingBottom: 10,
