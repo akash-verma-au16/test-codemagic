@@ -136,6 +136,7 @@ class Post extends Component {
         }
 
     }
+
     restoreLikes = async () => {
         try {
             //Check if previous state exists
@@ -155,6 +156,7 @@ class Post extends Component {
             // Error retrieving data
         }
     }
+    
     likePost = () => {
         /* unique id generation */
         const id = uuid.v4()
@@ -248,22 +250,27 @@ class Post extends Component {
     }
 
     onIconPresshandler = (associateId) => {
-        if (this.props.postSource == 'StrengthCount') {
-            this.props.navigation.push('Profile', {
-                associateId: associateId,
-                profileData: {},
-                isPost: false
-            })
-        }
-        else if (this.props.postSource == 'Profile') {
-            return
+        if(this.props.isConnected) {
+            if (this.props.postSource == 'StrengthCount') {
+                this.props.navigation.push('Profile', {
+                    associateId: associateId,
+                    profileData: {},
+                    isPost: false
+                })
+            }
+            else if (this.props.postSource == 'Profile') {
+                return
+            }
+            else {
+                this.props.navigation.navigate('Profile', {
+                    associateId: associateId,
+                    profileData: associateId === this.props.associate_id ? this.props.profileData : {},
+                    isPost: associateId === this.props.associate_id ? true : false
+                })
+            }
         }
         else {
-            this.props.navigation.navigate('Profile', {
-                associateId: associateId,
-                profileData: associateId === this.props.associate_id ? this.props.profileData : {},
-                isPost: associateId === this.props.associate_id ? true : false
-            })
+            this.noInternetToast()
         }
     }
 
@@ -274,17 +281,11 @@ class Post extends Component {
                 profileData:  this.props.profileData
             })
         } else {
-            ToastAndroid.showWithGravityAndOffset(
-                'Please connect to the Internet',
-                ToastAndroid.LONG,
-                ToastAndroid.BOTTOM,
-                25,
-                100,
-            );
+            this.noInternetToast()
         }
     }
 
-    showToast() {
+    comingSoon() {
         ToastAndroid.showWithGravityAndOffset(
             'Coming soon',
             ToastAndroid.LONG,
@@ -292,6 +293,33 @@ class Post extends Component {
             25,
             100,
         );
+    }
+
+    noInternetToast() {
+        ToastAndroid.showWithGravityAndOffset(
+            'Please connect to the Internet',
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM,
+            25,
+            100,
+        );
+    }
+
+    deletePostAlert = () => {
+        Alert.alert(
+            'Delete Post?',
+            'Are you sure you want to delete this post ?',
+            [
+                {
+                    text: 'No',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Yes', onPress: () => { this.props.postDeleteHandler(this.props.postId) }
+                }
+            ],
+            { cancelable: false },
+        )
     }
 
     rewardsAddon = async () => {
@@ -551,20 +579,7 @@ class Post extends Component {
                     data={this.props.associate_id === this.props.associate ? this.data : this.otherData}
                     onChangeListener={({ key }) => {
                         if (key == 'delete') {
-                            Alert.alert(
-                                'Delete Post?',
-                                'Are you sure you want to delete this post ?',
-                                [
-                                    {
-                                        text: 'No',
-                                        style: 'cancel'
-                                    },
-                                    {
-                                        text: 'Yes', onPress: () => { this.props.postDeleteHandler(this.props.postId) }
-                                    }
-                                ],
-                                { cancelable: false },
-                            )
+                            this.deletePostAlert()
                         }
                         else if (key == 'edit') {
                             this.props.navigation.navigate('EditPost', {
@@ -581,7 +596,7 @@ class Post extends Component {
                             })
                         }
                         else {
-                            this.showToast()
+                            this.comingSoon()
                         }
                     }}
                     visibilityDisableHandler={() => {

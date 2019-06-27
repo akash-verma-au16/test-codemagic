@@ -40,7 +40,10 @@ class ListSurvey extends React.Component {
         super(props)
         this.state = {
             isLoading: false,
-            selectedTab: 0
+            selectedTab: 0,
+            myPulse: [],
+            orgPulse: [],
+            funQuiz: []
         }
         this.MyPulse = []
         this.OrgPulse = []
@@ -161,7 +164,7 @@ class ListSurvey extends React.Component {
                         <Text key={0} style={{ padding: 10 }}>No Surveys Available</Text>
                     )
                 }
-                this.setState({ isLoading: false })
+                this.setState({ isLoading: false, myPulse: this.MyPulse, orgPulse: this.OrgPulse, funQuiz: this.FunQuiz })
 
             })
             .catch(() => {
@@ -329,7 +332,7 @@ class ListSurvey extends React.Component {
                                         />
                                     }
                                 >
-                                    {this.MyPulse}
+                                    {this.state.myPulse}
                                 </ScrollView>
                             </View>
                             <View>
@@ -351,7 +354,7 @@ class ListSurvey extends React.Component {
                                         />
                                     }
                                 >
-                                    {this.OrgPulse}
+                                    {this.state.orgPulse}
                                 </ScrollView>
                             </View>
                             <View>
@@ -373,7 +376,7 @@ class ListSurvey extends React.Component {
                                         />
                                     }
                                 >
-                                    {this.FunQuiz}
+                                    {this.state.funQuiz}
                                 </ScrollView>
                             </View>
                         </IndicatorViewPager>

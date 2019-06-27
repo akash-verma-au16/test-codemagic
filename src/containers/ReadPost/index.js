@@ -41,10 +41,10 @@ class ListPost extends React.Component {
             refreshing: true,
             newPostVisibility: false,
             isConnected: this.props.isConnected,
-            networkChanged: false
+            networkChanged: false,
+            postList: []
         }
         this.loadPosts = this.loadPosts.bind(this);
-        this.postList = [],
         this.post = []
         this.taggedAssociate = [],
         this.scrollViewRef = React.createRef();
@@ -211,7 +211,7 @@ class ListPost extends React.Component {
                                 addOn={item.addOnPoints}
                             />
                         )
-                        this.setState({ refreshing: false, networkChanged: false })
+                        this.setState({ refreshing: false, networkChanged: false, postList: this.post })
                     }).catch(() => {
                         this.setState({ refreshing: false, networkChanged: false })
                         Toast.show({
@@ -265,8 +265,7 @@ class ListPost extends React.Component {
                     ref={this.scrollViewRef}
                     onScroll={(event) => { this.scrollHandler(event) }}
                 >
-
-                    {this.post}
+                    {this.state.postList}
                 </ScrollView>
             </Container>
 

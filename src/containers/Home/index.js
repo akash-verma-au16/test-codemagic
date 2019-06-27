@@ -73,7 +73,8 @@ class Home extends React.Component {
         super(props)
         this.state = {
             postList: [],
-            noPost: false,
+            transactionList: [],
+            summeryList: [],
             associate_id: this.props.navigation.getParam('associateId'),
             homeRefreshing: false,
             refreshing: false,
@@ -98,12 +99,6 @@ class Home extends React.Component {
             strengthCount: "0"
         }
         this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id || this.state.associate_id == undefined })
-        this.loadProfile = this.loadProfile.bind(this)
-        this.loadTransactions = this.loadTransactions.bind(this)
-        this.loadHome = this.loadHome.bind(this)
-        this.loadSummary = this.loadSummary.bind(this)
-        this.showToast = this.showToast.bind(this)
-        this.handleEditProfile = this.handleEditProfile.bind(this)
         this.pager = React.createRef();
         this.posts = []
         this.counts = []
@@ -137,7 +132,7 @@ class Home extends React.Component {
     };
 
     async componentWillMount() {
-        this.setState({homeRefreshing: true})
+        this.setState({homeRefreshing: true, summaryRefreshing: true})
         if (this.state.associate_id !== this.props.associate_id) {
             if (this.state.associate_id == undefined || this.state.associate_id == "") {
                 this.setState({ associate_id: this.props.associate_id })
@@ -276,7 +271,11 @@ class Home extends React.Component {
                 await list_posts(payload, this.headers).then((response) => {
                     if(this.homeDataBackup.length === response.data.data.posts.length) {
                         if(response.data.data.posts.length === 0) {
-                            this.setState({ noPost: true, homeRefreshing: false })
+                            this.homeDataList = []
+                            this.homeDataList.push(
+                                <Text style={{ textAlign: 'center', width: '100%', alignItems: 'center', justifyContent: 'center' }}>No posts found.</Text>
+                            )
+                            this.setState({ postList: this.homeDataList, homeRefreshing: false })
                             return
                         }
                         response.data.data.posts.map((item, index) => {
@@ -297,7 +296,6 @@ class Home extends React.Component {
                         }
 
                     } else {
-                        this.setState({noPost: false})
                         this.homeDataBackup = response.data.data.posts
                         this.posts = response.data.data.posts
                         this.counts = response.data.data.counts
@@ -368,7 +366,6 @@ class Home extends React.Component {
     }
 
     loadSummary = () => {
-        this.setState({ summaryRefreshing: true })
         const payload = {
             "tenant_id": this.props.accountAlias,
             "associate_id": this.state.associate_id
@@ -396,6 +393,7 @@ class Home extends React.Component {
                                 />
                             </View>
                         )
+                        this.setState({summeryList: this.summeryList, summaryRefreshing: false})
                     })
                 }
             }).catch(() => {
@@ -405,7 +403,6 @@ class Home extends React.Component {
         catch (e) {
             this.setState({ summaryRefreshing: false })
         }
-        this.setState({ summaryRefreshing: false })
     }
 
     //Navigate to Posts for logged in User
@@ -574,17 +571,15 @@ class Home extends React.Component {
                                 this.transactionList.push(
                                     <Text style={{ flex: 1, alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingTop: 20 }} key={0}>No recent transactios found.</Text>
                                 )
+                                this.setState({ transactionList: this.transactionList })
                             }
                             this.setState({ refreshing: false })
                             return
                         } else {
                             //Change in Payload
                             this.transactionDataBackup = response.data.data.transaction_data
-                            if (this.transactionList.length !== 0) {
-                                this.transactionList = []
-                            }
-                            this.createTransactionTile(response.data.data.transaction_data)
-                            this.setState({ refreshing: false })
+                            this.transactionList = []
+                            this.createTransactionTile(this.transactionDataBackup)
                         }
                     }).catch(() => {
                         this.setState({ refreshing: false })
@@ -654,7 +649,7 @@ class Home extends React.Component {
                 </View>
             )
         })
-        this.setState({ refreshing: false })
+        this.setState({ refreshing: false, transactionList: this.transactionList })
     }
     //Visibilty input data
     data = [
@@ -827,7 +822,7 @@ class Home extends React.Component {
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', width: "100%", padding: 3 }}>
                                 <TouchableOpacity onPress={() => this.pager.setPage(0)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
                                     <Text style={styles.text}>Home</Text>
-                                    <H3 style={this.state.selectedTab == 0 ? styles.textActive : styles.textInactive}>{this.homeDataList.length}</H3>
+                                    <H3 style={this.state.selectedTab == 0 ? styles.textActive : styles.textInactive}>{this.posts.length}</H3>
                                 </TouchableOpacity>
                                 <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                                 <TouchableOpacity onPress={() => this.pager.setPage(1)} style={{ alignItems: 'center', justifyContent: 'space-around', width: '33%' }}>
@@ -844,7 +839,7 @@ class Home extends React.Component {
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', width: "100%", padding: 3 }}>
                                 <TouchableOpacity onPress={() => this.pager.setPage(0)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
                                     <Text style={styles.text}>Home</Text>
-                                    <H3 style={this.state.selectedTab == 0 ? styles.textActive : styles.textInactive}>{this.homeDataList.length}</H3>
+                                    <H3 style={this.state.selectedTab == 0 ? styles.textActive : styles.textInactive}>{this.posts.length}</H3>
                                 </TouchableOpacity>
                                 <View style={{ backgroundColor: '#000', width: 1 / 3, height: '65%' }} />
                                 <TouchableOpacity onPress={() => this.pager.setPage(1)} style={{ alignItems: 'center', justifyContent: 'center', width: '33%' }}>
@@ -886,7 +881,7 @@ class Home extends React.Component {
                             style={styles.viewPager}
                             onPageSelected={(page) => this.setState({ selectedTab: page.position })}
                         >
-                            <View style={{ flex: 1, backgroundColor: '#efefef' }}>
+                            <View style={{ flex: 1, backgroundColor: '#efefef'}}>
                                 <ScrollView
                                     showsVerticalScrollIndicator={false}
                                     contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingTop: 3, backgroundColor: '#eee' }}
@@ -905,9 +900,7 @@ class Home extends React.Component {
                                             }}
                                         />
                                     }>
-                                    {!this.state.noData ? this.state.postList : 
-                                        <Text key={0} style={{ textAlign: 'center', width: '100%', alignItems: 'center', justifyContent: 'center' }}>No posts found.</Text>
-                                    }
+                                    { this.state.postList } 
                                 </ScrollView>
                             </View>
                             {
@@ -931,7 +924,7 @@ class Home extends React.Component {
                                                     }}
                                                 />
                                             }>
-                                            {this.transactionList}
+                                            {this.state.transactionList}
                                         </ScrollView>
                                     </View>
                                     :
@@ -958,7 +951,7 @@ class Home extends React.Component {
                                             }}
                                         />
                                     }>
-                                    {this.summeryList.length > 0 ? this.summeryList : this.summeryRawList}
+                                    {this.summeryList.length > 0 ? this.state.summeryList : this.summeryRawList}
                                 </ScrollView>
                             </View>
                         </IndicatorViewPager>
