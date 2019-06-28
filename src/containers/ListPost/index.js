@@ -385,20 +385,17 @@ class ListPost extends React.Component {
                         if(this.state.initialLoad) {
                             this.setState({ initialLoad: false })
                         }
+                        this.posts = response.data.data.posts
+                        this.counts = response.data.data.counts
                         /* Change in payload */
                         if (this.postList.length !== 0) {
 
-                            if (this.scrollPosition > 150) {
+                            if (this.posts.length > this.payloadBackup.length && this.scrollPosition > 150) {
                                 /* Show th new post button */
                                 this.setState({ newPostVisibility: true })
                             }
                         }
-                        if (this.state.isPostDeleted) {
-                            // this.setState({ isPostDeleted: false })
-                            return
-                        }
-                        this.posts = response.data.data.posts
-                        this.counts = response.data.data.counts
+                        
                         this.posts.map((item, index) => {
                             item.Item.likeCount = this.counts[index].likeCount
                             item.Item.commentCount = this.counts[index].commentCount
