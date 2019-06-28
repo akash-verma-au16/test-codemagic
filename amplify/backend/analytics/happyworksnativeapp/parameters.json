@@ -1,10 +1,10 @@
 {
     "appName": "happyworksnativeapp",
-    "roleName": "pinpointLambdaRole837e3d11",
-    "cloudWatchPolicyName": "cloudWatchPolicy837e3d11",
-    "pinpointPolicyName": "pinpointPolicy837e3d11",
-    "authPolicyName": "pinpoint_amplify_837e3d11",
-    "unauthPolicyName": "pinpoint_amplify_837e3d11",
+    "roleName": "pinpointLambdaRole797c2d28",
+    "cloudWatchPolicyName": "cloudWatchPolicy797c2d28",
+    "pinpointPolicyName": "pinpointPolicy797c2d28",
+    "authPolicyName": "pinpoint_amplify_797c2d28",
+    "unauthPolicyName": "pinpoint_amplify_797c2d28",
     "authRoleName": {
         "Ref": "AuthRoleName"
     },

@@ -1,6 +1,6 @@
 {
     "auth": {
-        "cognitoce3469c7": {
+        "cognito9ba52401": {
             "service": "Cognito",
             "providerPlugin": "awscloudformation"
         }
