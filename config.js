@@ -33,9 +33,10 @@ export default {
         read_posts: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/read_posts",
         get_associate_name: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/get_associate_name",
         strength_details: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/strength_details",
-        
         liked_post: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/liked_post",
-        rewards_addon: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/api/share_addon"
+        rewards_addon: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/api/share_addon",
+        register_device:'https://75cvygmh71.execute-api.ap-south-1.amazonaws.com/api/register_device',
+        unregister:'https://75cvygmh71.execute-api.ap-south-1.amazonaws.com/api/unregister'
     },
     api: {
         signup: "signup",
@@ -73,36 +74,3 @@ export default {
         admin: "admin"
     }
 }
-
-// Previously used URLs (Release 1.8)
-// create_post: "https://bgi3nogyc8.execute-api.ap-southeast-1.amazonaws.com/dev/kinesis"
-// news_feed: "https://wzis5oap66.execute-api.ap-southeast-1.amazonaws.com/dev/post/news_feed"
-// get_visibility: "https://wzis5oap66.execute-api.ap-southeast-1.amazonaws.com/dev/post/get_visibility"
-// post: "https://ueb6oyqxnf.execute-api.ap-southeast-1.amazonaws.com
-
-// Added
-// list_posts: "https://uhj5dficb2.execute-api.ap-southeast-1.amazonaws.com/dev/post/list_posts"
-
-// Changed endpoints 17/05
-// list_posts
-// strength_counts: "https://0xso4c76y7.execute-api.ap-southeast-1.amazonaws.com/api/strength_counts"
-// get_visibility: "https://uhj5dficb2.execute-api.ap-southeast-1.amazonaws.com/dev/post/get_visibility" 
-// create_post:"https://ipbi7go0f8.execute-api.ap-southeast-1.amazonaws.com/dev/posts/create-post" 
-// user_profile: "https://0xso4c76y7.execute-api.ap-southeast-1.amazonaws.com/api/user_profile"
-//  update_profile: "https://0xso4c76y7.execute-api.ap-southeast-1.amazonaws.com/api/update_profile"
-
-// Changed Endpoints 23/05
-// https://0n3dfqk7t5.execute-api.ap-southeast-1.amazonaws.com/dev/posts/create_post
-// news_feed: "https://gp4itpb287.execute-api.ap-southeast-1.amazonaws.com/dev/post/news_feed"
-// strength_counts: "https://gp4itpb287.execute-api.ap-southeast-1.amazonaws.com/dev/post/strength_count"
-// list_posts: "https://gp4itpb287.execute-api.ap-southeast-1.amazonaws.com/dev/post/list_posts"
-// get_visibility: "https://gp4itpb287.execute-api.ap-southeast-1.amazonaws.com/dev/post/get_visibility"
-
-//Reward nasic URL
-// https://835zntrqv6.execute-api.ap-southeast-1.amazonaws.com/api
-
-// Changed Endpoints 28/05
-// create_post: "https://0n3dfqk7t5.execute-api.ap-southeast-1.amazonaws.com/dev/posts/create_post"
-// list_posts: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/list_posts"
-// news_feed: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/news_feed"
-// strength_counts: "https://i91oxrurli.execute-api.ap-southeast-1.amazonaws.com/dev/post/strength_count"

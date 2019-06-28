@@ -1,15 +1,15 @@
 import axios from 'axios';
-
+import config from '../../config';
 export const register_device = (
     payload
 ) => {
-    const endpoint = 'https://flnuddep8j.execute-api.ap-southeast-1.amazonaws.com/api/register_device'
+    const endpoint = config.url.register_device
     return axios.post(endpoint, payload)
 }
 
 export const unregister = (
     payload
 ) => {
-    const endpoint = 'https://flnuddep8j.execute-api.ap-southeast-1.amazonaws.com/api/unregister'
+    const endpoint = config.url.unregister
     return axios.post(endpoint, payload)
 }
