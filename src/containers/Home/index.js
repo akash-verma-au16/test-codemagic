@@ -98,6 +98,7 @@ class Home extends React.Component {
             walletBalance: this.props.walletBalance,
             strengthCount: "0"
         }
+        this.handleEditProfile = this.handleEditProfile.bind(this)
         this.props.navigation.setParams({ 'id': this.state.associate_id == this.props.associate_id || this.state.associate_id == undefined })
         this.pager = React.createRef();
         this.posts = []
@@ -376,6 +377,8 @@ class Home extends React.Component {
                 if(response.data.data.length == 0) {
                     this.summeryRawList = []
                     this.summeryRawList.push(<Text key={0} style={{ textAlign: 'center', width: '100%', alignItems: 'center', justifyContent: 'center' }}>No strengths to display.</Text>)
+                    this.setState({ summaryRefreshing: false })
+                    return
                 }
                 else {
                     this.summeryList = []
@@ -565,7 +568,7 @@ class Home extends React.Component {
                         this.setState({
                             walletBalance: response.data.data.wallet_balance
                         })
-                        if (this.transactionDataBackup.length === response.data.data.transaction_data) {
+                        if (this.transactionDataBackup.length === response.data.data.transaction_data.length) {
                             if (response.data.data.transaction_data.length == 0) {
                                 this.transactionList = []
                                 this.transactionList.push(

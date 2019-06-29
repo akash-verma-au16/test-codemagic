@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Navigator from './src/containers/Navigator'
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from "@react-native-community/netinfo"
-import { StatusBar, Linking } from 'react-native';
+import { StatusBar } from 'react-native';
 import { Root } from 'native-base'
 import { createStore, compose } from 'redux'
 import reducer from './src/store/reducers'
