@@ -6,8 +6,7 @@ import {
     Dimensions,
     BackHandler,
     Image,
-    Animated,
-    Text
+    Animated
 } from 'react-native';
 
 /* Native Base */

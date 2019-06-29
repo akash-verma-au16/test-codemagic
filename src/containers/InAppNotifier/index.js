@@ -18,7 +18,8 @@ class InAppNotifier extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            refreshing: false
+            refreshing: false,
+            notificationList:[]
         }
         this.onRefresh = this.onRefresh.bind(this)
         this.loadNotifications = this.loadNotifications.bind(this)
@@ -46,7 +47,7 @@ class InAppNotifier extends React.Component {
                                 <Text style={{ flex: 1, alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingTop: 20 }} key={0}>No new notifications</Text>
                             )
                         }
-                        this.setState({ refreshing: false })
+                        this.setState({ refreshing: false, notificationList: this.notificationList })
                     } else {
                         //Change in Payload
                         this.payloadBackup = response.data.in_app_data
@@ -100,7 +101,7 @@ class InAppNotifier extends React.Component {
                 </View>
             )
         })
-        this.setState({refreshing: false})
+        this.setState({refreshing: false, notificationList: this.notificationList})
     }
 
     async goBack() {
@@ -152,7 +153,7 @@ class InAppNotifier extends React.Component {
                     }
                     contentContainerStyle={styles.container}
                 >
-                    {this.notificationList}
+                    {this.state.notificationList}
                 </ScrollView>
             </Container>
         )

@@ -10,6 +10,7 @@ import {
 import {
     Icon
 } from 'native-base'
+
 export default class VisibilityModal extends Component {
 
     componentDidMount(){

@@ -20,8 +20,6 @@ import { strength_details } from '../../services/post'
 
 //Prefetch profile data
 import { loadProfile } from '../Home/apicalls'
-/* Components */
-import { NavigationEvents } from 'react-navigation';
 // push notification
 import Auth from '@aws-amplify/auth';
 import Analytics from '@aws-amplify/analytics';
@@ -40,7 +38,8 @@ class StrengthPosts extends React.Component {
         super(props)
         this.state = {
             refreshing: false,
-            newPostVisibility: false
+            newPostVisibility: false,
+            postList: []
         }
         this.post = []
         this.postList = []
@@ -205,7 +204,7 @@ class StrengthPosts extends React.Component {
             )
 
             if (posts.length == this.postList.length) {
-                setTimeout(() => this.setState({ refreshing: false}), 1500)
+                setTimeout(() => this.setState({ refreshing: false, postList: this.postList}), 1500)
             }
         })
     }
@@ -242,8 +241,7 @@ class StrengthPosts extends React.Component {
                     ref={this.scrollViewRef}
                     onScroll={(event) => { this.scrollHandler(event) }}
                 >
-
-                    {this.postList}
+                    {this.state.postList}
                 </ScrollView>
             </Container>
 
