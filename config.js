@@ -89,7 +89,7 @@ const qa_env = {
         inapp_notification: "https://9ibd9qor6l.execute-api.ap-south-1.amazonaws.com/api/list_inapp",
         read_transaction: "https://5950v28o48.execute-api.ap-south-1.amazonaws.com/api/read_transactions",
         get_balance: "https://5950v28o48.execute-api.ap-south-1.amazonaws.com/api/get_balance",
-        user_profile: "https://yp1g6l4ywd.execute-api.ap-south-1.amazonaws.com/api/get_profile",
+        user_profile: "https://ye1o32nua6.execute-api.ap-south-1.amazonaws.com/api/get_profile",
         list_posts: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/list_posts",
         strength_counts: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/strength_count",
         update_profile: "https://ye1o32nua6.execute-api.ap-south-1.amazonaws.com/api/update_profile",

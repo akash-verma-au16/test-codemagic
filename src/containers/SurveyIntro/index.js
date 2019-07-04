@@ -29,6 +29,7 @@ import image from '../../assets/surveyBackground.jpg'
 import icon from '../../assets/smily.png'
 /* Services */
 import { read_survey } from '../../services/questionBank'
+
 class SurveyIntro extends React.Component {
 
     constructor(props) {
@@ -70,10 +71,6 @@ class SurveyIntro extends React.Component {
                         this.setState({ isLoading: false })
                     }).catch(() => {
                         this.setState({ isLoading: false })
-                        // Toast.show({
-                        //     text: "Something went wrong, please try again", //error.response.data.code
-                        //     type: "danger"
-                        // })
                         ToastAndroid.showWithGravityAndOffset(
                             'Something went wrong, please try again',
                             ToastAndroid.SHORT,

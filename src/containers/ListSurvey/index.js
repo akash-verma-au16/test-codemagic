@@ -110,7 +110,7 @@ class ListSurvey extends React.Component {
                 this.MyPulse = []
                 this.OrgPulse = []
                 this.FunQuiz = []
-                response.data.data.common_question.map((item, index) => {
+                response.data.data.tenant_specific.map((item, index) => {
                     switch (index % 3) {
                     case 0:
                         this.image = nature1
