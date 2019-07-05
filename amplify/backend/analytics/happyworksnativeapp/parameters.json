@@ -1,0 +1,20 @@
+{
+    "appName": "happyworksnativeapp",
+    "roleName": "pinpointLambdaRole797c2d28",
+    "cloudWatchPolicyName": "cloudWatchPolicy797c2d28",
+    "pinpointPolicyName": "pinpointPolicy797c2d28",
+    "authPolicyName": "pinpoint_amplify_797c2d28",
+    "unauthPolicyName": "pinpoint_amplify_797c2d28",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authRoleArn": {
+        "Fn::GetAtt": [
+            "AuthRole",
+            "Arn"
+        ]
+    }
+}

@@ -1,0 +1,20 @@
+export const auth = {
+    AUTHENTICATE_USER: 'AUTHENTICATE_USER',
+    DEAUTHENTICATE_USER: 'DEAUTHENTICATE_USER'
+}
+
+export const system ={
+    AGREE_POLICY : 'AGREE_POLICY',
+    NETWORK_STATUS: 'NETWORK_STATUS'
+
+}
+export const dev = {
+    CLEAR_DATA : 'CLEAR_DATA',
+    UPDATE_USER: 'UPDATE_USER',
+    UPDATE_WALLET: 'UPDATE_WALLET'
+}
+
+export const user = {
+    WALLET_BALLANCE : 'WALLET_BALLANCE',
+    UPDATE_IMAGE : 'UPDATE_IMAGE'
+}
