@@ -1,7 +1,7 @@
 const dev_env = {
     url: {
         dev: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com",
-        create_post: "https://l4x0bf3qad.execute-api.ap-south-1.amazonaws.com/dev/posts/create_post",
+        create_post: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/create_post",
         get_visibility: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/get_visibility",
         news_feed: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/news_feed",
         list_survey: "https://yqigt6qajl.execute-api.ap-south-1.amazonaws.com/dev/survey/list_survey",
@@ -15,19 +15,19 @@ const dev_env = {
         update_profile: "https://yp1g6l4ywd.execute-api.ap-south-1.amazonaws.com/api/update_profile",
         list_associates: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/list_associates",
         list_project_members: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/list_project_members",
-        comment_post: "https://l4x0bf3qad.execute-api.ap-south-1.amazonaws.com/dev/posts/comment_post",
-        like_post: "https://l4x0bf3qad.execute-api.ap-south-1.amazonaws.com/dev/posts/like_post",
-        unlike_post: "https://l4x0bf3qad.execute-api.ap-south-1.amazonaws.com/dev/posts/unlike_post",
+        comment_post: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/comment_post",
+        like_post: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/like_post",
+        unlike_post: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/unlike_post",
         list_likes: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/list_likes",
         like_id: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/like_id",
         file_download: "https://gid6eh4y79.execute-api.ap-south-1.amazonaws.com/api/file_download",
         file_upload: "https://gid6eh4y79.execute-api.ap-south-1.amazonaws.com/api/file_upload",
         list_comments: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/list_comments",
-        edit_comment: "https://l4x0bf3qad.execute-api.ap-south-1.amazonaws.com/dev/posts/edit_comment",
-        delete_comment: "https://l4x0bf3qad.execute-api.ap-south-1.amazonaws.com/dev/posts/delete_comment",
+        edit_comment: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/edit_comment",
+        delete_comment: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/delete_comment",
         read_tenant: "https://p2prrzyo83.execute-api.ap-south-1.amazonaws.com/dev/super_admin/read_tenant",
-        delete_post: "https://l4x0bf3qad.execute-api.ap-south-1.amazonaws.com/dev/posts/delete_post",
-        edit_post: "https://l4x0bf3qad.execute-api.ap-south-1.amazonaws.com/dev/posts/edit_post",
+        delete_post: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/delete_post",
+        edit_post: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/edit_post",
         edit_post_addon: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/api/share_addon",
         new_associate_notify: "https://75cvygmh71.execute-api.ap-south-1.amazonaws.com/api/notify",
         read_posts: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/read_posts",
@@ -155,6 +155,6 @@ const qa_env = {
     }
 }
 
-let current_env = qa_env
+let current_env = dev_env
 
 export default current_env
