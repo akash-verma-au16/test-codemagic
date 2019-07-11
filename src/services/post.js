@@ -12,7 +12,7 @@ export const create_post = (
     payload, headers
 ) => {
     const endpoint = config.url.create_post
-    return axios.put(endpoint, payload, headers)
+    return axios.post(endpoint, payload, headers)
 }
 
 export const get_visibility = (
@@ -47,28 +47,28 @@ export const like_post = (
     payload, headers
 ) => {
     const endpoint = config.url.like_post
-    return axios.put(endpoint, payload, headers)
+    return axios.post(endpoint, payload, headers)
 }
 
 export const unlike_post = (
     payload, headers
 ) => {
     const endpoint = config.url.unlike_post
-    return axios.put(endpoint, payload, headers)
+    return axios.post(endpoint, payload, headers)
 }
 
 export const edit_post = (
     payload, headers
 ) => {
     const endpoint = config.url.edit_post
-    return axios.put(endpoint, payload, headers)
+    return axios.post(endpoint, payload, headers)
 }
 
 export const delete_post = (
     payload, headers
 ) => {
     const endpoint = config.url.delete_post
-    return axios.put(endpoint, payload, headers)
+    return axios.post(endpoint, payload, headers)
 }
 
 export const list_likes = (
