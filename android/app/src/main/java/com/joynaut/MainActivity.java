@@ -1,4 +1,4 @@
-package com.happyworks;
+package com.joynaut;
 
 import com.facebook.react.ReactActivity;
 
