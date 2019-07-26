@@ -7,7 +7,8 @@ import {
     Alert,
     BackHandler,
     ToastAndroid,
-    AsyncStorage
+    AsyncStorage,
+    Linking
 } from 'react-native';
 /* Redux */
 import { connect } from 'react-redux'
@@ -25,6 +26,7 @@ import { logout } from '../../services/bAuth'
 import { unregister } from '../../services/pushNotification'
 /* Custom Components */
 import LoadingModal from '../LoadingModal'
+
 class Settings extends React.Component {
     constructor(props) {
         super(props)
@@ -76,12 +78,7 @@ class Settings extends React.Component {
         {
             key: 'Privacy Policy',
             icon: 'md-lock',
-            onPress: () => this.toast()
-        },
-        {
-            key: 'User Agreement',
-            icon: 'md-document',
-            onPress: () => this.toast()
+            onPress: () => Linking.openURL('http://joy-hw-privacy-policy.s3-website-ap-southeast-1.amazonaws.com')
         },
         {
             key: 'App Version : 1.13',

@@ -5,14 +5,14 @@ const dev_env = {
         get_visibility: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/get_visibility",
         news_feed: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/news_feed",
         list_survey: "https://yqigt6qajl.execute-api.ap-south-1.amazonaws.com/dev/survey/list_survey",
-        give_reward: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/api/give_reward",
-        inapp_notification: "https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/api/list_inapp",
-        read_transaction: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/api/read_transactions",
-        get_balance: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/api/get_balance",
-        user_profile: "https://yp1g6l4ywd.execute-api.ap-south-1.amazonaws.com/api/get_profile",
+        give_reward: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/dev/reward/give_reward",
+        inapp_notification: "https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/list_in_app",
+        read_transaction: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/dev/reward/read_transactions",
+        get_balance: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/dev/reward/get_balance",
+        user_profile: "https://yp1g6l4ywd.execute-api.ap-south-1.amazonaws.com/dev/user_profile/get_profile",
         list_posts: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/list_posts",
         strength_counts: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/strength_count",
-        update_profile: "https://yp1g6l4ywd.execute-api.ap-south-1.amazonaws.com/api/update_profile",
+        update_profile: "https://yp1g6l4ywd.execute-api.ap-south-1.amazonaws.com/dev/user_profile/update_profile",
         list_associates: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/list_associates",
         list_project_members: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/list_project_members",
         comment_post: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/comment_post",
@@ -20,26 +20,26 @@ const dev_env = {
         unlike_post: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/unlike_post",
         list_likes: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/list_likes",
         like_id: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/like_id",
-        file_download: "https://gid6eh4y79.execute-api.ap-south-1.amazonaws.com/api/file_download",
-        file_upload: "https://gid6eh4y79.execute-api.ap-south-1.amazonaws.com/api/file_upload",
+        file_download: "https://gid6eh4y79.execute-api.ap-south-1.amazonaws.com/dev/aws_ops/file_download",
+        file_upload: "https://gid6eh4y79.execute-api.ap-south-1.amazonaws.com/dev/aws_ops/file_upload",
         list_comments: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/list_comments",
         edit_comment: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/edit_comment",
         delete_comment: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/delete_comment",
         read_tenant: "https://p2prrzyo83.execute-api.ap-south-1.amazonaws.com/dev/super_admin/read_tenant",
         delete_post: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/delete_post",
         edit_post: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/edit_post",
-        edit_post_addon: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/api/share_addon",
+        edit_post_addon: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/dev/reward/share_addon",
         new_associate_notify: "https://75cvygmh71.execute-api.ap-south-1.amazonaws.com/api/notify",
         read_posts: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/read_posts",
         get_associate_name: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/get_associate_name",
         strength_details: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/strength_details",
         liked_post: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/liked_post",
         rewards_addon: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/api/share_addon",
-        register_device: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/api/register_device',
-        unregister: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/api/unregister',
-        get_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/api/get_status',
-        enable_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/api/enable_status',
-        disable_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/api/disable_status'
+        register_device: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/register_device',
+        unregister: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/unregister_device',
+        get_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/get_status',
+        enable_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/enable_status',
+        disable_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/disable_status'
     },
     api: {
         signup: "signup",
@@ -116,7 +116,10 @@ const qa_env = {
         liked_post: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/liked_post",
         rewards_addon: "https://5950v28o48.execute-api.ap-south-1.amazonaws.com/api/share_addon",
         register_device: 'https://9ibd9qor6l.execute-api.ap-south-1.amazonaws.com/api/register_device',
-        unregister: 'https://9ibd9qor6l.execute-api.ap-south-1.amazonaws.com/api/unregister'
+        unregister: 'https://9ibd9qor6l.execute-api.ap-south-1.amazonaws.com/api/unregister',
+        get_status: 'https://9ibd9qor6l.execute-api.ap-south-1.amazonaws.com/api/get_status',
+        enable_status: 'https://9ibd9qor6l.execute-api.ap-south-1.amazonaws.com/api/enable_status',
+        disable_status: 'https://9ibd9qor6l.execute-api.ap-south-1.amazonaws.com/api/disable_status'
     },
     api: {
         signup: "signup",
@@ -155,6 +158,6 @@ const qa_env = {
     }
 }
 
-let current_env = qa_env
+let current_env = dev_env
 
 export default current_env

@@ -8,7 +8,9 @@ import moment from 'moment/min/moment-with-locales'
 //API methods
 import { edit_post, edit_post_addon, new_associate_notify } from '../../services/post'
 import { list_associate } from '../../services/tenant'
-import { dev } from '../../store/actions'
+import { dev, auth } from '../../store/actions'
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Redux */
 import { connect } from 'react-redux'
 //Tagged associate componet
@@ -138,7 +140,7 @@ class EditPost extends React.Component {
     //Authorization headers
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.idToken 
         }
     }
 
@@ -240,7 +242,8 @@ class EditPost extends React.Component {
                         })
                         this.props.navigation.goBack()
 
-                    }).catch(() => {
+                    }).catch((e) => {
+                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                         //Error Retriving Data
                     })
                 }
@@ -287,9 +290,10 @@ class EditPost extends React.Component {
             post_id: this.props.navigation.getParam('postId'),
             points: points
         }
+
         this.setState({ editAddon: this.state.editAddon + points })
         try {
-            edit_post_addon(payload).then(async () => {
+            edit_post_addon(payload, this.headers).then(async () => {
                 let walletBalance = this.props.walletBalance - points
                 const payload = {
                     walletBalance: walletBalance
@@ -304,7 +308,8 @@ class EditPost extends React.Component {
                     25,
                     100,
                 );
-            }).catch(() => {
+            }).catch((e) => {
+                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                 // error retriving data
             })
         }
@@ -325,9 +330,12 @@ class EditPost extends React.Component {
             privacy: this.props.navigation.getParam('privacy'),
             time: this.state.epoch
         }
+
         try {
-            new_associate_notify(payload).then(() => {
-            }).catch(() => {
+            new_associate_notify(payload, this.headers).then(() => {
+            }).catch((e) => {
+                //Check for session expiry
+                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                 //Error retriving data
             })
         }
@@ -382,15 +390,10 @@ class EditPost extends React.Component {
     }
 
     loadMembers = () => {
-        const headers = {
-            headers: {
-                Authorization: this.props.idToken
-            }
-        }
         if (this.props.accountAlias !== undefined) {
             list_associate({
                 tenant_id: this.props.accountAlias
-            }, headers)
+            }, this.headers)
                 .then(response => {
                     /* Clear Garbage */
                     this.associateData = []
@@ -405,8 +408,9 @@ class EditPost extends React.Component {
                     })
                     this.setState({ isTagerLoading: false })
                 })
-                .catch(() => {
+                .catch((e) => {
                     this.setState({ isTagerLoading: false })
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                 })
         }
 
@@ -593,7 +597,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props })
+        updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
     };
 }
 

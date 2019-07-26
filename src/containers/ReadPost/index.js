@@ -12,12 +12,16 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Post from '../../components/Post/index'
 /* Redux */
 import { connect } from 'react-redux'
+import { auth } from '../../store/actions'
 import {
     Container,
     Toast
 } from 'native-base';
 /* Services */
 import { read_post } from '../../services/post'
+
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 
 //Prefetch profile data
 import { loadProfile } from '../Home/apicalls'
@@ -212,7 +216,8 @@ class ListPost extends React.Component {
                             />
                         )
                         this.setState({ refreshing: false, networkChanged: false, postList: this.post })
-                    }).catch(() => {
+                    }).catch((e) => {
+                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                         this.setState({ refreshing: false, networkChanged: false })
                         Toast.show({
                             text: 'This post is unavailable',
@@ -293,4 +298,10 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(ListPost)
+const mapDispatchToProps = (dispatch) => {
+    return {
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ListPost)
