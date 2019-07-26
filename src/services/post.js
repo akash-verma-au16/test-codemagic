@@ -106,15 +106,15 @@ export const rewards_addon = (
 }
 
 export const edit_post_addon = (
-    payload
+    payload, headers
 ) => {
     const endpoint = config.url.edit_post_addon
-    return axios.post(endpoint, payload)
+    return axios.post(endpoint, payload, headers)
 }
 
 export const new_associate_notify = (
-    payload
+    payload, headers
 ) => {
     const endpoint = config.url.new_associate_notify
-    return axios.post(endpoint, payload)
+    return axios.post(endpoint, payload, headers)
 }

@@ -105,6 +105,7 @@ class ListSurvey extends React.Component {
     }
 
     loadSurveys = () => {
+        //Authorization headers
         const headers = {
             headers: {
                 Authorization: this.props.idToken

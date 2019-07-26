@@ -51,8 +51,7 @@ class StrengthPosts extends React.Component {
         this.scrollPosition = 0
         //Carry Profile Data
         this.profileData = {}
-        this.counts = [],
-        this.associateList = this.props.associateList
+        this.counts = []
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -264,7 +263,6 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        associateList: state.user.associateList,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         isAuthenticate: state.isAuthenticate,
