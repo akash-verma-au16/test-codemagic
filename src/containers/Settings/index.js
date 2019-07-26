@@ -14,7 +14,7 @@ import {
 
 /* Redux */
 import { connect } from 'react-redux'
-import { auth, dev } from '../../store/actions'
+import { auth, dev, user } from '../../store/actions'
 import { StackActions, NavigationActions } from 'react-navigation';
 /* Native Base */
 import {
@@ -26,6 +26,8 @@ import {
 /* Services */
 import { logout } from '../../services/bAuth'
 import { unregister, get_status, enable_status, disable_status } from '../../services/pushNotification'
+// RBAC Handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Custom Components */
 import LoadingModal from '../LoadingModal'
 
@@ -34,7 +36,7 @@ class Settings extends React.Component {
         super(props)
         this.state = {
             isLoading: false,
-            isSwitchOn: false,
+            isSwitchOn: this.props.pushNotificationStatus,
             switchLoader: true
         }
         this.signOut = this.signOut.bind(this)
@@ -44,8 +46,14 @@ class Settings extends React.Component {
         await this.props.navigation.goBack()
     }
 
-    componentWillMount() {
-        this.getStatus()
+    // async componentWillMount() {
+    //     await this.getStatus()
+    // }
+
+    headers = {
+        headers: {
+            Authorization: this.props.idToken
+        }
     }
 
     statusApiPayload = {
@@ -53,50 +61,16 @@ class Settings extends React.Component {
         associate_id: this.props.associate_id
     }
 
-    getStatus = () => {
-        try {
-            if (this.props.isConnected) {
-                get_status(this.statusApiPayload).then(async(response) => {
-                    console.log(response.data.is_push_disabled)
-                    if(response.data.is_push_disabled == 'True') {
-                        this.setState({
-                            isSwitchOn: true
-                        })
-                    }
-                    else {
-                        this.setState({
-                            isSwitchOn: false
-                        })
-                    }
-                    // }
-                }).catch((e) => {
-                    throw e
-                })
-            }
-            else {
-                this.noInternetToast()
-            }
-        }
-        catch {
-            throw 'error'
-        }
-
-    }
-
     enableStatus = () => {
         try {
             if (this.props.isConnected) {
-                enable_status(this.statusApiPayload).then((response) => {
+                disable_status(this.statusApiPayload, this.headers).then((response) => {
                     if (response.status == 200) { 
-                        console.log(response)
-                        this.setState({
-                            isSwitchOn: true
-                        })
+                        this.props.updatePushNotifStatus({ pushNotifStatus: true })
                     }
                 }).catch((e) => {
-                    this.setState({
-                        isSwitchOn: false
-                    })
+                    this.setState({ isSwitchOn: false })
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                 })
             }
             else {
@@ -111,17 +85,13 @@ class Settings extends React.Component {
     disableStatus = () => {
         try {
             if (this.props.isConnected) {
-                disable_status(this.statusApiPayload).then((response) => {
+                enable_status(this.statusApiPayload, this.headers).then(() => {
                     // if (response.data.is_push_disabled == true) {
-                    console.log(response)
-                    this.setState({
-                        isSwitchOn: false
-                    })
+                    this.props.updatePushNotifStatus({ pushNotifStatus: false })
                     // }
                 }).catch((e) => {
-                    this.setState({
-                        isSwitchOn: true
-                    })
+                    this.setState({ isSwitchOn: true })
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                 })
             }
             else {
@@ -262,12 +232,10 @@ class Settings extends React.Component {
         this.setState({
             isSwitchOn: value
         }, () => {
-            if(value == true) {
-                console.log('enable')
+            if (value == true) {
                 this.enableStatus()
             }
             else {
-                console.log('disable')
                 this.disableStatus()
             }
         })
@@ -371,13 +339,16 @@ const mapStateToProps = (state) => {
         accountAlias: state.user.accountAlias,
         email: state.user.emailAddress,
         isConnected: state.system.isConnected,
-        associate_id: state.user.associate_id
+        associate_id: state.user.associate_id,
+        idToken: state.user.idToken,
+        pushNotificationStatus: state.user.pushNotifStatus
     };
 }
 const mapDispatchToProps = (dispatch) => {
     return {
         deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
-        clearData: () => dispatch({ type: dev.CLEAR_DATA })
+        clearData: () => dispatch({ type: dev.CLEAR_DATA }),
+        updatePushNotifStatus: (props) => dispatch({ type: user.UPDATE_PUSH_STATUS, payload: props})
     };
 }
 

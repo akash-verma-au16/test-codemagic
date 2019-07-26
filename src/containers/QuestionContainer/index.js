@@ -186,11 +186,6 @@ class QuestionContainer extends React.Component {
                         })
                     }).catch((e) => {
                         checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
-                        Toast.show({
-                            text: "Something went wrong, please try again.",
-                            type: 'danger',
-                            duration: 2000
-                        })
                         this.setState({ isSubmitLoading: false })
                     })
                 } else {

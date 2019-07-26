@@ -16,5 +16,6 @@ export const dev = {
 
 export const user = {
     WALLET_BALLANCE : 'WALLET_BALLANCE',
-    UPDATE_IMAGE : 'UPDATE_IMAGE'
+    UPDATE_IMAGE : 'UPDATE_IMAGE',
+    UPDATE_PUSH_STATUS: 'UPDATE_PUSH_STATUS'
 }

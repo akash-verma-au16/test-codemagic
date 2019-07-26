@@ -168,12 +168,12 @@ class Likes extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        associateList: state.user.associateList,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
-        isConnected: state.system.isConnected
+        isConnected: state.system.isConnected,
+        idToken: state.user.idToken
     };
 }
 

@@ -57,8 +57,6 @@ class ListPost extends React.Component {
         this.scrollPosition = 0
         //Carry Profile Data
         this.profileData = {}
-        //Associate data
-        this.associateList = this.props.associateList
         this.counts = []
         this.postId = this.props.navigation.getParam('id')
     }
@@ -288,7 +286,6 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        associateList: state.user.associateList,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         isAuthenticate: state.isAuthenticate,

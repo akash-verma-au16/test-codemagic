@@ -244,7 +244,6 @@ class Comments extends React.Component {
                     key={item.comment_id} 
                     comment_id={item.comment_id} 
                     post_id={item.post_id}
-                    associate={this.props.associateList[item.associate_id]} 
                     id={item.associate_id}
                     message={item.message}
                     time={item.time} 
@@ -379,7 +378,6 @@ class Comments extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        associateList: state.user.associateList,
         fullName: state.user.firstName+" "+state.user.lastName,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,

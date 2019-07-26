@@ -74,13 +74,6 @@ class SurveyIntro extends React.Component {
                     }).catch((e) => {
                         checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                         this.setState({ isLoading: false })
-                        ToastAndroid.showWithGravityAndOffset(
-                            'Something went wrong, please try again',
-                            ToastAndroid.SHORT,
-                            ToastAndroid.BOTTOM,
-                            25,
-                            100,
-                        );
                     })
                 } else {
                     this.setState({ isLoading: false })

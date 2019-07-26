@@ -16,22 +16,22 @@ export const unregister = (
 
 //Push notification status APIs
 export const get_status = (
-    payload
+    payload, headers
 ) => {
     const endpoint = config.url.get_status
-    return axios.post(endpoint, payload)
+    return axios.post(endpoint, payload, headers)
 }
 
 export const enable_status = (
-    payload
+    payload, headers
 ) => {
     const endpoint = config.url.enable_status
-    return axios.post(endpoint, payload)
+    return axios.post(endpoint, payload, headers)
 }
 
 export const disable_status = (
-    payload
+    payload, headers
 ) => {
     const endpoint = config.url.disable_status
-    return axios.post(endpoint, payload)
+    return axios.post(endpoint, payload, headers)
 }

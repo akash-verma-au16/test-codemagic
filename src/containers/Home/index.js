@@ -1138,7 +1138,6 @@ class Home extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        associateList: state.user.associateList,
         email: state.user.emailAddress,
         userName: state.user.firstName + " " + state.user.lastName,
         firstName: state.user.firstName,
