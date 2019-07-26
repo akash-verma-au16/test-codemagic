@@ -23,6 +23,7 @@ import {
 } from 'native-base';
 /* Redux */
 import { connect } from 'react-redux'
+import { auth, dev} from '../../store/actions'
 // React Navigation
 import { NavigationEvents } from 'react-navigation';
 /* Services */
@@ -31,6 +32,8 @@ import { create_post, get_visibility } from '../../services/post'
 import uuid from 'uuid'
 import MultiSelect from 'react-native-multiple-select'
 import { list_associate, list_project_members } from '../../services/tenant'
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Components */
 import VisibilityModal from '../VisibilityModal'
 import LoadingModal from '../LoadingModal'
@@ -136,10 +139,11 @@ class CreatePost extends React.Component {
                         this.visibilityData.push({ icon: iconName, text: item.name, name: item.id, key: text })
                     })
                     this.setState({ isVisibilityLoading: false })
-                }).catch(() => {
+                }).catch((e) => {
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                     this.setState({ isVisibilityLoading: false })
                 })
-            } catch (error) {
+            } catch {
                 this.setState({ isVisibilityLoading: false })
             }
         }
@@ -323,7 +327,8 @@ class CreatePost extends React.Component {
                 this.setState(this.initialState)
                 this.props.navigation.navigate('home')
 
-            }).catch(() => {
+            }).catch((e) => {
+                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                 Keyboard.dismiss()
                 Toast.show({
                     text: 'Error while creating the post',
@@ -506,11 +511,41 @@ class CreatePost extends React.Component {
                     })
                     this.setState({ isTagerLoading: false, isProject: true })
                 })
-                .catch(() => {
+                .catch((e) => {
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)                    
                     this.setState({ isTagerLoading: false })
                 })
         }
 
+    }
+
+    getProfile = async () => {
+        if (this.props.isAuthenticate) {
+            //Authorization headers
+            const headers = {
+                headers: {
+                    Authorization: this.props.idToken
+                }
+            }
+            //profile payload
+            const payload1 = {
+                tenant_id: this.props.accountAlias,
+                associate_id: this.props.associate_id
+            }
+            let profileData = await loadProfile(payload1, headers, this.props.isConnected);
+            if (profileData == undefined) {
+                checkIfSessionExpired(this.profileData, this.props.navigation, this.props.deAuthenticate)
+                return
+            }
+            else {
+                this.setState({ profileData: profileData })
+                const payload = {
+                    walletBalance: profileData.wallet_balance
+                }
+                this.props.updateWallet(payload)
+                this.props.navigation.setParams({ 'profileData': profileData, walletBalance: this.props.walletBalance })
+            }
+        }
     }
 
     loadMembers = () => {
@@ -537,7 +572,8 @@ class CreatePost extends React.Component {
                     })
                     this.setState({ isTagerLoading: false })
                 })
-                .catch(() => {
+                .catch((e) => {
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                     this.setState({ isTagerLoading: false })
                 })
         }
@@ -718,17 +754,7 @@ class CreatePost extends React.Component {
                                 this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl })
                                 this.loadVisibility()
                                 this.loadMembers()
-                                this.setState({
-                                    profileData: await loadProfile({
-                                        "tenant_id": this.props.accountAlias,
-                                        "associate_id": this.props.associate_id
-                                    }, {
-                                        headers: {
-                                            Authorization: this.props.idToken
-                                        }
-                                    }, this.props.isConnected)
-                                })
-
+                                this.getProfile()
                             }
                         }
                     }}
@@ -815,4 +841,11 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(CreatePost)
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CreatePost)

@@ -24,6 +24,10 @@ import LoadingModal from '../LoadingModal'
 
 //Redux
 import { connect } from 'react-redux'
+import { auth } from '../../store/actions'
+
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 
 //Styles for the screen
 import { styles } from './style'
@@ -151,7 +155,8 @@ class Comments extends React.Component {
                             this.loadComments(this.comments)
                         }
                     }
-                }).catch(() => {
+                }).catch((e) => {
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)                
                 })
             } 
         }
@@ -208,7 +213,8 @@ class Comments extends React.Component {
                                 100,
                             );
                         }
-                    }).catch (() => {
+                    }).catch ((e) => {
+                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                         Keyboard.dismiss()
                     })
                 }
@@ -238,7 +244,6 @@ class Comments extends React.Component {
                     key={item.comment_id} 
                     comment_id={item.comment_id} 
                     post_id={item.post_id}
-                    associate={this.props.associateList[item.associate_id]} 
                     id={item.associate_id}
                     message={item.message}
                     time={item.time} 
@@ -285,8 +290,9 @@ class Comments extends React.Component {
                     if(response.status === 200) {
                         setTimeout(() => this.setState({ isCommentDeleted: false }), 2000)
                     }
-                }).catch(() => {
+                }).catch((e) => {
                     //Error retriving data
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                     this.setState({ isCommentDeleted: false })
                 })
             }
@@ -372,7 +378,6 @@ class Comments extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        associateList: state.user.associateList,
         fullName: state.user.firstName+" "+state.user.lastName,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
@@ -384,4 +389,9 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(Comments)
+const mapDispatchToProps = (dispatch) => {
+    return {
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+    };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Comments)

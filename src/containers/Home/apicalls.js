@@ -9,8 +9,8 @@ export async function loadProfile(payload, headers, isConnected) {
                 profileData = response.data.data
                 return profileData
 
-            }).catch(() => {
-                return undefined
+            }).catch((e) => {
+                return e.response
             })
         }
     }

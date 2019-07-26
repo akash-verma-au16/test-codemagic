@@ -24,6 +24,8 @@ import { auth } from '../../store/actions'
 import Question from '../../components/Question'
 /* Assets */
 import image from '../../assets/surveyBackground.jpg'
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Services */
 import { save_answers } from '../../services/dataApi'
 import {give_rewards} from '../../services/rewards'
@@ -176,17 +178,14 @@ class QuestionContainer extends React.Component {
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: res.data.points
                             })
-                        }).catch(() => {
+                        }).catch((e) => {
+                            checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: 0
                             })
                         })
-                    }).catch(() => {
-                        Toast.show({
-                            text: "Something went wrong, please try again.",
-                            type: 'danger',
-                            duration: 2000
-                        })
+                    }).catch((e) => {
+                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                         this.setState({ isSubmitLoading: false })
                     })
                 } else {
@@ -343,7 +342,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        authenticate: (props) => dispatch({ type: auth.AUTHENTICATE_USER, payload: props })
+        authenticate: (props) => dispatch({ type: auth.AUTHENTICATE_USER, payload: props }),
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
     };
 }
 

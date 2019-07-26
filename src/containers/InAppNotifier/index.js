@@ -5,9 +5,14 @@ import {
     Toast
 } from 'native-base';
 import NetInfo from "@react-native-community/netinfo"
+//Redux
+import { auth } from '../../store/actions'
 
 import { connect } from 'react-redux'
 import { inapp_notification } from '../../services/inAppNotification'
+
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 
 // Import Strnegth Icon
 import { strngthIcon } from '../../components/Card/data'
@@ -37,6 +42,7 @@ class InAppNotifier extends React.Component {
                 Authorization: this.props.idToken
             }
         }
+
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
                 inapp_notification(payload, headers).then(response => {
@@ -57,7 +63,8 @@ class InAppNotifier extends React.Component {
                         this.createNotificationTile(response.data.in_app_data)
                         this.setState({ refreshing: false })
                     }
-                }).catch(() => {
+                }).catch((e) => {
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                     this.setState({ refreshing: false })
                 })
             }
@@ -214,4 +221,10 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(InAppNotifier)
+const mapDispatchToProps = (dispatch) => {
+    return {
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(InAppNotifier)

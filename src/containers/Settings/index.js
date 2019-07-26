@@ -7,11 +7,14 @@ import {
     Alert,
     BackHandler,
     ToastAndroid,
-    AsyncStorage
+    AsyncStorage,
+    Switch,
+    Linking
 } from 'react-native';
+
 /* Redux */
 import { connect } from 'react-redux'
-import { auth, dev } from '../../store/actions'
+import { auth, dev, user } from '../../store/actions'
 import { StackActions, NavigationActions } from 'react-navigation';
 /* Native Base */
 import {
@@ -22,20 +25,82 @@ import {
 } from 'native-base';
 /* Services */
 import { logout } from '../../services/bAuth'
-import { unregister } from '../../services/pushNotification'
+import { unregister, get_status, enable_status, disable_status } from '../../services/pushNotification'
+// RBAC Handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Custom Components */
 import LoadingModal from '../LoadingModal'
+
 class Settings extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            isLoading: false
+            isLoading: false,
+            isSwitchOn: this.props.pushNotificationStatus,
+            switchLoader: true
         }
         this.signOut = this.signOut.bind(this)
     }
 
     async goBack() {
         await this.props.navigation.goBack()
+    }
+
+    // async componentWillMount() {
+    //     await this.getStatus()
+    // }
+
+    headers = {
+        headers: {
+            Authorization: this.props.idToken
+        }
+    }
+
+    statusApiPayload = {
+        tenant_id: this.props.accountAlias,
+        associate_id: this.props.associate_id
+    }
+
+    enableStatus = () => {
+        try {
+            if (this.props.isConnected) {
+                disable_status(this.statusApiPayload, this.headers).then((response) => {
+                    if (response.status == 200) { 
+                        this.props.updatePushNotifStatus({ pushNotifStatus: true })
+                    }
+                }).catch((e) => {
+                    this.setState({ isSwitchOn: false })
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                })
+            }
+            else {
+                this.noInternetToast()
+            }
+        }
+        catch {
+            throw 'error'
+        }
+    }
+
+    disableStatus = () => {
+        try {
+            if (this.props.isConnected) {
+                enable_status(this.statusApiPayload, this.headers).then(() => {
+                    // if (response.data.is_push_disabled == true) {
+                    this.props.updatePushNotifStatus({ pushNotifStatus: false })
+                    // }
+                }).catch((e) => {
+                    this.setState({ isSwitchOn: true })
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                })
+            }
+            else {
+                this.noInternetToast()
+            }
+        }
+        catch {
+            throw 'error'
+        }
     }
 
     componentDidMount() {
@@ -51,11 +116,9 @@ class Settings extends React.Component {
 
     static navigationOptions = () => {
         return {
-
             headerRight: (
                 <React.Fragment />
             )
-
         };
     };
     toast = () => {
@@ -67,21 +130,26 @@ class Settings extends React.Component {
             100,
         );
     }
+
+    noInternetToast = () => {
+        ToastAndroid.showWithGravityAndOffset(
+            'Please, connect to the internet',
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM,
+            25,
+            100,
+        );
+    }
+
     data = [
         {
             key: 'Push Notification',
-            icon: 'md-notifications',
-            onPress: () => this.toast()
+            icon: 'md-notifications'
         },
         {
             key: 'Privacy Policy',
             icon: 'md-lock',
-            onPress: () => this.toast()
-        },
-        {
-            key: 'User Agreement',
-            icon: 'md-document',
-            onPress: () => this.toast()
+            onPress: () => Linking.openURL('http://joy-hw-privacy-policy.s3-website-ap-southeast-1.amazonaws.com')
         },
         {
             key: 'App Version : 1.13',
@@ -144,13 +212,7 @@ class Settings extends React.Component {
         }).catch(() => {
             if (!this.props.isConnected) {
                 this.setState({ isLoading: false })
-                ToastAndroid.showWithGravityAndOffset(
-                    'Please, connect to the internet',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                    25,
-                    100,
-                );
+                this.noInternetToast()
 
             } else {
                 this.setState({ isLoading: false })
@@ -164,6 +226,62 @@ class Settings extends React.Component {
 
             }
         })
+    }
+
+    switchHandler = (value) => {
+        this.setState({
+            isSwitchOn: value
+        }, () => {
+            if (value == true) {
+                this.enableStatus()
+            }
+            else {
+                this.disableStatus()
+            }
+        })
+    }
+
+    renderItem = ({ item }) => {
+        return (
+            <TouchableOpacity
+                disabled={item.onPress ? false : true}
+                style={{
+                    flexDirection: 'row',
+                    paddingVertical: 20,
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    borderColor: 'black',
+                    borderBottomWidth: 1
+                }}
+                onPress={item.onPress}
+            >
+                <View style={{ flexDirection: 'row' }}>
+                    <Icon name={item.icon} style={styles.icon} />
+
+                    <H3 style={{
+                        color: 'black',
+                        textAlign: 'center'
+                    }}
+                    >
+                        {item.key}
+                    </H3>
+                </View>
+                {
+                    item.key == 'Push Notification' ?
+                        <Switch
+                            value={this.state.isSwitchOn}
+                            onValueChange={(value) => this.switchHandler(value)}
+                        />
+                        : null
+                }
+                {item.onPress && item.key !== 'Push Notification' ?
+                    <Icon name='ios-arrow-forward' style={[
+                        styles.icon,
+                        { color: 'black' }
+                    ]} />
+                    : null}
+            </TouchableOpacity>
+        )
     }
 
     signOutHandler = () => {
@@ -196,40 +314,8 @@ class Settings extends React.Component {
                 >
                     <FlatList
                         data={this.data}
-                        renderItem={
-                            ({ item }) =>
-                                <TouchableOpacity
-                                    disabled={item.onPress ? false : true}
-                                    style={{
-                                        flexDirection: 'row',
-                                        paddingVertical: 20,
-                                        justifyContent: 'space-between',
-                                        width: '100%',
-                                        borderColor: 'black',
-                                        borderBottomWidth: 1
-                                    }}
-                                    onPress={item.onPress}
-                                >
-                                    <View style={{ flexDirection: 'row' }}>
-                                        <Icon name={item.icon} style={styles.icon} />
-
-                                        <H3 style={{
-                                            color: 'black',
-                                            textAlign: 'center'
-
-                                        }}
-                                        >
-                                            {item.key}
-                                        </H3>
-                                    </View>
-                                    {item.onPress ?
-                                        <Icon name='ios-arrow-forward' style={[
-                                            styles.icon,
-                                            { color: 'black' }
-                                        ]} />
-                                        : null}
-                                </TouchableOpacity>
-                        }
+                        extraData={this.state.isSwitchOn}
+                        renderItem={this.renderItem}
                     />
                 </Content>
                 <LoadingModal
@@ -253,13 +339,16 @@ const mapStateToProps = (state) => {
         accountAlias: state.user.accountAlias,
         email: state.user.emailAddress,
         isConnected: state.system.isConnected,
-        associate_id: state.user.associate_id
+        associate_id: state.user.associate_id,
+        idToken: state.user.idToken,
+        pushNotificationStatus: state.user.pushNotifStatus
     };
 }
 const mapDispatchToProps = (dispatch) => {
     return {
         deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
-        clearData: () => dispatch({ type: dev.CLEAR_DATA })
+        clearData: () => dispatch({ type: dev.CLEAR_DATA }),
+        updatePushNotifStatus: (props) => dispatch({ type: user.UPDATE_PUSH_STATUS, payload: props})
     };
 }
 

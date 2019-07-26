@@ -18,7 +18,7 @@ import {
 
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from "@react-native-community/netinfo"
-import { user } from '../../store/actions'
+import { user, auth } from '../../store/actions'
 import {
     Container,
     Text,
@@ -54,6 +54,9 @@ import { NavigationEvents } from 'react-navigation';
 /* Redux */
 import { connect } from 'react-redux'
 import { dev } from '../../store/actions'
+
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 
 //Loading Modal
 import LoadingModal from '../LoadingModal'
@@ -136,7 +139,7 @@ class Home extends React.Component {
         this.setState({homeRefreshing: true, summaryRefreshing: true})
         if (this.state.associate_id !== this.props.associate_id) {
             if (this.state.associate_id == undefined || this.state.associate_id == "") {
-                this.setState({ associate_id: this.props.associate_id })
+                await this.setState({ associate_id: this.props.associate_id })
                 this.loadSummary()
             }
         }
@@ -219,7 +222,8 @@ class Home extends React.Component {
                         })
                     }
                     this.setState({ loading: false })
-                }).catch(() => {
+                }).catch((e) => {
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                 })
             }
         }
@@ -251,7 +255,8 @@ class Home extends React.Component {
                     if (res.status === 200) {
                         setTimeout(() => this.setState({ isPostDeleted: false }), 2000)
                     }
-                }).catch(() => {
+                }).catch((e) => {
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                 })
             }
             catch (e) {/* error */ }
@@ -307,7 +312,8 @@ class Home extends React.Component {
                         })
                         this.createTiles(this.posts)
                     }
-                }).catch(() => {
+                }).catch((e) => {
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                     this.setState({ homeRefreshing: false })
                 })
             }
@@ -371,6 +377,7 @@ class Home extends React.Component {
             "tenant_id": this.props.accountAlias,
             "associate_id": this.state.associate_id
         }
+
         try {
             strength_counts(payload, this.headers).then((response) => {
                 this.setState({ strengthCount: response.data.data.length})
@@ -399,7 +406,8 @@ class Home extends React.Component {
                         this.setState({summeryList: this.summeryList, summaryRefreshing: false})
                     })
                 }
-            }).catch(() => {
+            }).catch((e) => {
+                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                 this.setState({ summaryRefreshing: false })
             })
         }
@@ -472,7 +480,9 @@ class Home extends React.Component {
                             if (this.state.photo !== null) {
                                 this.setState({ imageUrl: this.state.photo }, () => this.handleUploadImage())
                             }
-                        }).catch(() => {
+                        }).catch((e) => {
+                            this.setState({ visibilityModalVisible: false })
+                            checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                         })
                     }
                     else {
@@ -562,6 +572,7 @@ class Home extends React.Component {
                 "tenant_id": this.props.accountAlias,
                 "associate_id": this.props.associate_id
             }
+
             try {
                 if (payload.tenant_id !== "" && payload.associate_id !== "") {
                     await read_transaction(payload, this.headers).then(response => {
@@ -584,7 +595,8 @@ class Home extends React.Component {
                             this.transactionList = []
                             this.createTransactionTile(this.transactionDataBackup)
                         }
-                    }).catch(() => {
+                    }).catch((e) => {
+                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                         this.setState({ refreshing: false })
                     })
                 }
@@ -668,7 +680,7 @@ class Home extends React.Component {
             file_name: 'logo.png',
             associate_email: this.props.email
         }
-        file_upload(payload)
+        file_upload(payload, this.headers)
             .then((response) => {
                 const headers = {
                     'Content-Type': 'multipart/form-data'
@@ -685,7 +697,7 @@ class Home extends React.Component {
                     }).catch(() => {
                     })
             })
-            .catch(() => {
+            .catch((e) => {
             })
     }
 
@@ -698,13 +710,13 @@ class Home extends React.Component {
             file_name: 'logo.png',
             associate_email: this.userData.email || this.props.email
         }
-        file_download(payload).then((response) => {
+        file_download(payload, this.headers).then((response) => {
             /* Store the image */
             this.setState({ isImageLoading: false, imageUrl: response.data.data['download-signed-url'] })
             if (payload.associate_email === this.props.email)
                 this.props.imageUrl(response.data.data['download-signed-url'])
 
-        }).catch(() => {
+        }).catch((e) => {
             //Error retriving data
         })
     }
@@ -1126,7 +1138,6 @@ class Home extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        associateList: state.user.associateList,
         email: state.user.emailAddress,
         userName: state.user.firstName + " " + state.user.lastName,
         firstName: state.user.firstName,
@@ -1145,7 +1156,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         updateUser: (props) => dispatch({ type: dev.UPDATE_USER, payload: props }),
-        imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props })
+        imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props }),
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
     };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Home)
