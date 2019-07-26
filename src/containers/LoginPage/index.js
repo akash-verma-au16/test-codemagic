@@ -68,7 +68,6 @@ class LoginPage extends React.Component {
         this.textInputEmail = React.createRef();
         this.textInputPassword = React.createRef();
         this.contentView = React.createRef()
-        this.associateList = {}
     }
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress',this.goBack )
@@ -273,8 +272,7 @@ class LoginPage extends React.Component {
                                         lastName: lastName,
                                         phoneNumber: response.data.payload.idToken.payload.phone_number,
                                         emailAddress: response.data.payload.idToken.payload.email.toLowerCase(),
-                                        idToken: response.data.payload.accessToken.jwtToken,
-                                        associateList: this.associateList
+                                        idToken: response.data.payload.accessToken.jwtToken
                                     };
 
                                     this.likeSyncHandler({

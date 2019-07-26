@@ -27,6 +27,7 @@ import {
 } from 'native-base';
 /* Services */
 import { news_feed, delete_post, liked_post, get_associate_name } from '../../services/post'
+import { get_status } from '../../services/pushNotification'
 //Loading Modal
 import LoadingModal from '../LoadingModal'
 //RBAC handler function
@@ -229,7 +230,6 @@ class ListPost extends React.Component {
             try {
                 await get_associate_name(payload, headers).then((res) => {
                     res.data.data.map((item) => {
-                        // this.associateList[item.associate_id] = item.full_name
                         AsyncStorage.setItem(item.associate_id, item.full_name)
                     })
                 }).catch((error) => {
@@ -288,8 +288,9 @@ class ListPost extends React.Component {
             })
         })
         await this.getProfile()
+        await this.getPushnotificationStatus()
         if (this.props.isAuthenticate) {
-            this.props.navigation.setParams({ 'isConnected': this.props.isConnected })
+            this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
         }
 
         this.interval = setInterval(() => {
@@ -308,7 +309,7 @@ class ListPost extends React.Component {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.goBack(this.state.isFocused))
         
         //  Loading profile
-        this.props.navigation.setParams({ 'profileData': this.profileData, walletBalance: this.profileData.walletBalance, 'associateId': this.props.associate_id })
+        this.props.navigation.setParams({ 'profileData': this.profileData, walletBalance: this.profileData.walletBalance })
 
     }
 
@@ -490,6 +491,42 @@ class ListPost extends React.Component {
             this.showToast()
         }
     }
+    //Get Pushnotification Status
+    getPushnotificationStatus = () => {
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
+
+        const payload = {
+            tenant_id: this.props.accountAlias,
+            associate_id: this.props.associate_id
+        }
+        try {
+            if (this.props.isConnected) {
+                get_status(payload, headers).then(async (response) => {
+                    if (response.data.is_push_disabled == 'True') {
+                        this.props.updatePushNotifStatus({ pushNotifStatus: true })
+                    }
+                    else {
+                        this.props.updatePushNotifStatus({ pushNotifStatus: true })
+                    }
+                    // }
+                }).catch((e) => {
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                })
+            }
+            else {
+                this.showToast()
+            }
+        }
+        catch {
+            throw 'error'
+        }
+
+    }
+
     getProfile = async () => {
         if (this.props.isAuthenticate) {
             //Authorization headers
@@ -674,7 +711,6 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        associateList: state.user.associateList,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         isAuthenticate: state.isAuthenticate,
@@ -692,7 +728,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
         imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props }),
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updatePushNotifStatus: (props) => dispatch({ type: user.UPDATE_PUSH_STATUS, payload: props })
     };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(withInAppNotification(ListPost))

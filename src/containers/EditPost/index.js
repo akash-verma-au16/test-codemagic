@@ -563,16 +563,6 @@ const styles = StyleSheet.create({
         fontSize: 17
         // backgroundColor: '#efefef'
     },
-    associate: {
-        color: '#1c92c4',
-        fontWeight: 'bold'
-    },
-    postText: {
-        fontFamily: "OpenSans-Regular",
-        fontWeight: '400',
-        color: '#000',
-        fontSize: 15
-    },
     strength: {
         color: '#111',
         fontWeight: 'bold',

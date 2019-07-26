@@ -34,7 +34,7 @@ const dev_env = {
         get_associate_name: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/get_associate_name",
         strength_details: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/strength_details",
         liked_post: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/liked_post",
-        rewards_addon: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/api/share_addon",
+        rewards_addon: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/dev/reward/share_addon",
         register_device: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/register_device',
         unregister: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/unregister_device',
         get_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/get_status',

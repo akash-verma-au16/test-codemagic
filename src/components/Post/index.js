@@ -11,7 +11,7 @@ import { styles } from './styles'
 /* unique id generation */
 import uuid from 'uuid'
 
-import { dev } from '../../store/actions'
+import { dev, auth } from '../../store/actions'
 
 //Cusotm component
 import VisibilityModal from '../../containers/VisibilityModal'
@@ -19,6 +19,8 @@ import VisibilityModal from '../../containers/VisibilityModal'
 import { like_post, unlike_post, like_id, rewards_addon } from '../../services/post' 
 //React navigation
 import { withNavigation } from 'react-navigation';
+//RBAC Handler function
+import { checkIfSessionExpired } from '../../containers/RBAC/RBAC_Handler'
 
 //Redux
 import { connect } from 'react-redux'
@@ -183,7 +185,8 @@ class Post extends Component {
                     AsyncStorage.setItem(this.props.postId, 'true')
                 }
 
-            }).catch(() => {
+            }).catch((e) => {
+                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
             })
         }
         catch (e) {/* error */ }
@@ -215,9 +218,11 @@ class Post extends Component {
                         this.setState({ isLiked: false })
                         AsyncStorage.setItem(this.props.postId, 'false')
                     }
-                }).catch(() => {
+                }).catch((e) => {
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                 })
-            }).catch(() => {
+            }).catch((e) => {
+                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
             })
         }
         catch (e) {/* error */ }
@@ -372,8 +377,9 @@ class Post extends Component {
                         );
 
                         this.setState({ addOn: "", addOnPoints: this.state.addOnPoints + points })
-                    }).catch(() => {
+                    }).catch((e) => {
                         //Error retriving data
+                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                         this.setState({ addonVisible: false })
                     })
                 }
@@ -624,7 +630,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props })
+        updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
     };
 }
 

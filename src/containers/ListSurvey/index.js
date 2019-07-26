@@ -105,10 +105,16 @@ class ListSurvey extends React.Component {
     }
 
     loadSurveys = () => {
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        } 
         this.setState({ isLoading: true })
         list_survey({
             tenant_id: this.props.accountAlias
-        }, this.headers)
+        }, headers)
             .then(response => {
                 this.MyPulse = []
                 this.OrgPulse = []
