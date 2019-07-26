@@ -289,7 +289,7 @@ class ListPost extends React.Component {
         })
         await this.getProfile()
         if (this.props.isAuthenticate) {
-            this.props.navigation.setParams({ 'isConnected': this.props.isConnected })
+            this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
         }
 
         this.interval = setInterval(() => {
@@ -308,7 +308,7 @@ class ListPost extends React.Component {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.goBack(this.state.isFocused))
         
         //  Loading profile
-        this.props.navigation.setParams({ 'profileData': this.profileData, walletBalance: this.profileData.walletBalance, 'associateId': this.props.associate_id })
+        this.props.navigation.setParams({ 'profileData': this.profileData, walletBalance: this.profileData.walletBalance })
 
     }
 
