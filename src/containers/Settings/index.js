@@ -93,7 +93,9 @@ class Settings extends React.Component {
                         })
                     }
                 }).catch((e) => {
-                    throw e
+                    this.setState({
+                        isSwitchOn: false
+                    })
                 })
             }
             else {
@@ -116,7 +118,9 @@ class Settings extends React.Component {
                     })
                     // }
                 }).catch((e) => {
-                    throw e
+                    this.setState({
+                        isSwitchOn: true
+                    })
                 })
             }
             else {

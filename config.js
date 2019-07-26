@@ -37,9 +37,9 @@ const dev_env = {
         rewards_addon: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/api/share_addon",
         register_device: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/api/register_device',
         unregister: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/api/unregister',
-        get_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/api/get_status',
-        enable_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/api/enable_status',
-        disable_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/api/disable_status'
+        get_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/get_status',
+        enable_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/enable_status',
+        disable_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/disable_status'
     },
     api: {
         signup: "signup",
