@@ -11,12 +11,16 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Post from '../../components/Post/index'
 /* Redux */
 import { connect } from 'react-redux'
+import { auth } from '../../store/actions'
 import {
     Container,
     Toast
 } from 'native-base';
 /* Services */
 import { strength_details } from '../../services/post'
+
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 
 //Prefetch profile data
 import { loadProfile } from '../Home/apicalls'
@@ -143,7 +147,8 @@ class StrengthPosts extends React.Component {
                             item.Item.addOnPoints = this.counts[index].addOnPoints
                         })
                         this.createTiles(this.posts)
-                    }).catch(() => {
+                    }).catch((e) => {
+                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                         this.setState({ refreshing: false })
                     })
 
@@ -269,4 +274,10 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(StrengthPosts)
+const mapDispatchToProps = (dispatch) => {
+    return {
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(StrengthPosts)

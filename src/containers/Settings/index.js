@@ -8,7 +8,8 @@ import {
     BackHandler,
     ToastAndroid,
     AsyncStorage,
-    Switch
+    Switch,
+    Linking
 } from 'react-native';
 
 /* Redux */
@@ -178,12 +179,7 @@ class Settings extends React.Component {
         {
             key: 'Privacy Policy',
             icon: 'md-lock',
-            onPress: () => this.toast()
-        },
-        {
-            key: 'User Agreement',
-            icon: 'md-document',
-            onPress: () => this.toast()
+            onPress: () => Linking.openURL('http://joy-hw-privacy-policy.s3-website-ap-southeast-1.amazonaws.com')
         },
         {
             key: 'App Version : 1.13',

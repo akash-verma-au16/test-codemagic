@@ -7,8 +7,11 @@ import Moment from 'react-moment'
 import moment from 'moment/min/moment-with-locales'
 // API Methods
 import { edit_comment } from '../../services/comments'
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Redux */
 import { connect } from 'react-redux'
+import { auth } from '../../store/actions'
 
 class EditComment extends React.Component {
     constructor(props) {
@@ -147,7 +150,8 @@ class EditComment extends React.Component {
                             })
                             this.props.navigation.goBack()
                         }
-                    }).catch(() => {
+                    }).catch((e) => {
+                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                     })
                 }
                 catch (e){/* error */}
@@ -305,4 +309,10 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(EditComment) 
+const mapDispatchToProps = (dispatch) => {
+    return {
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditComment) 

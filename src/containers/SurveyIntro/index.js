@@ -27,6 +27,8 @@ import RoundButton from '../../components/RoundButton'
 /* Assets */
 import image from '../../assets/surveyBackground.jpg'
 import icon from '../../assets/smily.png'
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Services */
 import { read_survey } from '../../services/questionBank'
 
@@ -69,7 +71,8 @@ class SurveyIntro extends React.Component {
                             questionData: response.data.data
                         })
                         this.setState({ isLoading: false })
-                    }).catch(() => {
+                    }).catch((e) => {
+                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                         this.setState({ isLoading: false })
                         ToastAndroid.showWithGravityAndOffset(
                             'Something went wrong, please try again',
@@ -205,7 +208,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        authenticate: (props) => dispatch({ type: auth.AUTHENTICATE_USER, payload: props })
+        authenticate: (props) => dispatch({ type: auth.AUTHENTICATE_USER, payload: props }),
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
     };
 }
 

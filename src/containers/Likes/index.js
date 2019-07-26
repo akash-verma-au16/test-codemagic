@@ -11,11 +11,14 @@ import NetInfo from "@react-native-community/netinfo"
 
 import { list_likes } from '../../services/post'
 import Like from '../../components/Like/index'
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 //Custom Data
 // import { data } from './data'
 
 //redux
 import { connect } from 'react-redux'
+import { auth } from '../../store/actions'
 
 class Likes extends React.Component {
     constructor(props) {
@@ -99,7 +102,9 @@ class Likes extends React.Component {
                     }
                 })
             }
-            catch(e) {/* error */}
+            catch(e) {
+                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+            }
         }
         else {
             ToastAndroid.showWithGravityAndOffset(
@@ -172,4 +177,10 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(Likes)
+const mapDispatchToProps = (dispatch) => {
+    return {
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Likes)

@@ -24,6 +24,10 @@ import LoadingModal from '../LoadingModal'
 
 //Redux
 import { connect } from 'react-redux'
+import { auth } from '../../store/actions'
+
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 
 //Styles for the screen
 import { styles } from './style'
@@ -151,7 +155,8 @@ class Comments extends React.Component {
                             this.loadComments(this.comments)
                         }
                     }
-                }).catch(() => {
+                }).catch((e) => {
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)                
                 })
             } 
         }
@@ -208,7 +213,8 @@ class Comments extends React.Component {
                                 100,
                             );
                         }
-                    }).catch (() => {
+                    }).catch ((e) => {
+                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                         Keyboard.dismiss()
                     })
                 }
@@ -285,8 +291,9 @@ class Comments extends React.Component {
                     if(response.status === 200) {
                         setTimeout(() => this.setState({ isCommentDeleted: false }), 2000)
                     }
-                }).catch(() => {
+                }).catch((e) => {
                     //Error retriving data
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                     this.setState({ isCommentDeleted: false })
                 })
             }
@@ -384,4 +391,9 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(Comments)
+const mapDispatchToProps = (dispatch) => {
+    return {
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+    };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Comments)
