@@ -354,7 +354,7 @@ class Comments extends React.Component {
                         maxLength={255} 
                         style={styles.addComment} 
                         multiline={true} 
-                        selectionColor='#1c92c4'
+                        selectionColor='#9871d5'
                         onChangeText={(text) => this.setState({addCommentText: text})} 
                         onFocus={this.focusHandler}
                     />

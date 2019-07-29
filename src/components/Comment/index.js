@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     },
     iconWrapper: {
         borderRadius: 30,
-        backgroundColor: '#1c92c4',
+        backgroundColor: '#9871d5',
         height: 32,
         aspectRatio: 1 / 1,
         alignItems: 'center',

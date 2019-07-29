@@ -427,7 +427,7 @@ class EditPost extends React.Component {
                         <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 3 }}>
                             <View name='image' style={{
                                 borderRadius: 30,
-                                backgroundColor: '#1c92c4',
+                                backgroundColor: '#9871d5',
                                 height: 35,
                                 aspectRatio: 1 / 1,
                                 alignItems: 'center',
@@ -454,7 +454,7 @@ class EditPost extends React.Component {
                         elevation: 2
                     }}>
 
-                        <View style={{ backgroundColor: '#1c92c4', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
+                        <View style={{ backgroundColor: '#9871d5', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Icon name='md-person-add' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
                                 <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Edit your colleagues</Text>
@@ -479,15 +479,15 @@ class EditPost extends React.Component {
                                 selectedItems={this.state.taggedAssociates}
                                 selectText='Select colleagues'
                                 searchInputPlaceholderText='Search colleagues...'
-                                tagRemoveIconColor='#1c92c4'
-                                tagBorderColor='#1c92c4'
-                                tagTextColor='#1c92c4'
-                                selectedItemTextColor='#1c92c4'
-                                selectedItemIconColor='#1c92c4'
+                                tagRemoveIconColor='#9871d5'
+                                tagBorderColor='#9871d5'
+                                tagTextColor='#9871d5'
+                                selectedItemTextColor='#9871d5'
+                                selectedItemIconColor='#9871d5'
                                 itemTextColor='#000'
                                 displayKey='name'
-                                searchInputStyle={{ color: '#1c92c4' }}
-                                submitButtonColor='#1c92c4'
+                                searchInputStyle={{ color: '#9871d5' }}
+                                submitButtonColor='#9871d5'
                                 submitButtonText='Submit'
                                 autoFocusInput={false}
                             />
@@ -510,7 +510,7 @@ class EditPost extends React.Component {
                             autoFocus={true}
                             style={styles.editPost}
                             multiline={true}
-                            selectionColor='#1c92c4'
+                            selectionColor='#9871d5'
                             onChangeText={(text) => {
                                 this.setState({ postMessage: text, isChanged: true })
                                 this.props.navigation.setParams({ isChanged: true })

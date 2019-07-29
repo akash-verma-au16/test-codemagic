@@ -613,7 +613,7 @@ class Home extends React.Component {
                 <View style={{ backgroundColor: '#FFF', width: Dimensions.get('window').width }} key={index}>
                     <View style={styles.transactionContainer}>
                         <View style={styles.iconView}>
-                            <View style={{ backgroundColor: '#1c92c4', borderRadius: 40, height: 40, width: 40, alignItems: 'center', justifyContent: 'center' }}>
+                            <View style={{ backgroundColor: '#9871d5', borderRadius: 40, height: 40, width: 40, alignItems: 'center', justifyContent: 'center' }}>
                                 <Icon name='ios-trophy' type={'Ionicons'} style={{ fontSize: 18, color: '#eee' }} />
                             </View>
                         </View>
@@ -781,7 +781,7 @@ class Home extends React.Component {
         if (this.state.loading) {
             return (
                 <View style={{ alignItems: 'center', justifyContent: 'flex-start', marginTop: 25 }}>
-                    <ActivityIndicator size='large' color='#1c92c4' />
+                    <ActivityIndicator size='large' color='#9871d5' />
                 </View>
             )
         }
@@ -804,7 +804,7 @@ class Home extends React.Component {
                                         resizeMode='cover'
                                     />
                                     :
-                                    <ActivityIndicator size='small' color='#1c92c4' />
+                                    <ActivityIndicator size='small' color='#9871d5' />
                                 }
 
                             </View>
@@ -998,7 +998,7 @@ class Home extends React.Component {
                                         <Text style={styles.headerText}>Edit Profile</Text>
                                         <TouchableOpacity style={{ height: 35, borderRadius: 30, aspectRatio: 1 / 1 }} onPress={this.handleEditProfile}>
                                             <Icon name='check' type={'MaterialIcons'}
-                                                style={this.state.isEdit ? { color: '#1c92c4', padding: 5, fontSize: 27 } : { color: '#ccc', padding: 5, fontSize: 27 }}
+                                                style={this.state.isEdit ? { color: '#9871d5', padding: 5, fontSize: 27 } : { color: '#ccc', padding: 5, fontSize: 27 }}
                                             />
                                         </TouchableOpacity>
                                     </View>
@@ -1018,7 +1018,7 @@ class Home extends React.Component {
                                                         style={styles.profilePic}
                                                     />
                                                 ) : (
-                                                    <ActivityIndicator size='large' color='#1c92c4' />
+                                                    <ActivityIndicator size='large' color='#9871d5' />
                                                 )
                                                 }
                                             </View>
@@ -1027,12 +1027,12 @@ class Home extends React.Component {
                                             </TouchableOpacity>
                                         </View>
                                         <View style={styles.textInputWraper}>
-                                            <Text style={styles.fieldText}>First Name <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
+                                            <Text style={styles.fieldText}>First Name <Text style={{ color: '#9871d5', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
                                             <TextInput
                                                 style={styles.textInput}
                                                 value={this.state.firstName}
                                                 placeholder='First Name'
-                                                underlineColorAndroid='#1c92c4'
+                                                underlineColorAndroid='#9871d5'
                                                 placeholderTextColor='#ccc'
                                                 onChangeText={(text) => {
                                                     this.setState({
@@ -1043,12 +1043,12 @@ class Home extends React.Component {
                                             />
                                         </View>
                                         <View style={styles.textInputWraper}>
-                                            <Text style={styles.fieldText}>Last Name <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
+                                            <Text style={styles.fieldText}>Last Name <Text style={{ color: '#9871d5', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
                                             <TextInput
                                                 style={styles.textInput}
                                                 value={this.state.lastName}
                                                 placeholder='Last Name'
-                                                underlineColorAndroid='#1c92c4'
+                                                underlineColorAndroid='#9871d5'
                                                 placeholderTextColor='#ccc'
                                                 onChangeText={(text) => {
                                                     this.setState({
@@ -1059,13 +1059,13 @@ class Home extends React.Component {
                                             />
                                         </View>
                                         <View style={styles.textInputWraper}>
-                                            <Text style={styles.fieldText}>Email <Text style={{ color: '#1c92c4', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
+                                            <Text style={styles.fieldText}>Email <Text style={{ color: '#9871d5', fontSize: 14, fontWeight: 'bold' }}>*</Text></Text>
                                             <TextInput
                                                 style={styles.textInput}
                                                 value={this.state.email}
                                                 editable={false}
                                                 placeholder='Email'
-                                                underlineColorAndroid='#1c92c4'
+                                                underlineColorAndroid='#9871d5'
                                                 keyboardType='email-address'
                                                 placeholderTextColor='#ccc'
                                                 onChangeText={(text) => {
@@ -1083,7 +1083,7 @@ class Home extends React.Component {
                                                 value={this.state.phoneNo}
                                                 placeholder='Phone Number'
                                                 keyboardType='phone-pad'
-                                                underlineColorAndroid='#1c92c4'
+                                                underlineColorAndroid='#9871d5'
                                                 placeholderTextColor='#ccc'
                                                 onChangeText={(text) => {
                                                     this.setState({

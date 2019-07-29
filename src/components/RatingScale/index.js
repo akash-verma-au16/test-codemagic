@@ -77,7 +77,7 @@ class RatingScale extends React.Component {
                 step={1}
                 trackStyle={styles.track}
                 thumbStyle={styles.thumb}
-                minimumTrackTintColor='#1c92c4'
+                minimumTrackTintColor='#9871d5'
                 value={0}
                 onValueChange={(value) =>{
                     this.setState({data:{
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
         height: 30,
         borderRadius: 30 / 2,
         backgroundColor: 'white',
-        borderColor: '#1c92c4',
+        borderColor: '#9871d5',
         borderWidth: 2
     },
     option: {
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         borderRadius: 10,
         width: Dimensions.get('window').width-30 ,
-        borderColor: '#1c92c4',
+        borderColor: '#9871d5',
         borderWidth: 1,
         backgroundColor:'white'
     }

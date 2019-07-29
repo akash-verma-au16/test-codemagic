@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
     icon: {
         fontSize: 20,
         paddingHorizontal: 10,
-        color: '#1c92c4'
+        color: '#9871d5'
     }
 })
 const mapStateToProps = (state) => {

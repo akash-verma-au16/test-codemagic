@@ -3,7 +3,7 @@ import { StyleSheet, Dimensions } from 'react-native'
 export const styles = StyleSheet.create({
     coloredText: {
         fontSize: 14,
-        color: '#1c92c4',
+        color: '#9871d5',
         fontFamily: "OpenSans-Regular",
         flexWrap: 'wrap'
     },
@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
         color: '#333'
     },
     companyName: {
-        color: '#1c92c4',
+        color: '#9871d5',
         fontSize: 15,
         fontWeight: 'bold',
         flexWrap: 'wrap',
@@ -47,7 +47,7 @@ export const styles = StyleSheet.create({
         fontSize: 15
     },
     textActive: {
-        color: '#1c92c4',
+        color: '#9871d5',
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 22,
@@ -59,7 +59,7 @@ export const styles = StyleSheet.create({
     },
     iconActive: {
         fontSize: 26,
-        color: '#1c92c4'
+        color: '#9871d5'
     },
     iconInactive: {
         fontSize: 25,
@@ -167,7 +167,7 @@ export const styles = StyleSheet.create({
     editBtn: {
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#1c92c4',
+        backgroundColor: '#9871d5',
         borderRadius: 3,
         paddingHorizontal: 10,
         paddingVertical: 3
@@ -271,7 +271,7 @@ export const styles = StyleSheet.create({
         fontSize: 18,
         fontFamily: 'OpenSans-Regular',
         fontWeight: "400",
-        color: '#1c92c4',
+        color: '#9871d5',
         textAlign: 'center',
         padding: 20
     }

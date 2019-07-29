@@ -26,7 +26,7 @@ const RootStack = createStackNavigator(
             screen: Home,
             navigationOptions: {
                 headerStyle: {
-                    backgroundColor: '#1c92c4'
+                    backgroundColor: '#9871d5'
                 },
                 title: 'Profile',
                 headerTintColor: '#fff',
@@ -91,7 +91,7 @@ const RootStack = createStackNavigator(
             screen: InAppNotifier,
             navigationOptions: {
                 headerStyle: {
-                    backgroundColor: '#1c92c4'
+                    backgroundColor: '#9871d5'
                 },
                 title: 'YOUR NOTIFICATIONS',
                 headerTintColor: '#fff',
@@ -106,7 +106,7 @@ const RootStack = createStackNavigator(
             screen: Likes,
             navigationOptions: {
                 headerStyle: {
-                    backgroundColor: '#1c92c4',
+                    backgroundColor: '#9871d5',
                     height: 41
                 },
                 title: 'People Who Liked',
@@ -122,7 +122,7 @@ const RootStack = createStackNavigator(
             screen: Comments,
             navigationOptions: {
                 headerStyle: {
-                    backgroundColor: '#1c92c4',
+                    backgroundColor: '#9871d5',
                     height: 40
                 },
                 title: 'Comments',
@@ -138,7 +138,7 @@ const RootStack = createStackNavigator(
             screen: EditPost,
             navigationOptions: {
                 headerStyle: {
-                    backgroundColor: '#1c92c4',
+                    backgroundColor: '#9871d5',
                     height: 40
                 },
                 title: 'Edit Post',
@@ -154,7 +154,7 @@ const RootStack = createStackNavigator(
             screen: StrengthPosts,
             navigationOptions: {
                 headerStyle: {
-                    backgroundColor: '#1c92c4',
+                    backgroundColor: '#9871d5',
                     height: 40
                 },
                 headerTintColor: '#fff',
@@ -169,7 +169,7 @@ const RootStack = createStackNavigator(
             screen: ReadPost,
             navigationOptions: {
                 headerStyle: {
-                    backgroundColor: '#1c92c4'
+                    backgroundColor: '#9871d5'
                 },
                 title: 'Your tagged post',
                 headerTintColor: '#fff',
@@ -184,7 +184,7 @@ const RootStack = createStackNavigator(
             screen: EditComment,
             navigationOptions: {
                 headerStyle: {
-                    backgroundColor: '#1c92c4',
+                    backgroundColor: '#9871d5',
                     height: 40
                 },
                 title: 'Edit Comment',
@@ -215,7 +215,7 @@ const RootStack = createStackNavigator(
             screen: Settings,
             navigationOptions: {
                 headerStyle: {
-                    backgroundColor: '#1c92c4'
+                    backgroundColor: '#9871d5'
                 },
                 title: 'Settings',
                 headerTintColor: '#fff',

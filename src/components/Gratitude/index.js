@@ -76,7 +76,7 @@ class Gratitude extends Component {
                 marginTop: 10,
                 marginBottom: 10
             }}>
-                <View style={{ backgroundColor: '#1c92c4', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
+                <View style={{ backgroundColor: '#9871d5', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Icon name='md-people' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
                         <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Thanks</Text>
@@ -142,7 +142,7 @@ class Gratitude extends Component {
 const styles = StyleSheet.create({
     template: {
         borderRadius: 10,
-        borderColor: '#1c92c4',
+        borderColor: '#9871d5',
         borderWidth: 2,
         justifyContent: 'center',
         alignItems: 'center',
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     },
     templateText: {
         paddingHorizontal: 10,
-        color: '#1c92c4'
+        color: '#9871d5'
     }
 })
 
