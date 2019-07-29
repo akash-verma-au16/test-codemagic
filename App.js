@@ -117,7 +117,7 @@ export default class App extends Component {
             this.state.dataLoaded ?
                 <InAppNotificationProvider backgroundColour='#ecf0f1' closeInterval={8000}>
                     <Root style={{ zIndex: 0 }}>
-                        <StatusBar backgroundColor='#9871d5' barStyle='light-content' />
+                        <StatusBar backgroundColor='#47309C' barStyle='light-content' />
                         <Provider store={this.store}>
                             <OfflineNotice isConnected={this.state.isConnected} />
                             <Navigator uriPrefix={prefix} />

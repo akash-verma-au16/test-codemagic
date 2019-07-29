@@ -26,7 +26,7 @@ export default class VisibilityModal extends Component {
         const lastTile = this.props.data.length -1
         this.props.data.map((item, index) => {
             
-            const color = this.props.state && this.props.state===item.text? '#9871d5' : '#555'
+            const color = this.props.state && this.props.state===item.text? '#47309C' : '#555'
             tiles.push(
                 <React.Fragment key={index}>
                     <TouchableOpacity

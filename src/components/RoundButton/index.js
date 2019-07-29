@@ -7,7 +7,7 @@ const RoundButton = (props) => (
         <Button
             disabled={props.isLoading}
             block
-            style={[styles.button, { backgroundColor: props.isLight ?'#9871d5':'#9871d5'},props.isDisabled?styles.buttonDisabled:null]}
+            style={[styles.button, { backgroundColor: props.isLight ?'#47309C':'#47309C'},props.isDisabled?styles.buttonDisabled:null]}
             onPress={props.onPress}>
             {props.isLoading ?
                 <Spinner color={props.isLight ?'#fff':'#fff'} />

@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
         fontSize: 15
     },
     associate: {
-        color: '#9871d5',
+        color: '#47309C',
         fontWeight: 'bold'
     },
     strength: {
@@ -37,7 +37,7 @@ export const styles = StyleSheet.create({
     },
     like: {
         fontSize: 20,
-        color: '#9871d5'
+        color: '#47309C'
     },
     unlike: {
         fontSize: 20,
@@ -77,7 +77,7 @@ export const styles = StyleSheet.create({
         fontFamily: "OpenSans-Regular",
         fontSize: 13,
         marginLeft: 11,
-        color: '#9871d5'
+        color: '#47309C'
     },
     footerTextInactive: {
         fontFamily: "OpenSans-Regular",
@@ -91,7 +91,7 @@ export const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     addon: {
-        color: '#9871d5',
+        color: '#47309C',
         fontSize: 15,
         fontFamily: 'Opensans-Regular',
         fontWeight: '400'
@@ -103,7 +103,7 @@ export const styles = StyleSheet.create({
         paddingVertical: 1,
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: '#9871d5'
+        borderColor: '#47309C'
     },
     addOnView: {
         alignItems: 'center',
@@ -122,14 +122,14 @@ export const styles = StyleSheet.create({
         width: '30%',
         borderWidth: 1,
         borderRadius: 3,
-        borderColor: '#9871d5',
+        borderColor: '#47309C',
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 10,
         paddingVertical: 7
     },
     points: {
-        color: '#9871d5',
+        color: '#47309C',
         fontSize: 16
     }
 

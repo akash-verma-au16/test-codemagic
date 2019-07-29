@@ -101,7 +101,7 @@ class ListPost extends React.Component {
                         {navigation.getParam('imageUrl') === '' ?
                             <ActivityIndicator
                                 size='small'
-                                color='#9871d5'
+                                color='#47309C'
                             />
                             :
                             <Thumbnail
@@ -667,7 +667,7 @@ class ListPost extends React.Component {
                             width: 100,
                             height: 50,
                             marginVertical: 10,
-                            backgroundColor: '#9871d5',
+                            backgroundColor: '#47309C',
                             justifyContent: 'center',
                             alignItems: 'center',
                             borderRadius: 100,

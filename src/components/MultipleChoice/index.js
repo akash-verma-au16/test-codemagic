@@ -81,17 +81,17 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         borderRadius: 10,
         width: Dimensions.get('window').width-30 ,
-        borderColor: '#9871d5',
+        borderColor: '#47309C',
         borderWidth: 1
         
     },
     activeOption:{
-        backgroundColor:'#9871d5'
+        backgroundColor:'#47309C'
     },
     text:{
         textAlign:'left',
         marginHorizontal:30,
-        color:'#9871d5'
+        color:'#47309C'
     },
     activeText:{
         color:'#fff'

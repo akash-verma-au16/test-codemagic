@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
         paddingTop: 15
     },
     indicator: {
-        backgroundColor: '#9871d5'
+        backgroundColor: '#47309C'
     },
     header: {
         color: 'white',
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     submitButton: {
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#9871d5',
+        backgroundColor: '#47309C',
         width: 50,
         aspectRatio: 1 / 1,
         borderRadius: 50,

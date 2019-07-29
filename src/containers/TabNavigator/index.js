@@ -9,7 +9,7 @@ const HomeStack = createStackNavigator({
         screen: ListPost,
         navigationOptions: {
             headerStyle: {
-                backgroundColor: '#9871d5'
+                backgroundColor: '#47309C'
             },
             title: 'HappyWorks',
             headerTintColor: '#fff',
@@ -26,7 +26,7 @@ const CreatePostStack = createStackNavigator({
         screen: CreatePost,
         navigationOptions: {
             headerStyle: {
-                backgroundColor: '#9871d5'
+                backgroundColor: '#47309C'
             },
             title: 'Leave a note',
             headerTintColor: '#fff',
@@ -44,7 +44,7 @@ const ListSurveyStack = createStackNavigator({
         screen: ListSurvey,
         navigationOptions: {
             headerStyle: {
-                backgroundColor: '#9871d5'
+                backgroundColor: '#47309C'
             },
             title: 'My Survey',
             headerTintColor: '#fff',
@@ -71,7 +71,7 @@ const TabNavigator = createBottomTabNavigator({
             getTabBarIcon(navigation, focused, tintColor)
     }),
     tabBarOptions: {
-        activeTintColor: '#9871d5',
+        activeTintColor: '#47309C',
         inactiveTintColor: 'black',
         showLabel: false
     },

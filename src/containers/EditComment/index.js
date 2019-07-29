@@ -227,7 +227,7 @@ class EditComment extends React.Component {
                         <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 3 }}>
                             <View name='image' style={{
                                 borderRadius: 30,
-                                backgroundColor: '#9871d5',
+                                backgroundColor: '#47309C',
                                 height: 35,
                                 aspectRatio: 1 / 1,
                                 alignItems: 'center',
@@ -251,7 +251,7 @@ class EditComment extends React.Component {
                         blurOnSubmit={false}
                         style={styles.editComment}
                         multiline={true}
-                        selectionColor='#9871d5'
+                        selectionColor='#47309C'
                         onChangeText={(text) => {
                             this.setState({ comment: text, isChanged: true })
                             this.props.navigation.setParams({ isChanged: true });  

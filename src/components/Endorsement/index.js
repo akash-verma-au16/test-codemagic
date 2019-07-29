@@ -114,7 +114,7 @@ class Endorsement extends Component {
                 marginBottom: 10,
                 flex: 1
             }}>
-                <View style={{ backgroundColor: '#9871d5', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
+                <View style={{ backgroundColor: '#47309C', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Icon name='md-people' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
                         <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Endorse</Text>
@@ -187,7 +187,7 @@ class Endorsement extends Component {
 const styles = StyleSheet.create({
     template: {
         borderRadius: 10,
-        borderColor: '#9871d5',
+        borderColor: '#47309C',
         borderWidth: 2,
         justifyContent: 'center',
         alignItems: 'center',

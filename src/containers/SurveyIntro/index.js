@@ -181,12 +181,12 @@ const styles = StyleSheet.create({
     },
     text:{
         marginVertical: 15,
-        color:'#9871d5',
+        color:'#47309C',
         textAlign: 'center'
     },
     surveyDescription: {
         textAlign: 'center',
-        color: '#9871d5',
+        color: '#47309C',
         fontSize: 20
     }
 });

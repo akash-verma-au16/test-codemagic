@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
         paddingVertical: 5
     },
     iconActive:{
-        color: '#9871d5',
+        color: '#47309C',
         fontSize: 26,
         paddingVertical: 5
     }

@@ -396,8 +396,8 @@ class CreatePost extends React.Component {
                     this.closeSelectionDrawer()
 
                 }}>
-                    <Icon name='md-people' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#9871d5' }} />
-                    <Text style={[styles.buttonText, { fontSize: fontSize, color: '#9871d5' }]}>Endorse</Text>
+                    <Icon name='md-people' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#47309C' }} />
+                    <Text style={[styles.buttonText, { fontSize: fontSize, color: '#47309C' }]}>Endorse</Text>
                 </TouchableOpacity>
                 <View style={{
                     height: 150,
@@ -408,8 +408,8 @@ class CreatePost extends React.Component {
                     this.setState({ GratitudeModalVisibility: true, postType: 'gratitude' })
                     this.closeSelectionDrawer()
                 }}>
-                    <Icon name='md-thumbs-up' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#9871d5' }} />
-                    <Text style={[styles.buttonText, { fontSize: fontSize, color: '#9871d5' }]}>Thanks</Text>
+                    <Icon name='md-thumbs-up' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#47309C' }} />
+                    <Text style={[styles.buttonText, { fontSize: fontSize, color: '#47309C' }]}>Thanks</Text>
                 </TouchableOpacity>
 
             </View>
@@ -427,7 +427,7 @@ class CreatePost extends React.Component {
             shadowOpacity: 0.2,
             elevation: 2
         }}>
-            <View style={{ backgroundColor: '#9871d5', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
+            <View style={{ backgroundColor: '#47309C', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Icon name='md-person-add' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
                     <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Tag your colleagues</Text>
@@ -442,7 +442,7 @@ class CreatePost extends React.Component {
 
             </View>
             {this.state.isTagerLoading ?
-                <Spinner color='#9871d5' />
+                <Spinner color='#47309C' />
                 :
                 <View style={{ width: '100%', paddingHorizontal: 20, marginTop: 10, marginBottom: 10 }}>
 
@@ -455,15 +455,15 @@ class CreatePost extends React.Component {
                         selectedItems={this.state.taggedAssociates}
                         selectText='Select colleagues'
                         searchInputPlaceholderText='Search colleagues...'
-                        tagRemoveIconColor='#9871d5'
-                        tagBorderColor='#9871d5'
-                        tagTextColor='#9871d5'
-                        selectedItemTextColor='#9871d5'
-                        selectedItemIconColor='#9871d5'
+                        tagRemoveIconColor='#47309C'
+                        tagBorderColor='#47309C'
+                        tagTextColor='#47309C'
+                        selectedItemTextColor='#47309C'
+                        selectedItemIconColor='#47309C'
                         itemTextColor='#000'
                         displayKey='name'
-                        searchInputStyle={{ color: '#9871d5' }}
-                        submitButtonColor='#9871d5'
+                        searchInputStyle={{ color: '#47309C' }}
+                        submitButtonColor='#47309C'
                         submitButtonText='Submit'
                         autoFocusInput={false}
                     />
@@ -616,7 +616,7 @@ class CreatePost extends React.Component {
 
                     <TouchableOpacity
                         style={{
-                            backgroundColor: '#9871d5',
+                            backgroundColor: '#47309C',
                             flexDirection: 'row',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -660,7 +660,7 @@ class CreatePost extends React.Component {
                         />
                         : null}
                     <View style={styles.addPointsContainer}>
-                        <View style={{ backgroundColor: '#9871d5', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
+                        <View style={{ backgroundColor: '#47309C', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Icon name='md-medal' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
                                 <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Balance :</Text>
@@ -690,7 +690,7 @@ class CreatePost extends React.Component {
                                 {this.state.addPoints>0 && this.state.taggedAssociates.length > 1 ?
                                     <React.Fragment>
                                         <Text style={{marginTop:5}}>You have tagged {this.state.taggedAssociates.length} colleagues</Text>
-                                        <Text style={{marginTop:5}}>Total Deduction will be {this.state.addPoints} x {this.state.taggedAssociates.length} that is <Text style={{fontSize:18,fontWeight:'500',color:'#9871d5'}}>{this.state.taggedAssociates.length * this.state.addPoints}</Text></Text>
+                                        <Text style={{marginTop:5}}>Total Deduction will be {this.state.addPoints} x {this.state.taggedAssociates.length} that is <Text style={{fontSize:18,fontWeight:'500',color:'#47309C'}}>{this.state.taggedAssociates.length * this.state.addPoints}</Text></Text>
                                     </React.Fragment>
                                     : null
                                 }
@@ -704,10 +704,10 @@ class CreatePost extends React.Component {
                                         placeholderTextColor='#777'
                                         style={styles.addPoints}
                                         value={this.state.addPoints == 0 ? "" : this.state.addPoints.toString()}
-                                        selectionColor='#9871d5'
+                                        selectionColor='#47309C'
                                         onChangeText={(text) => this.setState({ addPoints: text.replace(/[^0-9]/g, '') })}
                                         keyboardType='number-pad'
-                                        underlineColorAndroid='#9871d5'
+                                        underlineColorAndroid='#47309C'
                                         maxLength={3}
                                     />
                                 </View>
@@ -813,14 +813,14 @@ const styles = StyleSheet.create({
         width: '30%',
         borderWidth: 1,
         borderRadius: 3,
-        borderColor: '#9871d5',
+        borderColor: '#47309C',
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 10,
         paddingVertical: 7
     },
     points: {
-        color: '#9871d5',
+        color: '#47309C',
         fontSize: 16
     }
 });
