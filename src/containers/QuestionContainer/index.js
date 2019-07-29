@@ -23,7 +23,7 @@ import { auth } from '../../store/actions'
 /* Custom components */
 import Question from '../../components/Question'
 /* Assets */
-import image from '../../assets/surveyBackground.jpg'
+import image from '../../assets/rsz_gradient-background.png'
 //RBAC handler function
 import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Services */
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
         paddingTop: 15
     },
     indicator: {
-        backgroundColor: '#1c92c4'
+        backgroundColor: '#47309C'
     },
     header: {
         color: 'white',
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     submitButton: {
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#1c92c4',
+        backgroundColor: '#47309C',
         width: 50,
         aspectRatio: 1 / 1,
         borderRadius: 50,

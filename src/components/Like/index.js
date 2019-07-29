@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     iconView: {
         flexDirection: 'column',
         borderRadius: 50,
-        backgroundColor: '#1c92c4',
+        backgroundColor: '#47309C',
         height: 50,
         aspectRatio: 1 / 1,
         alignItems: 'center',

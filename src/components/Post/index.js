@@ -447,7 +447,7 @@ class Post extends Component {
                         <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center'}} onPress={() => this.onIconPresshandler(this.props.postCreator_id)}>
                             <View name='image' style={{
                                 borderRadius: 30,
-                                backgroundColor: '#1c92c4',
+                                backgroundColor: '#47309C',
                                 height: 35,
                                 aspectRatio: 1 / 1,
                                 alignItems: 'center',
@@ -555,7 +555,7 @@ class Post extends Component {
                         (this.props.postCreator_id !== this.props.associate_id) ?
                             <TouchableWithoutFeedback activeOpacity={0.8} style={styles.footerConetntView} onPress={() => {this.setState({ addonVisible: !this.state.addonVisible });this.addonButtonRef.current.bounceIn(800)} }>
                                 <Animatable.View useNativeDriver ref={this.addonButtonRef} style={styles.footerConetntView}>
-                                    <Icon name='md-add' type={'Ionicons'} style={this.state.addonVisible ? { color: '#1c92c4', fontSize: 19 } : { color: '#bababa', fontSize: 19 }} />
+                                    <Icon name='md-add' type={'Ionicons'} style={this.state.addonVisible ? { color: '#47309C', fontSize: 19 } : { color: '#bababa', fontSize: 19 }} />
                                     <Text style={this.state.addonVisible ? styles.footerTextActive : styles.footerTextInactive}>Add-on</Text>
                                 </Animatable.View>
                             </TouchableWithoutFeedback>
@@ -566,13 +566,13 @@ class Post extends Component {
                     <Animatable.View animation='zoomIn' useNativeDriver>
                         <View style={{ flexDirection: 'row', height: 1 / 3, backgroundColor: '#c9cacc', marginVertical: 5 }}></View>
                         <View style={styles.pointButtonView}>
-                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "1" }, () => this.rewardsAddon()) }}>
+                            <TouchableOpacity activeOpacity={0.5} underlayColor='#47309C' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "1" }, () => this.rewardsAddon()) }}>
                                 <Text style={styles.points}>+1</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "5" }, () => this.rewardsAddon()) }}>
+                            <TouchableOpacity activeOpacity={0.5} underlayColor='#47309C' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "5" }, () => this.rewardsAddon()) }}>
                                 <Text style={styles.points}>+5</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.5} underlayColor='#1c92c4' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "10" }, () => this.rewardsAddon()) }}>
+                            <TouchableOpacity activeOpacity={0.5} underlayColor='#47309C' style={styles.pointsView} onPress={async () => { await this.setState({ addOn: "10" }, () => this.rewardsAddon()) }}>
                                 <Text style={styles.points}>+10</Text>
                             </TouchableOpacity>
                         </View>

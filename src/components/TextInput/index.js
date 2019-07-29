@@ -6,7 +6,7 @@ class InputText extends React.Component {
 
     constructor(props) {
         super(props);
-        this.baseColor = this.props.color ? this.props.color :'#1c92c4'
+        this.baseColor = this.props.color ? this.props.color :'#47309C'
         this.state = {
             borderColor: this.baseColor
         }
@@ -33,7 +33,7 @@ class InputText extends React.Component {
                     style={{ ...this.styles.inputText, ...this.props.style, borderColor: this.state.borderColor }}
                     maxLength={200}
                     returnKeyType={"next"}
-                    selectionColor='#1c92c4'
+                    selectionColor='#47309C'
                     placeholderTextColor={'#000'}
                     onFocus={() => this.setState({ borderColor: this.props.color ? this.props.color : '#111' })}
                     onBlur={() => this.setState({ borderColor: this.baseColor })}

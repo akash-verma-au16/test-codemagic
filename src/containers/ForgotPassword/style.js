@@ -60,12 +60,12 @@ export default StyleSheet.create({
         width: '100%'
     },
     navigationLink: {
-        color: '#1c92c4',
+        color: '#47309C',
         marginBottom:15
     },
     icon: {
         fontSize: 50,
         paddingHorizontal: 10,
-        color:'#1c92c4'
+        color:'#47309C'
     }
 })

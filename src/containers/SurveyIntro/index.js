@@ -25,7 +25,7 @@ import { auth } from '../../store/actions'
 /* Custom components */
 import RoundButton from '../../components/RoundButton'
 /* Assets */
-import image from '../../assets/surveyBackground.jpg'
+import image from '../../assets/rsz_gradient-background.png'
 import icon from '../../assets/smily.png'
 //RBAC handler function
 import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
@@ -181,12 +181,12 @@ const styles = StyleSheet.create({
     },
     text:{
         marginVertical: 15,
-        color:'#1c92c4',
+        color:'#47309C',
         textAlign: 'center'
     },
     surveyDescription: {
         textAlign: 'center',
-        color: '#1c92c4',
+        color: '#47309C',
         fontSize: 20
     }
 });

@@ -206,7 +206,7 @@ class ListSurvey extends React.Component {
                         {navigation.getParam('imageUrl') === '' ?
                             <ActivityIndicator
                                 size='small'
-                                color='#1c92c4'
+                                color='#47309C'
                             />
                             :
                             <Thumbnail
@@ -300,7 +300,7 @@ class ListSurvey extends React.Component {
                 >
                     <View style={{ flex: 1 }}>
 
-                        <View style={{ flexDirection: 'row', width: '100%', backgroundColor: '#1c92c4', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                        <View style={{ flexDirection: 'row', width: '100%', backgroundColor: '#47309C', alignItems: 'center', justifyContent: 'space-evenly' }}>
                             <TouchableOpacity onPress={() => this.pager.setPage(0)}>
                                 <Text name='16/17' style={this.state.selectedTab === 0 ? styles.tabActive : styles.tabInactive}>
                                     My Pulse

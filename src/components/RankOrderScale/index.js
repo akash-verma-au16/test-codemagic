@@ -46,7 +46,7 @@ class RankOrderScale extends React.Component {
                 key={index}
                 style={[
                     styles.option,
-                    {backgroundColor: isActive ? '#1c92c4' : '#fff'}
+                    {backgroundColor: isActive ? '#47309C' : '#fff'}
                 ]}
                 onLongPress={move}
                 onPressOut={moveEnd}
@@ -55,7 +55,7 @@ class RankOrderScale extends React.Component {
                 <Text
                     style={[
                         styles.text,
-                        {color:isActive ? '#fff' : '#1c92c4'}
+                        {color:isActive ? '#fff' : '#47309C'}
                     ]}
                 >{item.label}</Text>
             </TouchableOpacity>
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     text:{
         textAlign:'left',
         marginHorizontal:30,
-        color:'#1c92c4'
+        color:'#47309C'
     },
     option: {
         marginTop:15,
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         borderRadius: 10,
         width: Dimensions.get('window').width-30 ,
-        borderColor: '#1c92c4',
+        borderColor: '#47309C',
         borderWidth: 1
     }
 

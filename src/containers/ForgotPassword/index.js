@@ -24,7 +24,7 @@ import Slogan from '../../components/Slogan'
 import TextInput from '../../components/TextInput'
 import RoundButton from '../../components/RoundButton'
 /* Assets */
-import image from '../../assets/image.png'
+import image from '../../assets/rsz_gradient-background.png'
 import key from '../../assets/key.png'
 /* Services */
 import { forgotPassword } from '../../services/bAuth'
