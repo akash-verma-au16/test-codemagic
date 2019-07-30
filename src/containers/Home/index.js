@@ -828,7 +828,9 @@ class Home extends React.Component {
                             }
                             <Text style={[styles.coloredText, styles.textLeft]} allowFontScaling numberOfLines={2}>{this.userData.email}</Text>
                             <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={1}>Mobile: <Text style={styles.mobilNo}>{this.userData.phonenumber}</Text></Text>
-                            <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={2}>Projects: <Text style={styles.companyName}>{this.projectList.toString()}</Text></Text>
+                            {this.projectList.toString().length===0?null:
+                                <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={2}>Projects: <Text style={styles.companyName}>{this.projectList.toString()}</Text></Text>
+                            }
                         </View>
                     </View>
 
