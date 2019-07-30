@@ -29,7 +29,7 @@ const dev_env = {
         delete_post: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/delete_post",
         edit_post: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/edit_post",
         edit_post_addon: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/dev/reward/share_addon",
-        new_associate_notify: "https://75cvygmh71.execute-api.ap-south-1.amazonaws.com/api/notify",
+        new_associate_notify: "https://75cvygmh71.execute-api.ap-south-1.amazonaws.com/dev/push_notify/notify_event",
         read_posts: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/read_posts",
         get_associate_name: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/get_associate_name",
         strength_details: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/strength_details",
