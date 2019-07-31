@@ -61,7 +61,8 @@ class CreatePost extends React.Component {
             endorsementStrength: '',
             addPoints: 0,
             isProject: false,
-            profileData: null
+            profileData: null,
+            associateData:[]
         }
         this.state = this.initialState
         this.inputTextRef = React.createRef();
@@ -448,7 +449,7 @@ class CreatePost extends React.Component {
 
                     <MultiSelect
                         hideSubmitButton
-                        items={this.state.isProject ? this.projectAssociateData : this.associateData}
+                        items={this.state.associateData}
                         uniqueKey='id'
                         ref={(component) => { this.multiSelect = component }}
                         onSelectedItemsChange={this.onSelectedItemsChange}
@@ -476,13 +477,13 @@ class CreatePost extends React.Component {
         this.setState({ taggedAssociates });
     }
 
-    visibilityChangeListener = ({ text, name, key }) => {
-        if (text !== 'Organization' || text !== 'Private') {
-            this.setState({ visibilitySelection: text, visibilityName: name, visibilityKey: key })
+    visibilityChangeListener = async({ text, name, key }) => {
+        if (text !== 'Organization' && text !== 'Private') {
+            await this.setState({ visibilitySelection: text, visibilityName: name, visibilityKey: key })
             this.loadProjectMembers(name)
         }
         else {
-            this.setState({ visibilitySelection: text, visibilityName: name, visibilityKey: key, isProject: false })
+            await this.setState({ visibilitySelection: text, visibilityName: name, visibilityKey: key, associateData: this.associateData })
         }
     }
 
@@ -507,6 +508,7 @@ class CreatePost extends React.Component {
                         /* preventing self endorsing */
                         if (item.associate_id !== this.props.associate_id) {
                             this.projectAssociateData.push({ id: item.associate_id, name: fullName })
+                            this.setState({ associateData: this.projectAssociateData})
                         }
                     })
                     this.setState({ isTagerLoading: false, isProject: true })
@@ -568,6 +570,7 @@ class CreatePost extends React.Component {
                         /* preventing self endorsing */
                         if (item.associate_id !== this.props.associate_id) {
                             this.associateData.push({ id: item.associate_id, name: fullName })
+                            this.setState({associateData: this.associateData})
                         }
                     })
                     this.setState({ isTagerLoading: false })

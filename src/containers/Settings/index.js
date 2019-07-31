@@ -64,10 +64,9 @@ class Settings extends React.Component {
     enableStatus = () => {
         try {
             if (this.props.isConnected) {
-                disable_status(this.statusApiPayload, this.headers).then((response) => {
-                    if (response.status == 200) { 
-                        this.props.updatePushNotifStatus({ pushNotifStatus: true })
-                    }
+                enable_status(this.statusApiPayload, this.headers).then(() => {
+                    this.props.updatePushNotifStatus({ pushNotifStatus: true })
+                    // }
                 }).catch((e) => {
                     this.setState({ isSwitchOn: false })
                     checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
@@ -85,10 +84,10 @@ class Settings extends React.Component {
     disableStatus = () => {
         try {
             if (this.props.isConnected) {
-                enable_status(this.statusApiPayload, this.headers).then(() => {
-                    // if (response.data.is_push_disabled == true) {
-                    this.props.updatePushNotifStatus({ pushNotifStatus: false })
-                    // }
+                disable_status(this.statusApiPayload, this.headers).then((response) => {
+                    if (response.status == 200) {
+                        this.props.updatePushNotifStatus({ pushNotifStatus: false })
+                    }
                 }).catch((e) => {
                     this.setState({ isSwitchOn: true })
                     checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
@@ -101,6 +100,7 @@ class Settings extends React.Component {
         catch {
             throw 'error'
         }
+
     }
 
     componentDidMount() {

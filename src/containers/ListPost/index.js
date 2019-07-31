@@ -27,7 +27,6 @@ import {
 } from 'native-base';
 /* Services */
 import { news_feed, delete_post, liked_post, get_associate_name } from '../../services/post'
-import { get_status } from '../../services/pushNotification'
 //Loading Modal
 import LoadingModal from '../LoadingModal'
 //RBAC handler function
@@ -288,7 +287,6 @@ class ListPost extends React.Component {
             })
         })
         await this.getProfile()
-        await this.getPushnotificationStatus()
         if (this.props.isAuthenticate) {
             this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
         }
@@ -491,45 +489,10 @@ class ListPost extends React.Component {
             this.showToast()
         }
     }
-    //Get Pushnotification Status
-    getPushnotificationStatus = () => {
-        const headers = {
-            headers: {
-                Authorization: this.props.idToken
-            }
-        }
-
-        const payload = {
-            tenant_id: this.props.accountAlias,
-            associate_id: this.props.associate_id
-        }
-        try {
-            if (this.props.isConnected) {
-                get_status(payload, headers).then(async (response) => {
-                    if (response.data.is_push_disabled == 'True') {
-                        this.props.updatePushNotifStatus({ pushNotifStatus: true })
-                    }
-                    else {
-                        this.props.updatePushNotifStatus({ pushNotifStatus: true })
-                    }
-                    // }
-                }).catch((e) => {
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
-                })
-            }
-            else {
-                this.showToast()
-            }
-        }
-        catch {
-            throw 'error'
-        }
-
-    }
 
     getProfile = async () => {
         if (this.props.isAuthenticate) {
-            //Authorization headers
+            //Authorization headers 
             const headers = {
                 headers: {
                     Authorization: this.props.idToken
@@ -728,8 +691,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
         imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props }),
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
-        updatePushNotifStatus: (props) => dispatch({ type: user.UPDATE_PUSH_STATUS, payload: props })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
     };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(withInAppNotification(ListPost))

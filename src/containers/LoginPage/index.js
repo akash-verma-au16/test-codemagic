@@ -39,6 +39,7 @@ import logo from '../../assets/Logo_High_black.png'
 /* Services */
 import { login } from '../../services/bAuth'
 import { read_member, read_tenant } from '../../services/tenant'
+import { get_status } from '../../services/pushNotification'
 /* Utilities */
 import toSentenceCase from '../../utilities/toSentenceCase'
 //RBAC Handler function
@@ -216,6 +217,43 @@ class LoginPage extends React.Component {
             
         })
     }
+
+    //Get Pushnotification Status
+    getPushnotificationStatus = (payload1) => {
+        const headers = {
+            headers: {
+                Authorization: payload1.idToken
+            }
+        }
+
+        const payload = {
+            tenant_id: payload1.accountAlias,
+            associate_id: payload1.associate_id
+        }
+
+        try {
+            if (this.props.isConnected) {
+                get_status(payload, headers).then(async (response) => {
+                    if (response.data.is_push_disabled == 'False') {
+                        this.props.updatePushNotifStatus({ pushNotifStatus: true })
+                    }
+                    else {
+                        this.props.updatePushNotifStatus({ pushNotifStatus: false })
+                    }
+                    // }
+                }).catch(() => {
+                })
+            }
+            else {
+                this.showToast()
+            }
+        }
+        catch {
+            throw 'error'
+        }
+
+    }
+
     signinHandler = () => {
         /* Hiding the keyboard to prevent Toast overlap */
         Keyboard.dismiss()
@@ -295,6 +333,7 @@ class LoginPage extends React.Component {
                                                 Authorization: response.data.payload.accessToken.jwtToken
                                             }
                                         }).then((res) => {
+                                            this.getPushnotificationStatus(payload)
                                             res.data.data.map((item) => {
                                                 AsyncStorage.setItem(item.associate_id, item.full_name)
                                             })
@@ -512,7 +551,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         authenticate: (props) => dispatch({ type: auth.AUTHENTICATE_USER, payload: props }),
-        imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props })
+        imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props }),
+        updatePushNotifStatus: (props) => dispatch({ type: user.UPDATE_PUSH_STATUS, payload: props })
     };
 }
 
