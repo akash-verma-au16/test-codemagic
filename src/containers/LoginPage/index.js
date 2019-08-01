@@ -39,12 +39,16 @@ import logo from '../../assets/Logo_High_black.png'
 /* Services */
 import { login } from '../../services/bAuth'
 import { read_member, read_tenant } from '../../services/tenant'
+import { get_status } from '../../services/pushNotification'
 /* Utilities */
 import toSentenceCase from '../../utilities/toSentenceCase'
+//RBAC Handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Push notification */
 import { register_device } from '../../services/pushNotification'
 import { get_associate_name, liked_post } from '../../services/post'
 import slackLogger from '../../services/slackLogger'
+
 class LoginPage extends React.Component {
 
     constructor(props) {
@@ -65,7 +69,6 @@ class LoginPage extends React.Component {
         this.textInputEmail = React.createRef();
         this.textInputPassword = React.createRef();
         this.contentView = React.createRef()
-        this.associateList = {}
     }
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress',this.goBack )
@@ -87,15 +90,17 @@ class LoginPage extends React.Component {
         this.setState({ isShowingKeyboard: false })
     }
     /* Restore Likes from the server */
-    likeSyncHandler = (payload) => {
-        liked_post(payload)
+    likeSyncHandler = (payload, header) => {
+        liked_post(payload, header)
             .then((response) => {
                 response.data.data.map((postId) => {
                     /* Store likes */
                     AsyncStorage.setItem(postId, 'true')
                 })
             })
-            .catch(() => {/* error */ })
+            .catch(() => {
+                // error
+            })
     }
 
     goBack() {
@@ -166,7 +171,16 @@ class LoginPage extends React.Component {
                     platform: Platform.OS,
                     device_token: token
                 }
-                register_device(payload_2)
+                const headers = {
+                    headers: {
+                        Authorization: payload.idToken
+                    }
+                }
+    
+                register_device(payload_2, headers).then(() => {
+
+                }).catch(() => {
+                })
                 //Send token to slack
                 slackLogger({
                     name: payload.firstName + ' ' + payload.lastName,
@@ -176,7 +190,6 @@ class LoginPage extends React.Component {
                 })
             } else {
                 //Show warning
-                alert('We were unable to register your device for push notifications, Please restart the app and check for working internet connection.')
                 return false
             }
 
@@ -192,11 +205,55 @@ class LoginPage extends React.Component {
             file_name: 'logo.png',
             associate_email: this.props.email
         }
-        file_download(payload).then((response) => {
+        const header = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
+
+        file_download(payload, header).then((response) => {
             this.props.imageUrl(response.data.data['download-signed-url'])
-        }).catch(() => {
+        }).catch((e) => {
+            
         })
     }
+
+    //Get Pushnotification Status
+    getPushnotificationStatus = (payload1) => {
+        const headers = {
+            headers: {
+                Authorization: payload1.idToken
+            }
+        }
+
+        const payload = {
+            tenant_id: payload1.accountAlias,
+            associate_id: payload1.associate_id
+        }
+
+        try {
+            if (this.props.isConnected) {
+                get_status(payload, headers).then(async (response) => {
+                    if (response.data.is_push_disabled == 'False') {
+                        this.props.updatePushNotifStatus({ pushNotifStatus: true })
+                    }
+                    else {
+                        this.props.updatePushNotifStatus({ pushNotifStatus: false })
+                    }
+                    // }
+                }).catch(() => {
+                })
+            }
+            else {
+                this.showToast()
+            }
+        }
+        catch {
+            throw 'error'
+        }
+
+    }
+
     signinHandler = () => {
         /* Hiding the keyboard to prevent Toast overlap */
         Keyboard.dismiss()
@@ -223,7 +280,7 @@ class LoginPage extends React.Component {
                             tenant_id: this.state.accountAlias.toLowerCase().trim()
                         }, {
                             headers: {
-                                Authorization: response.data.payload.idToken.jwtToken
+                                Authorization: response.data.payload.accessToken.jwtToken
                             }
                         }).then((tenantRes) => {
                             if (tenantRes.data.data[0].is_disabled) {
@@ -240,7 +297,7 @@ class LoginPage extends React.Component {
                                     email: this.state.email.toLowerCase().trim()
                                 }, {
                                     headers: {
-                                        Authorization: response.data.payload.idToken.jwtToken
+                                        Authorization: response.data.payload.accessToken.jwtToken
                                     }
                                 }).then(res => {
                                     let firstName = toSentenceCase(response.data.payload.idToken.payload.given_name);
@@ -253,13 +310,17 @@ class LoginPage extends React.Component {
                                         lastName: lastName,
                                         phoneNumber: response.data.payload.idToken.payload.phone_number,
                                         emailAddress: response.data.payload.idToken.payload.email.toLowerCase(),
-                                        idToken: response.data.payload.idToken.jwtToken,
-                                        associateList: this.associateList
+                                        idToken: response.data.payload.accessToken.jwtToken
                                     };
 
                                     this.likeSyncHandler({
                                         tenant_id: payload.accountAlias,
                                         associate_id: payload.associate_id
+                                    }, 
+                                    {
+                                        headers: {
+                                            Authorization: payload.idToken
+                                        }
                                     })
                                     this.props.authenticate(payload);
                                     //Activate Push Notofication
@@ -267,11 +328,17 @@ class LoginPage extends React.Component {
                                     if (!this.sendToken(payload))
                                         return
                                     try {
-                                        get_associate_name({ tenant_id: payload.accountAlias }).then((res) => {
+                                        get_associate_name({ tenant_id: payload.accountAlias }, {
+                                            headers: {
+                                                Authorization: response.data.payload.accessToken.jwtToken
+                                            }
+                                        }).then((res) => {
+                                            this.getPushnotificationStatus(payload)
                                             res.data.data.map((item) => {
                                                 AsyncStorage.setItem(item.associate_id, item.full_name)
                                             })
                                             this.props.navigation.navigate('TabNavigator')
+                                        }).catch((e) => {
                                         })
                                     }
                                     catch (e) {/* error */ }
@@ -294,7 +361,7 @@ class LoginPage extends React.Component {
                                 })
                             }
 
-                        }).catch(() => {
+                        }).catch((e) => {
                         })
                     }).catch((error) => {
                         try {
@@ -484,7 +551,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         authenticate: (props) => dispatch({ type: auth.AUTHENTICATE_USER, payload: props }),
-        imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props })
+        imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props }),
+        updatePushNotifStatus: (props) => dispatch({ type: user.UPDATE_PUSH_STATUS, payload: props })
     };
 }
 

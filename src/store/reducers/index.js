@@ -14,7 +14,7 @@ const initialState = {
         tenantImageUrl: "",
         idToken:"",
         walletBalance: "",
-        associateList: {}
+        pushNotifStatus: false
     },
     system: {
         isFreshInstall: true,
@@ -38,8 +38,7 @@ export default (state = initialState, action) => {
                 lastName: action.payload.lastName,
                 phoneNumber: action.payload.phoneNumber,
                 emailAddress: action.payload.emailAddress,
-                idToken: action.payload.idToken,
-                associateList: action.payload.associateList
+                idToken: action.payload.idToken
             }
         }
     }
@@ -108,6 +107,16 @@ export default (state = initialState, action) => {
             user: {
                 ...state.user,
                 walletBalance: action.payload.walletBalance
+            }
+        }
+    }
+
+    case user.UPDATE_PUSH_STATUS: {
+        return {
+            ...state,
+            user: {
+                ...state.user,
+                pushNotifStatus: action.payload.pushNotifStatus
             }
         }
     }

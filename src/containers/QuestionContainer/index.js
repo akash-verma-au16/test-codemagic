@@ -23,7 +23,9 @@ import { auth } from '../../store/actions'
 /* Custom components */
 import Question from '../../components/Question'
 /* Assets */
-import image from '../../assets/surveyBackground.jpg'
+import image from '../../assets/rsz_gradient-background.png'
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Services */
 import { save_answers } from '../../services/dataApi'
 import {give_rewards} from '../../services/rewards'
@@ -176,17 +178,14 @@ class QuestionContainer extends React.Component {
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: res.data.points
                             })
-                        }).catch(() => {
+                        }).catch((e) => {
+                            checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: 0
                             })
                         })
-                    }).catch(() => {
-                        Toast.show({
-                            text: "Something went wrong, please try again.",
-                            type: 'danger',
-                            duration: 2000
-                        })
+                    }).catch((e) => {
+                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                         this.setState({ isSubmitLoading: false })
                     })
                 } else {
@@ -311,7 +310,7 @@ const styles = StyleSheet.create({
         paddingTop: 15
     },
     indicator: {
-        backgroundColor: '#1c92c4'
+        backgroundColor: '#47309C'
     },
     header: {
         color: 'white',
@@ -321,7 +320,7 @@ const styles = StyleSheet.create({
     submitButton: {
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#1c92c4',
+        backgroundColor: '#47309C',
         width: 50,
         aspectRatio: 1 / 1,
         borderRadius: 50,
@@ -343,7 +342,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        authenticate: (props) => dispatch({ type: auth.AUTHENTICATE_USER, payload: props })
+        authenticate: (props) => dispatch({ type: auth.AUTHENTICATE_USER, payload: props }),
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
     };
 }
 

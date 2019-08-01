@@ -23,6 +23,7 @@ import {
 } from 'native-base';
 /* Redux */
 import { connect } from 'react-redux'
+import { auth, dev} from '../../store/actions'
 // React Navigation
 import { NavigationEvents } from 'react-navigation';
 /* Services */
@@ -31,6 +32,8 @@ import { create_post, get_visibility } from '../../services/post'
 import uuid from 'uuid'
 import MultiSelect from 'react-native-multiple-select'
 import { list_associate, list_project_members } from '../../services/tenant'
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Components */
 import VisibilityModal from '../VisibilityModal'
 import LoadingModal from '../LoadingModal'
@@ -58,7 +61,8 @@ class CreatePost extends React.Component {
             endorsementStrength: '',
             addPoints: 0,
             isProject: false,
-            profileData: null
+            profileData: null,
+            associateData:[]
         }
         this.state = this.initialState
         this.inputTextRef = React.createRef();
@@ -136,10 +140,11 @@ class CreatePost extends React.Component {
                         this.visibilityData.push({ icon: iconName, text: item.name, name: item.id, key: text })
                     })
                     this.setState({ isVisibilityLoading: false })
-                }).catch(() => {
+                }).catch((e) => {
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                     this.setState({ isVisibilityLoading: false })
                 })
-            } catch (error) {
+            } catch {
                 this.setState({ isVisibilityLoading: false })
             }
         }
@@ -323,7 +328,8 @@ class CreatePost extends React.Component {
                 this.setState(this.initialState)
                 this.props.navigation.navigate('home')
 
-            }).catch(() => {
+            }).catch((e) => {
+                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                 Keyboard.dismiss()
                 Toast.show({
                     text: 'Error while creating the post',
@@ -391,8 +397,8 @@ class CreatePost extends React.Component {
                     this.closeSelectionDrawer()
 
                 }}>
-                    <Icon name='md-people' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
-                    <Text style={[styles.buttonText, { fontSize: fontSize, color: '#1c92c4' }]}>Endorse</Text>
+                    <Icon name='md-people' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#47309C' }} />
+                    <Text style={[styles.buttonText, { fontSize: fontSize, color: '#47309C' }]}>Endorse</Text>
                 </TouchableOpacity>
                 <View style={{
                     height: 150,
@@ -403,8 +409,8 @@ class CreatePost extends React.Component {
                     this.setState({ GratitudeModalVisibility: true, postType: 'gratitude' })
                     this.closeSelectionDrawer()
                 }}>
-                    <Icon name='md-thumbs-up' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#1c92c4' }} />
-                    <Text style={[styles.buttonText, { fontSize: fontSize, color: '#1c92c4' }]}>Thanks</Text>
+                    <Icon name='md-thumbs-up' style={{ fontSize: iconSize, paddingHorizontal: 5, color: '#47309C' }} />
+                    <Text style={[styles.buttonText, { fontSize: fontSize, color: '#47309C' }]}>Thanks</Text>
                 </TouchableOpacity>
 
             </View>
@@ -422,7 +428,7 @@ class CreatePost extends React.Component {
             shadowOpacity: 0.2,
             elevation: 2
         }}>
-            <View style={{ backgroundColor: '#1c92c4', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
+            <View style={{ backgroundColor: '#47309C', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Icon name='md-person-add' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
                     <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Tag your colleagues</Text>
@@ -437,28 +443,28 @@ class CreatePost extends React.Component {
 
             </View>
             {this.state.isTagerLoading ?
-                <Spinner color='#1c92c4' />
+                <Spinner color='#47309C' />
                 :
                 <View style={{ width: '100%', paddingHorizontal: 20, marginTop: 10, marginBottom: 10 }}>
 
                     <MultiSelect
                         hideSubmitButton
-                        items={this.state.isProject ? this.projectAssociateData : this.associateData}
+                        items={this.state.associateData}
                         uniqueKey='id'
                         ref={(component) => { this.multiSelect = component }}
                         onSelectedItemsChange={this.onSelectedItemsChange}
                         selectedItems={this.state.taggedAssociates}
                         selectText='Select colleagues'
                         searchInputPlaceholderText='Search colleagues...'
-                        tagRemoveIconColor='#1c92c4'
-                        tagBorderColor='#1c92c4'
-                        tagTextColor='#1c92c4'
-                        selectedItemTextColor='#1c92c4'
-                        selectedItemIconColor='#1c92c4'
+                        tagRemoveIconColor='#47309C'
+                        tagBorderColor='#47309C'
+                        tagTextColor='#47309C'
+                        selectedItemTextColor='#47309C'
+                        selectedItemIconColor='#47309C'
                         itemTextColor='#000'
                         displayKey='name'
-                        searchInputStyle={{ color: '#1c92c4' }}
-                        submitButtonColor='#1c92c4'
+                        searchInputStyle={{ color: '#47309C' }}
+                        submitButtonColor='#47309C'
                         submitButtonText='Submit'
                         autoFocusInput={false}
                     />
@@ -471,13 +477,13 @@ class CreatePost extends React.Component {
         this.setState({ taggedAssociates });
     }
 
-    visibilityChangeListener = ({ text, name, key }) => {
-        if (text !== 'Organization' || text !== 'Private') {
-            this.setState({ visibilitySelection: text, visibilityName: name, visibilityKey: key })
+    visibilityChangeListener = async({ text, name, key }) => {
+        if (text !== 'Organization' && text !== 'Private') {
+            await this.setState({ visibilitySelection: text, visibilityName: name, visibilityKey: key })
             this.loadProjectMembers(name)
         }
         else {
-            this.setState({ visibilitySelection: text, visibilityName: name, visibilityKey: key, isProject: false })
+            await this.setState({ visibilitySelection: text, visibilityName: name, visibilityKey: key, associateData: this.associateData })
         }
     }
 
@@ -502,15 +508,46 @@ class CreatePost extends React.Component {
                         /* preventing self endorsing */
                         if (item.associate_id !== this.props.associate_id) {
                             this.projectAssociateData.push({ id: item.associate_id, name: fullName })
+                            this.setState({ associateData: this.projectAssociateData})
                         }
                     })
                     this.setState({ isTagerLoading: false, isProject: true })
                 })
-                .catch(() => {
+                .catch((e) => {
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)                    
                     this.setState({ isTagerLoading: false })
                 })
         }
 
+    }
+
+    getProfile = async () => {
+        if (this.props.isAuthenticate) {
+            //Authorization headers
+            const headers = {
+                headers: {
+                    Authorization: this.props.idToken
+                }
+            }
+            //profile payload
+            const payload1 = {
+                tenant_id: this.props.accountAlias,
+                associate_id: this.props.associate_id
+            }
+            let profileData = await loadProfile(payload1, headers, this.props.isConnected);
+            if (profileData == undefined) {
+                checkIfSessionExpired(this.profileData, this.props.navigation, this.props.deAuthenticate)
+                return
+            }
+            else {
+                this.setState({ profileData: profileData })
+                const payload = {
+                    walletBalance: profileData.wallet_balance
+                }
+                this.props.updateWallet(payload)
+                this.props.navigation.setParams({ 'profileData': profileData, walletBalance: this.props.walletBalance })
+            }
+        }
     }
 
     loadMembers = () => {
@@ -533,11 +570,13 @@ class CreatePost extends React.Component {
                         /* preventing self endorsing */
                         if (item.associate_id !== this.props.associate_id) {
                             this.associateData.push({ id: item.associate_id, name: fullName })
+                            this.setState({associateData: this.associateData})
                         }
                     })
                     this.setState({ isTagerLoading: false })
                 })
-                .catch(() => {
+                .catch((e) => {
+                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                     this.setState({ isTagerLoading: false })
                 })
         }
@@ -580,7 +619,7 @@ class CreatePost extends React.Component {
 
                     <TouchableOpacity
                         style={{
-                            backgroundColor: '#1c92c4',
+                            backgroundColor: '#47309C',
                             flexDirection: 'row',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -624,7 +663,7 @@ class CreatePost extends React.Component {
                         />
                         : null}
                     <View style={styles.addPointsContainer}>
-                        <View style={{ backgroundColor: '#1c92c4', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
+                        <View style={{ backgroundColor: '#47309C', flexDirection: 'row', borderTopRightRadius: 10, borderTopLeftRadius: 10, justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, width: '100%' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Icon name='md-medal' style={{ fontSize: 18, paddingRight: 5, color: 'white' }} />
                                 <Text style={{ fontSize: 18, color: '#fff', marginVertical: 10 }}>Balance :</Text>
@@ -654,7 +693,7 @@ class CreatePost extends React.Component {
                                 {this.state.addPoints>0 && this.state.taggedAssociates.length > 1 ?
                                     <React.Fragment>
                                         <Text style={{marginTop:5}}>You have tagged {this.state.taggedAssociates.length} colleagues</Text>
-                                        <Text style={{marginTop:5}}>Total Deduction will be {this.state.addPoints} x {this.state.taggedAssociates.length} that is <Text style={{fontSize:18,fontWeight:'500',color:'#1c92c4'}}>{this.state.taggedAssociates.length * this.state.addPoints}</Text></Text>
+                                        <Text style={{marginTop:5}}>Total Deduction will be {this.state.addPoints} x {this.state.taggedAssociates.length} that is <Text style={{fontSize:18,fontWeight:'500',color:'#47309C'}}>{this.state.taggedAssociates.length * this.state.addPoints}</Text></Text>
                                     </React.Fragment>
                                     : null
                                 }
@@ -668,10 +707,10 @@ class CreatePost extends React.Component {
                                         placeholderTextColor='#777'
                                         style={styles.addPoints}
                                         value={this.state.addPoints == 0 ? "" : this.state.addPoints.toString()}
-                                        selectionColor='#1c92c4'
+                                        selectionColor='#47309C'
                                         onChangeText={(text) => this.setState({ addPoints: text.replace(/[^0-9]/g, '') })}
                                         keyboardType='number-pad'
-                                        underlineColorAndroid='#1c92c4'
+                                        underlineColorAndroid='#47309C'
                                         maxLength={3}
                                     />
                                 </View>
@@ -718,17 +757,7 @@ class CreatePost extends React.Component {
                                 this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl })
                                 this.loadVisibility()
                                 this.loadMembers()
-                                this.setState({
-                                    profileData: await loadProfile({
-                                        "tenant_id": this.props.accountAlias,
-                                        "associate_id": this.props.associate_id
-                                    }, {
-                                        headers: {
-                                            Authorization: this.props.idToken
-                                        }
-                                    }, this.props.isConnected)
-                                })
-
+                                this.getProfile()
                             }
                         }
                     }}
@@ -787,14 +816,14 @@ const styles = StyleSheet.create({
         width: '30%',
         borderWidth: 1,
         borderRadius: 3,
-        borderColor: '#1c92c4',
+        borderColor: '#47309C',
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 10,
         paddingVertical: 7
     },
     points: {
-        color: '#1c92c4',
+        color: '#47309C',
         fontSize: 16
     }
 });
@@ -815,4 +844,11 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(CreatePost)
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CreatePost)

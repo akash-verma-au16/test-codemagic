@@ -24,7 +24,7 @@ import Slogan from '../../components/Slogan'
 import TextInput from '../../components/TextInput'
 import RoundButton from '../../components/RoundButton'
 /* Assets */
-import image from '../../assets/image.png'
+import image from '../../assets/rsz_gradient-background.png'
 import key from '../../assets/key.png'
 /* Services */
 import { forceChangePassword } from '../../services/bAuth'
@@ -57,22 +57,13 @@ class ForceChangePassword extends React.Component {
         }
     }
 
-    handleKeyboardDidShow = (event) => {
-        const keyboardHeight = event.endCoordinates.height;
+    handleKeyboardDidShow = () => {
         Animated.parallel([
-            Animated.timing(
-                this.state.shift,
-                {
-                    toValue: -keyboardHeight,
-                    duration: 500,
-                    useNativeDriver: true
-                }
-            ),
             Animated.timing(
                 this.state.fade,
                 {
                     toValue: 0,
-                    duration: 500,
+                    duration: 10,
                     useNativeDriver: true
                 }
             )
@@ -83,18 +74,12 @@ class ForceChangePassword extends React.Component {
     handleKeyboardDidHide = () => {
 
         Animated.parallel([
+
             Animated.timing(
-                this.state.shift,
-                {
-                    toValue: 0,
-                    duration: 200,
-                    useNativeDriver: true
-                }
-            ),Animated.timing(
                 this.state.fade,
                 {
                     toValue: 1,
-                    duration: 200,
+                    duration: 10,
                     useNativeDriver: true
                 }
             )

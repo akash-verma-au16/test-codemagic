@@ -7,8 +7,11 @@ import Moment from 'react-moment'
 import moment from 'moment/min/moment-with-locales'
 // API Methods
 import { edit_comment } from '../../services/comments'
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Redux */
 import { connect } from 'react-redux'
+import { auth } from '../../store/actions'
 
 class EditComment extends React.Component {
     constructor(props) {
@@ -147,7 +150,8 @@ class EditComment extends React.Component {
                             })
                             this.props.navigation.goBack()
                         }
-                    }).catch(() => {
+                    }).catch((e) => {
+                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                     })
                 }
                 catch (e){/* error */}
@@ -223,7 +227,7 @@ class EditComment extends React.Component {
                         <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 3 }}>
                             <View name='image' style={{
                                 borderRadius: 30,
-                                backgroundColor: '#1c92c4',
+                                backgroundColor: '#47309C',
                                 height: 35,
                                 aspectRatio: 1 / 1,
                                 alignItems: 'center',
@@ -247,7 +251,7 @@ class EditComment extends React.Component {
                         blurOnSubmit={false}
                         style={styles.editComment}
                         multiline={true}
-                        selectionColor='#1c92c4'
+                        selectionColor='#47309C'
                         onChangeText={(text) => {
                             this.setState({ comment: text, isChanged: true })
                             this.props.navigation.setParams({ isChanged: true });  
@@ -305,4 +309,10 @@ const mapStateToProps = (state) => {
     };
 }
 
-export default connect(mapStateToProps, null)(EditComment) 
+const mapDispatchToProps = (dispatch) => {
+    return {
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditComment) 

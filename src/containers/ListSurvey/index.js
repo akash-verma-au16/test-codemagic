@@ -32,6 +32,9 @@ import nature1 from '../../assets/tileBackgrounds/nature1.jpg'
 import nature2 from '../../assets/tileBackgrounds/nature2.jpg'
 import nature3 from '../../assets/tileBackgrounds/nature3.jpeg'
 import { list_survey } from '../../services/questionBank'
+
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Custom Components */
 import { IndicatorViewPager } from 'rn-viewpager';
 
@@ -102,10 +105,16 @@ class ListSurvey extends React.Component {
     }
 
     loadSurveys = () => {
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        } 
         this.setState({ isLoading: true })
         list_survey({
             tenant_id: this.props.accountAlias
-        }, this.headers)
+        }, headers)
             .then(response => {
                 this.MyPulse = []
                 this.OrgPulse = []
@@ -167,7 +176,8 @@ class ListSurvey extends React.Component {
                 this.setState({ isLoading: false, myPulse: this.MyPulse, orgPulse: this.OrgPulse, funQuiz: this.FunQuiz })
 
             })
-            .catch(() => {
+            .catch((e) => {
+                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
                 this.setState({ isLoading: false })
             })
 
@@ -196,7 +206,7 @@ class ListSurvey extends React.Component {
                         {navigation.getParam('imageUrl') === '' ?
                             <ActivityIndicator
                                 size='small'
-                                color='#1c92c4'
+                                color='#47309C'
                             />
                             :
                             <Thumbnail
@@ -290,7 +300,7 @@ class ListSurvey extends React.Component {
                 >
                     <View style={{ flex: 1 }}>
 
-                        <View style={{ flexDirection: 'row', width: '100%', backgroundColor: '#1c92c4', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                        <View style={{ flexDirection: 'row', width: '100%', backgroundColor: '#47309C', alignItems: 'center', justifyContent: 'space-evenly' }}>
                             <TouchableOpacity onPress={() => this.pager.setPage(0)}>
                                 <Text name='16/17' style={this.state.selectedTab === 0 ? styles.tabActive : styles.tabInactive}>
                                     My Pulse

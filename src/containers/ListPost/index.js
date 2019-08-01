@@ -18,7 +18,7 @@ import Post from '../../components/Post/index'
 
 /* Redux */
 import { connect } from 'react-redux'
-import { user } from '../../store/actions'
+import { dev, user, auth } from '../../store/actions'
 import {
     Container,
     Icon,
@@ -27,9 +27,10 @@ import {
 } from 'native-base';
 /* Services */
 import { news_feed, delete_post, liked_post, get_associate_name } from '../../services/post'
-import { dev } from '../../store/actions'
 //Loading Modal
 import LoadingModal from '../LoadingModal'
+//RBAC handler function
+import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 //Prefetch profile data
 import { loadProfile } from '../Home/apicalls'
 /* Components */
@@ -99,7 +100,7 @@ class ListPost extends React.Component {
                         {navigation.getParam('imageUrl') === '' ?
                             <ActivityIndicator
                                 size='small'
-                                color='#1c92c4'
+                                color='#47309C'
                             />
                             :
                             <Thumbnail
@@ -134,12 +135,19 @@ class ListPost extends React.Component {
             tenant_id: this.props.accountAlias,
             associate_id: this.props.associate_id
         }
+        const headers = {
+            headers: {
+                Authorization: this.props.idToken
+            }
+        }
+
         try {
-            liked_post(payload, this.headers).then((res) => {
+            liked_post(payload, headers).then((res) => {
                 if (res.status == "success") {
                     this.likes = res.data
                 }
-            }).catch(() => {
+            }).catch((error) => {
+                checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate)
             })
         }
         catch (e) {/* error */ }
@@ -208,15 +216,27 @@ class ListPost extends React.Component {
     }
 
     getAssociateNames = async () => {
-        try {
-            await get_associate_name({ tenant_id: this.props.accountAlias }).then((res) => {
-                res.data.data.map((item) => {
-                    // this.associateList[item.associate_id] = item.full_name
-                    AsyncStorage.setItem(item.associate_id, item.full_name)
+        if(this.props.isAuthenticate) {
+            const payload = {
+                tenant_id: this.props.accountAlias
+            }
+            const headers = {
+                headers: {
+                    Authorization: this.props.idToken
+                }
+            }
+
+            try {
+                await get_associate_name(payload, headers).then((res) => {
+                    res.data.data.map((item) => {
+                        AsyncStorage.setItem(item.associate_id, item.full_name)
+                    })
+                }).catch((error) => {
+                    checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate)
                 })
-            })
+            }
+            catch (e) {/* error */ }
         }
-        catch (e) {/* error */ }
     }
 
     //Authorization headers
@@ -342,82 +362,90 @@ class ListPost extends React.Component {
 
     //Loads news feed
     loadPosts = () => {
-        this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
-        const payload = {
-            tenant_id: this.props.accountAlias,
-            associate_id: this.props.associate_id
-        }
+        if(this.props.isAuthenticate) {
+            this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
+            const payload = {
+                tenant_id: this.props.accountAlias,
+                associate_id: this.props.associate_id
+            }
+            const headers = {
+                headers: {
+                    Authorization: this.props.idToken
+                }
+            }
 
-        if (payload.tenant_id !== "" && payload.associate_id !== "" && this.state.isFocused) {
-            try {
-                news_feed(payload, this.headers).then((response) => {
-                    /* take payload backup to check for changes later */
-                    if (this.payloadBackup.length === response.data.data.posts.length) {
-                        /* No change in payload hence do nothing */
-                        this.setState({ refreshing: false, networkChanged: false })
+            if (payload.tenant_id !== "" && payload.associate_id !== "" && this.state.isFocused) {
+                try {
+                    news_feed(payload, headers).then((response) => {
+                        /* take payload backup to check for changes later */
+                        if (this.payloadBackup.length === response.data.data.posts.length) {
+                            /* No change in payload hence do nothing */
+                            this.setState({ refreshing: false, networkChanged: false })
 
-                        /* Checking if any data is available */
-                        if (response.data.data.posts.length === 0) {
-                            /* Update state to render warning */
-                            this.setState({ refreshing: false, networkChanged: false, initialLoad: true })
-                            return
-                        }
+                            /* Checking if any data is available */
+                            if (response.data.data.posts.length === 0) {
+                                /* Update state to render warning */
+                                this.setState({ refreshing: false, networkChanged: false, initialLoad: true })
+                                return
+                            }
 
-                        response.data.data.posts.map((item, index) => {
-                            item.Item.likeCount = response.data.data.counts[index].likeCount
-                            item.Item.commentCount = response.data.data.counts[index].commentCount 
-                            item.Item.addOnPoints = response.data.data.counts[index].addOnPoints
+                            response.data.data.posts.map((item, index) => {
+                                item.Item.likeCount = response.data.data.counts[index].likeCount
+                                item.Item.commentCount = response.data.data.counts[index].commentCount
+                                item.Item.addOnPoints = response.data.data.counts[index].addOnPoints
 
-                        })
-                        if (JSON.stringify(this.posts) !== JSON.stringify(response.data.data.posts)) { 
+                            })
+                            if (JSON.stringify(this.posts) !== JSON.stringify(response.data.data.posts)) {
 
+                                this.posts = response.data.data.posts
+                                this.createTiles(this.posts)
+                            }
+                            else {
+                                this.setState({
+                                    refreshing: false
+                                })
+                                return
+                            }
+
+                        } else {
+                            if (this.state.initialLoad) {
+                                this.setState({ initialLoad: false })
+                            }
                             this.posts = response.data.data.posts
+                            this.counts = response.data.data.counts
+                            /* Change in payload */
+                            if (this.postList.length !== 0) {
+
+                                if (this.posts.length > this.payloadBackup.length && this.scrollPosition > 150) {
+                                    /* Show th new post button */
+                                    this.setState({ newPostVisibility: true })
+                                }
+                            }
+
+                            this.posts.map((item, index) => {
+                                item.Item.likeCount = this.counts[index].likeCount
+                                item.Item.commentCount = this.counts[index].commentCount
+                                item.Item.addOnPoints = this.counts[index].addOnPoints
+                            })
+
+                            // /* Take Backup */
+                            this.payloadBackup = this.posts
+                            /* Create UI tiles to display */
                             this.createTiles(this.posts)
                         }
-                        else {
-                            this.setState({
-                                refreshing: false
-                            })
-                            return
-                        }
-
-                    } else {
-                        if(this.state.initialLoad) {
-                            this.setState({ initialLoad: false })
-                        }
-                        this.posts = response.data.data.posts
-                        this.counts = response.data.data.counts
-                        /* Change in payload */
-                        if (this.postList.length !== 0) {
-
-                            if (this.posts.length > this.payloadBackup.length && this.scrollPosition > 150) {
-                                /* Show th new post button */
-                                this.setState({ newPostVisibility: true })
-                            }
-                        }
-                        
-                        this.posts.map((item, index) => {
-                            item.Item.likeCount = this.counts[index].likeCount
-                            item.Item.commentCount = this.counts[index].commentCount
-                            item.Item.addOnPoints = this.counts[index].addOnPoints
-                        })
-
-                        // /* Take Backup */
-                        this.payloadBackup = this.posts
-                        /* Create UI tiles to display */
-                        this.createTiles(this.posts)
-                    }
-                }).catch(() => {
+                    }).catch((e) => {
+                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                        this.setState({ refreshing: false, networkChanged: false })
+                    })
+                }
+                catch (error) {
+                    Toast.show({
+                        text: 'Something went wrong',
+                        type: 'danger',
+                        duration: 2000
+                    })
                     this.setState({ refreshing: false, networkChanged: false })
-                })
-            }
-            catch (error) {
-                Toast.show({
-                    text: 'Something went wrong',
-                    type: 'danger',
-                    duration: 2000
-                })
-                this.setState({ refreshing: false, networkChanged: false })
+                }
             }
         }
     }
@@ -434,17 +462,23 @@ class ListPost extends React.Component {
                     associate_id: this.props.associate_id
                 }
             }
+            const headers = {
+                headers: {
+                    Authorization: this.props.idToken
+                }
+            }
             var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
             this.postList.splice(index, 1)
             this.posts.splice(index, 1)
             this.setState({ postList: this.postList })         
             try {
-                await delete_post(payload, this.headers).then((res) => {
+                await delete_post(payload, headers).then((res) => {
                     if (res.status === 200) {
                         setTimeout(() => this.setState({ isPostDeleted: false }), 2500)
                     }
-                }).catch(() => {
+                }).catch((error) => {
                     //Error deleting Post
+                    checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate)
                     this.setState({ isPostDeleted: false })
                 })
             }
@@ -455,9 +489,10 @@ class ListPost extends React.Component {
             this.showToast()
         }
     }
+
     getProfile = async () => {
         if (this.props.isAuthenticate) {
-            //Authorization headers
+            //Authorization headers 
             const headers = {
                 headers: {
                     Authorization: this.props.idToken
@@ -469,6 +504,9 @@ class ListPost extends React.Component {
                 associate_id: this.props.associate_id
             }
             this.profileData = await loadProfile(payload1, headers, this.props.isConnected);
+            if(this.profileData == undefined) {
+                checkIfSessionExpired(this.profileData, this.props.navigation, this.props.deAuthenticate)
+            }
             const payload = {
                 walletBalance: this.profileData.wallet_balance
             }
@@ -575,6 +613,7 @@ class ListPost extends React.Component {
                                 this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
                                 this.getProfile()
                                 this.loadPosts()
+                                this.getAssociateNames()
                             }
                         }
                     }} 
@@ -591,7 +630,7 @@ class ListPost extends React.Component {
                             width: 100,
                             height: 50,
                             marginVertical: 10,
-                            backgroundColor: '#1c92c4',
+                            backgroundColor: '#47309C',
                             justifyContent: 'center',
                             alignItems: 'center',
                             borderRadius: 100,
@@ -635,7 +674,6 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        associateList: state.user.associateList,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         isAuthenticate: state.isAuthenticate,
@@ -652,7 +690,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
-        imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props })
+        imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props }),
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
     };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(withInAppNotification(ListPost))
