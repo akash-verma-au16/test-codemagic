@@ -544,7 +544,8 @@ const mapStateToProps = (state) => {
         imagelink: state.user.imageUrl,
         tenant_name: state.user.tenant_name,
         email: state.user.emailAddress,
-        accountAlias: state.user.accountAlias
+        accountAlias: state.user.accountAlias,
+        idToken: state.user.idToken
     };
 }
 
