@@ -521,24 +521,27 @@ class ListPost extends React.Component {
     }
 
     gotoFeedbackPageAlert = () => {
-        if (this.props.feedbackCurrentCount % feedbackDisplayCount == 0) {
-            Alert.alert(
-                'Feedback',
-                'Hey, would you like to share your feedback?',
-                [
-                    {
-                        text: 'No',
-                        style: 'cancel'
-                    },
-                    {
-                        text: 'Yes', onPress: () => {
-                            this.props.navigation.navigate('Feedback')
-                        }
-                    }
-                ],
-                { cancelable: false },
-            )
-        }
+        console.log('feedbackDisplayCount', feedbackDisplayCount)
+        console.log('this.props.feedbackCurrentCount', this.props.feedbackCurrentCount)
+        this.props.navigation.navigate('Feedback')
+        // if (this.props.feedbackCurrentCount % feedbackDisplayCount == 0) {
+        //     Alert.alert(
+        //         'Feedback',
+        //         'Hey, would you like to share your feedback?',
+        //         [
+        //             {
+        //                 text: 'No',
+        //                 style: 'cancel'
+        //             },
+        //             {
+        //                 text: 'Yes', onPress: () => {
+        //                     this.props.navigation.navigate('Feedback')
+        //                 }
+        //             }
+        //         ],
+        //         { cancelable: false },
+        //     )
+        // }
     }
 
     createTiles = async (posts) => {

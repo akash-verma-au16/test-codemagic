@@ -94,7 +94,7 @@ const RootStack = createStackNavigator(
                 headerStyle: {
                     backgroundColor: '#47309C'
                 },
-                title: 'YOUR NOTIFICATIONS',
+                title: 'Notifications',
                 headerTintColor: '#fff',
                 headerTitleStyle: {
                     fontWeight: 'bold',
