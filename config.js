@@ -1,3 +1,6 @@
+
+export const feedbackDisplayCount = 5;
+
 const dev_env = {
     url: {
         dev: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com",
@@ -158,6 +161,6 @@ const qa_env = {
     }
 }
 
-let current_env = dev_env
+let current_env = qa_env
 
 export default current_env

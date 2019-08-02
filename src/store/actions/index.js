@@ -6,7 +6,6 @@ export const auth = {
 export const system ={
     AGREE_POLICY : 'AGREE_POLICY',
     NETWORK_STATUS: 'NETWORK_STATUS'
-
 }
 export const dev = {
     CLEAR_DATA : 'CLEAR_DATA',
@@ -17,5 +16,6 @@ export const dev = {
 export const user = {
     WALLET_BALLANCE : 'WALLET_BALLANCE',
     UPDATE_IMAGE : 'UPDATE_IMAGE',
-    UPDATE_PUSH_STATUS: 'UPDATE_PUSH_STATUS'
+    UPDATE_PUSH_STATUS: 'UPDATE_PUSH_STATUS',
+    UPDATE_FEEDBACK_DISPLAY_COUNT: 'UPDATE_FEEDBACK_DISPLAY_COUNT'
 }
