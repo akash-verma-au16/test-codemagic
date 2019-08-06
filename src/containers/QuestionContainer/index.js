@@ -150,7 +150,7 @@ class QuestionContainer extends React.Component {
     //Authemtication header
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.accessToken
         }
     }
 
@@ -336,7 +336,7 @@ const mapStateToProps = (state) => {
         tenant_id:state.user.accountAlias,
         isConnected: state.system.isConnected,
         associate_id: state.user.associate_id,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
     };
 }
 

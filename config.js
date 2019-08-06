@@ -39,7 +39,8 @@ const dev_env = {
         unregister: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/unregister_device',
         get_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/get_status',
         enable_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/enable_status',
-        disable_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/disable_status'
+        disable_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/disable_status',
+        refresh_token: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com/dev/refresh_token"
     },
     api: {
         signup: "signup",
@@ -86,7 +87,7 @@ const qa_env = {
         news_feed: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/news_feed",
         list_survey: "https://9mde2akfwf.execute-api.ap-south-1.amazonaws.com/qa/survey/list_survey",
         give_reward: "https://5950v28o48.execute-api.ap-south-1.amazonaws.com/qa/reward/give_reward",
-        inapp_notification: "https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/list_inapp",
+        inapp_notification: "https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/list_in_app",
         read_transaction: "https://5950v28o48.execute-api.ap-south-1.amazonaws.com/qa/reward/read_transactions",
         get_balance: "https://5950v28o48.execute-api.ap-south-1.amazonaws.com/qa/reward/get_balance",
         user_profile: "https://ye1o32nua6.execute-api.ap-south-1.amazonaws.com/qa/user_profile/get_profile",
@@ -94,7 +95,7 @@ const qa_env = {
         strength_counts: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/strength_count",
         update_profile: "https://ye1o32nua6.execute-api.ap-south-1.amazonaws.com/qa/user_profile/update_profile",
         list_associates: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/list_associates",
-        list_project_members: "https://kgr1mcpif2.execute-api.ap-south-1.amazonaws.com/qa/admin/list_project_members",
+        list_project_members: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/list_project_members",
         comment_post: "https://6iwbpat27k.execute-api.ap-south-1.amazonaws.com/qa/post/comment_post",
         like_post: "https://6iwbpat27k.execute-api.ap-south-1.amazonaws.com/qa/post/like_post",
         unlike_post: "https://6iwbpat27k.execute-api.ap-south-1.amazonaws.com/qa/post/unlike_post",
@@ -119,7 +120,8 @@ const qa_env = {
         unregister: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/unregister',
         get_status: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/get_status',
         enable_status: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/enable_status',
-        disable_status: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/disable_status'
+        disable_status: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/disable_status',
+        refresh_token: 'https://htzgm6e757.execute-api.ap-south-1.amazonaws.com/qa/refresh_token'
     },
     api: {
         signup: "signup",
@@ -158,6 +160,6 @@ const qa_env = {
     }
 }
 
-let current_env = dev_env
+let current_env = qa_env
 
 export default current_env

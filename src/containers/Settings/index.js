@@ -46,13 +46,9 @@ class Settings extends React.Component {
         await this.props.navigation.goBack()
     }
 
-    // async componentWillMount() {
-    //     await this.getStatus()
-    // }
-
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.accessToken
         }
     }
 
@@ -340,7 +336,7 @@ const mapStateToProps = (state) => {
         email: state.user.emailAddress,
         isConnected: state.system.isConnected,
         associate_id: state.user.associate_id,
-        idToken: state.user.idToken,
+        accessToken: state.user.accessToken,
         pushNotificationStatus: state.user.pushNotifStatus
     };
 }

@@ -58,3 +58,8 @@ export const forceChangePassword = ({accountAlias, email, password, new_password
         })
     }
 }
+
+export const refreshToken = (payload) => {
+    const endpoint = config.url.refresh_token
+    return axios.post(endpoint, payload)
+}

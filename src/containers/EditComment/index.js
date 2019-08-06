@@ -138,7 +138,7 @@ class EditComment extends React.Component {
             //Authorization headers
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
             if (this.props.isConnected) {
@@ -305,7 +305,7 @@ const mapStateToProps = (state) => {
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
     };
 }
 

@@ -115,7 +115,7 @@ class CreatePost extends React.Component {
         }
         const headers = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
         this.setState({ isVisibilityLoading: true })
@@ -315,7 +315,7 @@ class CreatePost extends React.Component {
 
         const headers = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
         this.setState({ isLoading: true })
@@ -490,14 +490,16 @@ class CreatePost extends React.Component {
     loadProjectMembers = (projectId) => {
         const headers = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
         if (this.props.accountAlias !== undefined) {
-            list_project_members({
+            const payload = {
                 tenant_id: this.props.accountAlias,
                 project_id: projectId
-            }, headers)
+            }
+
+            list_project_members(payload, headers)
                 .then(response => {
                     /* Clear Garbage */
                     this.projectAssociateData = []
@@ -526,7 +528,7 @@ class CreatePost extends React.Component {
             //Authorization headers
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
             //profile payload
@@ -553,7 +555,7 @@ class CreatePost extends React.Component {
     loadMembers = () => {
         const headers = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
         if (this.props.accountAlias !== undefined) {
@@ -839,7 +841,7 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken,
+        accessToken: state.user.accessToken,
         imageUrl: state.user.imageUrl
     };
 }

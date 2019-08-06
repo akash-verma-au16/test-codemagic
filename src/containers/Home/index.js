@@ -196,7 +196,7 @@ class Home extends React.Component {
 
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.accessToken
         }
     }
     //Load user profile API Handler
@@ -1149,7 +1149,7 @@ const mapStateToProps = (state) => {
         isConnected: state.system.isConnected,
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
-        idToken: state.user.idToken,
+        accessToken: state.user.accessToken,
         tenantName: state.user.tenant_name,
         walletBalance: state.user.walletBalance
     };

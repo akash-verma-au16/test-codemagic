@@ -60,7 +60,7 @@ class ListSurvey extends React.Component {
     //Authorization headers
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.accessToken
         }
     }  
     async componentDidMount() {
@@ -73,7 +73,7 @@ class ListSurvey extends React.Component {
             //Authorization headers
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
             //profile payload
@@ -108,7 +108,7 @@ class ListSurvey extends React.Component {
         //Authorization headers
         const headers = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         } 
         this.setState({ isLoading: true })
@@ -450,7 +450,7 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken,
+        accessToken: state.user.accessToken,
         imageUrl:state.user.imageUrl
 
     };

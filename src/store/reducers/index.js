@@ -13,6 +13,8 @@ const initialState = {
         imageUrl: "",
         tenantImageUrl: "",
         idToken:"",
+        accessToken:"",
+        refreshToken:"",
         walletBalance: "",
         pushNotifStatus: false
     },
@@ -38,7 +40,9 @@ export default (state = initialState, action) => {
                 lastName: action.payload.lastName,
                 phoneNumber: action.payload.phoneNumber,
                 emailAddress: action.payload.emailAddress,
-                idToken: action.payload.idToken
+                idToken: action.payload.idToken,
+                accessToken: action.payload.accessToken,
+                refreshToken: action.payload.refreshToken
             }
         }
     }
@@ -117,6 +121,16 @@ export default (state = initialState, action) => {
             user: {
                 ...state.user,
                 pushNotifStatus: action.payload.pushNotifStatus
+            }
+        }
+    }
+
+    case auth.REFRESH_TOKEN: {
+        return {
+            ...state,
+            user: {
+                ...state.user,
+                accessToken: action.payload.accessToken
             }
         }
     }

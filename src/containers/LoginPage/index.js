@@ -42,8 +42,7 @@ import { read_member, read_tenant } from '../../services/tenant'
 import { get_status } from '../../services/pushNotification'
 /* Utilities */
 import toSentenceCase from '../../utilities/toSentenceCase'
-//RBAC Handler function
-import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
+
 /* Push notification */
 import { register_device } from '../../services/pushNotification'
 import { get_associate_name, liked_post } from '../../services/post'
@@ -173,7 +172,7 @@ class LoginPage extends React.Component {
                 }
                 const headers = {
                     headers: {
-                        Authorization: payload.idToken
+                        Authorization: payload.accessToken
                     }
                 }
     
@@ -207,7 +206,7 @@ class LoginPage extends React.Component {
         }
         const header = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
 
@@ -222,7 +221,7 @@ class LoginPage extends React.Component {
     getPushnotificationStatus = (payload1) => {
         const headers = {
             headers: {
-                Authorization: payload1.idToken
+                Authorization: payload1.accessToken
             }
         }
 
@@ -310,7 +309,9 @@ class LoginPage extends React.Component {
                                         lastName: lastName,
                                         phoneNumber: response.data.payload.idToken.payload.phone_number,
                                         emailAddress: response.data.payload.idToken.payload.email.toLowerCase(),
-                                        idToken: response.data.payload.accessToken.jwtToken
+                                        idToken: response.data.payload.idToken.jwtToken,
+                                        accessToken: response.data.payload.accessToken.jwtToken,
+                                        refreshToken: response.data.payload.refreshToken.token
                                     };
 
                                     this.likeSyncHandler({
@@ -319,7 +320,7 @@ class LoginPage extends React.Component {
                                     }, 
                                     {
                                         headers: {
-                                            Authorization: payload.idToken
+                                            Authorization: payload.accessToken
                                         }
                                     })
                                     this.props.authenticate(payload);
@@ -544,7 +545,8 @@ const mapStateToProps = (state) => {
         imagelink: state.user.imageUrl,
         tenant_name: state.user.tenant_name,
         email: state.user.emailAddress,
-        accountAlias: state.user.accountAlias
+        accountAlias: state.user.accountAlias,
+        accessToken: state.user.accessToken
     };
 }
 

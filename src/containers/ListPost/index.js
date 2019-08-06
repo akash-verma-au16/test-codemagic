@@ -137,7 +137,7 @@ class ListPost extends React.Component {
         }
         const headers = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
 
@@ -222,10 +222,9 @@ class ListPost extends React.Component {
             }
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
-
             try {
                 await get_associate_name(payload, headers).then((res) => {
                     res.data.data.map((item) => {
@@ -242,7 +241,7 @@ class ListPost extends React.Component {
     //Authorization headers
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.accessToken
         }
     }
     //profile payload
@@ -370,7 +369,7 @@ class ListPost extends React.Component {
             }
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
 
@@ -464,7 +463,7 @@ class ListPost extends React.Component {
             }
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
             var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
@@ -495,7 +494,7 @@ class ListPost extends React.Component {
             //Authorization headers 
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
             //profile payload
@@ -679,7 +678,7 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken,
+        accessToken: state.user.accessToken,
         imagelink: state.user.imageUrl,
         tenant_name: state.user.tenant_name,
         email: state.user.emailAddress,

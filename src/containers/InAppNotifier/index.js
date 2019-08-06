@@ -39,7 +39,7 @@ class InAppNotifier extends React.Component {
         }
         const headers = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
 
@@ -216,7 +216,7 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
 
     };
 }

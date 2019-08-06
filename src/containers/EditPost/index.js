@@ -140,7 +140,7 @@ class EditPost extends React.Component {
     //Authorization headers
     headers = {
         headers: {
-            Authorization: this.props.idToken 
+            Authorization: this.props.accessToken
         }
     }
 
@@ -580,7 +580,7 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken,
+        accessToken: state.user.accessToken,
         walletBalance: state.user.walletBalance
     };
 }

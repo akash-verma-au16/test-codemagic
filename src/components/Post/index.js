@@ -134,7 +134,7 @@ class Post extends Component {
     //Authorization headers
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.accessToken
         }
 
     }
@@ -624,7 +624,7 @@ const mapStateToProps = (state) => {
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
     };
 }
 
