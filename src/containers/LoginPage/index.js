@@ -254,6 +254,25 @@ class LoginPage extends React.Component {
 
     }
 
+    showNewUserAlert = () => {
+        Alert.alert(
+            'New User?',
+            'Hey, are you a new user?',
+            [
+                {
+                    text: 'No',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Yes', onPress: () => {
+                        this.props.navigation.navigate('Welcome')
+                    }
+                }
+            ],
+            { cancelable: false },
+        )
+    }
+
     signinHandler = () => {
         /* Hiding the keyboard to prevent Toast overlap */
         Keyboard.dismiss()
@@ -394,6 +413,7 @@ class LoginPage extends React.Component {
                                     type: 'danger',
                                     duration: 3000
                                 })
+                                this.showNewUserAlert()
                                 break;
                             case "UserNotFound":
                                 Toast.show({

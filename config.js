@@ -86,7 +86,7 @@ const qa_env = {
         news_feed: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/news_feed",
         list_survey: "https://9mde2akfwf.execute-api.ap-south-1.amazonaws.com/qa/survey/list_survey",
         give_reward: "https://5950v28o48.execute-api.ap-south-1.amazonaws.com/qa/reward/give_reward",
-        inapp_notification: "https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/list_inapp",
+        inapp_notification: "https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/list_in_app",
         read_transaction: "https://5950v28o48.execute-api.ap-south-1.amazonaws.com/qa/reward/read_transactions",
         get_balance: "https://5950v28o48.execute-api.ap-south-1.amazonaws.com/qa/reward/get_balance",
         user_profile: "https://ye1o32nua6.execute-api.ap-south-1.amazonaws.com/qa/user_profile/get_profile",
@@ -158,6 +158,6 @@ const qa_env = {
     }
 }
 
-let current_env = dev_env
+let current_env = qa_env
 
 export default current_env
