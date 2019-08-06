@@ -433,7 +433,12 @@ class ListPost extends React.Component {
                             this.createTiles(this.posts)
                         }
                     }).catch((e) => {
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                        const error_code = {status: 403}
+                        const isSessionExpired = checkIfSessionExpired(error_code, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        console.log('isSessionExpired', isSessionExpired)
+                        if (!isSessionExpired) {
+                            this.loadPosts()
+                        }
                         this.setState({ refreshing: false, networkChanged: false })
                     })
                 }
@@ -690,7 +695,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
         imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props }),
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(withInAppNotification(ListPost))
