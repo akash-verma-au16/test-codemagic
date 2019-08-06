@@ -45,12 +45,14 @@ class Welcome extends React.Component {
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-start', padding: 20, height: Dimensions.get('window').height }}>
                         <Image source={logo} style={{ width: '85%', height: 200, resizeMode: 'contain', marginTop: 30 }} />
                         <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 50 }}>
-                            <Text style={styles.aboutAppText}>Think positive | Feel better | Grow together...</Text>
+                            <Text style={styles.aboutAppText}>Healthy Minds... Healthy Returns...</Text>
                             <Text style={styles.shortDescription}>We maximise engagement, happiness and meaning in the workplace by blending technology with psychology.</Text>
                         </View>
                         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', marginBottom: 36, width: '100%' }}>
-                            <Text onPress={() => Linking.openURL('http://www.modicleeinfosystem.com/Happyworks/')} style={styles.knowMore}>KNOW MORE ABOUT HAPPYWORKS</Text>
-                            <TouchableOpacity style={styles.button} activeOpacity={0.9} onPress={() => Linking.openURL('http://www.modicleeinfosystem.com/Happyworks/')}>
+                            <TouchableOpacity onPress={() => Linking.openURL('http://www.modicleeinfosystem.com/Happyworks/')} activeOpacity={0.8}>
+                                <Text style={styles.knowMore}>KNOW MORE ABOUT HAPPYWORKS</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={() => Linking.openURL('http://portal-qa.happyworks.io/')}>
                                 <Text style={styles.signUp}>SIGN UP</Text>
                             </TouchableOpacity>
                         </View>
@@ -68,7 +70,7 @@ const styles = StyleSheet.create({
     },
     aboutAppText: {
         fontWeight: '900',
-        fontSize: 30,
+        fontSize: 32,
         textAlign: 'center',
         color: '#FFF'
     },
