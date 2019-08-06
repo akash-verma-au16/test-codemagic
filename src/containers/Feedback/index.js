@@ -1,16 +1,26 @@
 import React, { Component } from 'react';
-import { View, Text, BackHandler, StyleSheet, Image, Dimensions, ImageBackground, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, BackHandler, StyleSheet, Image, Dimensions, ImageBackground, TextInput, TouchableOpacity, ToastAndroid } from 'react-native';
 //Emoji images
 import not_good from '../../assets/bad_face.png'
 import good from '../../assets/smiley_face.png'
 import very_good from '../../assets/big_smiley_face.png'
 import backgroundImage from '../../assets/rsz_gradient-background.png'
 
-export default class Feedback extends Component {
+/* Redux */
+import { connect } from 'react-redux'
+
+//Services
+import feedbackLogger from '../../services/feedbackLogger'
+
+class Feedback extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            feedbackText: ""
+            feedbackText: "",
+            userAns:"",
+            activeNotGood: false,
+            activeGood: false,
+            activeVeryGood: false
         };
     }
 
@@ -19,6 +29,43 @@ export default class Feedback extends Component {
             this.props.navigation.goBack()
             return true
         })
+    }
+
+    submitFeedback = () => {
+        if(this.state.userAns == "") {
+            ToastAndroid.showWithGravityAndOffset(
+                'Please select ans',
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM,
+                25,
+                100,
+            );
+            return
+        }
+
+        if(this.state.feedbackText == "") {
+            ToastAndroid.showWithGravityAndOffset(
+                'Please write something in your feedback',
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM,
+                25,
+                100,
+            );
+            return
+        }
+
+        const payload = {
+            tenantId: this.props.accountAlias,
+            userName: this.props.firstName + " " + this.props.lastName,
+            email: this.props.email,
+            userAns: this.state.userAns,
+            feedback: this.state.feedbackText
+        } 
+
+        console.log(payload)
+
+        feedbackLogger(payload)
+        
     }
 
     componentWillUnmount() {
@@ -33,18 +80,18 @@ export default class Feedback extends Component {
                         What do you think of our App? 
                     </Text>
                     <View style={styles.emojiContainer}>
-                        <View style={styles.emojiView}>
+                        <TouchableOpacity style={styles.emojiView} onPress={() => this.setState({ userAns: "Not Good", activeNotGood: true, activeGood: false, activeVeryGood: false})}>
                             <Image source={not_good} style={styles.emoji}/>
-                            <Text style={styles.emojiText}>Not Good</Text>
-                        </View>
-                        <View style={styles.emojiView}>
+                            <Text style={this.state.activeNotGood ? styles.activeText : styles.inactiveText}>Not Good</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.emojiView} onPress={() => this.setState({ userAns: "Good", activeNotGood: false, activeGood: true, activeVeryGood: false })}>
                             <Image source={good} style={styles.emoji}/>
-                            <Text style={styles.emojiText}>Good</Text>
-                        </View>
-                        <View style={styles.emojiView}>
+                            <Text style={this.state.activeGood ? styles.activeText : styles.inactiveText}>Good</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.emojiView} onPress={() => this.setState({ userAns: "Very Good", activeNotGood: false, activeGood: false, activeVeryGood: true})}>
                             <Image source={very_good} style={styles.emoji}/>
-                            <Text style={styles.emojiText}>Very Good</Text>
-                        </View>
+                            <Text style={this.state.activeVeryGood ? styles.activeText : styles.inactiveText}>Very Good</Text>
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.feedbackView}>
                         <Text style={styles.feedbackQue}>
@@ -62,7 +109,7 @@ export default class Feedback extends Component {
                         />
                     </View>
                     <View style={{flex: 1, justifyContent: 'flex-end', width: '100%'}}>
-                        <TouchableOpacity style={styles.button} activeOpacity={0.9}>
+                        <TouchableOpacity style={styles.button} activeOpacity={0.9} onPress={this.submitFeedback}>
                             <Text style={styles.signUp}>SUBMIT</Text>
                         </TouchableOpacity>
                     </View>
@@ -101,8 +148,13 @@ const styles = StyleSheet.create({
         height: 30,
         width: 30
     },
-    emojiText: {
-        fontSize: 18,
+    inactiveText: {
+        fontSize: 17,
+        color: '#a1a1a1',
+        textAlign: 'center'
+    },
+    activeText: {
+        fontSize: 19,
         color: '#FFF',
         textAlign: 'center'
     },
@@ -140,3 +192,16 @@ const styles = StyleSheet.create({
         fontSize: 21
     }
 })
+
+const mapStateToProps = (state) => {
+    return {
+        firstName: state.user.firstName,
+        lastName: state.user.lastName,
+        isAuthenticate: state.isAuthenticate,
+        isConnected: state.system.isConnected,
+        email: state.user.emailAddress,
+        accountAlias: state.user.accountAlias
+    };
+}
+
+export default connect(mapStateToProps, null)(Feedback)
