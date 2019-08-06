@@ -521,9 +521,6 @@ class ListPost extends React.Component {
     }
 
     gotoFeedbackPageAlert = () => {
-        console.log('feedbackDisplayCount', feedbackDisplayCount)
-        console.log('this.props.feedbackCurrentCount', this.props.feedbackCurrentCount)
-        // this.props.navigation.navigate('Feedback')
         if(this.props.isAuthenticate) {
             if (this.props.feedbackCurrentCount % feedbackDisplayCount == 0) {
                 Alert.alert(
