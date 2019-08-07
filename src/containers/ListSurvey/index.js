@@ -13,7 +13,7 @@ import {
     processColor
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
-import { H2 } from 'native-base'
+import { H2} from 'native-base'
 /* Redux */
 import { connect } from 'react-redux'
 import { auth, dev } from '../../store/actions'
@@ -268,6 +268,71 @@ class ListSurvey extends React.Component {
             })
         }
     ]
+    sleepPieData = {
+        green: {
+            dataSets: [{
+                values: [{value: 100,label:''}
+                ],
+                label: '',
+                config: {
+                    colors: [processColor('#2ecc71')],
+                    sliceSpace: 5,
+                    labelTextSize: 18,
+                    valueTextSize:0,
+                    valueTextColor: processColor('white'),
+                    selectionShift: 13,
+                    valueFormatter: "",
+                    valueLineColor: processColor('white'),
+                    valueLinePart1Length: 0.5
+                
+                }
+            }]
+        
+        },
+        orange:{
+            dataSets: [{
+                values: [{value: 80,label:''},
+                    {value: 20,label:''}
+                ],
+                label: '',
+                config: {
+                    colors: [processColor('#e67e22'), processColor('#eee')],
+                    sliceSpace: 5,
+                    labelTextSize: 18,
+                    valueTextSize:0,
+                    valueTextColor: processColor('white'),
+                    selectionShift: 13,
+                    valueFormatter: "",
+                    valueLineColor: processColor('white'),
+                    valueLinePart1Length: 0.5
+                
+                }
+            }]
+        
+        },
+        red:{
+            dataSets: [{
+                values: [{value: 40,label:''},
+                    {value: 60,label:''}
+                ],
+                label: '',
+                config: {
+                    colors: [processColor('#e74c3c'), processColor('#eee')],
+                    sliceSpace: 5,
+                    labelTextSize: 18,
+                    valueTextSize:0,
+                    valueTextColor: processColor('white'),
+                    selectionShift: 13,
+                    valueFormatter: "",
+                    valueLineColor: processColor('white'),
+                    valueLinePart1Length: 0.5
+                
+                }
+            }]
+        
+        }
+
+    }
 
     render() {
 
@@ -283,111 +348,58 @@ class ListSurvey extends React.Component {
                     shadowOffset: { width: 5, height: 5 },
                     shadowColor: 'black',
                     shadowOpacity: 0.5,
-                    elevation: 2
+                    elevation: 2,
+                    alignItems:'center'
                 }}>
                     <H2 style={{ margin: 20, marginBottom: 10 }}>Your Daily Stats</H2>
                     <View style={{flexDirection:'row',flex:1}}>
-                    
-                        <PieChart
-                            style={{
-                                flex: 1,
-                                margin: 10
-    
-                            }}
-                            chartDescription={{
-                                text: '',
-                                textSize: 0,
-                                textColor: processColor('darkgray')
-                    
-                            }}
-                            transparentCircleRadius={55}
-                            transparentCircleColor={processColor('#f0f0f088')}
-                            legend={{
-                                enabled: false,
-                                textSize: 15,
-                                form: 'CIRCLE',
-                    
-                                horizontalAlignment: "RIGHT",
-                                verticalAlignment: "CENTER",
-                                orientation: "VERTICAL",
-                                wordWrapEnabled: true
-                            }}
-                            data={{
-                                dataSets: [{
-                                    values: [{value: 30,label:''},
-                                        {value: 70,label:''}
-                                    ],
-                                    label: '',
-                                    config: {
-                                        colors: [processColor('#47309C'), processColor('#eee')],
-                                        sliceSpace: 5,
-                                        labelTextSize: 18,
-                                        valueTextSize:0,
-                                        valueTextColor: processColor('white'),
-                                        selectionShift: 13,
-                                        valueFormatter: "",
-                                        valueLineColor: processColor('white'),
-                                        valueLinePart1Length: 0.5
-                                    
-                                    }
-                                }]
-                            
-                            }}
-              
-                            rotationEnabled={true}
-                            styledCenterText={{ text: 'Restful Score', color: processColor('black'), size: 18 }}
-                            centerTextRadiusPercent={100}
-                            holeRadius={50}
+                        <View style={{flex:1}}>
+                            <PieChart
+                                style={styles.pieStyle}
+                                chartDescription={{
+                                    text: '',
+                                    textSize: 0
+                                }}
+                                transparentCircleRadius={55}
+                                transparentCircleColor={processColor('#f0f0f088')}
+                                legend={{enabled: false}}
+                                data={this.sleepPieData.red}
+                                rotationEnabled={true}
+                                styledCenterText={{ text: '2 hrs', color: processColor('#47309C'), size: 18 }}
+                                centerTextRadiusPercent={100}
+                                holeRadius={50}
 
-                            onSelect={null}
-                        />
-                        <PieChart
-                            style={{
-                                flex: 1,
-                                margin: 10
-    
-                            }}
-                            chartDescription={{
-                                text: '',
-                                textSize: 0,
-                                textColor: processColor('darkgray')
+                            />
+                            <Text style={{width:'100%',textAlign:'center',fontSize:18,color:'black'}}>Sleep Cycle</Text>
+                        </View>
+                        <View style={{flex:1}}>
+                            <PieChart
+                                style={styles.pieStyle}
+                                chartDescription={{
+                                    text: '',
+                                    textSize: 0
                     
-                            }}
-                            transparentCircleRadius={55}
-                            transparentCircleColor={processColor('#f0f0f088')}
-                            legend={{
-                                enabled: false
-                            }}
-                            data={{
-                                dataSets: [{
-                                    values: [{value: 60,label:''},
-                                        {value: 40,label:''}
-                                    ],
-                                    label: '',
-                                    config: {
-                                        colors: [processColor('#47309C'), processColor('#eee')],
-                                        sliceSpace: 5,
-                                        labelTextSize: 18,
-                                        valueTextSize:0,
-                                        valueTextColor: processColor('white'),
-                                        selectionShift: 13,
-                                        valueFormatter: "",
-                                        valueLineColor: processColor('white'),
-                                        valueLinePart1Length: 0.5
-                                    
-                                    }
-                                }]
-                            
-                            }}
+                                }}
+                                transparentCircleRadius={55}
+                                transparentCircleColor={processColor('#f0f0f088')}
+                                legend={{
+                                    enabled: false
+                                }}
+                                data={this.sleepPieData.orange}
               
-                            rotationEnabled={true}
-                            styledCenterText={{ text: 'Energy Score', color: processColor('black'), size: 18 }}
-                            centerTextRadiusPercent={100}
-                            holeRadius={50}
+                                rotationEnabled={true}
+                                styledCenterText={{ text: '100', color: processColor('black'), size: 18 }}
+                                centerTextRadiusPercent={100}
+                                holeRadius={50}
 
-                            onSelect={null}
-                        />
+                                onSelect={null}
+                            />
+                            <Text style={{width:'100%',textAlign:'center',fontSize:18,color:'black'}}>Energy Score</Text>
+                        </View>
                     </View>
+                    <Text onPress={()=>{
+                        this.props.navigation.navigate('DetailedInsights')
+                    }} style={{ margin: 20, marginBottom: 10 ,color:'#47309C'}}>Preview Analytics</Text>
                 </View>
                 <Content
                     contentContainerStyle={{ flex: 1 }}
@@ -508,6 +520,11 @@ class ListSurvey extends React.Component {
     }
 }
 const styles = StyleSheet.create({
+    pieStyle:{
+        flex: 1,
+        margin: 10
+
+    },
     tabActive: {
         color: '#fff',
         paddingVertical: 10

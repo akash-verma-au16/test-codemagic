@@ -19,6 +19,7 @@ import EditPost from '../EditPost/index'
 import EditComment from '../EditComment/index'
 import ReadPost from '../ReadPost'
 import StrengthPosts from '../StrengthPosts'
+import DetailedInsights from '../DetailedInsights'
 /* This stack will contain list of all pages */
 const RootStack = createStackNavigator(
     {
@@ -142,6 +143,22 @@ const RootStack = createStackNavigator(
                     height: 40
                 },
                 title: 'Edit Post',
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: 19,
+                    fontFamily: 'OpenSans-Regular'
+                }
+            }
+        },
+        'DetailedInsights': {
+            screen: DetailedInsights,
+            navigationOptions: {
+                headerStyle: {
+                    backgroundColor: '#47309C',
+                    height: 40
+                },
+                title: 'Detailed Insights',
                 headerTintColor: '#fff',
                 headerTitleStyle: {
                     fontWeight: 'bold',
