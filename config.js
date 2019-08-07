@@ -1,3 +1,6 @@
+
+export const feedbackDisplayCount = 5;
+
 const dev_env = {
     url: {
         dev: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com",

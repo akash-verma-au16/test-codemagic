@@ -14,7 +14,8 @@ const initialState = {
         tenantImageUrl: "",
         idToken:"",
         walletBalance: "",
-        pushNotifStatus: false
+        pushNotifStatus: false,
+        feedbackDisplayCount: 0
     },
     system: {
         isFreshInstall: true,
@@ -117,6 +118,16 @@ export default (state = initialState, action) => {
             user: {
                 ...state.user,
                 pushNotifStatus: action.payload.pushNotifStatus
+            }
+        }
+    }
+
+    case user.UPDATE_FEEDBACK_DISPLAY_COUNT: {
+        return {
+            ...state,
+            user: {
+                ...state.user,
+                feedbackDisplayCount: state.user.feedbackDisplayCount + 1
             }
         }
     }
