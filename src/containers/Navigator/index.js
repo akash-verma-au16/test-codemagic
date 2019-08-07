@@ -19,6 +19,7 @@ import EditPost from '../EditPost/index'
 import EditComment from '../EditComment/index'
 import ReadPost from '../ReadPost'
 import StrengthPosts from '../StrengthPosts'
+import Feedback from '../Feedback/index'
 /* This stack will contain list of all pages */
 const RootStack = createStackNavigator(
     {
@@ -93,7 +94,7 @@ const RootStack = createStackNavigator(
                 headerStyle: {
                     backgroundColor: '#47309C'
                 },
-                title: 'YOUR NOTIFICATIONS',
+                title: 'Notifications',
                 headerTintColor: '#fff',
                 headerTitleStyle: {
                     fontWeight: 'bold',
@@ -225,7 +226,13 @@ const RootStack = createStackNavigator(
                     flex: 1
                 }
             }
-        }
+        },
+        'Feedback': {
+            screen: Feedback,
+            navigationOptions: {
+                header: null
+            }
+        },
     },
     {
         initialRouteName: 'TabNavigator'
