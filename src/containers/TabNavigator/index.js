@@ -46,7 +46,7 @@ const ListSurveyStack = createStackNavigator({
             headerStyle: {
                 backgroundColor: '#47309C'
             },
-            title: 'My Survey',
+            title: 'Insights',
             headerTintColor: '#fff',
             headerTitleStyle: {
                 fontWeight: 'bold',
