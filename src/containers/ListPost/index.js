@@ -712,7 +712,6 @@ const mapStateToProps = (state) => {
         tenant_name: state.user.tenant_name,
         email: state.user.emailAddress,
         walletBalance: state.user.walletBalance,
-        idToken: state.user.idToken
         feedbackCurrentCount: state.user.feedbackDisplayCount
     };
 }
