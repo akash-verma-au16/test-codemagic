@@ -7,16 +7,17 @@ import {
     ImageBackground,
     Dimensions,
     RefreshControl,
-    ScrollView, 
+    ScrollView,
     ToastAndroid,
-    ActivityIndicator
+    ActivityIndicator,
+    processColor
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
 import { H2 } from 'native-base'
 /* Redux */
 import { connect } from 'react-redux'
 import { auth, dev } from '../../store/actions'
-import { BarChart } from 'react-native-charts-wrapper';
+import { PieChart } from 'react-native-charts-wrapper';
 import { NavigationEvents } from 'react-navigation';
 /* Native Base */
 import {
@@ -62,7 +63,7 @@ class ListSurvey extends React.Component {
         headers: {
             Authorization: this.props.idToken
         }
-    }  
+    }
     async componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
         await this.getProfile()
@@ -110,7 +111,7 @@ class ListSurvey extends React.Component {
             headers: {
                 Authorization: this.props.idToken
             }
-        } 
+        }
         this.setState({ isLoading: true })
         list_survey({
             tenant_id: this.props.accountAlias
@@ -199,8 +200,8 @@ class ListSurvey extends React.Component {
                                 associateId: navigation.getParam('associateId')
                             })
                         }
-                    }} 
-                    style={{marginLeft: 13, alignItems: 'center', justifyContent: 'center'}}
+                    }}
+                    style={{ marginLeft: 13, alignItems: 'center', justifyContent: 'center' }}
                 >
                     <View style={styles.navImageWrapper}>
                         {navigation.getParam('imageUrl') === '' ?
@@ -284,14 +285,109 @@ class ListSurvey extends React.Component {
                     shadowOpacity: 0.5,
                     elevation: 2
                 }}>
-                    <H2 style={{ margin: 20, marginBottom: 10 }}>Survey summary</H2>
-                    <BarChart style={{
-                        flex: 1,
-                        margin: 10
+                    <H2 style={{ margin: 20, marginBottom: 10 }}>Your Daily Stats</H2>
+                    <View style={{flexDirection:'row',flex:1}}>
+                    
+                        <PieChart
+                            style={{
+                                flex: 1,
+                                margin: 10
+    
+                            }}
+                            chartDescription={{
+                                text: '',
+                                textSize: 0,
+                                textColor: processColor('darkgray')
+                    
+                            }}
+                            transparentCircleRadius={55}
+                            transparentCircleColor={processColor('#f0f0f088')}
+                            legend={{
+                                enabled: false,
+                                textSize: 15,
+                                form: 'CIRCLE',
+                    
+                                horizontalAlignment: "RIGHT",
+                                verticalAlignment: "CENTER",
+                                orientation: "VERTICAL",
+                                wordWrapEnabled: true
+                            }}
+                            data={{
+                                dataSets: [{
+                                    values: [{value: 30,label:''},
+                                        {value: 70,label:''}
+                                    ],
+                                    label: '',
+                                    config: {
+                                        colors: [processColor('#47309C'), processColor('#eee')],
+                                        sliceSpace: 5,
+                                        labelTextSize: 18,
+                                        valueTextSize:0,
+                                        valueTextColor: processColor('white'),
+                                        selectionShift: 13,
+                                        valueFormatter: "",
+                                        valueLineColor: processColor('white'),
+                                        valueLinePart1Length: 0.5
+                                    
+                                    }
+                                }]
+                            
+                            }}
+              
+                            rotationEnabled={true}
+                            styledCenterText={{ text: 'Restful Score', color: processColor('black'), size: 18 }}
+                            centerTextRadiusPercent={100}
+                            holeRadius={50}
 
-                    }}
-                    data={{ dataSets: [{ label: "Sample Data", values: [{ y: 10 }, { y: 20 }, { y: 1 }, { y: 10 }, { y: 15 }, { y: 5 }, { y: 18 }, { y: 12 }, { y: 1 }] }] }}
-                    />
+                            onSelect={null}
+                        />
+                        <PieChart
+                            style={{
+                                flex: 1,
+                                margin: 10
+    
+                            }}
+                            chartDescription={{
+                                text: '',
+                                textSize: 0,
+                                textColor: processColor('darkgray')
+                    
+                            }}
+                            transparentCircleRadius={55}
+                            transparentCircleColor={processColor('#f0f0f088')}
+                            legend={{
+                                enabled: false
+                            }}
+                            data={{
+                                dataSets: [{
+                                    values: [{value: 60,label:''},
+                                        {value: 40,label:''}
+                                    ],
+                                    label: '',
+                                    config: {
+                                        colors: [processColor('#47309C'), processColor('#eee')],
+                                        sliceSpace: 5,
+                                        labelTextSize: 18,
+                                        valueTextSize:0,
+                                        valueTextColor: processColor('white'),
+                                        selectionShift: 13,
+                                        valueFormatter: "",
+                                        valueLineColor: processColor('white'),
+                                        valueLinePart1Length: 0.5
+                                    
+                                    }
+                                }]
+                            
+                            }}
+              
+                            rotationEnabled={true}
+                            styledCenterText={{ text: 'Energy Score', color: processColor('black'), size: 18 }}
+                            centerTextRadiusPercent={100}
+                            holeRadius={50}
+
+                            onSelect={null}
+                        />
+                    </View>
                 </View>
                 <Content
                     contentContainerStyle={{ flex: 1 }}
@@ -318,7 +414,7 @@ class ListSurvey extends React.Component {
                             </TouchableOpacity>
 
                         </View>
-                        <IndicatorViewPager 
+                        <IndicatorViewPager
                             ref={ref => this.pager = ref}
                             style={{ flex: 1 }}
                             onPageSelected={(page) => this.setState({ selectedTab: page.position })}
@@ -393,10 +489,10 @@ class ListSurvey extends React.Component {
 
                     </View>
                     <NavigationEvents
-                        onWillFocus={async() => {
+                        onWillFocus={async () => {
                             if (this.props.isConnected) {
                                 if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                    this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl})
+                                    this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl })
                                     this.loadSurveys()
                                     await this.getProfile()
                                 }
@@ -428,16 +524,16 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         margin: 10
     },
-    tileText: { 
+    tileText: {
         textAlign: 'center',
-        color: '#fff' 
+        color: '#fff'
     },
     navImageWrapper: {
-        backgroundColor: '#eee', 
-        height: 40, 
-        width: 40, 
-        borderRadius: 20, 
-        alignItems: 'center', 
+        backgroundColor: '#eee',
+        height: 40,
+        width: 40,
+        borderRadius: 20,
+        alignItems: 'center',
         justifyContent: 'center'
     }
 })
@@ -451,7 +547,7 @@ const mapStateToProps = (state) => {
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
         idToken: state.user.idToken,
-        imageUrl:state.user.imageUrl
+        imageUrl: state.user.imageUrl
 
     };
 }
