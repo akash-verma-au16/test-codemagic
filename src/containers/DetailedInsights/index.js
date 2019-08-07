@@ -171,7 +171,7 @@ class DetailedInsights extends React.Component {
                                         values: [{ y: 10 }, { y: 2 }, { y: 1 }, { y: 4 }, { y: 4 }, { y: 9 }, { y: 5 }],
                                         label: 'Sleep in Hours',
                                         config: {
-                                            color: processColor('#47309C'),
+                                            colors: [processColor('#2ecc71'),processColor('#e74c3c'),processColor('#e74c3c'),processColor('#e67e22'),processColor('#e67e22'),processColor('#00309C'),processColor('#473000')],
                                             valueTextColor: processColor('#fff'),
                                             barShadowColor: processColor('#47309C'),
                                             highlightAlpha: 90,
