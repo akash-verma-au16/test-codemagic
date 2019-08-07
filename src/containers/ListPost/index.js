@@ -147,7 +147,11 @@ class ListPost extends React.Component {
                     this.likes = res.data
                 }
             }).catch((error) => {
-                checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate)
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.loadLikes()
+                    return
+                }
             })
         }
         catch (e) {/* error */ }
@@ -231,7 +235,11 @@ class ListPost extends React.Component {
                         AsyncStorage.setItem(item.associate_id, item.full_name)
                     })
                 }).catch((error) => {
-                    checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate)
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.getAssociateNames()
+                        return
+                    }
                 })
             }
             catch (e) {/* error */ }
@@ -433,11 +441,11 @@ class ListPost extends React.Component {
                             this.createTiles(this.posts)
                         }
                     }).catch((e) => {
-                        const error_code = {status: 403}
-                        const isSessionExpired = checkIfSessionExpired(error_code, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
                         console.log('isSessionExpired', isSessionExpired)
                         if (!isSessionExpired) {
                             this.loadPosts()
+                            return
                         }
                         this.setState({ refreshing: false, networkChanged: false })
                     })
@@ -482,7 +490,11 @@ class ListPost extends React.Component {
                     }
                 }).catch((error) => {
                     //Error deleting Post
-                    checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate)
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if(!isSessionExpired) {
+                        this.deletePost(postId)
+                        return
+                    }
                     this.setState({ isPostDeleted: false })
                 })
             }
@@ -509,7 +521,11 @@ class ListPost extends React.Component {
             }
             this.profileData = await loadProfile(payload1, headers, this.props.isConnected);
             if(this.profileData == undefined) {
-                checkIfSessionExpired(this.profileData, this.props.navigation, this.props.deAuthenticate)
+                const isSessionExpired = checkIfSessionExpired(this.profileData, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.getProfile()
+                    return
+                }
             }
             const payload = {
                 walletBalance: this.profileData.wallet_balance

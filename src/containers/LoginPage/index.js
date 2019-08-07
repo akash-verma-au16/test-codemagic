@@ -266,6 +266,7 @@ class LoginPage extends React.Component {
                         email: this.state.email,
                         password: this.state.password
                     }).then((response) => {
+                        console.log('login', response)
                         /* Restricting Super Admin Access as no Tenant Name is available to fetch */
                         if (this.state.accountAlias.trim().toLowerCase() === 'default') {
                             Toast.show({

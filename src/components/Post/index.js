@@ -185,8 +185,12 @@ class Post extends Component {
                     AsyncStorage.setItem(this.props.postId, 'true')
                 }
 
-            }).catch((e) => {
-                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+            }).catch((error) => {
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.likePost()
+                    return
+                }
             })
         }
         catch (e) {/* error */ }
@@ -218,11 +222,19 @@ class Post extends Component {
                         this.setState({ isLiked: false })
                         AsyncStorage.setItem(this.props.postId, 'false')
                     }
-                }).catch((e) => {
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                }).catch((error) => {
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.unlikePost()
+                        return
+                    }
                 })
-            }).catch((e) => {
-                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+            }).catch((error) => {
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.unlikePost()
+                    return
+                }
             })
         }
         catch (e) {/* error */ }
@@ -377,9 +389,13 @@ class Post extends Component {
                         );
 
                         this.setState({ addOn: "", addOnPoints: this.state.addOnPoints + points })
-                    }).catch((e) => {
+                    }).catch((error) => {
                         //Error retriving data
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                        const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        if (!isSessionExpired) {
+                            this.rewardsAddon()
+                            return
+                        }
                         this.setState({ addonVisible: false })
                     })
                 }
@@ -631,7 +647,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 

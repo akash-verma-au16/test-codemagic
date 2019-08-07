@@ -25,7 +25,7 @@ import {
 } from 'native-base';
 /* Services */
 import { logout } from '../../services/bAuth'
-import { unregister, get_status, enable_status, disable_status } from '../../services/pushNotification'
+import { unregister, enable_status, disable_status } from '../../services/pushNotification'
 // RBAC Handler function
 import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Custom Components */
@@ -63,9 +63,14 @@ class Settings extends React.Component {
                 enable_status(this.statusApiPayload, this.headers).then(() => {
                     this.props.updatePushNotifStatus({ pushNotifStatus: true })
                     // }
-                }).catch((e) => {
+                }).catch((error) => {
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.enableStatus()
+                        return
+                    }
                     this.setState({ isSwitchOn: false })
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+
                 })
             }
             else {
@@ -84,9 +89,14 @@ class Settings extends React.Component {
                     if (response.status == 200) {
                         this.props.updatePushNotifStatus({ pushNotifStatus: false })
                     }
-                }).catch((e) => {
+                }).catch((error) => {
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.enableStatus()
+                        return
+                    }
                     this.setState({ isSwitchOn: true })
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+
                 })
             }
             else {
@@ -344,7 +354,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
         clearData: () => dispatch({ type: dev.CLEAR_DATA }),
-        updatePushNotifStatus: (props) => dispatch({ type: user.UPDATE_PUSH_STATUS, payload: props})
+        updatePushNotifStatus: (props) => dispatch({ type: user.UPDATE_PUSH_STATUS, payload: props}),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
+
     };
 }
 

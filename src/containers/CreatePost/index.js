@@ -140,8 +140,12 @@ class CreatePost extends React.Component {
                         this.visibilityData.push({ icon: iconName, text: item.name, name: item.id, key: text })
                     })
                     this.setState({ isVisibilityLoading: false })
-                }).catch((e) => {
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                }).catch((error) => {
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.loadVisibility()
+                        return
+                    }
                     this.setState({ isVisibilityLoading: false })
                 })
             } catch {
@@ -328,8 +332,12 @@ class CreatePost extends React.Component {
                 this.setState(this.initialState)
                 this.props.navigation.navigate('home')
 
-            }).catch((e) => {
-                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+            }).catch((error) => {
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.postSubmitHandler()
+                    return
+                }
                 Keyboard.dismiss()
                 Toast.show({
                     text: 'Error while creating the post',
@@ -515,8 +523,12 @@ class CreatePost extends React.Component {
                     })
                     this.setState({ isTagerLoading: false, isProject: true })
                 })
-                .catch((e) => {
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)                    
+                .catch((error) => {
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.loadProjectMembers(projectId)
+                        return
+                    }                    
                     this.setState({ isTagerLoading: false })
                 })
         }
@@ -538,7 +550,11 @@ class CreatePost extends React.Component {
             }
             let profileData = await loadProfile(payload1, headers, this.props.isConnected);
             if (profileData == undefined) {
-                checkIfSessionExpired(this.profileData, this.props.navigation, this.props.deAuthenticate)
+                const isSessionExpired = checkIfSessionExpired(profileData, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.getProfile()
+                    return
+                }
                 return
             }
             else {
@@ -577,8 +593,12 @@ class CreatePost extends React.Component {
                     })
                     this.setState({ isTagerLoading: false })
                 })
-                .catch((e) => {
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                .catch((error) => {
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.loadMembers()
+                        return
+                    }
                     this.setState({ isTagerLoading: false })
                 })
         }
@@ -849,7 +869,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 
