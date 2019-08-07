@@ -2,7 +2,6 @@ import React from 'react';
 import {
     Keyboard,
     ImageBackground,
-    Image,
     TouchableOpacity,
     Animated,
     Platform
@@ -11,6 +10,7 @@ import {
     Form,
     Container,
     Content,
+    Icon,
     Toast,
     View,
     Text
@@ -25,7 +25,6 @@ import TextInput from '../../components/TextInput'
 import RoundButton from '../../components/RoundButton'
 /* Assets */
 import image from '../../assets/rsz_gradient-background.png'
-import key from '../../assets/key.png'
 /* Services */
 import { forceChangePassword } from '../../services/bAuth'
 
@@ -103,10 +102,9 @@ class ForceChangePassword extends React.Component {
             try {
                 /* extracting data from login page */
                 const email = this.props.navigation.getParam('email')
-                const accountAlias = this.props.navigation.getParam('accountAlias')
                 const oldPassword = this.props.navigation.getParam('password')
                 /* check the availability of data */
-                if (oldPassword && this.state.confirmPassword && this.state.password && email && accountAlias) {
+                if (oldPassword && this.state.confirmPassword && this.state.password && email) {
 
                     if(this.state.confirmPassword!==this.state.password){
                         Toast.show({
@@ -119,7 +117,6 @@ class ForceChangePassword extends React.Component {
                     }
                     if(this.props.isConnected) {
                         forceChangePassword({
-                            accountAlias: accountAlias,
                             email: email,
                             password: oldPassword,
                             new_password: this.state.password
@@ -192,7 +189,7 @@ class ForceChangePassword extends React.Component {
                             {/* This wrapper will shrink based on screen size making room for other components */}
                             <View style={styles.imageWrapper}>
                                 <Animated.View style={[styles.imageContainer,{opacity:fade}]}>
-                                    <Image source={key} style={styles.icon} />
+                                    <Icon name='ios-key' style={styles.icon} />
                                 </Animated.View>
                             </View>
                             <View

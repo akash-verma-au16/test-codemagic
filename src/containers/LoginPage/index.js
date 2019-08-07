@@ -42,8 +42,7 @@ import { read_member, read_tenant } from '../../services/tenant'
 import { get_status } from '../../services/pushNotification'
 /* Utilities */
 import toSentenceCase from '../../utilities/toSentenceCase'
-//RBAC Handler function
-import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
+
 /* Push notification */
 import { register_device } from '../../services/pushNotification'
 import { get_associate_name, liked_post } from '../../services/post'
@@ -56,7 +55,6 @@ class LoginPage extends React.Component {
         this.state = {
             isShowingKeyboard: false,
             isSignInLoading: false,
-            accountAlias: "",
             email: "",
             password: "",
             logoShift: new Animated.Value(-50),
@@ -65,7 +63,6 @@ class LoginPage extends React.Component {
         }
         this.tenantName = ""
         /* Refs are used to redirect the focus to the next component using keyboard button */
-        this.textInputAccountAlias = React.createRef();
         this.textInputEmail = React.createRef();
         this.textInputPassword = React.createRef();
         this.contentView = React.createRef()
@@ -153,7 +150,6 @@ class LoginPage extends React.Component {
     forgotPasswordHandler = () => {
         this.setState({ password: '' })
         this.props.navigation.navigate('ForgotPassword', {
-            accountAlias: this.state.accountAlias,
             email: this.state.email
         })
     }
@@ -261,14 +257,14 @@ class LoginPage extends React.Component {
             isSignInLoading: true
         }, () => {
             try {
-                if (this.state.accountAlias && this.state.email && this.state.password) {
+                if (this.state.email && this.state.password) {
                     login({
-                        accountAlias: this.state.accountAlias,
                         email: this.state.email,
                         password: this.state.password
                     }).then((response) => {
+                        const accountAlias = response.data.payload.tenant_id
                         /* Restricting Super Admin Access as no Tenant Name is available to fetch */
-                        if (this.state.accountAlias.trim().toLowerCase() === 'default') {
+                        if (accountAlias.trim().toLowerCase() === 'default') {
                             Toast.show({
                                 text: 'No Access for Super Admin',
                                 type: "danger"
@@ -277,7 +273,7 @@ class LoginPage extends React.Component {
                             return
                         }
                         read_tenant({
-                            tenant_id: this.state.accountAlias.toLowerCase().trim()
+                            tenant_id: accountAlias.toLowerCase().trim()
                         }, {
                             headers: {
                                 Authorization: response.data.payload.accessToken.jwtToken
@@ -293,7 +289,7 @@ class LoginPage extends React.Component {
                                 );
                             } else {
                                 read_member({
-                                    tenant_id: this.state.accountAlias.toLowerCase().trim(),
+                                    tenant_id: accountAlias.toLowerCase().trim(),
                                     email: this.state.email.toLowerCase().trim()
                                 }, {
                                     headers: {
@@ -303,7 +299,7 @@ class LoginPage extends React.Component {
                                     let firstName = toSentenceCase(response.data.payload.idToken.payload.given_name);
                                     let lastName = toSentenceCase(response.data.payload.idToken.payload.family_name);
                                     const payload = {
-                                        accountAlias: this.state.accountAlias.toLowerCase().trim(),
+                                        accountAlias: accountAlias.toLowerCase().trim(),
                                         tenant_name: tenantRes.data.data[0].tenant_name,
                                         associate_id: res.data.data.associate_id,
                                         firstName: firstName,
@@ -332,8 +328,8 @@ class LoginPage extends React.Component {
                                             headers: {
                                                 Authorization: response.data.payload.accessToken.jwtToken
                                             }
-                                        }).then((res) => {
-                                            this.getPushnotificationStatus(payload)
+                                        }).then(async(res) => {
+                                            await this.getPushnotificationStatus(payload)
                                             res.data.data.map((item) => {
                                                 AsyncStorage.setItem(item.associate_id, item.full_name)
                                             })
@@ -361,7 +357,7 @@ class LoginPage extends React.Component {
                                 })
                             }
 
-                        }).catch((e) => {
+                        }).catch(() => {
                         })
                     }).catch((error) => {
                         try {
@@ -376,7 +372,6 @@ class LoginPage extends React.Component {
                                 })
                                 /* navigate to forceChangePassword */
                                 this.props.navigation.navigate('ForceChangePassword', {
-                                    accountAlias: this.state.accountAlias,
                                     email: this.state.email,
                                     password: this.state.password
                                 })
@@ -464,18 +459,6 @@ class LoginPage extends React.Component {
 
                             <Animated.View style={[{ alignItems: 'center' }, { opacity: logoFade }]}>
                                 <TextInput
-                                    placeholder='Account Alias'
-                                    value={this.state.accountAlias}
-                                    onChangeText={(text) => this.setState({ accountAlias: text })}
-                                    inputRef={input => this.textInputAccountAlias = input}
-                                    onSubmitEditing={() => {
-                                        this.textInputEmail._root.focus()
-                                        this.contentView._root.scrollToEnd()
-                                    }}
-                                    style={styles.color111}
-                                />
-
-                                <TextInput
                                     placeholder='Username'
                                     value={this.state.email}
                                     onChangeText={(text) => this.setState({ email: text })}
@@ -544,7 +527,8 @@ const mapStateToProps = (state) => {
         imagelink: state.user.imageUrl,
         tenant_name: state.user.tenant_name,
         email: state.user.emailAddress,
-        accountAlias: state.user.accountAlias
+        accountAlias: state.user.accountAlias,
+        idToken: state.user.idToken
     };
 }
 
