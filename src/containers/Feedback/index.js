@@ -60,7 +60,7 @@ class Feedback extends Component {
         
         if(this.state.userAns == "") {
             ToastAndroid.showWithGravityAndOffset(
-                'Please select ans',
+                'Please share your experience',
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
