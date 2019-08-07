@@ -121,6 +121,8 @@ class ListPost extends React.Component {
         };
     };
     componentWillMount() {
+        //Increment count to Display feedback alert
+        this.props.incrementCount()
         this.props.navigation.setParams({ commingSoon: this.commingSoon });
         if (this.props.isFreshInstall) {
             this.props.navigation.navigate('TermsAndConditions')
@@ -130,8 +132,6 @@ class ListPost extends React.Component {
             return
         }
         this.loadLikes()
-        //Increment count to Display feedback alert
-        this.props.incrementCount()
     }
 
     loadLikes = () => {
@@ -524,8 +524,8 @@ class ListPost extends React.Component {
         if(this.props.isAuthenticate) {
             if (this.props.feedbackCurrentCount % feedbackDisplayCount == 0) {
                 Alert.alert(
-                    'Feedback',
-                    'Hey, would you like to share your feedback?',
+                    'Loving HappyWorks',
+                    'Please share your experience!',
                     [
                         {
                             text: 'No',
