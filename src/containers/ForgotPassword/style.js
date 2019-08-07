@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native'
 export default StyleSheet.create({
     container: {
-        flex: 1
+        flex:1
     },
     form: {
         flex: 1,
@@ -53,7 +53,7 @@ export default StyleSheet.create({
 
     },
     customForm: {
-        
+        overflow: 'hidden',
         alignItems: "center",
         backgroundColor: '#fff',
         justifyContent: "flex-end",

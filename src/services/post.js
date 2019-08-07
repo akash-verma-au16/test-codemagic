@@ -78,10 +78,10 @@ export const list_likes = (
     return axios.post(endpoint, payload, headers)
 }
 export const like_id = (
-    payload
+    payload, headers
 ) => {
     const endpoint = config.url.like_id
-    return axios.post(endpoint, payload)
+    return axios.post(endpoint, payload, headers)
 }
 export const liked_post = (
     payload, headers
