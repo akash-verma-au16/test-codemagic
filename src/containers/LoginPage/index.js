@@ -256,11 +256,17 @@ class LoginPage extends React.Component {
 
     showNewUserAlert = () => {
         Alert.alert(
-            'New User?',
-            'Hey, are you a new user?',
+            'New to HappyWorks?',
+            '',
             [
                 {
-                    text: 'No',
+                    text: 'No', onPress: () => {
+                        Toast.show({
+                            text: 'Invalid credentials',
+                            type: 'danger',
+                            duration: 3000
+                        })
+                    },
                     style: 'cancel'
                 },
                 {
@@ -384,10 +390,8 @@ class LoginPage extends React.Component {
                         })
                     }).catch((error) => {
                         try {
-
                             switch (error.response.data.code) {
                             case "ForceChangePassword":
-
                                 Toast.show({
                                     text: 'Please change the password to continue',
                                     type: 'success',
@@ -408,11 +412,6 @@ class LoginPage extends React.Component {
                                 })
                                 break;
                             case "TenantDoesNotExist":
-                                Toast.show({
-                                    text: 'Tenant does not exist',
-                                    type: 'danger',
-                                    duration: 3000
-                                })
                                 this.showNewUserAlert()
                                 break;
                             case "UserNotFound":
@@ -432,7 +431,7 @@ class LoginPage extends React.Component {
 
                         } catch (error) {
                             Toast.show({
-                                text: 'Please check your internet connection',
+                                text: 'Something went wrong, please try again later.',
                                 type: 'danger',
                                 duration: 3000
                             })
@@ -449,7 +448,7 @@ class LoginPage extends React.Component {
                 }
             } catch (error) {
                 Toast.show({
-                    text: "Something went wrong, please try again later.",
+                    text: "Something went wrong, please try again.",
                     type: "danger"
                 })
                 this.setState({ isSignInLoading: false })
