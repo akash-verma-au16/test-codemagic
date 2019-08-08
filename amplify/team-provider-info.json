@@ -22,5 +22,29 @@
                 }
             }
         }
+    },
+    "prod": {
+        "awscloudformation": {
+            "AuthRoleName": "happyworksnativeapp-prod-20190808191852-authRole",
+            "UnauthRoleArn": "arn:aws:iam::717027884951:role/happyworksnativeapp-prod-20190808191852-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::717027884951:role/happyworksnativeapp-prod-20190808191852-authRole",
+            "Region": "ap-south-1",
+            "DeploymentBucketName": "happyworksnativeapp-prod-20190808191852-deployment",
+            "UnauthRoleName": "happyworksnativeapp-prod-20190808191852-unauthRole",
+            "StackName": "happyworksnativeapp-prod-20190808191852",
+            "StackId": "arn:aws:cloudformation:ap-south-1:717027884951:stack/happyworksnativeapp-prod-20190808191852/416c92a0-b9e3-11e9-96dd-02a35fd872f4"
+        },
+        "categories": {
+            "auth": {
+                "cognito9ba52401": {}
+            },
+            "notifications": {
+                "Pinpoint": {
+                    "Name": "happyworksnativeapp-dev-prod",
+                    "Id": "0d6aae7cd67d46d3a683c8f2bbbd5ce1",
+                    "Region": "us-west-2"
+                }
+            }
+        }
     }
 }
