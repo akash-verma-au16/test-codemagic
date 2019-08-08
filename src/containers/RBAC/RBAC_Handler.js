@@ -11,12 +11,10 @@ async function refreshTokens(navigation, deAuthenticate, updateNewTokens){
         refresh_token: userState.refreshToken,
         tenant_id: userState.accountAlias
     }
-    console.log('refreshTokens',payload)
+    //Get new Tokens
     refreshToken(payload).then((res) => {
-        console.log('response', res.data.payload.AccessToken)
         updateNewTokens({ accessToken: res.data.payload.AccessToken})
-    }).catch((e) => {
-        console.log('error')
+    }).catch(() => {
         reactNativeHelper(navigation, deAuthenticate)
     })
 
@@ -25,17 +23,14 @@ async function refreshTokens(navigation, deAuthenticate, updateNewTokens){
 export const checkIfSessionExpired = (code, navigation, deAuthenticate, updateNewTokens) => {
     try {
         if(code.status === 401) {
-            console.log(code.status)
             reactNativeHelper(navigation, deAuthenticate)
             return true
         } 
         else if(code.status === 403) {
-            console.log(code.status)
             refreshTokens(navigation, deAuthenticate, updateNewTokens)
             return false
         }
         else {
-            console.log(code.status)
             reactNativeHelper(navigation, deAuthenticate)
             return true
         }
