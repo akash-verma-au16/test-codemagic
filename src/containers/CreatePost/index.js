@@ -115,7 +115,7 @@ class CreatePost extends React.Component {
         }
         const headers = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
         this.setState({ isVisibilityLoading: true })
@@ -140,8 +140,12 @@ class CreatePost extends React.Component {
                         this.visibilityData.push({ icon: iconName, text: item.name, name: item.id, key: text })
                     })
                     this.setState({ isVisibilityLoading: false })
-                }).catch((e) => {
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                }).catch((error) => {
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.loadVisibility()
+                        return
+                    }
                     this.setState({ isVisibilityLoading: false })
                 })
             } catch {
@@ -315,7 +319,7 @@ class CreatePost extends React.Component {
 
         const headers = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
         this.setState({ isLoading: true })
@@ -328,8 +332,12 @@ class CreatePost extends React.Component {
                 this.setState(this.initialState)
                 this.props.navigation.navigate('home')
 
-            }).catch((e) => {
-                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+            }).catch((error) => {
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.postSubmitHandler()
+                    return
+                }
                 Keyboard.dismiss()
                 Toast.show({
                     text: 'Error while creating the post',
@@ -490,14 +498,16 @@ class CreatePost extends React.Component {
     loadProjectMembers = (projectId) => {
         const headers = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
         if (this.props.accountAlias !== undefined) {
-            list_project_members({
+            const payload = {
                 tenant_id: this.props.accountAlias,
                 project_id: projectId
-            }, headers)
+            }
+
+            list_project_members(payload, headers)
                 .then(response => {
                     /* Clear Garbage */
                     this.projectAssociateData = []
@@ -513,8 +523,12 @@ class CreatePost extends React.Component {
                     })
                     this.setState({ isTagerLoading: false, isProject: true })
                 })
-                .catch((e) => {
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)                    
+                .catch((error) => {
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.loadProjectMembers(projectId)
+                        return
+                    }                    
                     this.setState({ isTagerLoading: false })
                 })
         }
@@ -526,7 +540,7 @@ class CreatePost extends React.Component {
             //Authorization headers
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
             //profile payload
@@ -536,7 +550,11 @@ class CreatePost extends React.Component {
             }
             let profileData = await loadProfile(payload1, headers, this.props.isConnected);
             if (profileData == undefined) {
-                checkIfSessionExpired(this.profileData, this.props.navigation, this.props.deAuthenticate)
+                const isSessionExpired = checkIfSessionExpired(profileData, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.getProfile()
+                    return
+                }
                 return
             }
             else {
@@ -553,7 +571,7 @@ class CreatePost extends React.Component {
     loadMembers = () => {
         const headers = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
         if (this.props.accountAlias !== undefined) {
@@ -575,8 +593,12 @@ class CreatePost extends React.Component {
                     })
                     this.setState({ isTagerLoading: false })
                 })
-                .catch((e) => {
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                .catch((error) => {
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.loadMembers()
+                        return
+                    }
                     this.setState({ isTagerLoading: false })
                 })
         }
@@ -839,7 +861,7 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken,
+        accessToken: state.user.accessToken,
         imageUrl: state.user.imageUrl
     };
 }
@@ -847,7 +869,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 

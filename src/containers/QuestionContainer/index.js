@@ -150,7 +150,7 @@ class QuestionContainer extends React.Component {
     //Authemtication header
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.accessToken
         }
     }
 
@@ -178,14 +178,22 @@ class QuestionContainer extends React.Component {
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: res.data.points
                             })
-                        }).catch((e) => {
-                            checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                        }).catch((error) => {
+                            const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                            if (!isSessionExpired) {
+                                this.submitHandler()
+                                return
+                            }
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: 0
                             })
                         })
-                    }).catch((e) => {
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                    }).catch((error) => {
+                        const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        if (!isSessionExpired) {
+                            this.submitHandler()
+                            return
+                        }
                         this.setState({ isSubmitLoading: false })
                     })
                 } else {
@@ -336,14 +344,15 @@ const mapStateToProps = (state) => {
         tenant_id:state.user.accountAlias,
         isConnected: state.system.isConnected,
         associate_id: state.user.associate_id,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
         authenticate: (props) => dispatch({ type: auth.AUTHENTICATE_USER, payload: props }),
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 

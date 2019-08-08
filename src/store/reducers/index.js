@@ -13,6 +13,8 @@ const initialState = {
         imageUrl: "",
         tenantImageUrl: "",
         idToken:"",
+        accessToken:"",
+        refreshToken:"",
         walletBalance: "",
         pushNotifStatus: false,
         feedbackDisplayCount: 0
@@ -39,7 +41,9 @@ export default (state = initialState, action) => {
                 lastName: action.payload.lastName,
                 phoneNumber: action.payload.phoneNumber,
                 emailAddress: action.payload.emailAddress,
-                idToken: action.payload.idToken
+                idToken: action.payload.idToken,
+                accessToken: action.payload.accessToken,
+                refreshToken: action.payload.refreshToken
             }
         }
     }
@@ -122,12 +126,12 @@ export default (state = initialState, action) => {
         }
     }
 
-    case user.UPDATE_FEEDBACK_DISPLAY_COUNT: {
+    case auth.REFRESH_TOKEN: {
         return {
             ...state,
             user: {
                 ...state.user,
-                feedbackDisplayCount: state.user.feedbackDisplayCount + 1
+                accessToken: action.payload.accessToken
             }
         }
     }

@@ -55,7 +55,7 @@ class SurveyIntro extends React.Component {
     //Authorization headers
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.accessToken
         }
     }
 
@@ -195,7 +195,7 @@ const mapStateToProps = (state) => {
     return {
         isAuthenticate: state.isAuthenticate,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
     };
 }
 

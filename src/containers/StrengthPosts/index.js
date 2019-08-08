@@ -3,7 +3,6 @@ import {
     StyleSheet,
     ScrollView,
     RefreshControl,
-    Dimensions,
     BackHandler
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
@@ -63,7 +62,7 @@ class StrengthPosts extends React.Component {
     //Authorization headers
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.accessToken
         }
     }
     //profile payload
@@ -103,6 +102,13 @@ class StrengthPosts extends React.Component {
     }
     getProfile = async () => {
         this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
+        if (this.profileData == undefined) {
+            const isSessionExpired = checkIfSessionExpired(this.profileData, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+            if (!isSessionExpired) {
+                this.getProfile()
+                return
+            }
+        }
     }
 
     newPostHandler = () => {
@@ -146,8 +152,12 @@ class StrengthPosts extends React.Component {
                             item.Item.addOnPoints = this.counts[index].addOnPoints
                         })
                         this.createTiles(this.posts)
-                    }).catch((e) => {
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                    }).catch((error) => {
+                        const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        if (!isSessionExpired) {
+                            this.loadPosts()
+                            return
+                        }
                         this.setState({ refreshing: false })
                     })
 
@@ -268,13 +278,14 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 

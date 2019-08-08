@@ -196,7 +196,7 @@ class Home extends React.Component {
 
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.accessToken
         }
     }
     //Load user profile API Handler
@@ -222,8 +222,12 @@ class Home extends React.Component {
                         })
                     }
                     this.setState({ loading: false })
-                }).catch((e) => {
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                }).catch((error) => {
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.loadProfile()
+                        return
+                    }
                 })
             }
         }
@@ -242,21 +246,24 @@ class Home extends React.Component {
                 }
             }
 
-            var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
-            this.homeDataList.splice(index, 1)
-            this.posts.splice(index, 1)
-            if (this.posts.length == 0) {
-                this.setState({ noData: true })
-            }
-            this.setState({postList: this.homeDataList})
-
             try {
                 delete_post(payload, this.headers).then(async(res) => {
                     if (res.status === 200) {
+                        var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
+                        this.homeDataList.splice(index, 1)
+                        this.posts.splice(index, 1)
+                        if (this.posts.length == 0) {
+                            this.setState({ noData: true })
+                        }
+                        this.setState({ postList: this.homeDataList })
                         setTimeout(() => this.setState({ isPostDeleted: false }), 2000)
                     }
                 }).catch((e) => {
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                    const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.deletePost(postId)
+                        return
+                    }
                 })
             }
             catch (e) {/* error */ }
@@ -313,7 +320,11 @@ class Home extends React.Component {
                         this.createTiles(this.posts)
                     }
                 }).catch((e) => {
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                    const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.loadHome()
+                        return
+                    }
                     this.setState({ homeRefreshing: false })
                 })
             }
@@ -406,8 +417,12 @@ class Home extends React.Component {
                         this.setState({summeryList: this.summeryList, summaryRefreshing: false})
                     })
                 }
-            }).catch((e) => {
-                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+            }).catch((error) => {
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.loadSummary()
+                    return
+                }
                 this.setState({ summaryRefreshing: false })
             })
         }
@@ -482,7 +497,11 @@ class Home extends React.Component {
                             }
                         }).catch((e) => {
                             this.setState({ visibilityModalVisible: false })
-                            checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                            const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                            if (!isSessionExpired) {
+                                this.handleEditProfile()
+                                return
+                            }
                         })
                     }
                     else {
@@ -595,8 +614,12 @@ class Home extends React.Component {
                             this.transactionList = []
                             this.createTransactionTile(this.transactionDataBackup)
                         }
-                    }).catch((e) => {
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                    }).catch((error) => {
+                        const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        if (!isSessionExpired) {
+                            this.loadTransactions()
+                            return
+                        }
                         this.setState({ refreshing: false })
                     })
                 }
@@ -697,7 +720,12 @@ class Home extends React.Component {
                     }).catch(() => {
                     })
             })
-            .catch((e) => {
+            .catch((error) => {
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.handleUploadImage()
+                    return
+                }
             })
     }
 
@@ -717,6 +745,11 @@ class Home extends React.Component {
                 this.props.imageUrl(response.data.data['download-signed-url'])
 
         }).catch((e) => {
+            const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+            if (!isSessionExpired) {
+                this.handleImageDownload()
+                return
+            }
             //Error retriving data
         })
     }
@@ -1149,7 +1182,7 @@ const mapStateToProps = (state) => {
         isConnected: state.system.isConnected,
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
-        idToken: state.user.idToken,
+        accessToken: state.user.accessToken,
         tenantName: state.user.tenant_name,
         walletBalance: state.user.walletBalance
     };
@@ -1159,7 +1192,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         updateUser: (props) => dispatch({ type: dev.UPDATE_USER, payload: props }),
         imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props }),
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Home)

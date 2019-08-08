@@ -141,7 +141,7 @@ class ListPost extends React.Component {
         }
         const headers = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
 
@@ -151,7 +151,11 @@ class ListPost extends React.Component {
                     this.likes = res.data
                 }
             }).catch((error) => {
-                checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate)
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.loadLikes()
+                    return
+                }
             })
         }
         catch (e) {/* error */ }
@@ -226,17 +230,20 @@ class ListPost extends React.Component {
             }
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
-
             try {
                 await get_associate_name(payload, headers).then((res) => {
                     res.data.data.map((item) => {
                         AsyncStorage.setItem(item.associate_id, item.full_name)
                     })
                 }).catch((error) => {
-                    checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate)
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.getAssociateNames()
+                        return
+                    }
                 })
             }
             catch (e) {/* error */ }
@@ -246,7 +253,7 @@ class ListPost extends React.Component {
     //Authorization headers
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.accessToken
         }
     }
     //profile payload
@@ -375,7 +382,7 @@ class ListPost extends React.Component {
             }
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
 
@@ -439,7 +446,12 @@ class ListPost extends React.Component {
                             this.createTiles(this.posts)
                         }
                     }).catch((e) => {
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                        const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        console.log('isSessionExpired', isSessionExpired)
+                        if (!isSessionExpired) {
+                            this.loadPosts()
+                            return
+                        }
                         this.setState({ refreshing: false, networkChanged: false })
                     })
                 }
@@ -469,7 +481,7 @@ class ListPost extends React.Component {
             }
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
             var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
@@ -483,7 +495,11 @@ class ListPost extends React.Component {
                     }
                 }).catch((error) => {
                     //Error deleting Post
-                    checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate)
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if(!isSessionExpired) {
+                        this.deletePost(postId)
+                        return
+                    }
                     this.setState({ isPostDeleted: false })
                 })
             }
@@ -500,7 +516,7 @@ class ListPost extends React.Component {
             //Authorization headers 
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
             //profile payload
@@ -510,7 +526,11 @@ class ListPost extends React.Component {
             }
             this.profileData = await loadProfile(payload1, headers, this.props.isConnected);
             if(this.profileData == undefined) {
-                checkIfSessionExpired(this.profileData, this.props.navigation, this.props.deAuthenticate)
+                const isSessionExpired = checkIfSessionExpired(this.profileData, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.getProfile()
+                    return
+                }
             }
             const payload = {
                 walletBalance: this.profileData.wallet_balance
@@ -707,7 +727,7 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken,
+        accessToken: state.user.accessToken,
         imagelink: state.user.imageUrl,
         tenant_name: state.user.tenant_name,
         email: state.user.emailAddress,
@@ -721,7 +741,7 @@ const mapDispatchToProps = (dispatch) => {
         updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
         imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props }),
         deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
-        incrementCount: () => dispatch({ type: user.UPDATE_FEEDBACK_DISPLAY_COUNT })
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(withInAppNotification(ListPost))

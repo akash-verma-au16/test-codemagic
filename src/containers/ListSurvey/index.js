@@ -61,7 +61,7 @@ class ListSurvey extends React.Component {
     //Authorization headers
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.accessToken
         }
     }
     async componentDidMount() {
@@ -74,7 +74,7 @@ class ListSurvey extends React.Component {
             //Authorization headers
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
             //profile payload
@@ -109,7 +109,7 @@ class ListSurvey extends React.Component {
         //Authorization headers
         const headers = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
         this.setState({ isLoading: true })
@@ -177,8 +177,12 @@ class ListSurvey extends React.Component {
                 this.setState({ isLoading: false, myPulse: this.MyPulse, orgPulse: this.OrgPulse, funQuiz: this.FunQuiz })
 
             })
-            .catch((e) => {
-                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+            .catch((error) => {
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.loadSurveys()
+                    return
+                }
                 this.setState({ isLoading: false })
             })
 
@@ -563,15 +567,16 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken,
-        imageUrl: state.user.imageUrl
+        accessToken: state.user.accessToken,
+        imageUrl:state.user.imageUrl
 
     };
 }
 const mapDispatchToProps = (dispatch) => {
     return {
         deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
-        clearData: () => dispatch({ type: dev.CLEAR_DATA })
+        clearData: () => dispatch({ type: dev.CLEAR_DATA }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 

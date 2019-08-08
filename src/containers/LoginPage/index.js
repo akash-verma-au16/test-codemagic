@@ -169,7 +169,7 @@ class LoginPage extends React.Component {
                 }
                 const headers = {
                     headers: {
-                        Authorization: payload.idToken
+                        Authorization: payload.accessToken
                     }
                 }
     
@@ -203,7 +203,7 @@ class LoginPage extends React.Component {
         }
         const header = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
 
@@ -218,7 +218,7 @@ class LoginPage extends React.Component {
     getPushnotificationStatus = (payload1) => {
         const headers = {
             headers: {
-                Authorization: payload1.idToken
+                Authorization: payload1.accessToken
             }
         }
 
@@ -331,7 +331,9 @@ class LoginPage extends React.Component {
                                         lastName: lastName,
                                         phoneNumber: response.data.payload.idToken.payload.phone_number,
                                         emailAddress: response.data.payload.idToken.payload.email.toLowerCase(),
-                                        idToken: response.data.payload.accessToken.jwtToken
+                                        idToken: response.data.payload.idToken.jwtToken,
+                                        accessToken: response.data.payload.accessToken.jwtToken,
+                                        refreshToken: response.data.payload.refreshToken.token
                                     };
 
                                     this.likeSyncHandler({
@@ -340,7 +342,7 @@ class LoginPage extends React.Component {
                                     }, 
                                     {
                                         headers: {
-                                            Authorization: payload.idToken
+                                            Authorization: payload.accessToken
                                         }
                                     })
                                     this.props.authenticate(payload);
@@ -547,7 +549,7 @@ const mapStateToProps = (state) => {
         tenant_name: state.user.tenant_name,
         email: state.user.emailAddress,
         accountAlias: state.user.accountAlias,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
     };
 }
 

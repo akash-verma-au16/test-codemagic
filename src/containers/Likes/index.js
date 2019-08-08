@@ -77,7 +77,7 @@ class Likes extends React.Component {
     //Authorization headers
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.accessToken
         }
     }
 
@@ -102,8 +102,12 @@ class Likes extends React.Component {
                     }
                 })
             }
-            catch(e) {
-                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+            catch (error) {
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.fetchPeopleList()
+                    return
+                }
             }
         }
         else {
@@ -173,13 +177,14 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 

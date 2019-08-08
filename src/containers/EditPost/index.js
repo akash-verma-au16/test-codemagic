@@ -140,7 +140,7 @@ class EditPost extends React.Component {
     //Authorization headers
     headers = {
         headers: {
-            Authorization: this.props.idToken 
+            Authorization: this.props.accessToken
         }
     }
 
@@ -242,8 +242,12 @@ class EditPost extends React.Component {
                         })
                         this.props.navigation.goBack()
 
-                    }).catch((e) => {
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                    }).catch((error) => {
+                        const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        if (!isSessionExpired) {
+                            this.editPostHandler()
+                            return
+                        }
                         //Error Retriving Data
                     })
                 }
@@ -308,8 +312,12 @@ class EditPost extends React.Component {
                     25,
                     100,
                 );
-            }).catch((e) => {
-                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+            }).catch((error) => {
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.newAssociateAddon(newAssociateList, points)
+                    return
+                }
                 // error retriving data
             })
         }
@@ -333,9 +341,13 @@ class EditPost extends React.Component {
 
         try {
             new_associate_notify(payload, this.headers).then(() => {
-            }).catch((e) => {
+            }).catch((error) => {
                 //Check for session expiry
-                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.newUserNotify(newAssociateList)
+                    return
+                }
                 //Error retriving data
             })
         }
@@ -408,9 +420,13 @@ class EditPost extends React.Component {
                     })
                     this.setState({ isTagerLoading: false })
                 })
-                .catch((e) => {
+                .catch((error) => {
                     this.setState({ isTagerLoading: false })
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.loadMembers()
+                        return
+                    }
                 })
         }
 
@@ -580,7 +596,7 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken,
+        accessToken: state.user.accessToken,
         walletBalance: state.user.walletBalance
     };
 }
@@ -588,7 +604,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 
