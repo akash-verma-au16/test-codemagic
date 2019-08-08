@@ -31,8 +31,7 @@ export const checkIfSessionExpired = (code, navigation, deAuthenticate, updateNe
             return false
         }
         else {
-            reactNativeHelper(navigation, deAuthenticate)
-            return true
+            return
         }
     } catch (error) {
         //error

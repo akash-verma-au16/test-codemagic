@@ -111,21 +111,21 @@ class Comments extends React.Component {
         }
     }
 
-    //Authorization headers
-    headers = {
-        headers: {
-            Authorization: this.props.accessToken
-        }
-    }
     fetchComments = () => {
         const payload = {
             "post_id": this.postId,
             "tenant_id": this.props.accountAlias,
             "associate_id": this.props.associate_id
         }
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
         try {
             if (this.props.isConnected) {
-                list_comments(payload, this.headers).then((response) => {
+                list_comments(payload, headers).then((response) => {
                     if(response.data.data.Items.length == 0 && this.comments.length == 0) {
                         this.commentList = []
                         this.setState({ commentsRefresh: false, initialLoad: true })                        
@@ -189,9 +189,15 @@ class Comments extends React.Component {
                         }
                     }
                 }   
+                //Authorization headers
+                const headers = {
+                    headers: {
+                        Authorization: this.props.accessToken
+                    }
+                }
                 try {
                     // this.setState({ commentsRefresh: true })
-                    add_comment(payload, this.headers).then(async(res) => {
+                    add_comment(payload, headers).then(async(res) => {
                         if(res.status === 200) {
                             this.setState({ addCommentText: "" })
                             this.comments.push({
@@ -282,9 +288,14 @@ class Comments extends React.Component {
                     }
                 }
             }
-           
+            //Authorization headers
+            const headers = {
+                headers: {
+                    Authorization: this.props.accessToken
+                }
+            }
             try {
-                delete_comment(payload, this.headers).then(async(response) => {
+                delete_comment(payload,headers).then(async(response) => {
                     if(response.status === 200) {
                         var index = this.comments.findIndex((comment) => { return comment.comment_id == comment_id })
                         this.commentList.splice(index, 1)

@@ -52,21 +52,20 @@ class SurveyIntro extends React.Component {
         })
     }
 
-    //Authorization headers
-    headers = {
-        headers: {
-            Authorization: this.props.accessToken
-        }
-    }
-
     componentWillUnmount() {
         this.backHandler.remove()
     }
     readSurveyHandler = () => {
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
         if (this.surveyId) {
             this.setState({ isLoading: true }, () => {
                 if(this.props.isConnected) {
-                    read_survey(this.surveyId, this.headers).then(response => {
+                    read_survey(this.surveyId,headers).then(response => {
                         this.props.navigation.navigate('QuestionContainer', {
                             questionData: response.data.data
                         })

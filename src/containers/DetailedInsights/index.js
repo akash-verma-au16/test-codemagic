@@ -1,15 +1,8 @@
 import React from 'react';
 import {
     View,
-    TouchableOpacity,
     Text,
-    StyleSheet,
-    ImageBackground,
-    Dimensions,
-    RefreshControl,
-    ScrollView,
-    ToastAndroid,
-    ActivityIndicator,
+    BackHandler,
     processColor
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
@@ -17,27 +10,18 @@ import { H2 } from 'native-base'
 /* Redux */
 import { connect } from 'react-redux'
 import { auth, dev } from '../../store/actions'
-import { PieChart, BarChart } from 'react-native-charts-wrapper';
+import { BarChart } from 'react-native-charts-wrapper';
 import { NavigationEvents } from 'react-navigation';
 /* Native Base */
 import {
     Container,
-    Content,
-    Toast,
-    Thumbnail
+    Content
 } from 'native-base';
 //Prefetch Profile Data
 import { loadProfile } from '../Home/apicalls'
-/* Assets */
-import nature1 from '../../assets/tileBackgrounds/nature1.jpg'
-import nature2 from '../../assets/tileBackgrounds/nature2.jpg'
-import nature3 from '../../assets/tileBackgrounds/nature3.jpeg'
-import { list_survey } from '../../services/questionBank'
 
 //RBAC handler function
 import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
-/* Custom Components */
-import { IndicatorViewPager } from 'rn-viewpager';
 
 class DetailedInsights extends React.Component {
     constructor(props) {
@@ -61,10 +45,14 @@ class DetailedInsights extends React.Component {
     //Authorization headers
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.accessToken
         }
     }
     async componentDidMount() {
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            this.props.navigation.goBack();
+            return true;
+        });
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
         await this.getProfile()
     }
@@ -74,7 +62,7 @@ class DetailedInsights extends React.Component {
             //Authorization headers
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
             //profile payload
@@ -93,11 +81,11 @@ class DetailedInsights extends React.Component {
 
     componentWillUnmount() {
         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+        this.backHandler.remove();
     }
 
     handleConnectivityChange = async (isConnected) => {
         if (isConnected) {
-            this.loadSurveys()
             await this.getProfile()
         }
         else {
@@ -171,7 +159,7 @@ class DetailedInsights extends React.Component {
                                         values: [{ y: 10 }, { y: 2 }, { y: 1 }, { y: 4 }, { y: 4 }, { y: 9 }, { y: 5 }],
                                         label: 'Sleep in Hours',
                                         config: {
-                                            colors: [processColor('#2ecc71'),processColor('#e74c3c'),processColor('#e74c3c'),processColor('#e67e22'),processColor('#e67e22'),processColor('#00309C'),processColor('#473000')],
+                                            colors: [processColor('#2ecc71'), processColor('#e74c3c'), processColor('#e74c3c'), processColor('#e67e22'), processColor('#e67e22'), processColor('#2ecc71'), processColor('#e67e22')],
                                             valueTextColor: processColor('#fff'),
                                             barShadowColor: processColor('#47309C'),
                                             highlightAlpha: 90,
@@ -270,7 +258,6 @@ class DetailedInsights extends React.Component {
                             if (this.props.isConnected) {
                                 if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                     this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl })
-                                    this.loadSurveys()
                                     await this.getProfile()
                                 }
                             }
@@ -292,7 +279,7 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken,
+        accessToken: state.user.accessToken,
         imageUrl: state.user.imageUrl
 
     };

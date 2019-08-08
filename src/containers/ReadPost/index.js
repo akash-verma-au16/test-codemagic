@@ -85,12 +85,6 @@ class ListPost extends React.Component {
         return true
     }
 
-    //Authorization headers
-    headers = {
-        headers: {
-            Authorization: this.props.accessToken
-        }
-    }
     //profile payload
     payload = {
         "tenant_id": this.props.accountAlias,
@@ -123,8 +117,14 @@ class ListPost extends React.Component {
             this.setState({
                 networkChanged: true
             }, async () => {
+                //Authorization headers
+                const headers = {
+                    headers: {
+                        Authorization: this.props.accessToken
+                    }
+                }
                 this.loadPosts()
-                this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
+                this.profileData = await loadProfile(this.payload,headers, this.props.isConnected)
                 this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': this.props.isConnected })
             })
         }
@@ -155,19 +155,20 @@ class ListPost extends React.Component {
 
     //Loads news feed
     loadPosts = () => {
-        const payload = {
-            tenant_id: this.props.accountAlias,
-            associate_id: this.props.associate_id
-        }
-
         const read_post_payload = {
             tenant_id: this.props.accountAlias,
             post_id: this.postId
         }
-        if (payload.tenant_id !== "" && payload.associate_id !== "") {
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
+        if (read_post_payload.tenant_id !== "" && read_post_payload.post_id !== "") {
             try {
 
-                read_post(read_post_payload, this.headers)
+                read_post(read_post_payload, headers)
                     .then(async (response) => {
 
                         const item = response.data.data.posts.Item

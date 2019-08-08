@@ -46,21 +46,20 @@ class Settings extends React.Component {
         await this.props.navigation.goBack()
     }
 
-    headers = {
-        headers: {
-            Authorization: this.props.accessToken
-        }
-    }
-
     statusApiPayload = {
         tenant_id: this.props.accountAlias,
         associate_id: this.props.associate_id
     }
 
     enableStatus = () => {
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
         try {
             if (this.props.isConnected) {
-                enable_status(this.statusApiPayload, this.headers).then(() => {
+                enable_status(this.statusApiPayload,headers).then(() => {
                     this.props.updatePushNotifStatus({ pushNotifStatus: true })
                     // }
                 }).catch((error) => {
@@ -83,9 +82,14 @@ class Settings extends React.Component {
     }
 
     disableStatus = () => {
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
         try {
             if (this.props.isConnected) {
-                disable_status(this.statusApiPayload, this.headers).then((response) => {
+                disable_status(this.statusApiPayload,headers).then((response) => {
                     if (response.status == 200) {
                         this.props.updatePushNotifStatus({ pushNotifStatus: false })
                     }

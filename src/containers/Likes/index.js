@@ -74,12 +74,6 @@ class Likes extends React.Component {
             100,
         );
     }
-    //Authorization headers
-    headers = {
-        headers: {
-            Authorization: this.props.accessToken
-        }
-    }
 
     fetchPeopleList = () => {
         if(this.props.isConnected) {
@@ -88,8 +82,14 @@ class Likes extends React.Component {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id
             }
+            //Authorization headers
+            const headers = {
+                headers: {
+                    Authorization: this.props.accessToken
+                }
+            }
             try {
-                list_likes(payload,this.headers).then((res) => {
+                list_likes(payload,headers).then((res) => {
                     if(res.status == 200) {
                         if (res.data.data.Items.length == 0) {
                             this.setState({ noData: true, peopleListrefresh: false })

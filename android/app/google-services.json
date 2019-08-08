@@ -37,6 +37,35 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:316935748292:android:d98a6ab58e12bff5",
+        "android_client_info": {
+          "package_name": "com.happyworksapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "316935748292-gih7gqbgkl344b4shnpeed1ucgn45e0d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAs8nn8R0sCGKRtq9i-bXIp3sS2OvRk45w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "316935748292-gih7gqbgkl344b4shnpeed1ucgn45e0d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:316935748292:android:40e951daa6846b1e",
         "android_client_info": {
           "package_name": "com.joynaut"

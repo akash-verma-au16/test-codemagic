@@ -555,7 +555,6 @@ class CreatePost extends React.Component {
                     this.getProfile()
                     return
                 }
-                return
             }
             else {
                 this.setState({ profileData: profileData })
