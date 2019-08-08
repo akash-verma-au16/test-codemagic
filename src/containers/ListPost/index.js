@@ -447,7 +447,6 @@ class ListPost extends React.Component {
                         }
                     }).catch((e) => {
                         const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
-                        console.log('isSessionExpired', isSessionExpired)
                         if (!isSessionExpired) {
                             this.loadPosts()
                             return
@@ -483,14 +482,14 @@ class ListPost extends React.Component {
                 headers: {
                     Authorization: this.props.accessToken
                 }
-            }
-            var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
-            this.postList.splice(index, 1)
-            this.posts.splice(index, 1)
-            this.setState({ postList: this.postList })         
+            }       
             try {
                 await delete_post(payload, headers).then((res) => {
                     if (res.status === 200) {
+                        var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
+                        this.postList.splice(index, 1)
+                        this.posts.splice(index, 1)
+                        this.setState({ postList: this.postList })  
                         setTimeout(() => this.setState({ isPostDeleted: false }), 2500)
                     }
                 }).catch((error) => {
@@ -544,7 +543,7 @@ class ListPost extends React.Component {
         if(this.props.isAuthenticate) {
             if (this.props.feedbackCurrentCount % feedbackDisplayCount == 0) {
                 Alert.alert(
-                    'Loving HappyWorks',
+                    'Loving HappyWorks?',
                     'Please share your experience!',
                     [
                         {
@@ -741,7 +740,8 @@ const mapDispatchToProps = (dispatch) => {
         updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
         imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props }),
         deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
-        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props }),
+        incrementCount: () => dispatch({ type: user.UPDATE_FEEDBACK_DISPLAY_COUNT })
     };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(withInAppNotification(ListPost))

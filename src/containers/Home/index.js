@@ -194,20 +194,21 @@ class Home extends React.Component {
         }
     }
 
-    headers = {
-        headers: {
-            Authorization: this.props.accessToken
-        }
-    }
     //Load user profile API Handler
     loadProfile() {
         const payload = {
             "tenant_id": this.props.accountAlias,
             "associate_id": this.state.associate_id
         }
+        //Authemtication header
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
-                user_profile(payload, this.headers).then((response) => {
+                user_profile(payload,headers).then((response) => {
                     this.userData = response.data.data
                     if (this.state.associate_id !== this.props.associate_id) {
                         this.handleImageDownload()
@@ -245,9 +246,15 @@ class Home extends React.Component {
                     associate_id: this.props.associate_id
                 }
             }
+            //Authemtication header
+            const headers = {
+                headers: {
+                    Authorization: this.props.accessToken
+                }
+            }
 
             try {
-                delete_post(payload, this.headers).then(async(res) => {
+                delete_post(payload,headers).then(async(res) => {
                     if (res.status === 200) {
                         var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
                         this.homeDataList.splice(index, 1)
@@ -278,10 +285,17 @@ class Home extends React.Component {
             "tenant_id": this.props.accountAlias,
             "associate_id": this.state.associate_id
         }
+
+        //Authemtication header
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
 
-                await list_posts(payload, this.headers).then((response) => {
+                await list_posts(payload,headers).then((response) => {
                     if(this.homeDataBackup.length === response.data.data.posts.length) {
                         if(response.data.data.posts.length === 0) {
                             this.homeDataList = []
@@ -388,9 +402,15 @@ class Home extends React.Component {
             "tenant_id": this.props.accountAlias,
             "associate_id": this.state.associate_id
         }
+        //Authemtication header
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
 
         try {
-            strength_counts(payload, this.headers).then((response) => {
+            strength_counts(payload,headers).then((response) => {
                 this.setState({ strengthCount: response.data.data.length})
                 if(response.data.data.length == 0) {
                     this.summeryRawList = []
@@ -484,15 +504,21 @@ class Home extends React.Component {
                             "phone_number": "+91" + this.state.phoneNo
 
                         }
-                        ToastAndroid.showWithGravityAndOffset(
-                            'Updating...',
-                            ToastAndroid.LONG,
-                            ToastAndroid.BOTTOM,
-                            25,
-                            100,
-                        );
-                        await update_profile(payload, this.headers).then(() => {
+                        //Authemtication header
+                        const headers = {
+                            headers: {
+                                Authorization: this.props.accessToken
+                            }
+                        }
+                        await update_profile(payload,headers).then(() => {
                             if (this.state.photo !== null) {
+                                ToastAndroid.showWithGravityAndOffset(
+                                    'Updating...',
+                                    ToastAndroid.LONG,
+                                    ToastAndroid.BOTTOM,
+                                    25,
+                                    100,
+                                );
                                 this.setState({ imageUrl: this.state.photo }, () => this.handleUploadImage())
                             }
                         }).catch((e) => {
@@ -592,9 +618,16 @@ class Home extends React.Component {
                 "associate_id": this.props.associate_id
             }
 
+            //Authemtication header
+            const headers = {
+                headers: {
+                    Authorization: this.props.accessToken
+                }
+            }
+
             try {
                 if (payload.tenant_id !== "" && payload.associate_id !== "") {
-                    await read_transaction(payload, this.headers).then(response => {
+                    await read_transaction(payload, headers).then(response => {
                         this.setState({
                             walletBalance: response.data.data.wallet_balance
                         })
@@ -703,7 +736,14 @@ class Home extends React.Component {
             file_name: 'logo.png',
             associate_email: this.props.email
         }
-        file_upload(payload, this.headers)
+
+        //Authemtication header
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
+        file_upload(payload,headers)
             .then((response) => {
                 const headers = {
                     'Content-Type': 'multipart/form-data'
@@ -738,7 +778,14 @@ class Home extends React.Component {
             file_name: 'logo.png',
             associate_email: this.userData.email || this.props.email
         }
-        file_download(payload, this.headers).then((response) => {
+
+        //Authemtication header
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
+        file_download(payload,headers).then((response) => {
             /* Store the image */
             this.setState({ isImageLoading: false, imageUrl: response.data.data['download-signed-url'] })
             if (payload.associate_email === this.props.email)

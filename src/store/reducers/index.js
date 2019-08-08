@@ -136,6 +136,16 @@ export default (state = initialState, action) => {
         }
     }
 
+    case user.UPDATE_FEEDBACK_DISPLAY_COUNT: {
+        return {
+            ...state,
+            user: {
+                ...state.user,
+                feedbackDisplayCount: state.user.feedbackDisplayCount + 1
+            }
+        }
+    }
+
     default: {
         return state;
     }

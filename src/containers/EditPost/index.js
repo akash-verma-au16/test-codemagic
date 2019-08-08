@@ -137,13 +137,6 @@ class EditPost extends React.Component {
         });
     }
 
-    //Authorization headers
-    headers = {
-        headers: {
-            Authorization: this.props.accessToken
-        }
-    }
-
     editPostHandler = async () => {
         if (this.props.isConnected) {
             //new associate data
@@ -208,8 +201,15 @@ class EditPost extends React.Component {
                     }
                 }
 
+                //Authorization headers
+                const headers = {
+                    headers: {
+                        Authorization: this.props.accessToken
+                    }
+                }
+
                 try {
-                    edit_post(payload, this.headers).then(async () => {
+                    edit_post(payload, headers).then(async () => {
                         if (this.newAssociate.length > 0) {
                             this.newAssociate.map((item) => {
                                 this.newAssociateList.push({ associate_id: item })
@@ -295,9 +295,16 @@ class EditPost extends React.Component {
             points: points
         }
 
-        this.setState({ editAddon: this.state.editAddon + points })
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
+
         try {
-            edit_post_addon(payload, this.headers).then(async () => {
+            edit_post_addon(payload, headers).then(async () => {
+                this.setState({ editAddon: this.state.editAddon + points })
                 let walletBalance = this.props.walletBalance - points
                 const payload = {
                     walletBalance: walletBalance
@@ -339,8 +346,15 @@ class EditPost extends React.Component {
             time: this.state.epoch
         }
 
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
+
         try {
-            new_associate_notify(payload, this.headers).then(() => {
+            new_associate_notify(payload,headers).then(() => {
             }).catch((error) => {
                 //Check for session expiry
                 const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
@@ -403,9 +417,16 @@ class EditPost extends React.Component {
 
     loadMembers = () => {
         if (this.props.accountAlias !== undefined) {
+            //Authorization headers
+            const headers = {
+                headers: {
+                    Authorization: this.props.accessToken
+                }
+            }
+
             list_associate({
                 tenant_id: this.props.accountAlias
-            }, this.headers)
+            }, headers)
                 .then(response => {
                     /* Clear Garbage */
                     this.associateData = []

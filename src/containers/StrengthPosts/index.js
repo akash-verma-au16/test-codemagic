@@ -58,13 +58,6 @@ class StrengthPosts extends React.Component {
             title: navigation.getParam('strengthType')
         }
     }
-
-    //Authorization headers
-    headers = {
-        headers: {
-            Authorization: this.props.accessToken
-        }
-    }
     //profile payload
     payload = {
         "tenant_id": this.props.accountAlias,
@@ -95,13 +88,23 @@ class StrengthPosts extends React.Component {
     }
 
     handleConnectivityChange = async (isConnected) => {
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
         if (isConnected) {
             this.loadPosts()
-            this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
+            this.profileData = await loadProfile(this.payload, headers, this.props.isConnected)
         }
     }
     getProfile = async () => {
-        this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
+        this.profileData = await loadProfile(this.payload,headers, this.props.isConnected);
         if (this.profileData == undefined) {
             const isSessionExpired = checkIfSessionExpired(this.profileData, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
             if (!isSessionExpired) {
@@ -138,9 +141,15 @@ class StrengthPosts extends React.Component {
             associate_id: this.props.associate_id,
             sub_type: this.props.navigation.getParam('strengthType')
         }
+
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
         if (payload.tenant_id !== "" && payload.associate_id !== "") {
             try {
-                strength_details(payload, this.headers)
+                strength_details(payload,headers)
                     .then((response) => {
                         this.posts = []
                         this.counts = []
