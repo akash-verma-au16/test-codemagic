@@ -158,6 +158,11 @@ class Settings extends React.Component {
             onPress: () => Linking.openURL('http://joy-hw-privacy-policy.s3-website-ap-southeast-1.amazonaws.com')
         },
         {
+            key: 'Feedback',
+            icon: 'md-mail',
+            onPress: () => this.props.navigation.navigate('Feedback')
+        },
+        {
             key: 'App Version : 1.13',
             icon: 'md-phone-portrait'
         },

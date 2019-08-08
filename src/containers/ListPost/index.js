@@ -27,6 +27,8 @@ import {
 } from 'native-base';
 /* Services */
 import { news_feed, delete_post, liked_post, get_associate_name } from '../../services/post'
+// Config
+import { feedbackDisplayCount } from '../../../config'
 //Loading Modal
 import LoadingModal from '../LoadingModal'
 //RBAC handler function
@@ -119,6 +121,8 @@ class ListPost extends React.Component {
         };
     };
     componentWillMount() {
+        //Increment count to Display feedback alert
+        this.props.incrementCount()
         this.props.navigation.setParams({ commingSoon: this.commingSoon });
         if (this.props.isFreshInstall) {
             this.props.navigation.navigate('TermsAndConditions')
@@ -316,6 +320,7 @@ class ListPost extends React.Component {
         //  Loading profile
         this.props.navigation.setParams({ 'profileData': this.profileData, walletBalance: this.profileData.walletBalance })
 
+        this.gotoFeedbackPageAlert()
     }
 
     componentWillUnmount() {
@@ -535,6 +540,29 @@ class ListPost extends React.Component {
         }        
     }
 
+    gotoFeedbackPageAlert = () => {
+        if(this.props.isAuthenticate) {
+            if (this.props.feedbackCurrentCount % feedbackDisplayCount == 0) {
+                Alert.alert(
+                    'Loving HappyWorks',
+                    'Please share your experience!',
+                    [
+                        {
+                            text: 'No',
+                            style: 'cancel'
+                        },
+                        {
+                            text: 'Yes', onPress: () => {
+                                this.props.navigation.navigate('Feedback')
+                            }
+                        }
+                    ],
+                    { cancelable: false },
+                )
+            }
+        }
+    }
+
     createTiles = async (posts) => {
         this.postList = []
         this.getProfile()
@@ -703,7 +731,8 @@ const mapStateToProps = (state) => {
         imagelink: state.user.imageUrl,
         tenant_name: state.user.tenant_name,
         email: state.user.emailAddress,
-        walletBalance: state.user.walletBalance
+        walletBalance: state.user.walletBalance,
+        feedbackCurrentCount: state.user.feedbackDisplayCount
     };
 }
 

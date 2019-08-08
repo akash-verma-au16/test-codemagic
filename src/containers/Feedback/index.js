@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, BackHandler, StyleSheet, Image, Dimensions, ImageBackground, TextInput, TouchableOpacity, ToastAndroid } from 'react-native';
+import { View, Text, BackHandler, StyleSheet, Image, Dimensions, ImageBackground, TextInput, TouchableOpacity, ToastAndroid, ActivityIndicator, ScrollView, Alert } from 'react-native';
 //Emoji images
 import not_good from '../../assets/bad_face.png'
 import good from '../../assets/smiley_face.png'
@@ -20,21 +20,47 @@ class Feedback extends Component {
             userAns:"",
             activeNotGood: false,
             activeGood: false,
-            activeVeryGood: false
+            activeVeryGood: false,
+            isLoading: false
         };
     }
 
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            this.props.navigation.goBack()
+            this.goBack()
             return true
         })
     }
 
+    goBack() {
+        if(this.state.feedbackText !== "" || this.state.userAns !=="") {
+            Alert.alert(
+                'Discard Changes?',
+                'Are you sure you want to discard the changes?',
+                [
+                    {
+                        text: 'No',
+                        style: 'cancel'
+                    },
+                    {
+                        text: 'Yes', onPress: () => {
+                            this.props.navigation.goBack()
+                        }
+                    }
+                ],
+                { cancelable: false },
+            )
+        }
+        else {
+            this.props.navigation.goBack()
+        }
+    }
+
     submitFeedback = () => {
+        
         if(this.state.userAns == "") {
             ToastAndroid.showWithGravityAndOffset(
-                'Please select ans',
+                'Please share your experience',
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
@@ -45,7 +71,7 @@ class Feedback extends Component {
 
         if(this.state.feedbackText == "") {
             ToastAndroid.showWithGravityAndOffset(
-                'Please write something in your feedback',
+                'Please write something...',
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
@@ -53,6 +79,7 @@ class Feedback extends Component {
             );
             return
         }
+        this.setState({isLoading: true})
 
         const payload = {
             tenantId: this.props.accountAlias,
@@ -60,9 +87,13 @@ class Feedback extends Component {
             email: this.props.email,
             userAns: this.state.userAns,
             feedback: this.state.feedbackText
-        } 
+        }
 
+        //Log user feedback to Slack
         feedbackLogger(payload)
+
+        this.setState({isLoading: false})
+        this.props.navigation.goBack()
         
     }
 
@@ -73,7 +104,7 @@ class Feedback extends Component {
     render() {
         return (
             <ImageBackground source={backgroundImage} style={{ width: '100%', height: '100%' }}>
-                <View style={styles.container}>
+                <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
                     <Text style={styles.feedbackQue}>
                         What do you think of our App? 
                     </Text>
@@ -105,13 +136,18 @@ class Feedback extends Component {
                             selectionColor='#47309C' 
                             maxLength={200}
                         />
-                    </View>
+                    </View> 
                     <View style={{flex: 1, justifyContent: 'flex-end', width: '100%'}}>
-                        <TouchableOpacity style={styles.button} activeOpacity={0.9} onPress={this.submitFeedback}>
-                            <Text style={styles.signUp}>SUBMIT</Text>
+                        <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={this.submitFeedback}>
+                            {
+                                this.state.isLoading ?
+                                    <ActivityIndicator size="small" color="#47309C" />
+                                    :
+                                    <Text style={styles.signUp}>SUBMIT</Text>
+                            }
                         </TouchableOpacity>
                     </View>
-                </View>
+                </ScrollView>
             </ImageBackground>
         );
     }
@@ -119,7 +155,6 @@ class Feedback extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1, 
         alignItems: 'center', 
         justifyContent:'flex-start',
         padding: 20,
@@ -182,7 +217,8 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#FFF',
         borderRadius: 7,
-        marginTop: 15
+        marginTop: 15,
+        alignSelf: 'flex-end'
     },
     signUp: {
         color: '#47309C',
