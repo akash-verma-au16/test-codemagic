@@ -1,0 +1,26 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "happyworksnativeapp-dev-20190628130512-authRole",
+            "UnauthRoleArn": "arn:aws:iam::236585061287:role/happyworksnativeapp-dev-20190628130512-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::236585061287:role/happyworksnativeapp-dev-20190628130512-authRole",
+            "Region": "ap-south-1",
+            "DeploymentBucketName": "happyworksnativeapp-dev-20190628130512-deployment",
+            "UnauthRoleName": "happyworksnativeapp-dev-20190628130512-unauthRole",
+            "StackName": "happyworksnativeapp-dev-20190628130512",
+            "StackId": "arn:aws:cloudformation:ap-south-1:236585061287:stack/happyworksnativeapp-dev-20190628130512/43a733e0-9977-11e9-a6b6-06bf7cfdfe80"
+        },
+        "categories": {
+            "auth": {
+                "cognito9ba52401": {}
+            },
+            "notifications": {
+                "Pinpoint": {
+                    "Name": "happyworksnativeapp-dev",
+                    "Id": "14f6415745db4f3099c8c6d8af1deae3",
+                    "Region": "us-west-2"
+                }
+            }
+        }
+    }
+}
