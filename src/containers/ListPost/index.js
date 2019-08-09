@@ -236,7 +236,6 @@ class ListPost extends React.Component {
                         AsyncStorage.setItem(item.associate_id, item.full_name)
                     })
                 }).catch((error) => {
-                    console.log('getAssociateNames',error)
                     const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
                     if (!isSessionExpired) {
                         this.getAssociateNames()

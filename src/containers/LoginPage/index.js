@@ -154,7 +154,6 @@ class LoginPage extends React.Component {
     }
 
     sendToken = async (payload) => {
-        console.log('Calling sendToken')
         try {
             //Check if previous token exists
             const token = await AsyncStorage.getItem('token');
@@ -173,10 +172,8 @@ class LoginPage extends React.Component {
                     }
                 }
     
-                register_device(payload_2, headers).then((res) => {
-                    console.log('register_device', res)
+                register_device(payload_2, headers).then(() => {
                 }).catch((e) => {
-                    console.log('register_device', e.response)
                 })
                 // Send token to slack
                 slackLogger({
@@ -187,7 +184,6 @@ class LoginPage extends React.Component {
                 })
             } else {
                 //Show warning
-                console.log('No token')
                 return false
             }
 
@@ -253,7 +249,6 @@ class LoginPage extends React.Component {
                         email: this.state.email,
                         password: this.state.password
                     }).then((response) => {
-                        console.log('login', response)
                         const accountAlias = response.data.payload.tenant_id
                         /* Restricting Super Admin Access as no Tenant Name is available to fetch */
                         if (accountAlias.trim().toLowerCase() === 'default') {
