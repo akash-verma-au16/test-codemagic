@@ -16,7 +16,7 @@ const initialState = {
         accessToken:"",
         refreshToken:"",
         walletBalance: "",
-        pushNotifStatus: false,
+        pushNotifStatus: true,
         feedbackDisplayCount: 0
     },
     system: {

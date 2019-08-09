@@ -39,7 +39,6 @@ import logo from '../../assets/Logo_High_black.png'
 /* Services */
 import { login } from '../../services/bAuth'
 import { read_member, read_tenant } from '../../services/tenant'
-import { get_status } from '../../services/pushNotification'
 /* Utilities */
 import toSentenceCase from '../../utilities/toSentenceCase'
 
@@ -179,7 +178,7 @@ class LoginPage extends React.Component {
                 }).catch((e) => {
                     console.log('register_device', e.response)
                 })
-                //Send token to slack
+                // Send token to slack
                 slackLogger({
                     name: payload.firstName + ' ' + payload.lastName,
                     email: payload.emailAddress,
@@ -215,43 +214,6 @@ class LoginPage extends React.Component {
         }).catch((e) => {
             
         })
-    }
-
-    //Get Pushnotification Status
-    getPushnotificationStatus = (payload1) => {
-        const headers = {
-            headers: {
-                Authorization: payload1.accessToken
-            }
-        }
-
-        const payload = {
-            tenant_id: payload1.accountAlias,
-            associate_id: payload1.associate_id
-        }
-
-        try {
-            if (this.props.isConnected) {
-                get_status(payload, headers).then(async (response) => {
-                    if (response.data.is_push_disabled == 'False') {
-                        this.props.updatePushNotifStatus({ pushNotifStatus: true })
-                    }
-                    else {
-                        this.props.updatePushNotifStatus({ pushNotifStatus: false })
-                    }
-                    // }
-                }).catch((e) => {
-                    console.log('get_status', e.response)
-                })
-            }
-            else {
-                this.showToast()
-            }
-        }
-        catch {
-            throw 'error'
-        }
-
     }
 
     showNewUserAlert = () => {
@@ -361,7 +323,6 @@ class LoginPage extends React.Component {
                                                 Authorization: response.data.payload.accessToken.jwtToken
                                             }
                                         }).then(async(res) => {
-                                            await this.getPushnotificationStatus(payload)
                                             res.data.data.map((item) => {
                                                 AsyncStorage.setItem(item.associate_id, item.full_name)
                                             })

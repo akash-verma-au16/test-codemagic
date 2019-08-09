@@ -27,7 +27,7 @@ import { auth, dev} from '../../store/actions'
 // React Navigation
 import { NavigationEvents } from 'react-navigation';
 /* Services */
-import { loadProfile } from '../Home/apicalls'
+import { user_profile } from '../../services/profile'
 import { create_post, get_visibility } from '../../services/post'
 import uuid from 'uuid'
 import MultiSelect from 'react-native-multiple-select'
@@ -109,17 +109,17 @@ class CreatePost extends React.Component {
     }
 
     loadVisibility = () => {
-        const payload = {
-            email: this.props.emailAddress,
-            tenant_id: this.props.accountAlias
-        }
-        const headers = {
-            headers: {
-                Authorization: this.props.accessToken
+        if(this.props.isAuthenticate) {
+            const payload = {
+                email: this.props.emailAddress,
+                tenant_id: this.props.accountAlias
             }
-        }
-        this.setState({ isVisibilityLoading: true })
-        if (this.props.accountAlias !== undefined) {
+            const headers = {
+                headers: {
+                    Authorization: this.props.accessToken
+                }
+            }
+            this.setState({ isVisibilityLoading: true })
             try {
                 get_visibility(payload, headers).then((response) => {
                     this.visibilityData = []
@@ -152,7 +152,6 @@ class CreatePost extends React.Component {
                 this.setState({ isVisibilityLoading: false })
             }
         }
-
     }
     _keyboardDidShow = () => {
         this.setState({ isShowingKeyboard: true })
@@ -537,43 +536,41 @@ class CreatePost extends React.Component {
 
     getProfile = async () => {
         if (this.props.isAuthenticate) {
-            //Authorization headers
+            //Authorization headers 
             const headers = {
                 headers: {
                     Authorization: this.props.accessToken
                 }
             }
             //profile payload
-            const payload1 = {
+            const profilePayload = {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id
             }
-            let profileData = await loadProfile(payload1, headers, this.props.isConnected);
-            if (profileData == undefined) {
-                const isSessionExpired = checkIfSessionExpired(profileData, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
-                if (!isSessionExpired) {
-                    this.getProfile()
-                    return
-                }
-            }
-            else {
+            user_profile(profilePayload, headers).then((res) => {
+                let profileData = res.data.data
                 this.setState({ profileData: profileData })
                 const payload = {
                     walletBalance: profileData.wallet_balance
                 }
                 this.props.updateWallet(payload)
-                this.props.navigation.setParams({ 'profileData': profileData, walletBalance: this.props.walletBalance })
-            }
+            }).catch((e) => {
+                const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.getProfile()
+                    return
+                }
+            })
         }
     }
 
     loadMembers = () => {
-        const headers = {
-            headers: {
-                Authorization: this.props.accessToken
+        if(this.props.isAuthenticate) {
+            const headers = {
+                headers: {
+                    Authorization: this.props.accessToken
+                }
             }
-        }
-        if (this.props.accountAlias !== undefined) {
             list_associate({
                 tenant_id: this.props.accountAlias
             }, headers)
@@ -587,7 +584,7 @@ class CreatePost extends React.Component {
                         /* preventing self endorsing */
                         if (item.associate_id !== this.props.associate_id) {
                             this.associateData.push({ id: item.associate_id, name: fullName })
-                            this.setState({associateData: this.associateData})
+                            this.setState({ associateData: this.associateData })
                         }
                     })
                     this.setState({ isTagerLoading: false })
@@ -601,7 +598,6 @@ class CreatePost extends React.Component {
                     this.setState({ isTagerLoading: false })
                 })
         }
-
     }
     handleConnectivityChange = (isConnected) => {
         if (isConnected) {

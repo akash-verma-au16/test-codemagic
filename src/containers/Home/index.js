@@ -114,7 +114,7 @@ class Home extends React.Component {
         this.summeryRawList = []
         this.transactionDataBackup = []
         this.homeDataBackup = []
-        this.userData = this.state.associate_id == this.props.associate_id ? this.props.navigation.getParam('profileData') : {}
+        this.userData = {}
         this.dataList = []
 
         Moment.globalMoment = moment;
