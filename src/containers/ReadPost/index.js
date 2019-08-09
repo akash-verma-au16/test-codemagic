@@ -24,7 +24,7 @@ import { read_post } from '../../services/post'
 import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 
 //Prefetch profile data
-import { loadProfile } from '../Home/apicalls'
+import { user_profile } from '../../services/profile'
 // push notification
 import Auth from '@aws-amplify/auth';
 import Analytics from '@aws-amplify/analytics';
@@ -48,7 +48,6 @@ class ListPost extends React.Component {
             networkChanged: false,
             postList: []
         }
-        this.loadPosts = this.loadPosts.bind(this);
         this.post = []
         this.taggedAssociate = [],
         this.scrollViewRef = React.createRef();
@@ -70,7 +69,6 @@ class ListPost extends React.Component {
 
     componentWillMount() {
 
-        this.props.navigation.setParams({ commingSoon: this.commingSoon });
         if (this.props.isFreshInstall) {
             this.props.navigation.navigate('TermsAndConditions')
             return
@@ -85,11 +83,6 @@ class ListPost extends React.Component {
         return true
     }
 
-    //profile payload
-    payload = {
-        "tenant_id": this.props.accountAlias,
-        "associate_id": this.props.associate_id
-    }
     async componentDidMount() {
         if (this.props.isAuthenticate) {
             this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
@@ -112,24 +105,39 @@ class ListPost extends React.Component {
         this.backHandler.remove()
     }
 
+    getProfile = async () => {
+        if (this.props.isAuthenticate) {
+            //Authorization headers 
+            const headers = {
+                headers: {
+                    Authorization: this.props.accessToken
+                }
+            }
+            //profile payload
+            const profilePayload = {
+                tenant_id: this.props.accountAlias,
+                associate_id: this.props.associate_id
+            }
+            user_profile(profilePayload, headers).then((res) => {
+                this.profileData = res.data.data
+            }).catch((e) => {
+                const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.getProfile()
+                    return
+                }
+            })
+        }
+    }
+
     handleConnectivityChange = (isConnected) => {
         if (isConnected) {
             this.setState({
                 networkChanged: true
             }, async () => {
-                //Authorization headers
-                const headers = {
-                    headers: {
-                        Authorization: this.props.accessToken
-                    }
-                }
+                await this.getProfile()
                 this.loadPosts()
-                this.profileData = await loadProfile(this.payload,headers, this.props.isConnected)
-                this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': this.props.isConnected })
             })
-        }
-        else {
-            this.props.navigation.setParams({ 'isConnected': false })
         }
     }
 

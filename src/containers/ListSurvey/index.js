@@ -10,7 +10,8 @@ import {
     ScrollView,
     ToastAndroid,
     ActivityIndicator,
-    processColor
+    processColor,
+    BackHandler
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
 import { H2} from 'native-base'
@@ -27,7 +28,7 @@ import {
     Thumbnail
 } from 'native-base';
 //Prefetch Profile Data
-import { loadProfile } from '../Home/apicalls'
+import { user_profile } from '../../services/profile'
 /* Assets */
 import nature1 from '../../assets/tileBackgrounds/nature1.jpg'
 import nature2 from '../../assets/tileBackgrounds/nature2.jpg'
@@ -55,50 +56,53 @@ class ListSurvey extends React.Component {
         this.pager = React.createRef();
         //Profile Data
         this.profileData = {}
-        this.getProfile = this.getProfile.bind(this)
     }
 
-    //Authorization headers
-    headers = {
-        headers: {
-            Authorization: this.props.accessToken
-        }
-    }
     async componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+        // Hardware backpress handle
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            this.props.navigation.navigate('home')
+            return true;
+        });
         await this.getProfile()
     }
 
     getProfile = async () => {
         if (this.props.isAuthenticate) {
-            //Authorization headers
+            //Authorization headers 
             const headers = {
                 headers: {
                     Authorization: this.props.accessToken
                 }
             }
             //profile payload
-            const payload1 = {
+            const profilePayload = {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id
             }
-            this.profileData = await loadProfile(payload1, headers, this.props.isConnected);
-            this.props.navigation.setParams({
-                'profileData': this.profileData,
-                'isConnected': this.props.isConnected,
-                'associateId': this.props.associate_id
+            user_profile(profilePayload, headers).then((res) => {
+                this.profileData = res.data.data
+            }).catch((e) => {
+                const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.getProfile()
+                    return
+                }
             })
         }
     }
 
     componentWillUnmount() {
         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+        this.backHandler.remove()
     }
 
     handleConnectivityChange = async (isConnected) => {
         if (isConnected) {
+            this.props.navigation.setParams({ 'isConnected': true })
             this.loadSurveys()
-            await this.getProfile()
+            this.getProfile()
         }
         else {
             this.props.navigation.setParams({ 'isConnected': false })
@@ -106,86 +110,87 @@ class ListSurvey extends React.Component {
     }
 
     loadSurveys = () => {
-        //Authorization headers
-        const headers = {
-            headers: {
-                Authorization: this.props.accessToken
+        if(this.props.isAuthenticate) {
+            //Authorization headers
+            const headers = {
+                headers: {
+                    Authorization: this.props.accessToken
+                }
             }
-        }
-        this.setState({ isLoading: true })
-        list_survey({
-            tenant_id: this.props.accountAlias
-        }, headers)
-            .then(response => {
-                this.MyPulse = []
-                this.OrgPulse = []
-                this.FunQuiz = []
-                response.data.data.tenant_specific.map((item, index) => {
-                    switch (index % 3) {
-                    case 0:
-                        this.image = nature1
-                        break
-                    case 1:
-                        this.image = nature2
-                        break
-                    case 2:
-                        this.image = nature3
-                    }
-                    const card = (
-                        <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('SurveyIntro', {
-                                surveyId: item.id,
-                                surveyName: item.name,
-                                surveyDescription: item.description,
-                                surveyNote: '',
-                                surveyLevel: item.level
-                            })}
-                            key={index}
-                        >
-                            <View>
-                                <ImageBackground style={styles.tile} resizeMode='cover' source={this.image} blurRadius={0.2} borderRadius={5}>
-                                    <Text style={styles.tileText}>{item.name}</Text>
-                                </ImageBackground>
-                            </View>
-                        </TouchableOpacity>
-                    )
-                    if (item.type === "Daily-Questionnaire") {
-                        this.MyPulse.push(card)
+            this.setState({ isLoading: true })
+            list_survey({
+                tenant_id: this.props.accountAlias
+            }, headers)
+                .then(response => {
+                    this.MyPulse = []
+                    this.OrgPulse = []
+                    this.FunQuiz = []
+                    response.data.data.tenant_specific.map((item, index) => {
+                        switch (index % 3) {
+                        case 0:
+                            this.image = nature1
+                            break
+                        case 1:
+                            this.image = nature2
+                            break
+                        case 2:
+                            this.image = nature3
+                        }
+                        const card = (
+                            <TouchableOpacity
+                                onPress={() => this.props.navigation.navigate('SurveyIntro', {
+                                    surveyId: item.id,
+                                    surveyName: item.name,
+                                    surveyDescription: item.description,
+                                    surveyNote: '',
+                                    surveyLevel: item.level
+                                })}
+                                key={index}
+                            >
+                                <View>
+                                    <ImageBackground style={styles.tile} resizeMode='cover' source={this.image} blurRadius={0.2} borderRadius={5}>
+                                        <Text style={styles.tileText}>{item.name}</Text>
+                                    </ImageBackground>
+                                </View>
+                            </TouchableOpacity>
+                        )
+                        if (item.type === "Daily-Questionnaire") {
+                            this.MyPulse.push(card)
 
-                    } else if (item.type === "Weekly-Questionnaire") {
-                        this.OrgPulse.push(card)
-                    } else {
-                        this.FunQuiz.push(card)
+                        } else if (item.type === "Weekly-Questionnaire") {
+                            this.OrgPulse.push(card)
+                        } else {
+                            this.FunQuiz.push(card)
+                        }
+
+                    })
+                    if (this.MyPulse.length == 0) {
+                        this.MyPulse.push(
+                            <Text key={0} style={{ padding: 10 }}>No Surveys Available</Text>
+                        )
                     }
+                    if (this.OrgPulse.length == 0) {
+                        this.OrgPulse.push(
+                            <Text key={0} style={{ padding: 10 }}>No Surveys Available</Text>
+                        )
+                    }
+                    if (this.FunQuiz.length == 0) {
+                        this.FunQuiz.push(
+                            <Text key={0} style={{ padding: 10 }}>No Surveys Available</Text>
+                        )
+                    }
+                    this.setState({ isLoading: false, myPulse: this.MyPulse, orgPulse: this.OrgPulse, funQuiz: this.FunQuiz })
 
                 })
-                if (this.MyPulse.length == 0) {
-                    this.MyPulse.push(
-                        <Text key={0} style={{ padding: 10 }}>No Surveys Available</Text>
-                    )
-                }
-                if (this.OrgPulse.length == 0) {
-                    this.OrgPulse.push(
-                        <Text key={0} style={{ padding: 10 }}>No Surveys Available</Text>
-                    )
-                }
-                if (this.FunQuiz.length == 0) {
-                    this.FunQuiz.push(
-                        <Text key={0} style={{ padding: 10 }}>No Surveys Available</Text>
-                    )
-                }
-                this.setState({ isLoading: false, myPulse: this.MyPulse, orgPulse: this.OrgPulse, funQuiz: this.FunQuiz })
-
-            })
-            .catch((error) => {
-                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
-                if (!isSessionExpired) {
-                    this.loadSurveys()
-                    return
-                }
-                this.setState({ isLoading: false })
-            })
-
+                .catch((error) => {
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.loadSurveys()
+                        return
+                    }
+                    this.setState({ isLoading: false })
+                })
+        }
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -198,9 +203,7 @@ class ListSurvey extends React.Component {
                 <TouchableOpacity
                     onPress={() => {
                         if (navigation.getParam('isConnected')) {
-                            const profileObj = navigation.getParam('profileData')
                             navigation.navigate('Profile', {
-                                profileData: profileObj,
                                 associateId: navigation.getParam('associateId')
                             })
                         }
@@ -508,9 +511,8 @@ class ListSurvey extends React.Component {
                         onWillFocus={async () => {
                             if (this.props.isConnected) {
                                 if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                    this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl })
+                                    this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl, 'associateId': this.props.associate_id })
                                     this.loadSurveys()
-                                    await this.getProfile()
                                 }
                             }
                         }}

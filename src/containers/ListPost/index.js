@@ -34,7 +34,7 @@ import LoadingModal from '../LoadingModal'
 //RBAC handler function
 import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 //Prefetch profile data
-import { loadProfile } from '../Home/apicalls'
+import { user_profile } from '../../services/profile'
 /* Components */
 import { NavigationEvents } from 'react-navigation';
 
@@ -56,9 +56,6 @@ class ListPost extends React.Component {
             isFocused: false,
             postList:[]
         }
-        this.loadLikes = this.loadLikes.bind(this)
-        this.loadPosts = this.loadPosts.bind(this);
-        this.getProfile = this.getProfile.bind(this) 
         this.likes = []
         this.posts = []
         this.postList = []
@@ -89,7 +86,7 @@ class ListPost extends React.Component {
                         if (navigation.getParam('isConnected')) {
                             const profileObj = navigation.getParam('profileData')
                             navigation.navigate('Profile', {
-                                profileData: profileObj,
+                                // profileData: profileObj,
                                 associateId: navigation.getParam('associateId')
                             })
                         }
@@ -239,6 +236,7 @@ class ListPost extends React.Component {
                         AsyncStorage.setItem(item.associate_id, item.full_name)
                     })
                 }).catch((error) => {
+                    console.log('getAssociateNames',error)
                     const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
                     if (!isSessionExpired) {
                         this.getAssociateNames()
@@ -318,7 +316,7 @@ class ListPost extends React.Component {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.goBack(this.state.isFocused))
         
         //  Loading profile
-        this.props.navigation.setParams({ 'profileData': this.profileData, walletBalance: this.profileData.walletBalance })
+        this.props.navigation.setParams({ 'profileData': this.profileData})
 
         this.gotoFeedbackPageAlert()
     }
@@ -519,23 +517,24 @@ class ListPost extends React.Component {
                 }
             }
             //profile payload
-            const payload1 = {
+            const profilePayload = {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id
             }
-            this.profileData = await loadProfile(payload1, headers, this.props.isConnected);
-            if(this.profileData == undefined) {
-                const isSessionExpired = checkIfSessionExpired(this.profileData, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+            user_profile(profilePayload,headers).then((res) => {
+                this.profileData = res.data.data
+                const payload = {
+                    walletBalance: this.profileData.wallet_balance
+                }
+                this.props.updateWallet(payload)
+                this.props.navigation.setParams({ 'profileData': this.profileData})
+            }).catch((e) =>{
+                const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
                 if (!isSessionExpired) {
                     this.getProfile()
                     return
                 }
-            }
-            const payload = {
-                walletBalance: this.profileData.wallet_balance
-            }
-            this.props.updateWallet(payload)
-            this.props.navigation.setParams({ 'profileData': this.profileData, walletBalance: this.props.walletBalance })
+            })
         }        
     }
 
@@ -564,7 +563,6 @@ class ListPost extends React.Component {
 
     createTiles = async (posts) => {
         this.postList = []
-        this.getProfile()
         await posts.map(async (item) => {
 
             /* Convert Array of objects to array of strings */
@@ -658,7 +656,6 @@ class ListPost extends React.Component {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
-                                this.getProfile()
                                 this.loadPosts()
                                 this.getAssociateNames()
                             }
