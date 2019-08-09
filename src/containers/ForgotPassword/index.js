@@ -25,7 +25,7 @@ import TextInput from '../../components/TextInput'
 import RoundButton from '../../components/RoundButton'
 /* Assets */
 import image from '../../assets/rsz_gradient-background.png'
-import key from '../../assets/key.png'
+
 /* Services */
 import { forgotPassword } from '../../services/bAuth'
 /* Styles */
@@ -38,14 +38,12 @@ class ForgotPassword extends React.Component {
         /* prepopulate fields if data is available */
         this.state = {
             isButtonLoading: false,
-            accountAlias: this.props.navigation.getParam('accountAlias',''),
             email: this.props.navigation.getParam('email',''),
             shift: new Animated.Value(0),
             fade:new Animated.Value(1)
         }
 
         /* Refs are used to redirect the focus to the next component using keyboard button */
-        this.textInputAccountAlias = React.createRef();
         this.textInputEmail = React.createRef(); 
     }
     componentDidMount() {
@@ -65,9 +63,8 @@ class ForgotPassword extends React.Component {
             isButtonLoading: true
         }, () => {
             try {
-                if (this.state.accountAlias && this.state.email) {
+                if (this.state.email) {
                     forgotPassword({
-                        accountAlias: this.state.accountAlias,
                         email: this.state.email
                     }).then(() => {
                         Toast.show({
@@ -76,7 +73,6 @@ class ForgotPassword extends React.Component {
                         })
 
                         this.props.navigation.navigate('ConfirmPassword', {
-                            accountAlias: this.state.accountAlias,
                             email: this.state.email
                         })
                         this.setState({ isButtonLoading: false })
@@ -104,7 +100,7 @@ class ForgotPassword extends React.Component {
                     
                 } else {
                     Toast.show({
-                        text: 'All fields are required',
+                        text: 'Please enter an email',
                         type: "danger"
                     })
                     this.setState({ isButtonLoading: false })
@@ -150,14 +146,6 @@ class ForgotPassword extends React.Component {
                                 <Text style={styles.header}>Forgot Password?</Text>
                                 <Text style={styles.text}
                                 >We just need your registered Email id to send you password reset instructions</Text>
-                                <TextInput
-                                    placeholder='Account Alias'
-                                    value={this.state.accountAlias}
-                                    onChangeText={(text) => this.setState({ accountAlias: text })}
-                                    inputRef={input => this.textInputAccountAlias = input}
-                                    onSubmitEditing={() => this.textInputEmail._root.focus()}
-                                    color='black'
-                                />
 
                                 <TextInput
                                     placeholder='Registered Email Id'

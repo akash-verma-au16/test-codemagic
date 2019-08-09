@@ -111,21 +111,21 @@ class Comments extends React.Component {
         }
     }
 
-    //Authorization headers
-    headers = {
-        headers: {
-            Authorization: this.props.idToken
-        }
-    }
     fetchComments = () => {
         const payload = {
             "post_id": this.postId,
             "tenant_id": this.props.accountAlias,
             "associate_id": this.props.associate_id
         }
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
         try {
             if (this.props.isConnected) {
-                list_comments(payload, this.headers).then((response) => {
+                list_comments(payload, headers).then((response) => {
                     if(response.data.data.Items.length == 0 && this.comments.length == 0) {
                         this.commentList = []
                         this.setState({ commentsRefresh: false, initialLoad: true })                        
@@ -155,8 +155,12 @@ class Comments extends React.Component {
                             this.loadComments(this.comments)
                         }
                     }
-                }).catch((e) => {
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)                
+                }).catch((error) => {
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.fetchComments()
+                        return
+                    }                
                 })
             } 
         }
@@ -185,23 +189,28 @@ class Comments extends React.Component {
                         }
                     }
                 }   
+                //Authorization headers
+                const headers = {
+                    headers: {
+                        Authorization: this.props.accessToken
+                    }
+                }
                 try {
-                    this.setState({ addCommentText: "" })
-                    this.comments.push({
-                        associate_id: payload.Data.comment.associate_id,
-                        comment_id: payload.Data.comment.comment_id,
-                        message: payload.Data.comment.message,
-                        post_id: payload.Data.post_id,
-                        tenant_id: payload.Data.tenant_id,
-                        time: payload.Data.comment.time
-                    })
-                    this.props.navigation.setParams({ commentCount: this.comments.length })
-                    this.loadComments(this.comments)
-                    Keyboard.dismiss()
                     // this.setState({ commentsRefresh: true })
-                    add_comment(payload, this.headers).then(async(res) => {
+                    add_comment(payload, headers).then(async(res) => {
                         if(res.status === 200) {
-                            
+                            this.setState({ addCommentText: "" })
+                            this.comments.push({
+                                associate_id: payload.Data.comment.associate_id,
+                                comment_id: payload.Data.comment.comment_id,
+                                message: payload.Data.comment.message,
+                                post_id: payload.Data.post_id,
+                                tenant_id: payload.Data.tenant_id,
+                                time: payload.Data.comment.time
+                            })
+                            this.props.navigation.setParams({ commentCount: this.comments.length })
+                            Keyboard.dismiss()
+                            this.loadComments(this.comments)                            
                             // setTimeout(() => this.fetchComments(), 1000)
                         }
                         else {
@@ -213,8 +222,12 @@ class Comments extends React.Component {
                                 100,
                             );
                         }
-                    }).catch ((e) => {
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                    }).catch((error) => {
+                        const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        if (!isSessionExpired) {
+                            this.addComment()
+                            return
+                        }
                         Keyboard.dismiss()
                     })
                 }
@@ -275,24 +288,34 @@ class Comments extends React.Component {
                     }
                 }
             }
-            var index = this.comments.findIndex((comment) => { return comment.comment_id == comment_id })
-            this.commentList.splice(index, 1)
-            this.comments.sort((a, b) => { return a.time - b.time })
-            this.comments.splice(index, 1)
-            if(this.comments.length == 0) {
-                this.setState({ initialLoad: true })
-            }
-            else {
-                this.setState({commentList: this.commentList})
+            //Authorization headers
+            const headers = {
+                headers: {
+                    Authorization: this.props.accessToken
+                }
             }
             try {
-                delete_comment(payload, this.headers).then(async(response) => {
+                delete_comment(payload,headers).then(async(response) => {
                     if(response.status === 200) {
+                        var index = this.comments.findIndex((comment) => { return comment.comment_id == comment_id })
+                        this.commentList.splice(index, 1)
+                        this.comments.sort((a, b) => { return a.time - b.time })
+                        this.comments.splice(index, 1)
+                        if (this.comments.length == 0) {
+                            this.setState({ initialLoad: true })
+                        }
+                        else {
+                            this.setState({ commentList: this.commentList })
+                        }
                         setTimeout(() => this.setState({ isCommentDeleted: false }), 2000)
                     }
-                }).catch((e) => {
+                }).catch((error) => {
                     //Error retriving data
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.delete_comment(comment_id, comment)
+                        return
+                    }
                     this.setState({ isCommentDeleted: false })
                 })
             }
@@ -384,14 +407,15 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
 
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Comments)

@@ -147,13 +147,6 @@ class QuestionContainer extends React.Component {
             this.pager.setPage(this.state.currentPage + 1)
     }
 
-    //Authemtication header
-    headers = {
-        headers: {
-            Authorization: this.props.idToken
-        }
-    }
-
     submitHandler = () => {
         this.setState({ isSubmitLoading: true })
         
@@ -166,7 +159,13 @@ class QuestionContainer extends React.Component {
                         survey_id: this.questionData.survey.id,
                         answer_set: this.answerSet
                     }
-                    save_answers(payload, this.headers).then(() => {
+                    //Authemtication header
+                    const headers = {
+                        headers: {
+                            Authorization: this.props.accessToken
+                        }
+                    }
+                    save_answers(payload, headers).then(() => {
                         /* Give rewards */
                         give_rewards(
                             {
@@ -174,18 +173,26 @@ class QuestionContainer extends React.Component {
                                 "associate_id" : this.props.associate_id,
                                 "event_id" : "a675055e-2d11-42e1-8938-57a4f5fc037b",
                                 "survey_name": this.questionData.survey.name
-                            }, this.headers).then((res) => {
+                            }, headers).then((res) => {
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: res.data.points
                             })
-                        }).catch((e) => {
-                            checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                        }).catch((error) => {
+                            const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                            if (!isSessionExpired) {
+                                this.submitHandler()
+                                return
+                            }
                             this.props.navigation.navigate('SurveyExit', {
                                 rewardPoints: 0
                             })
                         })
-                    }).catch((e) => {
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                    }).catch((error) => {
+                        const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        if (!isSessionExpired) {
+                            this.submitHandler()
+                            return
+                        }
                         this.setState({ isSubmitLoading: false })
                     })
                 } else {
@@ -336,14 +343,15 @@ const mapStateToProps = (state) => {
         tenant_id:state.user.accountAlias,
         isConnected: state.system.isConnected,
         associate_id: state.user.associate_id,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
         authenticate: (props) => dispatch({ type: auth.AUTHENTICATE_USER, payload: props }),
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 

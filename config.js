@@ -1,3 +1,6 @@
+
+export const feedbackDisplayCount = 5;
+
 const dev_env = {
     url: {
         dev: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com",
@@ -5,14 +8,14 @@ const dev_env = {
         get_visibility: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/get_visibility",
         news_feed: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/news_feed",
         list_survey: "https://yqigt6qajl.execute-api.ap-south-1.amazonaws.com/dev/survey/list_survey",
-        give_reward: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/dev/reward/give_reward",
-        inapp_notification: "https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/list_in_app",
-        read_transaction: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/dev/reward/read_transactions",
-        get_balance: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/dev/reward/get_balance",
-        user_profile: "https://yp1g6l4ywd.execute-api.ap-south-1.amazonaws.com/dev/user_profile/get_profile",
+        give_reward: "https://8pko2dfqvi.execute-api.ap-south-1.amazonaws.com/dev/reward/give_reward",
+        inapp_notification: "https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/list_in_app",
+        read_transaction: "https://8pko2dfqvi.execute-api.ap-south-1.amazonaws.com/dev/reward/read_transactions",
+        get_balance: "https://8pko2dfqvi.execute-api.ap-south-1.amazonaws.com/dev/reward/get_balance",
+        user_profile: "https://4p290g7ki0.execute-api.ap-south-1.amazonaws.com/dev/user_profile/get_profile",
         list_posts: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/list_posts",
         strength_counts: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/strength_count",
-        update_profile: "https://yp1g6l4ywd.execute-api.ap-south-1.amazonaws.com/dev/user_profile/update_profile",
+        update_profile: "https://4p290g7ki0.execute-api.ap-south-1.amazonaws.com/dev/user_profile/update_profile",
         list_associates: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/list_associates",
         list_project_members: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/list_project_members",
         comment_post: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/comment_post",
@@ -28,18 +31,19 @@ const dev_env = {
         read_tenant: "https://p2prrzyo83.execute-api.ap-south-1.amazonaws.com/dev/super_admin/read_tenant",
         delete_post: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/delete_post",
         edit_post: "https://g40atwad8a.execute-api.ap-south-1.amazonaws.com/dev/post/edit_post",
-        edit_post_addon: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/dev/reward/share_addon",
-        new_associate_notify: "https://75cvygmh71.execute-api.ap-south-1.amazonaws.com/dev/push_notify/notify_event",
+        edit_post_addon: "https://8pko2dfqvi.execute-api.ap-south-1.amazonaws.com/dev/reward/share_addon",
+        new_associate_notify: "https://1ejdsllzmf.execute-api.ap-south-1.amazonaws.com/dev/push_notify/notify_event",
         read_posts: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/read_posts",
         get_associate_name: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/get_associate_name",
         strength_details: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/strength_details",
         liked_post: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/liked_post",
-        rewards_addon: "https://n6dpuxecyh.execute-api.ap-south-1.amazonaws.com/dev/reward/share_addon",
-        register_device: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/register_device',
-        unregister: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/unregister_device',
-        get_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/get_status',
-        enable_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/enable_status',
-        disable_status: 'https://vpq6fn4pgh.execute-api.ap-south-1.amazonaws.com/dev/push_notification/disable_status'
+        rewards_addon: "https://8pko2dfqvi.execute-api.ap-south-1.amazonaws.com/dev/reward/share_addon",
+        register_device: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/register_device',
+        unregister: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/unregister_device',
+        get_status: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/get_status',
+        enable_status: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/enable_status',
+        disable_status: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/disable_status',
+        refresh_token: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com/dev/refresh_token"
     },
     api: {
         signup: "signup",
@@ -94,7 +98,7 @@ const qa_env = {
         strength_counts: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/strength_count",
         update_profile: "https://ye1o32nua6.execute-api.ap-south-1.amazonaws.com/qa/user_profile/update_profile",
         list_associates: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/list_associates",
-        list_project_members: "https://kgr1mcpif2.execute-api.ap-south-1.amazonaws.com/qa/admin/list_project_members",
+        list_project_members: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/list_project_members",
         comment_post: "https://6iwbpat27k.execute-api.ap-south-1.amazonaws.com/qa/post/comment_post",
         like_post: "https://6iwbpat27k.execute-api.ap-south-1.amazonaws.com/qa/post/like_post",
         unlike_post: "https://6iwbpat27k.execute-api.ap-south-1.amazonaws.com/qa/post/unlike_post",
@@ -119,7 +123,8 @@ const qa_env = {
         unregister: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/unregister',
         get_status: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/get_status',
         enable_status: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/enable_status',
-        disable_status: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/disable_status'
+        disable_status: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/disable_status',
+        refresh_token: 'https://htzgm6e757.execute-api.ap-south-1.amazonaws.com/qa/refresh_token'
     },
     api: {
         signup: "signup",

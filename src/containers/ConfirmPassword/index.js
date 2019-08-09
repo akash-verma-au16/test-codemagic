@@ -2,7 +2,6 @@ import React from 'react';
 import {
     Keyboard,
     ImageBackground,
-    Image,
     TouchableOpacity,
     Animated,
     Alert,
@@ -43,7 +42,6 @@ class ConfirmPassword extends React.Component {
             shift: new Animated.Value(0),
             fade:new Animated.Value(1)
         }
-
         /* Refs are used to redirect the focus to the next component using keyboard button */
         this.textInputOtp = React.createRef();
         this.textInputPassword = React.createRef();
@@ -83,12 +81,10 @@ class ConfirmPassword extends React.Component {
         }, () => {
             try {
                 const email = this.props.navigation.getParam('email')
-                const accountAlias = this.props.navigation.getParam('accountAlias')
 
-                if (this.state.otp && this.state.password && email && accountAlias) {
+                if (this.state.otp && this.state.password && email) {
                     if(this.props.isConnected) {
                         confirmPassword({
-                            accountAlias: accountAlias,
                             email: email,
                             password: this.state.password,
                             otp: this.state.otp

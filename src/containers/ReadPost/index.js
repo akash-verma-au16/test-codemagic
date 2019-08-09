@@ -24,7 +24,7 @@ import { read_post } from '../../services/post'
 import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 
 //Prefetch profile data
-import { loadProfile } from '../Home/apicalls'
+import { user_profile } from '../../services/profile'
 // push notification
 import Auth from '@aws-amplify/auth';
 import Analytics from '@aws-amplify/analytics';
@@ -48,7 +48,6 @@ class ListPost extends React.Component {
             networkChanged: false,
             postList: []
         }
-        this.loadPosts = this.loadPosts.bind(this);
         this.post = []
         this.taggedAssociate = [],
         this.scrollViewRef = React.createRef();
@@ -70,7 +69,6 @@ class ListPost extends React.Component {
 
     componentWillMount() {
 
-        this.props.navigation.setParams({ commingSoon: this.commingSoon });
         if (this.props.isFreshInstall) {
             this.props.navigation.navigate('TermsAndConditions')
             return
@@ -85,17 +83,6 @@ class ListPost extends React.Component {
         return true
     }
 
-    //Authorization headers
-    headers = {
-        headers: {
-            Authorization: this.props.idToken
-        }
-    }
-    //profile payload
-    payload = {
-        "tenant_id": this.props.accountAlias,
-        "associate_id": this.props.associate_id
-    }
     async componentDidMount() {
         if (this.props.isAuthenticate) {
             this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
@@ -118,18 +105,39 @@ class ListPost extends React.Component {
         this.backHandler.remove()
     }
 
+    getProfile = async () => {
+        if (this.props.isAuthenticate) {
+            //Authorization headers 
+            const headers = {
+                headers: {
+                    Authorization: this.props.accessToken
+                }
+            }
+            //profile payload
+            const profilePayload = {
+                tenant_id: this.props.accountAlias,
+                associate_id: this.props.associate_id
+            }
+            user_profile(profilePayload, headers).then((res) => {
+                this.profileData = res.data.data
+            }).catch((e) => {
+                const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.getProfile()
+                    return
+                }
+            })
+        }
+    }
+
     handleConnectivityChange = (isConnected) => {
         if (isConnected) {
             this.setState({
                 networkChanged: true
             }, async () => {
+                await this.getProfile()
                 this.loadPosts()
-                this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
-                this.props.navigation.setParams({ 'profileData': this.profileData, 'isConnected': this.props.isConnected })
             })
-        }
-        else {
-            this.props.navigation.setParams({ 'isConnected': false })
         }
     }
 
@@ -155,19 +163,20 @@ class ListPost extends React.Component {
 
     //Loads news feed
     loadPosts = () => {
-        const payload = {
-            tenant_id: this.props.accountAlias,
-            associate_id: this.props.associate_id
-        }
-
         const read_post_payload = {
             tenant_id: this.props.accountAlias,
             post_id: this.postId
         }
-        if (payload.tenant_id !== "" && payload.associate_id !== "") {
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
+        if (read_post_payload.tenant_id !== "" && read_post_payload.post_id !== "") {
             try {
 
-                read_post(read_post_payload, this.headers)
+                read_post(read_post_payload, headers)
                     .then(async (response) => {
 
                         const item = response.data.data.posts.Item
@@ -214,8 +223,12 @@ class ListPost extends React.Component {
                             />
                         )
                         this.setState({ refreshing: false, networkChanged: false, postList: this.post })
-                    }).catch((e) => {
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                    }).catch((error) => {
+                        const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        if (!isSessionExpired) {
+                            this.loadPosts()
+                            return
+                        }
                         this.setState({ refreshing: false, networkChanged: false })
                         Toast.show({
                             text: 'This post is unavailable',
@@ -291,13 +304,14 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 

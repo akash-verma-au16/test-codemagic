@@ -74,12 +74,6 @@ class Likes extends React.Component {
             100,
         );
     }
-    //Authorization headers
-    headers = {
-        headers: {
-            Authorization: this.props.idToken
-        }
-    }
 
     fetchPeopleList = () => {
         if(this.props.isConnected) {
@@ -88,8 +82,14 @@ class Likes extends React.Component {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id
             }
+            //Authorization headers
+            const headers = {
+                headers: {
+                    Authorization: this.props.accessToken
+                }
+            }
             try {
-                list_likes(payload,this.headers).then((res) => {
+                list_likes(payload,headers).then((res) => {
                     if(res.status == 200) {
                         if (res.data.data.Items.length == 0) {
                             this.setState({ noData: true, peopleListrefresh: false })
@@ -102,8 +102,12 @@ class Likes extends React.Component {
                     }
                 })
             }
-            catch(e) {
-                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+            catch (error) {
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.fetchPeopleList()
+                    return
+                }
             }
         }
         else {
@@ -173,13 +177,14 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 

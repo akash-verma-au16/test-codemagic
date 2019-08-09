@@ -27,12 +27,14 @@ import {
 } from 'native-base';
 /* Services */
 import { news_feed, delete_post, liked_post, get_associate_name } from '../../services/post'
+// Config
+import { feedbackDisplayCount } from '../../../config'
 //Loading Modal
 import LoadingModal from '../LoadingModal'
 //RBAC handler function
 import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 //Prefetch profile data
-import { loadProfile } from '../Home/apicalls'
+import { user_profile } from '../../services/profile'
 /* Components */
 import { NavigationEvents } from 'react-navigation';
 
@@ -54,9 +56,6 @@ class ListPost extends React.Component {
             isFocused: false,
             postList:[]
         }
-        this.loadLikes = this.loadLikes.bind(this)
-        this.loadPosts = this.loadPosts.bind(this);
-        this.getProfile = this.getProfile.bind(this) 
         this.likes = []
         this.posts = []
         this.postList = []
@@ -87,7 +86,7 @@ class ListPost extends React.Component {
                         if (navigation.getParam('isConnected')) {
                             const profileObj = navigation.getParam('profileData')
                             navigation.navigate('Profile', {
-                                profileData: profileObj,
+                                // profileData: profileObj,
                                 associateId: navigation.getParam('associateId')
                             })
                         }
@@ -119,6 +118,8 @@ class ListPost extends React.Component {
         };
     };
     componentWillMount() {
+        //Increment count to Display feedback alert
+        this.props.incrementCount()
         this.props.navigation.setParams({ commingSoon: this.commingSoon });
         if (this.props.isFreshInstall) {
             this.props.navigation.navigate('TermsAndConditions')
@@ -137,7 +138,7 @@ class ListPost extends React.Component {
         }
         const headers = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
 
@@ -147,7 +148,11 @@ class ListPost extends React.Component {
                     this.likes = res.data
                 }
             }).catch((error) => {
-                checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate)
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.loadLikes()
+                    return
+                }
             })
         }
         catch (e) {/* error */ }
@@ -222,17 +227,20 @@ class ListPost extends React.Component {
             }
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
-
             try {
                 await get_associate_name(payload, headers).then((res) => {
                     res.data.data.map((item) => {
                         AsyncStorage.setItem(item.associate_id, item.full_name)
                     })
                 }).catch((error) => {
-                    checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate)
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.getAssociateNames()
+                        return
+                    }
                 })
             }
             catch (e) {/* error */ }
@@ -242,7 +250,7 @@ class ListPost extends React.Component {
     //Authorization headers
     headers = {
         headers: {
-            Authorization: this.props.idToken
+            Authorization: this.props.accessToken
         }
     }
     //profile payload
@@ -307,8 +315,9 @@ class ListPost extends React.Component {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.goBack(this.state.isFocused))
         
         //  Loading profile
-        this.props.navigation.setParams({ 'profileData': this.profileData, walletBalance: this.profileData.walletBalance })
+        this.props.navigation.setParams({ 'profileData': this.profileData})
 
+        this.gotoFeedbackPageAlert()
     }
 
     componentWillUnmount() {
@@ -370,7 +379,7 @@ class ListPost extends React.Component {
             }
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
 
@@ -434,7 +443,11 @@ class ListPost extends React.Component {
                             this.createTiles(this.posts)
                         }
                     }).catch((e) => {
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                        const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        if (!isSessionExpired) {
+                            this.loadPosts()
+                            return
+                        }
                         this.setState({ refreshing: false, networkChanged: false })
                     })
                 }
@@ -464,21 +477,25 @@ class ListPost extends React.Component {
             }
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
-            }
-            var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
-            this.postList.splice(index, 1)
-            this.posts.splice(index, 1)
-            this.setState({ postList: this.postList })         
+            }       
             try {
                 await delete_post(payload, headers).then((res) => {
                     if (res.status === 200) {
+                        var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
+                        this.postList.splice(index, 1)
+                        this.posts.splice(index, 1)
+                        this.setState({ postList: this.postList })  
                         setTimeout(() => this.setState({ isPostDeleted: false }), 2500)
                     }
                 }).catch((error) => {
                     //Error deleting Post
-                    checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate)
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if(!isSessionExpired) {
+                        this.deletePost(postId)
+                        return
+                    }
                     this.setState({ isPostDeleted: false })
                 })
             }
@@ -495,29 +512,56 @@ class ListPost extends React.Component {
             //Authorization headers 
             const headers = {
                 headers: {
-                    Authorization: this.props.idToken
+                    Authorization: this.props.accessToken
                 }
             }
             //profile payload
-            const payload1 = {
+            const profilePayload = {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id
             }
-            this.profileData = await loadProfile(payload1, headers, this.props.isConnected);
-            if(this.profileData == undefined) {
-                checkIfSessionExpired(this.profileData, this.props.navigation, this.props.deAuthenticate)
-            }
-            const payload = {
-                walletBalance: this.profileData.wallet_balance
-            }
-            this.props.updateWallet(payload)
-            this.props.navigation.setParams({ 'profileData': this.profileData, walletBalance: this.props.walletBalance })
+            user_profile(profilePayload,headers).then((res) => {
+                this.profileData = res.data.data
+                const payload = {
+                    walletBalance: this.profileData.wallet_balance
+                }
+                this.props.updateWallet(payload)
+                this.props.navigation.setParams({ 'profileData': this.profileData})
+            }).catch((e) =>{
+                const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.getProfile()
+                    return
+                }
+            })
         }        
+    }
+
+    gotoFeedbackPageAlert = () => {
+        if(this.props.isAuthenticate) {
+            if (this.props.feedbackCurrentCount % feedbackDisplayCount == 0) {
+                Alert.alert(
+                    'Loving HappyWorks?',
+                    'Please share your experience!',
+                    [
+                        {
+                            text: 'No',
+                            style: 'cancel'
+                        },
+                        {
+                            text: 'Yes', onPress: () => {
+                                this.props.navigation.navigate('Feedback')
+                            }
+                        }
+                    ],
+                    { cancelable: false },
+                )
+            }
+        }
     }
 
     createTiles = async (posts) => {
         this.postList = []
-        this.getProfile()
         await posts.map(async (item) => {
 
             /* Convert Array of objects to array of strings */
@@ -611,7 +655,6 @@ class ListPost extends React.Component {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
-                                this.getProfile()
                                 this.loadPosts()
                                 this.getAssociateNames()
                             }
@@ -679,11 +722,12 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken,
+        accessToken: state.user.accessToken,
         imagelink: state.user.imageUrl,
         tenant_name: state.user.tenant_name,
         email: state.user.emailAddress,
-        walletBalance: state.user.walletBalance
+        walletBalance: state.user.walletBalance,
+        feedbackCurrentCount: state.user.feedbackDisplayCount
     };
 }
 
@@ -691,7 +735,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
         imageUrl: (props) => dispatch({ type: user.UPDATE_IMAGE, payload: props }),
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props }),
+        incrementCount: () => dispatch({ type: user.UPDATE_FEEDBACK_DISPLAY_COUNT })
     };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(withInAppNotification(ListPost))
