@@ -173,7 +173,8 @@ class LoginPage extends React.Component {
                 }
     
                 register_device(payload_2, headers).then(() => {
-                }).catch((e) => {
+
+                }).catch(() => {
                 })
                 // Send token to slack
                 slackLogger({
@@ -207,7 +208,7 @@ class LoginPage extends React.Component {
 
         file_download(payload, header).then((response) => {
             this.props.imageUrl(response.data.data['download-signed-url'])
-        }).catch((e) => {
+        }).catch(() => {
             
         })
     }
@@ -322,7 +323,7 @@ class LoginPage extends React.Component {
                                                 AsyncStorage.setItem(item.associate_id, item.full_name)
                                             })
                                             this.props.navigation.navigate('TabNavigator')
-                                        }).catch((e) => {
+                                        }).catch(() => {
                                         })
                                     }
                                     catch (e) {/* error */ }
