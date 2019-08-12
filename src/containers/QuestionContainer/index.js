@@ -28,7 +28,7 @@ import image from '../../assets/rsz_gradient-background.png'
 import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Services */
 import { save_answers } from '../../services/dataApi'
-import {give_rewards} from '../../services/rewards'
+import { give_rewards } from '../../services/rewards'
 /* Utilities */
 import { IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
 
@@ -40,12 +40,12 @@ class QuestionContainer extends React.Component {
             currentPage: 0,
             pageCount: this.questionData.questions.length,
             isSubmitLoading: false,
-            
+
             answerSet: {}
         }
-        this.pager = React.createRef();  
+        this.pager = React.createRef();
     }
-    
+
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             this.goBack()
@@ -81,11 +81,11 @@ class QuestionContainer extends React.Component {
     // for ROS
     ROSHandler = (questionId, answerObj) => {
         let ranks = {}
-        
-        answerObj.map((item,index)=>{
-            ranks={
+
+        answerObj.map((item, index) => {
+            ranks = {
                 ...ranks,
-                [item.label]:index
+                [item.label]: index
             }
         })
         this.answerSet = {
@@ -113,14 +113,14 @@ class QuestionContainer extends React.Component {
             this.questionData.questions.map((question, index) => {
 
                 let title = question.question.title
-                if(question.type==='RSCQ'){
-                    if(question.question.options.length===1){
-                        title=question.question.options[0].title
-                    }else{
-                        title='Answer the following questions'
+                if (question.type === 'RSCQ') {
+                    if (question.question.options.length === 1) {
+                        title = question.question.options[0].title
+                    } else {
+                        title = 'Answer the following questions'
                     }
                 }
-                
+
                 this.questions.push(
                     <View key={index}>
                         <Question
@@ -149,15 +149,19 @@ class QuestionContainer extends React.Component {
 
     submitHandler = () => {
         this.setState({ isSubmitLoading: true })
-        
+
         try {
-            if(this.props.isConnected) {
+            if (this.props.isConnected) {
                 if (this.answerSet) {
+                    let event = new Date();
+                    let options = { weekday: 'short' };
+                    let today = event.toLocaleDateString('en-us', options)
                     let payload = {
                         tenant_id: this.props.tenant_id,
                         associate_id: this.props.associate_id,
                         survey_id: this.questionData.survey.id,
-                        answer_set: this.answerSet
+                        answer_set: this.answerSet,
+                        day: today
                     }
                     //Authemtication header
                     const headers = {
@@ -169,9 +173,9 @@ class QuestionContainer extends React.Component {
                         /* Give rewards */
                         give_rewards(
                             {
-                                "tenant_id" : this.props.tenant_id,
-                                "associate_id" : this.props.associate_id,
-                                "event_id" : "a675055e-2d11-42e1-8938-57a4f5fc037b",
+                                "tenant_id": this.props.tenant_id,
+                                "associate_id": this.props.associate_id,
+                                "event_id": "a675055e-2d11-42e1-8938-57a4f5fc037b",
                                 "survey_name": this.questionData.survey.name
                             }, headers).then((res) => {
                             this.props.navigation.navigate('SurveyExit', {
@@ -213,15 +217,15 @@ class QuestionContainer extends React.Component {
             })
             this.setState({ isSubmitLoading: false })
         }
-        
+
     }
 
     goBack = () => {
-        if(this.state.isSubmitLoading){
+        if (this.state.isSubmitLoading) {
             Alert.alert(
                 'Submiting the survey!',
                 'take a deep breath..',
-                
+
             )
             return
         }
@@ -322,7 +326,7 @@ const styles = StyleSheet.create({
     header: {
         color: 'white',
         width: 50,
-        padding:10
+        padding: 10
     },
     submitButton: {
         alignItems: 'center',
@@ -340,7 +344,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         isAuthenticate: state.isAuthenticate,
-        tenant_id:state.user.accountAlias,
+        tenant_id: state.user.accountAlias,
         isConnected: state.system.isConnected,
         associate_id: state.user.associate_id,
         accessToken: state.user.accessToken
