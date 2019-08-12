@@ -158,6 +158,86 @@ const qa_env = {
     }
 }
 
-let current_env = qa_env
+const prod_env = {
+    url: {
+        dev: "https://huykcf5gv2.execute-api.ap-south-1.amazonaws.com",
+        create_post: "https://uchlbuhbh8.execute-api.ap-south-1.amazonaws.com/prod/post/create_post",
+        get_visibility: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/get_visibility",
+        news_feed: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/news_feed",
+        list_survey: "https://89joan8xl6.execute-api.ap-south-1.amazonaws.com/prod/survey/list_survey",
+        give_reward: "https://0kc97jej7b.execute-api.ap-south-1.amazonaws.com/prod/reward/give_reward",
+        inapp_notification: "https://zlrm5hjdw3.execute-api.ap-south-1.amazonaws.com/prod/push_notification/list_in_app",
+        read_transaction: "https://0kc97jej7b.execute-api.ap-south-1.amazonaws.com/prod/reward/read_transactions",
+        get_balance: "https://0kc97jej7b.execute-api.ap-south-1.amazonaws.com/prod/reward/get_balance",
+        user_profile: "https://p0s72nj3d3.execute-api.ap-south-1.amazonaws.com/prod/user_profile/get_profile",
+        list_posts: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/list_posts",
+        strength_counts: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/strength_count",
+        update_profile: "https://p0s72nj3d3.execute-api.ap-south-1.amazonaws.com/prod/user_profile/update_profile",
+        list_associates: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/list_associates",
+        list_project_members: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/list_project_members",
+        comment_post: "https://uchlbuhbh8.execute-api.ap-south-1.amazonaws.com/prod/post/comment_post",
+        like_post: "https://uchlbuhbh8.execute-api.ap-south-1.amazonaws.com/prod/post/like_post",
+        unlike_post: "https://uchlbuhbh8.execute-api.ap-south-1.amazonaws.com/prod/post/unlike_post",
+        list_likes: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/list_likes",
+        like_id: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/like_id",
+        file_download: "https://7epgquyakg.execute-api.ap-south-1.amazonaws.com/prod/aws_ops/file_download",
+        file_upload: "https://7epgquyakg.execute-api.ap-south-1.amazonaws.com/prod/aws_ops/file_upload",
+        list_comments: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/list_comments",
+        edit_comment: "https://uchlbuhbh8.execute-api.ap-south-1.amazonaws.com/prod/post/edit_comment",
+        delete_comment: "https://uchlbuhbh8.execute-api.ap-south-1.amazonaws.com/prod/post/delete_comment",
+        read_tenant: "https://tinvoeq086.execute-api.ap-south-1.amazonaws.com/prod/super_admin/read_tenant",
+        delete_post: "https://uchlbuhbh8.execute-api.ap-south-1.amazonaws.com/prod/post/delete_post",
+        edit_post: "https://uchlbuhbh8.execute-api.ap-south-1.amazonaws.com/prod/post/edit_post",
+        edit_post_addon: "https://0kc97jej7b.execute-api.ap-south-1.amazonaws.com/prod/reward/share_addon",
+        new_associate_notify: "https://z4oiw0j9he.execute-api.ap-south-1.amazonaws.com/prod/push_notify/notify_event",
+        read_posts: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/read_posts",
+        get_associate_name: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/get_associate_name",
+        strength_details: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/strength_details",
+        liked_post: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/liked_post",
+        rewards_addon: "https://0kc97jej7b.execute-api.ap-south-1.amazonaws.com/prod/reward/share_addon",
+        register_device: 'https://zlrm5hjdw3.execute-api.ap-south-1.amazonaws.com/prod/push_notification/register_device',
+        unregister: 'https://zlrm5hjdw3.execute-api.ap-south-1.amazonaws.com/prod/push_notification/unregister',
+        get_status: 'https://zlrm5hjdw3.execute-api.ap-south-1.amazonaws.com/prod/push_notification/get_status',
+        enable_status: 'https://zlrm5hjdw3.execute-api.ap-south-1.amazonaws.com/prod/push_notification/enable_status',
+        disable_status: 'https://zlrm5hjdw3.execute-api.ap-south-1.amazonaws.com/prod/push_notification/disable_status'
+    },
+    api: {
+        signup: "signup",
+        confirm_signup: "confirm_signup",
+        signin: "signin",
+        resend_code: "resend_code",
+        forgot_password: "forgot_password",
+        confirm_password: "confirm_password",
+        signout: "signout",
+        read_tenant: "read_tenant",
+        list_survey: "list_survey",
+        read_survey: "https://89joan8xl6.execute-api.ap-south-1.amazonaws.com/prod/survey/read_survey",
+        force_password_change: "force_password_change",
+        save_answers: "https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/save_answers",
+        give_rewards: "give_rewards",
+        read_member: "https://tinvoeq086.execute-api.ap-south-1.amazonaws.com/prod/admin/read_member",
+        create_post: "create_post",
+        list_posts: "list_posts",
+        list_associate: "list_associate",
+        register_device: "register_device"
+    },
+    type: {
+        survey: "survey",
+        data_apis: "data_apis",
+        api: "api",
+        post: "post"
+    },
+    env: {
+        dev: "prod",
+        devhw: "devhw",
+        qa: "qa"
+    },
+    role: {
+        super_admin: "super_admin",
+        admin: "admin"
+    }
+}
+
+let current_env = prod_env
 
 export default current_env
