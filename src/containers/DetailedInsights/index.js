@@ -3,7 +3,9 @@ import {
     View,
     Text,
     BackHandler,
-    processColor
+    processColor,
+    ActivityIndicator,
+    RefreshControl
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
 import { H2 } from 'native-base'
@@ -11,35 +13,30 @@ import { H2 } from 'native-base'
 import { connect } from 'react-redux'
 import { auth, dev } from '../../store/actions'
 import { BarChart } from 'react-native-charts-wrapper';
-import { NavigationEvents } from 'react-navigation';
+
 /* Native Base */
 import {
     Container,
     Content
 } from 'native-base';
-//Prefetch Profile Data
-import { loadProfile } from '../Home/apicalls'
 
 //RBAC handler function
-import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
+import {weekly_data} from '../../services/mobileDashboard'
 
 class DetailedInsights extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            isLoading: false,
+            isLoading: true,
             selectedTab: 0,
             myPulse: [],
             orgPulse: [],
             funQuiz: []
         }
-        this.MyPulse = []
-        this.OrgPulse = []
-        this.FunQuiz = []
-        this.pager = React.createRef();
-        //Profile Data
-        this.profileData = {}
-        this.getProfile = this.getProfile.bind(this)
+        this.green = '#2ecc71'
+        this.orange = '#e67e22'
+        this.red = '#e74c3c'
+        
     }
 
     //Authorization headers
@@ -53,11 +50,10 @@ class DetailedInsights extends React.Component {
             this.props.navigation.goBack();
             return true;
         });
-        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
-        await this.getProfile()
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange)
     }
 
-    getProfile = async () => {
+    weekly_data = async () => {
         if (this.props.isAuthenticate) {
             //Authorization headers
             const headers = {
@@ -66,13 +62,61 @@ class DetailedInsights extends React.Component {
                 }
             }
             //profile payload
-            const payload1 = {
+            const payload = {
                 tenant_id: this.props.accountAlias,
-                associate_id: this.props.associate_id
+                associate_id: this.props.associate_id,
+                day:'Tue'
             }
-            this.profileData = await loadProfile(payload1, headers, this.props.isConnected);
+            this.surveyData = await weekly_data(payload, headers, this.props.isConnected)
+
+            this.sleepPoints = [] //[{ y: 10 }, { y: 2 }, { y: 1 }, { y: 4 }, { y: 4 }, { y: 9 }, { y: 5 }]
+            this.sleepBarColors = []
+            this.sleepLabels = [] //['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+            this.energyPoints = []
+            this.energyBarColors = []
+            
+            for(let i=6;i>=0;i--){
+
+                //Structure Sleep Data
+                const day = this.surveyData.data.data.sleep[i].day
+                const hrs = this.surveyData.data.data.sleep[i].hrs
+                const energyPoint = this.surveyData.data.data.energy[i].hrs
+                //Add color for sleep bar graph
+                let sleepBarColor
+                if(hrs>=8){
+                    sleepBarColor = this.green
+                }else if(hrs<8 && hrs>=5){
+                    sleepBarColor = this.orange
+                }else{
+                    sleepBarColor = this.red
+                }
+                this.sleepBarColors.push(processColor(sleepBarColor))
+                this.sleepPoints.push({y: hrs})
+                
+                //Add color for energy bar graph
+                let energyBarColor
+                if(energyPoint>=8){
+                    energyBarColor = this.green
+                }else if(energyPoint<8 && energyPoint>=5){
+                    energyBarColor = this.orange
+                }else{
+                    energyBarColor = this.red
+                }
+                this.energyBarColors.push(processColor(energyBarColor))
+                this.energyPoints.push({y: energyPoint})
+
+                //Structure week of days
+                if(i===6)
+                    this.sleepLabels.push('Today')
+                else if(i===5)
+                    this.sleepLabels.push('Yesterday')
+                else
+                    this.sleepLabels.push(day)
+
+            }
+            this.setState({isLoading:false})
             this.props.navigation.setParams({
-                'profileData': this.profileData,
                 'isConnected': this.props.isConnected,
                 'associateId': this.props.associate_id
             })
@@ -86,184 +130,161 @@ class DetailedInsights extends React.Component {
 
     handleConnectivityChange = async (isConnected) => {
         if (isConnected) {
-            await this.getProfile()
+            await this.weekly_data()
         }
         else {
             this.props.navigation.setParams({ 'isConnected': false })
         }
     }
 
-    data = [
-        {
-            key: 'Daily Survey',
-            icon: 'md-stats',
-            onPress: () => this.props.navigation.navigate('SurveyIntro', {
-                surveyId: '3',
-                surveyName: 'Daily-Questionnaire',
-                surveyDescription: 'Daily Survey',
-                surveyNote: 'note',
-                surveyLevel: 'beginner'
-            })
-        },
-        {
-            key: 'Weekly Survey',
-            icon: 'md-stats',
-            onPress: () => this.props.navigation.navigate('SurveyIntro', {
-                surveyId: '1 ',
-                surveyName: 'Weekly-Questionnaire',
-                surveyDescription: 'Weekly Survey',
-                surveyNote: 'note',
-                surveyLevel: 'beginner'
-            })
-        }
-    ]
-
     render() {
-
         return (
 
             <Container style={{ backgroundColor: '#eee' }}>
                 <Content
                     contentContainerStyle={{}}
                     scrollEnabled={true}
-
-                >
-                    <View
-                        style={{
-                            flex: 1,
-                            margin: 10,
-                            backgroundColor: '#fff',
-                            borderRadius: 5,
-                            shadowOffset: { width: 5, height: 5 },
-                            shadowColor: 'black',
-                            shadowOpacity: 0.5,
-                            elevation: 2
-                        }}>
-                        <H2 style={{ margin: 20, marginBottom: 10 }}>Your Weekly Sleeping hours</H2>
-                        <View style={{ flexDirection: 'row', flex: 1 }}>
-
-                            <BarChart
-                                style={{
-                                    flex: 1,
-                                    margin: 10,
-                                    height: 200
-                                }}
-                                chartDescription={{
-                                    text: '',
-                                    textSize: 0,
-                                    textColor: processColor('darkgray')
-                        
-                                }}
-                                data={{
-                                    dataSets: [{
-                                        values: [{ y: 10 }, { y: 2 }, { y: 1 }, { y: 4 }, { y: 4 }, { y: 9 }, { y: 5 }],
-                                        label: 'Sleep in Hours',
-                                        config: {
-                                            colors: [processColor('#2ecc71'), processColor('#e74c3c'), processColor('#e74c3c'), processColor('#e67e22'), processColor('#e67e22'), processColor('#2ecc71'), processColor('#e67e22')],
-                                            valueTextColor: processColor('#fff'),
-                                            barShadowColor: processColor('#47309C'),
-                                            highlightAlpha: 90,
-                                            highlightColor: processColor('#47309C')
-                                        }
-                                    }],
-
-                                    config: {
-                                        barWidth: 0.5
-                                    }
-                                }}
-                                xAxis={{
-                                    valueFormatter: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                                    granularityEnabled: true,
-                                    granularity : 1
-                                }}
-                                animation={{ durationX: 2000 }}
-                                legend={{
-                                    enabled: false
-                                }}
-                                gridBackgroundColor={processColor('#ffffff')}
-                                visibleRange={{ x: { min: 5, max: 5 } }}
-                                drawBarShadow={false}
-                                drawValueAboveBar={false}
-                                drawHighlightArrow={false}
-                            />
-                            
-                        </View>
-                        <Text style={{width:'100%',textAlign:'center',fontSize:12,color:'black',fontStyle:'italic',marginBottom:10}}>
-                                Ideally you should sleep 8 hours every night
-                        </Text>
-                    </View>
-                    <View
-                        style={{
-                            flex: 1,
-                            margin: 10,
-                            backgroundColor: '#fff',
-                            borderRadius: 5,
-                            shadowOffset: { width: 5, height: 5 },
-                            shadowColor: 'black',
-                            shadowOpacity: 0.5,
-                            elevation: 2
-                        }}>
-                        <H2 style={{ margin: 20, marginBottom: 10 }}>Your Weekly Energy Score</H2>
-                        <View style={{ flexDirection: 'row', flex: 1 }}>
-
-                            <BarChart
-                                style={{
-                                    flex: 1,
-                                    margin: 10,
-                                    height: 200
-                                }}
-                                chartDescription={{
-                                    text: '',
-                                    textSize: 0,
-                                    textColor: processColor('darkgray')
-                        
-                                }}
-                                data={{
-                                    dataSets: [{
-                                        values: [{ y: 6 }, { y: 3 }, { y: 1 }, { y: 3 }, { y: 5 }, { y: 8 }, { y: 6 }],
-                                        label: 'Energy Score',
-                                        config: {
-                                            color: processColor('#47309C'),
-                                            valueTextColor: processColor('#fff'),
-                                            barShadowColor: processColor('#47309C'),
-                                            highlightAlpha: 90,
-                                            highlightColor: processColor('#47309C')
-                                        }
-                                    }],
-
-                                    config: {
-                                        barWidth: 0.5
-                                    }
-                                }}
-                                xAxis={{
-                                    valueFormatter: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                                    granularityEnabled: true,
-                                    granularity : 1
-                                }}
-                                animation={{ durationX: 2000 }}
-                                legend={{
-                                    enabled: false
-                                }}
-                                gridBackgroundColor={processColor('#ffffff')}
-                                visibleRange={{ x: { min: 5, max: 5 } }}
-                                drawBarShadow={false}
-                                drawValueAboveBar={false}
-                                drawHighlightArrow={false}
-                            />
-                        </View>
-                    </View>
-                    
-                    <NavigationEvents
-                        onWillFocus={async () => {
+                    refreshing={this.state.isLoading}
+                    refreshControl={<RefreshControl
+                        refreshing={this.state.isLoading}
+                        onRefresh={() => {
                             if (this.props.isConnected) {
                                 if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                    this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl })
-                                    await this.getProfile()
+                                    this.weekly_data()
                                 }
                             }
+                            
                         }}
-                    />
+                    />}
+                >
+                    {this.state.isLoading?null:
+                        <React.Fragment>
+                            <View
+                                style={{
+                                    flex: 1,
+                                    margin: 10,
+                                    backgroundColor: '#fff',
+                                    borderRadius: 5,
+                                    shadowOffset: { width: 5, height: 5 },
+                                    shadowColor: 'black',
+                                    shadowOpacity: 0.5,
+                                    elevation: 2
+                                }}>
+                                <H2 style={{ margin: 20, marginBottom: 10 }}>Your Weekly Sleeping hours</H2>
+                                <View style={{ flexDirection: 'row', flex: 1 }}>
 
+                                    <BarChart
+                                        style={{
+                                            flex: 1,
+                                            margin: 10,
+                                            height: 200
+                                        }}
+                                        chartDescription={{
+                                            text: '',
+                                            textSize: 0,
+                                            textColor: processColor('darkgray')
+                        
+                                        }}
+                                        data={{
+                                            dataSets: [{
+                                                values: this.sleepPoints,
+                                                label: 'Sleep in Hours',
+                                                config: {
+                                                    colors: this.sleepBarColors,
+                                                    valueTextColor: processColor('#fff'),
+                                                    barShadowColor: processColor('#47309C'),
+                                                    highlightAlpha: 90,
+                                                    highlightColor: processColor('#47309C')
+                                                }
+                                            }],
+
+                                            config: {
+                                                barWidth: 0.5
+                                            }
+                                        }}
+                                        xAxis={{
+                                            valueFormatter: this.sleepLabels,
+                                            granularityEnabled: true,
+                                            granularity : 1
+                                        }}
+                                        animation={{ durationX: 2000 }}
+                                        legend={{
+                                            enabled: false
+                                        }}
+                                        gridBackgroundColor={processColor('#ffffff')}
+                                        visibleRange={{ x: { min: 5, max: 5 } }}
+                                        drawBarShadow={false}
+                                        drawValueAboveBar={false}
+                                        drawHighlightArrow={false}
+                                    />
+                            
+                                </View>
+                                <Text style={{width:'100%',textAlign:'center',fontSize:12,color:'black',fontStyle:'italic',marginBottom:10}}>
+                                Ideally you should sleep 8 hours every night
+                                </Text>
+                            </View>
+                            <View
+                                style={{
+                                    flex: 1,
+                                    margin: 10,
+                                    backgroundColor: '#fff',
+                                    borderRadius: 5,
+                                    shadowOffset: { width: 5, height: 5 },
+                                    shadowColor: 'black',
+                                    shadowOpacity: 0.5,
+                                    elevation: 2
+                                }}>
+                                <H2 style={{ margin: 20, marginBottom: 10 }}>Your Weekly Energy Score</H2>
+                                <View style={{ flexDirection: 'row', flex: 1 }}>
+
+                                    <BarChart
+                                        style={{
+                                            flex: 1,
+                                            margin: 10,
+                                            height: 200
+                                        }}
+                                        chartDescription={{
+                                            text: '',
+                                            textSize: 0,
+                                            textColor: processColor('darkgray')
+                        
+                                        }}
+                                        data={{
+                                            dataSets: [{
+                                                values: this.energyPoints,
+                                                label: 'Energy Score',
+                                                config: {
+                                                    colors: this.energyBarColors,
+                                                    valueTextColor: processColor('#fff'),
+                                                    barShadowColor: processColor('#47309C'),
+                                                    highlightAlpha: 90,
+                                                    highlightColor: processColor('#47309C')
+                                                }
+                                            }],
+
+                                            config: {
+                                                barWidth: 0.5
+                                            }
+                                        }}
+                                        xAxis={{
+                                            valueFormatter: this.sleepLabels,
+                                            granularityEnabled: true,
+                                            granularity : 1
+                                        }}
+                                        animation={{ durationX: 2000 }}
+                                        legend={{
+                                            enabled: false
+                                        }}
+                                        gridBackgroundColor={processColor('#ffffff')}
+                                        visibleRange={{ x: { min: 5, max: 5 } }}
+                                        drawBarShadow={false}
+                                        drawValueAboveBar={false}
+                                        drawHighlightArrow={false}
+                                    />
+                                </View>
+                            </View>
+                        </React.Fragment>
+                    }
                 </Content>
 
             </Container>
