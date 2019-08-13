@@ -43,7 +43,9 @@ const dev_env = {
         get_status: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/get_status',
         enable_status: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/enable_status',
         disable_status: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/disable_status',
-        refresh_token: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com/dev/refresh_token"
+        refresh_token: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com/dev/refresh_token",
+        daily:"https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/daily",
+        weekly_data:"https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/weekly_data"
     },
     api: {
         signup: "signup",

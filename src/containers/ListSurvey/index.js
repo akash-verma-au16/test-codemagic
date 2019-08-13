@@ -10,15 +10,13 @@ import {
     ScrollView,
     ToastAndroid,
     ActivityIndicator,
-    processColor,
     BackHandler
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
-import { H2} from 'native-base'
+
 /* Redux */
 import { connect } from 'react-redux'
 import { auth, dev } from '../../store/actions'
-import { PieChart } from 'react-native-charts-wrapper';
 import { NavigationEvents } from 'react-navigation';
 /* Native Base */
 import {
@@ -34,7 +32,7 @@ import nature1 from '../../assets/tileBackgrounds/nature1.jpg'
 import nature2 from '../../assets/tileBackgrounds/nature2.jpg'
 import nature3 from '../../assets/tileBackgrounds/nature3.jpeg'
 import { list_survey } from '../../services/questionBank'
-
+import DailyStats from '../../components/DailyStats'
 //RBAC handler function
 import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Custom Components */
@@ -275,139 +273,18 @@ class ListSurvey extends React.Component {
             })
         }
     ]
-    sleepPieData = {
-        green: {
-            dataSets: [{
-                values: [{value: 100,label:''}
-                ],
-                label: '',
-                config: {
-                    colors: [processColor('#2ecc71')],
-                    sliceSpace: 5,
-                    labelTextSize: 18,
-                    valueTextSize:0,
-                    valueTextColor: processColor('white'),
-                    selectionShift: 13,
-                    valueFormatter: "",
-                    valueLineColor: processColor('white'),
-                    valueLinePart1Length: 0.5
-                
-                }
-            }]
-        
-        },
-        orange:{
-            dataSets: [{
-                values: [{value: 80,label:''},
-                    {value: 20,label:''}
-                ],
-                label: '',
-                config: {
-                    colors: [processColor('#e67e22'), processColor('#eee')],
-                    sliceSpace: 5,
-                    labelTextSize: 18,
-                    valueTextSize:0,
-                    valueTextColor: processColor('white'),
-                    selectionShift: 13,
-                    valueFormatter: "",
-                    valueLineColor: processColor('white'),
-                    valueLinePart1Length: 0.5
-                
-                }
-            }]
-        
-        },
-        red:{
-            dataSets: [{
-                values: [{value: 40,label:''},
-                    {value: 60,label:''}
-                ],
-                label: '',
-                config: {
-                    colors: [processColor('#e74c3c'), processColor('#eee')],
-                    sliceSpace: 5,
-                    labelTextSize: 18,
-                    valueTextSize:0,
-                    valueTextColor: processColor('white'),
-                    selectionShift: 13,
-                    valueFormatter: "",
-                    valueLineColor: processColor('white'),
-                    valueLinePart1Length: 0.5
-                
-                }
-            }]
-        
-        }
-
-    }
 
     render() {
 
         return (
 
             <Container style={{ backgroundColor: '#eee' }}>
-
-                <View style={{
-                    flex: 1,
-                    margin: 10,
-                    backgroundColor: '#fff',
-                    borderRadius: 5,
-                    shadowOffset: { width: 5, height: 5 },
-                    shadowColor: 'black',
-                    shadowOpacity: 0.5,
-                    elevation: 2,
-                    alignItems:'center'
-                }}>
-                    <H2 style={{ margin: 20, marginBottom: 10 }}>Your Daily Stats</H2>
-                    <View style={{flexDirection:'row',flex:1}}>
-                        <View style={{flex:1}}>
-                            <PieChart
-                                style={styles.pieStyle}
-                                chartDescription={{
-                                    text: '',
-                                    textSize: 0
-                                }}
-                                transparentCircleRadius={55}
-                                transparentCircleColor={processColor('#f0f0f088')}
-                                legend={{enabled: false}}
-                                data={this.sleepPieData.red}
-                                rotationEnabled={true}
-                                styledCenterText={{ text: '2 hrs', color: processColor('#47309C'), size: 18 }}
-                                centerTextRadiusPercent={100}
-                                holeRadius={50}
-
-                            />
-                            <Text style={{width:'100%',textAlign:'center',fontSize:18,color:'black'}}>Sleep Cycle</Text>
-                        </View>
-                        <View style={{flex:1}}>
-                            <PieChart
-                                style={styles.pieStyle}
-                                chartDescription={{
-                                    text: '',
-                                    textSize: 0
-                    
-                                }}
-                                transparentCircleRadius={55}
-                                transparentCircleColor={processColor('#f0f0f088')}
-                                legend={{
-                                    enabled: false
-                                }}
-                                data={this.sleepPieData.orange}
-              
-                                rotationEnabled={true}
-                                styledCenterText={{ text: '100', color: processColor('black'), size: 18 }}
-                                centerTextRadiusPercent={100}
-                                holeRadius={50}
-
-                                onSelect={null}
-                            />
-                            <Text style={{width:'100%',textAlign:'center',fontSize:18,color:'black'}}>Energy Score</Text>
-                        </View>
-                    </View>
-                    <Text onPress={()=>{
-                        this.props.navigation.navigate('DetailedInsights')
-                    }} style={{ margin: 20, marginBottom: 10 ,color:'#47309C'}}>Preview Analytics</Text>
-                </View>
+                <DailyStats 
+                    accountAlias={this.props.accountAlias}
+                    associate_id={this.props.associate_id}
+                    accessToken={this.props.accessToken}
+                    navigation={this.props.navigation}
+                />
                 <Content
                     contentContainerStyle={{ flex: 1 }}
                     scrollEnabled={true}
@@ -526,11 +403,7 @@ class ListSurvey extends React.Component {
     }
 }
 const styles = StyleSheet.create({
-    pieStyle:{
-        flex: 1,
-        margin: 10
 
-    },
     tabActive: {
         color: '#fff',
         paddingVertical: 10
