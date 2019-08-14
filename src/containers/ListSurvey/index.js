@@ -208,7 +208,9 @@ class ListSurvey extends React.Component {
             
             const dailyStatsPayload = {
                 sleepHrs:response.data.data.sleep[0].hrs,
-                energyPts: response.data.data.energy[0].pts
+                sleepDay:response.data.data.sleep[0].day,
+                energyPts: response.data.data.energy[0].pts,
+                energyDay: response.data.data.energy[0].day
             }
             this.setState({isDailyStatsLoading:false,dailyStatsPayload:dailyStatsPayload})
         }).catch(()=>{

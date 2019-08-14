@@ -84,7 +84,9 @@ export default class DailyStats extends Component {
         else
             this.sleepLabel = sleepHrs + ' hr'
 
-        //Circle Circumference
+        //Remove zero hrs
+        if(sleepHrs===0)
+            this.sleepLabel=''
 
         //Circle Color
         if(sleepHrs>=8){
@@ -105,7 +107,9 @@ export default class DailyStats extends Component {
         else
             this.energyLabel = energyPts + ' pt'
 
-        //Circle Circumference
+        //Remove zero hrs
+        if(energyPts===0)
+            this.energyLabel=''
 
         //Circle Color
         if(energyPts>=80){
@@ -170,6 +174,7 @@ export default class DailyStats extends Component {
                             holeRadius={50}
 
                         />
+                        <Text style={{width:'100%',textAlign:'center',fontSize:12,color:'black'}}>{this.props.dailyStatsPayload.sleepDay}</Text>
                         <Text style={{width:'100%',textAlign:'center',fontSize:18,color:'black'}}>Sleep Cycle</Text>
                     </View>
                     <View style={{flex:1}}>
@@ -214,12 +219,13 @@ export default class DailyStats extends Component {
 
                             onSelect={null}
                         />
+                        <Text style={{width:'100%',textAlign:'center',fontSize:12,color:'black'}}>{this.props.dailyStatsPayload.energyDay}</Text>
                         <Text style={{width:'100%',textAlign:'center',fontSize:18,color:'black'}}>Energy Cycle</Text>
                     </View>
                 </View>
                 <Text onPress={()=>{
                     this.props.navigation.navigate('DetailedInsights')
-                }} style={{ margin: 20, marginBottom: 10 ,color:'#47309C'}}>Preview Analytics</Text>
+                }} style={{ margin: 20, marginBottom: 10 ,color:'#47309C',fontSize:18}}>Preview Analytics</Text>
             </View>
         );
     }
