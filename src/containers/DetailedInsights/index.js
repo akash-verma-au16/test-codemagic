@@ -4,7 +4,6 @@ import {
     Text,
     BackHandler,
     processColor,
-    ActivityIndicator,
     RefreshControl
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
@@ -62,21 +61,22 @@ class DetailedInsights extends React.Component {
                 }
             }
             //profile payload
+            let event = new Date();
+            let options = { weekday: 'short' };
+            let today = event.toLocaleDateString('en-us', options)
             const payload = {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id,
-                day:'Tue'
+                day:today
             }
             this.surveyData = await weekly_data(payload, headers, this.props.isConnected)
-
-            this.sleepPoints = [] //[{ y: 10 }, { y: 2 }, { y: 1 }, { y: 4 }, { y: 4 }, { y: 9 }, { y: 5 }]
+            this.sleepPoints = [] 
             this.sleepBarColors = []
-            this.sleepLabels = [] //['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-
+            this.sleepLabels = []
             this.energyPoints = []
             this.energyBarColors = []
-            
-            for(let i=6;i>=0;i--){
+
+            for(let i=0;i<6;i++){
 
                 //Structure Sleep Data
                 const day = this.surveyData.data.data.sleep[i].day
@@ -96,9 +96,9 @@ class DetailedInsights extends React.Component {
                 
                 //Add color for energy bar graph
                 let energyBarColor
-                if(energyPoint>=8){
+                if(energyPoint>=80){
                     energyBarColor = this.green
-                }else if(energyPoint<8 && energyPoint>=5){
+                }else if(energyPoint<80 && energyPoint>=50){
                     energyBarColor = this.orange
                 }else{
                     energyBarColor = this.red
@@ -107,12 +107,7 @@ class DetailedInsights extends React.Component {
                 this.energyPoints.push({y: energyPoint})
 
                 //Structure week of days
-                if(i===6)
-                    this.sleepLabels.push('Today')
-                else if(i===5)
-                    this.sleepLabels.push('Yesterday')
-                else
-                    this.sleepLabels.push(day)
+                this.sleepLabels.push(day)
 
             }
             this.setState({isLoading:false})
@@ -185,6 +180,7 @@ class DetailedInsights extends React.Component {
                                             textColor: processColor('darkgray')
                         
                                         }}
+
                                         data={{
                                             dataSets: [{
                                                 values: this.sleepPoints,
@@ -243,6 +239,7 @@ class DetailedInsights extends React.Component {
                                             margin: 10,
                                             height: 200
                                         }}
+                                        
                                         chartDescription={{
                                             text: '',
                                             textSize: 0,
