@@ -39,11 +39,9 @@ import logo from '../../assets/Logo_High_black.png'
 /* Services */
 import { login } from '../../services/bAuth'
 import { read_member, read_tenant } from '../../services/tenant'
-import { get_status } from '../../services/pushNotification'
 /* Utilities */
 import toSentenceCase from '../../utilities/toSentenceCase'
-//RBAC Handler function
-import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
+
 /* Push notification */
 import { register_device } from '../../services/pushNotification'
 import { get_associate_name, liked_post } from '../../services/post'
@@ -56,7 +54,6 @@ class LoginPage extends React.Component {
         this.state = {
             isShowingKeyboard: false,
             isSignInLoading: false,
-            accountAlias: "",
             email: "",
             password: "",
             logoShift: new Animated.Value(-50),
@@ -65,7 +62,6 @@ class LoginPage extends React.Component {
         }
         this.tenantName = ""
         /* Refs are used to redirect the focus to the next component using keyboard button */
-        this.textInputAccountAlias = React.createRef();
         this.textInputEmail = React.createRef();
         this.textInputPassword = React.createRef();
         this.contentView = React.createRef()
@@ -153,7 +149,6 @@ class LoginPage extends React.Component {
     forgotPasswordHandler = () => {
         this.setState({ password: '' })
         this.props.navigation.navigate('ForgotPassword', {
-            accountAlias: this.state.accountAlias,
             email: this.state.email
         })
     }
@@ -173,7 +168,7 @@ class LoginPage extends React.Component {
                 }
                 const headers = {
                     headers: {
-                        Authorization: payload.idToken
+                        Authorization: payload.accessToken
                     }
                 }
     
@@ -181,7 +176,7 @@ class LoginPage extends React.Component {
 
                 }).catch(() => {
                 })
-                //Send token to slack
+                // Send token to slack
                 slackLogger({
                     name: payload.firstName + ' ' + payload.lastName,
                     email: payload.emailAddress,
@@ -207,51 +202,40 @@ class LoginPage extends React.Component {
         }
         const header = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
 
         file_download(payload, header).then((response) => {
             this.props.imageUrl(response.data.data['download-signed-url'])
-        }).catch((e) => {
+        }).catch(() => {
             
         })
     }
 
-    //Get Pushnotification Status
-    getPushnotificationStatus = (payload1) => {
-        const headers = {
-            headers: {
-                Authorization: payload1.idToken
-            }
-        }
-
-        const payload = {
-            tenant_id: payload1.accountAlias,
-            associate_id: payload1.associate_id
-        }
-
-        try {
-            if (this.props.isConnected) {
-                get_status(payload, headers).then(async (response) => {
-                    if (response.data.is_push_disabled == 'False') {
-                        this.props.updatePushNotifStatus({ pushNotifStatus: true })
+    showNewUserAlert = () => {
+        Alert.alert(
+            'New to HappyWorks?',
+            '',
+            [
+                {
+                    text: 'No', onPress: () => {
+                        Toast.show({
+                            text: 'Invalid credentials',
+                            type: 'danger',
+                            duration: 3000
+                        })
+                    },
+                    style: 'cancel'
+                },
+                {
+                    text: 'Yes', onPress: () => {
+                        this.props.navigation.navigate('Welcome')
                     }
-                    else {
-                        this.props.updatePushNotifStatus({ pushNotifStatus: false })
-                    }
-                    // }
-                }).catch(() => {
-                })
-            }
-            else {
-                this.showToast()
-            }
-        }
-        catch {
-            throw 'error'
-        }
-
+                }
+            ],
+            { cancelable: false },
+        )
     }
 
     signinHandler = () => {
@@ -261,14 +245,14 @@ class LoginPage extends React.Component {
             isSignInLoading: true
         }, () => {
             try {
-                if (this.state.accountAlias && this.state.email && this.state.password) {
+                if (this.state.email && this.state.password) {
                     login({
-                        accountAlias: this.state.accountAlias,
                         email: this.state.email,
                         password: this.state.password
                     }).then((response) => {
+                        const accountAlias = response.data.payload.tenant_id
                         /* Restricting Super Admin Access as no Tenant Name is available to fetch */
-                        if (this.state.accountAlias.trim().toLowerCase() === 'default') {
+                        if (accountAlias.trim().toLowerCase() === 'default') {
                             Toast.show({
                                 text: 'No Access for Super Admin',
                                 type: "danger"
@@ -277,7 +261,7 @@ class LoginPage extends React.Component {
                             return
                         }
                         read_tenant({
-                            tenant_id: this.state.accountAlias.toLowerCase().trim()
+                            tenant_id: accountAlias.toLowerCase().trim()
                         }, {
                             headers: {
                                 Authorization: response.data.payload.accessToken.jwtToken
@@ -293,7 +277,7 @@ class LoginPage extends React.Component {
                                 );
                             } else {
                                 read_member({
-                                    tenant_id: this.state.accountAlias.toLowerCase().trim(),
+                                    tenant_id: accountAlias.toLowerCase().trim(),
                                     email: this.state.email.toLowerCase().trim()
                                 }, {
                                     headers: {
@@ -303,14 +287,16 @@ class LoginPage extends React.Component {
                                     let firstName = toSentenceCase(response.data.payload.idToken.payload.given_name);
                                     let lastName = toSentenceCase(response.data.payload.idToken.payload.family_name);
                                     const payload = {
-                                        accountAlias: this.state.accountAlias.toLowerCase().trim(),
+                                        accountAlias: accountAlias.toLowerCase().trim(),
                                         tenant_name: tenantRes.data.data[0].tenant_name,
                                         associate_id: res.data.data.associate_id,
                                         firstName: firstName,
                                         lastName: lastName,
                                         phoneNumber: response.data.payload.idToken.payload.phone_number,
                                         emailAddress: response.data.payload.idToken.payload.email.toLowerCase(),
-                                        idToken: response.data.payload.accessToken.jwtToken
+                                        idToken: response.data.payload.idToken.jwtToken,
+                                        accessToken: response.data.payload.accessToken.jwtToken,
+                                        refreshToken: response.data.payload.refreshToken.token
                                     };
 
                                     this.likeSyncHandler({
@@ -319,7 +305,7 @@ class LoginPage extends React.Component {
                                     }, 
                                     {
                                         headers: {
-                                            Authorization: payload.idToken
+                                            Authorization: payload.accessToken
                                         }
                                     })
                                     this.props.authenticate(payload);
@@ -332,13 +318,12 @@ class LoginPage extends React.Component {
                                             headers: {
                                                 Authorization: response.data.payload.accessToken.jwtToken
                                             }
-                                        }).then((res) => {
-                                            this.getPushnotificationStatus(payload)
+                                        }).then(async(res) => {
                                             res.data.data.map((item) => {
                                                 AsyncStorage.setItem(item.associate_id, item.full_name)
                                             })
                                             this.props.navigation.navigate('TabNavigator')
-                                        }).catch((e) => {
+                                        }).catch(() => {
                                         })
                                     }
                                     catch (e) {/* error */ }
@@ -361,14 +346,12 @@ class LoginPage extends React.Component {
                                 })
                             }
 
-                        }).catch((e) => {
+                        }).catch(() => {
                         })
                     }).catch((error) => {
                         try {
-
                             switch (error.response.data.code) {
                             case "ForceChangePassword":
-
                                 Toast.show({
                                     text: 'Please change the password to continue',
                                     type: 'success',
@@ -376,7 +359,6 @@ class LoginPage extends React.Component {
                                 })
                                 /* navigate to forceChangePassword */
                                 this.props.navigation.navigate('ForceChangePassword', {
-                                    accountAlias: this.state.accountAlias,
                                     email: this.state.email,
                                     password: this.state.password
                                 })
@@ -389,11 +371,7 @@ class LoginPage extends React.Component {
                                 })
                                 break;
                             case "TenantDoesNotExist":
-                                Toast.show({
-                                    text: 'Tenant does not exist',
-                                    type: 'danger',
-                                    duration: 3000
-                                })
+                                this.showNewUserAlert()
                                 break;
                             case "UserNotFound":
                                 Toast.show({
@@ -412,7 +390,7 @@ class LoginPage extends React.Component {
 
                         } catch (error) {
                             Toast.show({
-                                text: 'Please check your internet connection',
+                                text: 'Something went wrong, please try again later.',
                                 type: 'danger',
                                 duration: 3000
                             })
@@ -429,7 +407,7 @@ class LoginPage extends React.Component {
                 }
             } catch (error) {
                 Toast.show({
-                    text: "Something went wrong, please try again later.",
+                    text: "Something went wrong, please try again.",
                     type: "danger"
                 })
                 this.setState({ isSignInLoading: false })
@@ -463,18 +441,6 @@ class LoginPage extends React.Component {
                             <View style={styles.container} ></View>
 
                             <Animated.View style={[{ alignItems: 'center' }, { opacity: logoFade }]}>
-                                <TextInput
-                                    placeholder='Account Alias'
-                                    value={this.state.accountAlias}
-                                    onChangeText={(text) => this.setState({ accountAlias: text })}
-                                    inputRef={input => this.textInputAccountAlias = input}
-                                    onSubmitEditing={() => {
-                                        this.textInputEmail._root.focus()
-                                        this.contentView._root.scrollToEnd()
-                                    }}
-                                    style={styles.color111}
-                                />
-
                                 <TextInput
                                     placeholder='Username'
                                     value={this.state.email}
@@ -545,7 +511,7 @@ const mapStateToProps = (state) => {
         tenant_name: state.user.tenant_name,
         email: state.user.emailAddress,
         accountAlias: state.user.accountAlias,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
     };
 }
 

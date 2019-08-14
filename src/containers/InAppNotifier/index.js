@@ -39,7 +39,7 @@ class InAppNotifier extends React.Component {
         }
         const headers = {
             headers: {
-                Authorization: this.props.idToken
+                Authorization: this.props.accessToken
             }
         }
 
@@ -64,7 +64,11 @@ class InAppNotifier extends React.Component {
                         this.setState({ refreshing: false })
                     }
                 }).catch((e) => {
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                    const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.loadNotifications()
+                        return
+                    }
                     this.setState({ refreshing: false })
                 })
             }
@@ -216,14 +220,15 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
 
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 

@@ -1,18 +1,18 @@
 {
     "auth": {
-        "cognito9ba52401": {
+        "cognito82420011": {
             "service": "Cognito",
             "providerPlugin": "awscloudformation"
         }
     },
     "analytics": {
-        "happyworksnativeapp": {
+        "happyworks": {
             "service": "Pinpoint",
             "providerPlugin": "awscloudformation"
         }
     },
     "notifications": {
-        "happyworksnativeapp-dev": {
+        "happyworks-dev": {
             "service": "Pinpoint",
             "channels": [
                 "FCM"

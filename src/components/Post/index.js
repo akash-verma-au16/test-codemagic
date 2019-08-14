@@ -131,14 +131,6 @@ class Post extends Component {
 
     }
 
-    //Authorization headers
-    headers = {
-        headers: {
-            Authorization: this.props.idToken
-        }
-
-    }
-
     restoreLikes = async () => {
         try {
             //Check if previous state exists
@@ -178,15 +170,27 @@ class Post extends Component {
                 }
             }
         }
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+
+        }
+
         try {
-            like_post(payload, this.headers).then((res) => {
+            like_post(payload,headers).then((res) => {
                 if (res.status === 200) {
                     this.setState({ isLiked: true })
                     AsyncStorage.setItem(this.props.postId, 'true')
                 }
 
-            }).catch((e) => {
-                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+            }).catch((error) => {
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.likePost()
+                    return
+                }
             })
         }
         catch (e) {/* error */ }
@@ -204,6 +208,13 @@ class Post extends Component {
                 }
             }
         }
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+
+        }
         const payload_2 = {
             post_id: this.props.postId,
             tenant_id: this.props.accountAlias,
@@ -211,18 +222,26 @@ class Post extends Component {
         }
         try {
 
-            like_id(payload_2, this.headers).then((response) => {
+            like_id(payload_2, headers).then((response) => {
                 payload.Data.like.like_id = response.data.data.like_id
-                unlike_post(payload, this.headers).then((res) => {
+                unlike_post(payload,headers).then((res) => {
                     if (res.status === 200) {
                         this.setState({ isLiked: false })
                         AsyncStorage.setItem(this.props.postId, 'false')
                     }
-                }).catch((e) => {
-                    checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                }).catch((error) => {
+                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                    if (!isSessionExpired) {
+                        this.unlikePost()
+                        return
+                    }
                 })
-            }).catch((e) => {
-                checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+            }).catch((error) => {
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.unlikePost()
+                    return
+                }
             })
         }
         catch (e) {/* error */ }
@@ -357,8 +376,15 @@ class Post extends Component {
                     points: this.state.addOn * this.taggedAssociates.length,
                     tagged_associates: this.taggedAssociates
                 }
+                //Authorization headers
+                const headers = {
+                    headers: {
+                        Authorization: this.props.accessToken
+                    }
+
+                }
                 try {
-                    rewards_addon(payload1, this.headers).then(async () => {
+                    rewards_addon(payload1,headers).then(async () => {
                         this.setState({ addonVisible: !this.state.addonVisible })
                         let points = this.state.addOn * this.taggedAssociates.length
                         let walletBalance = this.props.walletBalance - points
@@ -377,9 +403,13 @@ class Post extends Component {
                         );
 
                         this.setState({ addOn: "", addOnPoints: this.state.addOnPoints + points })
-                    }).catch((e) => {
+                    }).catch((error) => {
                         //Error retriving data
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                        const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        if (!isSessionExpired) {
+                            this.rewardsAddon()
+                            return
+                        }
                         this.setState({ addonVisible: false })
                     })
                 }
@@ -389,8 +419,9 @@ class Post extends Component {
                 }
             }
             else {
+                let pString = this.props.walletBalance > 1 ? ' points' : ' point'
                 ToastAndroid.showWithGravityAndOffset(
-                    'You have insufficient points: ' + this.props.walletBalance + ' points',
+                    'You have insufficient balance: ' + this.props.walletBalance + pString,
                     ToastAndroid.SHORT,
                     ToastAndroid.BOTTOM,
                     25,
@@ -624,14 +655,15 @@ const mapStateToProps = (state) => {
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
         updateWallet: (props) => dispatch({ type: dev.UPDATE_WALLET, payload: props }),
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 

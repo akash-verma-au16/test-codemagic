@@ -3,7 +3,6 @@ import {
     StyleSheet,
     ScrollView,
     RefreshControl,
-    Dimensions,
     BackHandler
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
@@ -59,13 +58,6 @@ class StrengthPosts extends React.Component {
             title: navigation.getParam('strengthType')
         }
     }
-
-    //Authorization headers
-    headers = {
-        headers: {
-            Authorization: this.props.idToken
-        }
-    }
     //profile payload
     payload = {
         "tenant_id": this.props.accountAlias,
@@ -96,13 +88,30 @@ class StrengthPosts extends React.Component {
     }
 
     handleConnectivityChange = async (isConnected) => {
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
         if (isConnected) {
             this.loadPosts()
-            this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected)
+            this.profileData = await loadProfile(this.payload, headers, this.props.isConnected)
         }
     }
     getProfile = async () => {
-        this.profileData = await loadProfile(this.payload, this.headers, this.props.isConnected);
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
+        this.profileData = await loadProfile(this.payload,headers, this.props.isConnected);
+        if (this.profileData == undefined) {
+            const isSessionExpired = checkIfSessionExpired(this.profileData, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+            if (!isSessionExpired) {
+                this.getProfile()
+                return
+            }
+        }
     }
 
     newPostHandler = () => {
@@ -132,9 +141,15 @@ class StrengthPosts extends React.Component {
             associate_id: this.props.associate_id,
             sub_type: this.props.navigation.getParam('strengthType')
         }
+
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
         if (payload.tenant_id !== "" && payload.associate_id !== "") {
             try {
-                strength_details(payload, this.headers)
+                strength_details(payload,headers)
                     .then((response) => {
                         this.posts = []
                         this.counts = []
@@ -146,8 +161,12 @@ class StrengthPosts extends React.Component {
                             item.Item.addOnPoints = this.counts[index].addOnPoints
                         })
                         this.createTiles(this.posts)
-                    }).catch((e) => {
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
+                    }).catch((error) => {
+                        const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        if (!isSessionExpired) {
+                            this.loadPosts()
+                            return
+                        }
                         this.setState({ refreshing: false })
                     })
 
@@ -268,13 +287,14 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        idToken: state.user.idToken
+        accessToken: state.user.accessToken
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 
