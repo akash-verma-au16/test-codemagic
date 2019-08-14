@@ -96,7 +96,25 @@ export default class DailyStats extends Component {
         }
     }
     renderEnergyCycle=()=>{
+        const energyPts = this.props.dailyStatsPayload.energyPts
+        this.activeEnergyPortion = energyPts
+        this.inactiveEnergyPortion = 100 - this.activeEnergyPortion
+        //Circle Middle Label
+        if(energyPts>1)
+            this.energyLabel = energyPts + ' pts'
+        else
+            this.energyLabel = energyPts + ' pt'
 
+        //Circle Circumference
+
+        //Circle Color
+        if(energyPts>=80){
+            this.activeEnergyPortionColor = this.green
+        }else if(energyPts<80 && energyPts>=50){
+            this.activeEnergyPortionColor = this.orange
+        }else{
+            this.activeEnergyPortionColor = this.red
+        }
     }
     render() {
         this.renderEnergyCycle()
@@ -167,10 +185,30 @@ export default class DailyStats extends Component {
                             legend={{
                                 enabled: false
                             }}
-                            data={this.pieData.orange}
+                            data={{
+                                dataSets: [{
+                                    values: [{value: this.activeEnergyPortion,label:''},
+                                        {value: this.inactiveEnergyPortion,label:''}
+                                    ],
+                                    label: '',
+                                    config: {
+                                        colors: [processColor(this.activeEnergyPortionColor), processColor('#eee')],
+                                        sliceSpace: 5,
+                                        labelTextSize: 18,
+                                        valueTextSize:0,
+                                        valueTextColor: processColor('white'),
+                                        selectionShift: 13,
+                                        valueFormatter: "",
+                                        valueLineColor: processColor('white'),
+                                        valueLinePart1Length: 0.5
+                                    
+                                    }
+                                }]
+                            
+                            }}
       
                             rotationEnabled={true}
-                            styledCenterText={{ text: '100', color: processColor('black'), size: 18 }}
+                            styledCenterText={{ text: this.energyLabel, color: processColor('#47309C'), size: 18 }}
                             centerTextRadiusPercent={100}
                             holeRadius={50}
 
