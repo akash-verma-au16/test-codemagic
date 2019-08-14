@@ -84,7 +84,9 @@ export default class DailyStats extends Component {
         else
             this.sleepLabel = sleepHrs + ' hr'
 
-        //Circle Circumference
+        //Remove zero hrs
+        if(sleepHrs===0)
+            this.sleepLabel=''
 
         //Circle Color
         if(sleepHrs>=8){
@@ -105,7 +107,9 @@ export default class DailyStats extends Component {
         else
             this.energyLabel = energyPts + ' pt'
 
-        //Circle Circumference
+        //Remove zero hrs
+        if(energyPts===0)
+            this.energyLabel=''
 
         //Circle Color
         if(energyPts>=80){
