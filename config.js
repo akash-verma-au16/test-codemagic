@@ -251,6 +251,6 @@ const prod_env = {
 }
 
 
-let current_env = dev_env
+let current_env = qa_env
 
 export default current_env
