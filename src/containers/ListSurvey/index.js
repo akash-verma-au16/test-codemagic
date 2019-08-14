@@ -211,10 +211,8 @@ class ListSurvey extends React.Component {
                 energyPts: response.data.data.energy[0].pts
             }
             this.setState({isDailyStatsLoading:false,dailyStatsPayload:dailyStatsPayload})
-            console.log(dailyStatsPayload)
-        }).catch((error)=>{
+        }).catch(()=>{
             this.setState({isDailyStatsLoading:false})
-            console.log(error.response)
         })
     }
     static navigationOptions = ({ navigation }) => {

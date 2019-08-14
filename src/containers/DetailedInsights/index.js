@@ -4,7 +4,6 @@ import {
     Text,
     BackHandler,
     processColor,
-    ActivityIndicator,
     RefreshControl
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
@@ -68,7 +67,7 @@ class DetailedInsights extends React.Component {
             const payload = {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id,
-                day:'Wed'
+                day:today
             }
             this.surveyData = await weekly_data(payload, headers, this.props.isConnected)
             this.sleepPoints = [] 
