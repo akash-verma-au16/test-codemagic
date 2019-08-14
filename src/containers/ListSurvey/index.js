@@ -13,7 +13,7 @@ import {
     BackHandler
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
-
+import { H2 } from 'native-base'
 /* Redux */
 import { connect } from 'react-redux'
 import { auth, dev } from '../../store/actions'
@@ -37,7 +37,7 @@ import DailyStats from '../../components/DailyStats'
 import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Custom Components */
 import { IndicatorViewPager } from 'rn-viewpager';
-
+import {daily} from '../../services/mobileDashboard'
 class ListSurvey extends React.Component {
     constructor(props) {
         super(props)
@@ -46,7 +46,9 @@ class ListSurvey extends React.Component {
             selectedTab: 0,
             myPulse: [],
             orgPulse: [],
-            funQuiz: []
+            funQuiz: [],
+            isDailyStatsLoading:true,
+            dailyStatsPayload:{}
         }
         this.MyPulse = []
         this.OrgPulse = []
@@ -190,7 +192,31 @@ class ListSurvey extends React.Component {
                 })
         }
     }
+    loadDailyStats = () =>{
+        
+        const payload = {
+            "tenant_id": this.props.accountAlias,
+            "associate_id": this.props.associate_id
+        }
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
 
+        daily(payload,headers).then((response)=>{
+            
+            const dailyStatsPayload = {
+                sleepHrs:response.data.data.sleep[0].hrs,
+                energyPts: response.data.data.energy[0].pts
+            }
+            this.setState({isDailyStatsLoading:false,dailyStatsPayload:dailyStatsPayload})
+            console.log(dailyStatsPayload)
+        }).catch((error)=>{
+            this.setState({isDailyStatsLoading:false})
+            console.log(error.response)
+        })
+    }
     static navigationOptions = ({ navigation }) => {
         return {
 
@@ -279,12 +305,35 @@ class ListSurvey extends React.Component {
         return (
 
             <Container style={{ backgroundColor: '#eee' }}>
-                <DailyStats 
-                    accountAlias={this.props.accountAlias}
-                    associate_id={this.props.associate_id}
-                    accessToken={this.props.accessToken}
-                    navigation={this.props.navigation}
-                />
+                {this.state.isDailyStatsLoading?
+                    <View style={{
+                        flex: 1,
+                        margin: 10,
+                        backgroundColor: '#fff',
+                        borderRadius: 5,
+                        shadowOffset: { width: 5, height: 5 },
+                        shadowColor: 'black',
+                        shadowOpacity: 0.5,
+                        elevation: 2,
+                        alignItems:'center'
+                    }}>
+                        <H2 style={{ margin: 20, marginBottom: 10 }}>Your Daily Stats</H2>
+                        <ActivityIndicator
+                            size='large'
+                            color='#47309C'
+                            style={{
+                                marginHorizontal: 5
+                            }}
+                        />
+                    </View>
+                    :
+                    <DailyStats
+                        navigation={this.props.navigation}
+                        isDailyStatsLoading={this.state.isDailyStatsLoading}
+                        dailyStatsPayload = {this.state.dailyStatsPayload}
+                    />
+                }
+                
                 <Content
                     contentContainerStyle={{ flex: 1 }}
                     scrollEnabled={true}
@@ -390,6 +439,7 @@ class ListSurvey extends React.Component {
                                 if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                     this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl, 'associateId': this.props.associate_id })
                                     this.loadSurveys()
+                                    this.loadDailyStats()
                                 }
                             }
                         }}
