@@ -52,7 +52,7 @@ Resources:
   # Always created
     Type: AWS::Cognito::IdentityPool
     Properties: 
-      IdentityPoolName: !If [ShouldNotCreateEnvResources, 'happyworksnativeapp_identitypool_a5cab981', !Join ['',['happyworksnativeapp_identitypool_a5cab981', '__', !Ref env]]]
+      IdentityPoolName: !If [ShouldNotCreateEnvResources, 'happyworks_identitypool_df5e0d33', !Join ['',['happyworks_identitypool_df5e0d33', '__', !Ref env]]]
             
       AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities
        
