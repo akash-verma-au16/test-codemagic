@@ -31,7 +31,7 @@ import { save_answers } from '../../services/dataApi'
 import { give_rewards } from '../../services/rewards'
 /* Utilities */
 import { IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
-
+import  moment from 'moment'
 class QuestionContainer extends React.Component {
     constructor(props) {
         super(props)
@@ -153,9 +153,7 @@ class QuestionContainer extends React.Component {
         try {
             if (this.props.isConnected) {
                 if (this.answerSet) {
-                    let event = new Date();
-                    let options = { weekday: 'short' };
-                    let today = event.toLocaleDateString('en-us', options)
+                    let today = moment().format('ddd')
                     let payload = {
                         tenant_id: this.props.tenant_id,
                         associate_id: this.props.associate_id,
