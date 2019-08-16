@@ -65,7 +65,7 @@ class DetailedInsights extends React.Component {
             const payload = {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id,
-                day:today
+                day:'Mon'
             }
             this.surveyData = await weekly_data(payload, headers, this.props.isConnected)
             this.sleepPoints = [] 
@@ -74,7 +74,7 @@ class DetailedInsights extends React.Component {
             this.energyPoints = []
             this.energyBarColors = []
 
-            for(let i=0;i<6;i++){
+            for(let i=0;i<7;i++){
 
                 //Structure Sleep Data
                 const day = this.surveyData.data.data.sleep[i].day
