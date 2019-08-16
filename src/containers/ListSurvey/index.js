@@ -38,6 +38,7 @@ import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Custom Components */
 import { IndicatorViewPager } from 'rn-viewpager';
 import {daily} from '../../services/mobileDashboard'
+import  moment from 'moment'
 class ListSurvey extends React.Component {
     constructor(props) {
         super(props)
@@ -193,10 +194,7 @@ class ListSurvey extends React.Component {
         }
     }
     loadDailyStats = () =>{
-        
-        let event = new Date();
-        let options = { weekday: 'short' };
-        let today = event.toLocaleDateString('en-us', options)
+        let today =  moment().format('ddd')
         const payload = {
             tenant_id: this.props.accountAlias,
             associate_id: this.props.associate_id,
@@ -209,16 +207,26 @@ class ListSurvey extends React.Component {
         }
 
         daily(payload,headers).then((response)=>{
+            try {
+                const dailyStatsPayload = {
+                    sleepHrs:response.data.data.sleep[0].hrs,
+                    sleepDay:response.data.data.sleep[0].day,
+                    energyPts: response.data.data.energy[0].pts,
+                    energyDay: response.data.data.energy[0].day
+                }
+                this.setState({isDailyStatsLoading:false,dailyStatsPayload:dailyStatsPayload})
+            } catch (error) {
+                //Wrong
+            }
             
+        }).catch(()=>{
             const dailyStatsPayload = {
-                sleepHrs:response.data.data.sleep[0].hrs,
-                sleepDay:response.data.data.sleep[0].day,
-                energyPts: response.data.data.energy[0].pts,
-                energyDay: response.data.data.energy[0].day
+                sleepHrs:0,
+                sleepDay:'',
+                energyPts: 0,
+                energyDay: ''
             }
             this.setState({isDailyStatsLoading:false,dailyStatsPayload:dailyStatsPayload})
-        }).catch(()=>{
-            this.setState({isDailyStatsLoading:false})
         })
     }
     static navigationOptions = ({ navigation }) => {
