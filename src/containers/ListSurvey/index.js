@@ -194,9 +194,13 @@ class ListSurvey extends React.Component {
     }
     loadDailyStats = () =>{
         
+        let event = new Date();
+        let options = { weekday: 'short' };
+        let today = event.toLocaleDateString('en-us', options)
         const payload = {
-            "tenant_id": this.props.accountAlias,
-            "associate_id": this.props.associate_id
+            tenant_id: this.props.accountAlias,
+            associate_id: this.props.associate_id,
+            day: today
         }
         const headers = {
             headers: {
