@@ -40,8 +40,8 @@
             },
             "notifications": {
                 "Pinpoint": {
-                    "Name": "happyworks-dev-prod",
-                    "Id": "46366773652247a9bee21c15235b75d5",
+                    "Name": "happyworks-prod",
+                    "Id": "0e5a9def3a544bb18a60af0273f07e9e",
                     "Region": "us-west-2"
                 }
             }

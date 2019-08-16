@@ -12,11 +12,9 @@
         }
     },
     "notifications": {
-        "happyworks-dev": {
+        "happyworks": {
             "service": "Pinpoint",
-            "channels": [
-                "FCM"
-            ]
+            "channels": []
         }
     }
 }
