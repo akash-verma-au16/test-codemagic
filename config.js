@@ -1,5 +1,5 @@
 
-export const feedbackDisplayCount = 5;
+export const feedbackDisplayCount = 37;
 
 const dev_env = {
     url: {
