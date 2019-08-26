@@ -21,6 +21,7 @@ import {
     Text,
     View
 } from 'native-base';
+import DeviceInfo from 'react-native-device-info';
 
 import { file_download } from '../../services/profile'
 import { user } from '../../store/actions'
@@ -46,6 +47,7 @@ import toSentenceCase from '../../utilities/toSentenceCase'
 import { register_device } from '../../services/pushNotification'
 import { get_associate_name, liked_post } from '../../services/post'
 import slackLogger from '../../services/slackLogger'
+
 
 class LoginPage extends React.Component {
 
@@ -471,6 +473,7 @@ class LoginPage extends React.Component {
                                 <TouchableOpacity onPress={this.forgotPasswordHandler}>
                                     <Text style={styles.navigationLink}>Forgot Password?</Text>
                                 </TouchableOpacity>
+                                <Text style={styles.appVersion}>App Version: {DeviceInfo.getVersion()}({DeviceInfo.getBuildNumber()})</Text>
                             </Animated.View>
                         </Form>
                     </View>
@@ -496,11 +499,15 @@ const styles = StyleSheet.create({
     },
     navigationLink: {
         color: '#000',
-        marginBottom: 15,
+        marginBottom: 5,
         fontWeight: 'bold'
     },
     color111: {
         color: '#111'
+    },
+    appVersion: {
+        marginBottom: 10,
+        fontSize: 12
     }
 });
 

@@ -11,6 +11,7 @@ import com.reactnativecommunity.netinfo.NetInfoPackage;
 import com.github.wuxudong.rncharts.MPAndroidChartPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.bugsnag.BugsnagReactNative;
+import com.learnium.RNDeviceInfo.RNDeviceInfo;
 
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.facebook.react.ReactNativeHost;
@@ -35,6 +36,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNDeviceInfo(),
             new RNPushNotificationPackage(),
             new RNFetchBlobPackage(),
             new PickerPackage(),
