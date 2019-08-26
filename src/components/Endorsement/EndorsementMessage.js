@@ -28,146 +28,146 @@ export default EndorsementMessage = [
     {
         'name': 'Honesty',
         'messages': [
-            "for being authentic and genuine",
-            "for showing integrity and character",
-            "for behaving ethically and morally"
+            "For being authentic and genuine",
+            "For showing integrity and character",
+            "For behaving ethically and morally"
         ]
     },
     {
         'name': 'Zest',
         'messages': [
-            "for showing extraordinary enthusiasm and energy towards tasks",
-            "for displaying extreme vitality and vigour while working",
-            "for bursting with life and energy and making everyone around active"
+            "For showing extraordinary enthusiasm and energy towards tasks",
+            "For displaying extreme vitality and vigour while working",
+            "For bursting with life and energy and making everyone around active"
         ]
     },
     {
         'name': 'Love',
         'messages': [
-            "for relating exceptionally well in the work context",
-            "for being a good friend",
-            "for being a compassionate and loving presence in the team"
+            "For relating exceptionally well in the work context",
+            "For being a good friend",
+            "For being a compassionate and loving presence in the team"
         ]
     },
     {
         'name': 'Kindness',
         'messages': [
-            "for generously helping with your time and expertise",
-            "for being a nice person and helping others",
+            "For generously helping with your time and expertise",
+            "For being a nice person and helping others",
             "For the nurturing and caring environment you help create"
         ]
     },
     {
         'name': 'Social Intelligence',
         'messages': [
-            "for making my day using your emotional intelligence",
-            "for being keenly aware of and responsive to needs of others",
-            "for displaying good understanding of people issues in the work context"
+            "For making my day using your emotional intelligence",
+            "For being keenly aware of and responsive to needs of others",
+            "For displaying good understanding of people issues in the work context"
         ]
     },
     {
         'name': 'Teamwork',
         'messages': [
-            "for keeping in mind and contributing to the common good",
-            "for exhibiting exceptional responsibility towards group outcomes",
-            "for going above and beyond while being a dedicated team player"
+            "For keeping in mind and contributing to the common good",
+            "For exhibiting exceptional responsibility towards group outcomes",
+            "For going above and beyond while being a dedicated team player"
         ]
     },
     {
         'name': 'Fairness',
         'messages': [
-            "for being fair and just in dealing with tricky and thorny people issues",
-            "for not letting your feelings overpower your rational thinking",
-            "for equitable distribution of work/ resources"
+            "For being fair and just in dealing with tricky and thorny people issues",
+            "For not letting your feelings overpower your rational thinking",
+            "For equitable distribution of work/ resources"
         ]
     },
     {
         'name': 'Leadership',
         'messages': [
-            "for showing exceptional organisational abilities leading to better group outcomes",
-            "for getting things done by the team",
-            "for encouraging and getting the best out of others"
+            "For showing exceptional organisational abilities leading to better group outcomes",
+            "For getting things done by the team",
+            "For encouraging and getting the best out of others"
         ]
     },
     {
         'name': 'Forgiveness',
         'messages': [
-            "for giving others a second chance",
-            "for not holding grudges and accepting shortcomings/ mistakes",
-            "for showing a big heart that can accommodate transgressions"
+            "For giving others a second chance",
+            "For not holding grudges and accepting shortcomings/ mistakes",
+            "For showing a big heart that can accommodate transgressions"
         ]
     },
     {
         'name': 'Humility',
         'messages': [
-            "for being modest about your achievements",
-            "for letting your work speak about you",
-            "for being down to earth and approachable"
+            "For being modest about your achievements",
+            "For letting your work speak about you",
+            "For being down to earth and approachable"
         ]
     },
     {
         'name': 'Prudence',
         'messages': [
-            "for making careful choices and decisions",
-            "for being cautious and doing proper contingency planning",
-            "for doing proper risk assessment and mitigation"
+            "For making careful choices and decisions",
+            "For being cautious and doing proper contingency planning",
+            "For doing proper risk assessment and mitigation"
         ]
     },
     {
         'name': 'Self-Regulation',
         'messages': [
-            "for managing your emotions and feelings well",
-            "for showing self - control and being disciplined in your",
-            "for taking care of long term gains in lieu of short term instant gratification’s"
+            "For managing your emotions and feelings well",
+            "For showing self - control and being disciplined in your",
+            "For taking care of long term gains in lieu of short term instant gratification’s"
         ]
     },
     {
         'name': 'Appreciation',
         'messages': [
-            "for your sense of wonder and awe",
-            "for your aesthetics eyes and design sense",
-            "for your four son excellence in all you do"
+            "For your sense of wonder and awe",
+            "For your aesthetics eyes and design sense",
+            "For your four son excellence in all you do"
         ]
     },
     {
         'name': 'Gratitude',
         'messages': [
-            "for being thankful and appreciative of others",
-            "for being thankful and expressing thankfulness",
-            "for not just acting reciprocally but paying it forward"
+            "For being thankful and appreciative of others",
+            "For being thankful and expressing thankfulness",
+            "For not just acting reciprocally but paying it forward"
         ]
     },
     {
         'name': 'Hope',
         'messages': [
-            "for always being optimistic and spreading that positive outlook",
-            "for keeping a tab on future and ensuring that the good future happens",
-            "for being optimistic and determined despite heavy odds"
+            "For always being optimistic and spreading that positive outlook",
+            "For keeping a tab on future and ensuring that the good future happens",
+            "For being optimistic and determined despite heavy odds"
         ]
     },
     {
         'name': 'Humor',
         'messages': [
-            "for your playful attitude that lights the room",
-            "for always hanging to bring a smile to others",
-            "for your lighthearted diffusion of tense situations"
+            "For your playful attitude that lights the room",
+            "For always hanging to bring a smile to others",
+            "For your lighthearted diffusion of tense situations"
         ]
     },
     {
         'name': 'Spirituality',
         'messages': [
-            "for having a strong sense of purpose and direction",
-            "for creating and endowing meaning to all that you do",
-            "for having strong and abiding values",
-            "for the connectedness and clam I feel when near you"
+            "For having a strong sense of purpose and direction",
+            "For creating and endowing meaning to all that you do",
+            "For having strong and abiding values",
+            "For the connectedness and clam I feel when near you"
         ]
     },
     {
         'name': 'Love of Learning',
         'messages': [
-            "for developing deep expertise in the domain",
-            "for systemically adding to personal and team knowledge and skills",
-            "for easily mastering new topics and skills and exhibiting steep learning curve"
+            "For developing deep expertise in the domain",
+            "For systemically adding to personal and team knowledge and skills",
+            "For easily mastering new topics and skills and exhibiting steep learning curve"
         ]
     },
     {
@@ -182,7 +182,7 @@ export default EndorsementMessage = [
         'name': 'Curiosity',
         'messages': [
             "For not being afraid about trying, exploring and questioning",
-            "for leading us down to new paths #curiosity",
+            "For leading us down to new paths #curiosity",
             "Your curiosity has always been a driving force for innovation"
         ]
     },

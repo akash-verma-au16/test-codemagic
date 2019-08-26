@@ -364,11 +364,6 @@ class ListSurvey extends React.Component {
                                     Org Pulse
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.pager.setPage(2)}>
-                                <Text style={this.state.selectedTab === 2 ? styles.tabActive : styles.tabInactive}>
-                                    Fun Quiz
-                                </Text>
-                            </TouchableOpacity>
 
                         </View>
                         <IndicatorViewPager
@@ -418,28 +413,6 @@ class ListSurvey extends React.Component {
                                     }
                                 >
                                     {this.state.orgPulse}
-                                </ScrollView>
-                            </View>
-                            <View>
-                                <ScrollView
-                                    contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
-                                    refreshControl={
-                                        <RefreshControl
-                                            refreshing={this.state.isLoading}
-                                            onRefresh={() => {
-                                                if (this.props.isConnected) {
-                                                    if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                                        this.loadSurveys()
-                                                    }
-                                                }
-                                                else {
-                                                    this.showToast()
-                                                }
-                                            }}
-                                        />
-                                    }
-                                >
-                                    {this.state.funQuiz}
                                 </ScrollView>
                             </View>
                         </IndicatorViewPager>
