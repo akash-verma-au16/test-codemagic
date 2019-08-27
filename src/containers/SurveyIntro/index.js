@@ -5,8 +5,7 @@ import {
     View,
     Dimensions,
     BackHandler,
-    Image,
-    ToastAndroid
+    Image
 } from 'react-native';
 
 /* Native Base */
@@ -71,8 +70,14 @@ class SurveyIntro extends React.Component {
                         })
                         this.setState({ isLoading: false })
                     }).catch((e) => {
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
-                        this.setState({ isLoading: false })
+                        const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        if (!isSessionExpired) {
+                            this.readSurveyHandler()
+                            return
+                        }
+                        else {
+                            this.setState({ isLoading: false })
+                        }
                     })
                 } else {
                     this.setState({ isLoading: false })
@@ -201,7 +206,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         authenticate: (props) => dispatch({ type: auth.AUTHENTICATE_USER, payload: props }),
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 
