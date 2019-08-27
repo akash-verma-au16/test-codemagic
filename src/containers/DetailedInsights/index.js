@@ -90,7 +90,7 @@ class DetailedInsights extends React.Component {
                     sleepBarColor = this.red
                 }
                 this.sleepBarColors.push(processColor(sleepBarColor))
-                this.sleepPoints.push({y: hrs})
+                this.sleepPoints.push({ y: hrs })
                 
                 //Add color for energy bar graph
                 let energyBarColor
@@ -201,6 +201,16 @@ class DetailedInsights extends React.Component {
                                             granularityEnabled: true,
                                             granularity : 1
                                         }}
+                                        yAxis={{
+                                            left: {
+                                                axisMaximum: 10,
+                                                axisMinimum:0 
+                                            },
+                                            right:{
+                                                axisMaximum: 10,
+                                                axisMinimum: 0
+                                            }
+                                        }}
                                         animation={{ durationX: 2000 }}
                                         legend={{
                                             enabled: false
@@ -265,6 +275,16 @@ class DetailedInsights extends React.Component {
                                             valueFormatter: this.sleepLabels,
                                             granularityEnabled: true,
                                             granularity : 1
+                                        }}
+                                        yAxis={{
+                                            left: {
+                                                axisMaximum: 100,
+                                                axisMinimum: 0
+                                            },
+                                            right: {
+                                                axisMaximum: 100,
+                                                axisMinimum: 0
+                                            }
                                         }}
                                         animation={{ durationX: 2000 }}
                                         legend={{

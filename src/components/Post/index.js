@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // Components from React-Native
-import { View, Text, TouchableOpacity,TouchableWithoutFeedback, ToastAndroid, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, TouchableWithoutFeedback, ToastAndroid, Alert } from 'react-native';
 // Components from Native Base
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -16,7 +16,8 @@ import { dev, auth } from '../../store/actions'
 //Cusotm component
 import VisibilityModal from '../../containers/VisibilityModal'
 
-import { like_post, unlike_post, like_id, rewards_addon } from '../../services/post' 
+import { like_post, unlike_post, like_id, rewards_addon } from '../../services/post'
+import { get_balance } from '../../services/profile'
 //React navigation
 import { withNavigation } from 'react-navigation';
 //RBAC Handler function
@@ -41,7 +42,7 @@ class Post extends Component {
             likeId: "",
             isEdit: false,
             editPostMessage: "",
-            addOnPoints: (this.props.addOn == null ? 0 : this.props.addOn), 
+            addOnPoints: (this.props.addOn == null ? 0 : this.props.addOn),
             addOn: "",
             likes: this.props.likeCount,
             comments: this.props.commentCount,
@@ -98,11 +99,10 @@ class Post extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.likeCount !== this.props.likeCount
-             || nextProps.commentCount !== this.props.commentCount
-             || nextProps.taggedAssociates !== this.props.taggedAssociates 
-             || nextProps.points !== this.props.points 
-             || nextProps.addOn !== this.props.addOn) 
-        {
+            || nextProps.commentCount !== this.props.commentCount
+            || nextProps.taggedAssociates !== this.props.taggedAssociates
+            || nextProps.points !== this.props.points
+            || nextProps.addOn !== this.props.addOn) {
             this.setState({
                 ...this.state,
                 likes: nextProps.likeCount,
@@ -150,7 +150,7 @@ class Post extends Component {
             // Error retrieving data
         }
     }
-    
+
     likePost = () => {
         /* unique id generation */
         const id = uuid.v4()
@@ -179,7 +179,7 @@ class Post extends Component {
         }
 
         try {
-            like_post(payload,headers).then((res) => {
+            like_post(payload, headers).then((res) => {
                 if (res.status === 200) {
                     this.setState({ isLiked: true })
                     AsyncStorage.setItem(this.props.postId, 'true')
@@ -224,7 +224,7 @@ class Post extends Component {
 
             like_id(payload_2, headers).then((response) => {
                 payload.Data.like.like_id = response.data.data.like_id
-                unlike_post(payload,headers).then((res) => {
+                unlike_post(payload, headers).then((res) => {
                     if (res.status === 200) {
                         this.setState({ isLiked: false })
                         AsyncStorage.setItem(this.props.postId, 'false')
@@ -274,7 +274,7 @@ class Post extends Component {
     }
 
     onIconPresshandler = (associateId) => {
-        if(this.props.isConnected) {
+        if (this.props.isConnected) {
             if (this.props.postSource == 'StrengthCount') {
                 this.props.navigation.push('Profile', {
                     associateId: associateId,
@@ -302,7 +302,7 @@ class Post extends Component {
         if (this.props.isConnected) {
             this.props.navigation.push('Profile', {
                 associateId: associateId,
-                profileData:  this.props.profileData
+                profileData: this.props.profileData
             })
         } else {
             this.noInternetToast()
@@ -346,7 +346,41 @@ class Post extends Component {
         )
     }
 
+    getBalance = () => {
+        if(this.props.isConnected) {
+            //Get Balance request payload
+            const payload = {
+                tenant_id: this.props.accountAlias,
+                associate_id: this.props.associate_id
+            }
+            //Authorization Header
+            const headers = {
+                headers: {
+                    Authorization: this.props.accessToken
+                }
+
+            }
+            try {
+                return get_balance(payload, headers).then((res) => {
+                    return res.data.data.total_points
+                })
+            }
+            catch (error) {
+                //Error retriving data
+                const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.getBalance()
+                    return
+                }
+            }
+        }
+        else {
+            this.noInternetToast()
+        }
+    }
+
     rewardsAddon = async () => {
+        let walletBalance
         if (this.props.isConnected) {
             this.taggedAssociates = []
             await this.props.taggedAssociates.map((item) => {
@@ -355,7 +389,7 @@ class Post extends Component {
                 }
             })
 
-            if (this.taggedAssociates.length == 0) { 
+            if (this.taggedAssociates.length == 0) {
                 ToastAndroid.showWithGravityAndOffset(
                     'You can not give Add-On points to yourself',
                     ToastAndroid.LONG,
@@ -366,7 +400,8 @@ class Post extends Component {
                 this.setState({ addonVisible: !this.state.addonVisible })
                 return
             }
-            if (this.props.walletBalance >= this.state.addOn * this.taggedAssociates.length) {
+            walletBalance = await this.getBalance()
+            if (walletBalance >= this.state.addOn * this.taggedAssociates.length) {
                 const payload1 = {
                     tenant_id: this.props.accountAlias,
                     associate_id: this.props.associate_id,
@@ -384,12 +419,12 @@ class Post extends Component {
 
                 }
                 try {
-                    rewards_addon(payload1,headers).then(async () => {
+                    rewards_addon(payload1, headers).then(async () => {
                         this.setState({ addonVisible: !this.state.addonVisible })
                         let points = this.state.addOn * this.taggedAssociates.length
-                        let walletBalance = this.props.walletBalance - points
+                        let wallet = walletBalance - points
                         const payload = {
-                            walletBalance: walletBalance
+                            walletBalance: wallet
                         }
                         //Update Wallet
                         this.props.updateWallet(payload)
@@ -419,9 +454,9 @@ class Post extends Component {
                 }
             }
             else {
-                let pString = this.props.walletBalance > 1 ? ' points' : ' point'
+                let pString = walletBalance > 1 ? ' points' : ' point'
                 ToastAndroid.showWithGravityAndOffset(
-                    'You have insufficient balance: ' + this.props.walletBalance + pString,
+                    'You have insufficient balance: ' + walletBalance + pString,
                     ToastAndroid.SHORT,
                     ToastAndroid.BOTTOM,
                     25,
@@ -432,13 +467,7 @@ class Post extends Component {
 
         }
         else {
-            ToastAndroid.showWithGravityAndOffset(
-                'No Internet Connection',
-                ToastAndroid.LONG,
-                ToastAndroid.BOTTOM,
-                25,
-                100,
-            );
+            this.noInternetToast()
             this.setState({ addonVisible: !this.state.addonVisible })
         }
     }
@@ -475,7 +504,7 @@ class Post extends Component {
                     style={styles.container}
                 >
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 3 }}>
-                        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center'}} onPress={() => this.onIconPresshandler(this.props.postCreator_id)}>
+                        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={() => this.onIconPresshandler(this.props.postCreator_id)}>
                             <View name='image' style={{
                                 borderRadius: 30,
                                 backgroundColor: '#47309C',
@@ -547,7 +576,7 @@ class Post extends Component {
                             </TouchableOpacity>
                         </View>
                         {this.state.addOnPoints > 0 ?
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginRight: 20}}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginRight: 20 }}>
                                 <View style={[styles.addOnView]}>
                                     <Text style={[styles.addon, { fontSize: 12 }]}>+{this.state.addOnPoints}</Text>
                                 </View>
@@ -584,7 +613,7 @@ class Post extends Component {
                     </TouchableOpacity>
                     {
                         (this.props.postCreator_id !== this.props.associate_id) ?
-                            <TouchableWithoutFeedback activeOpacity={0.8} style={styles.footerConetntView} onPress={() => {this.setState({ addonVisible: !this.state.addonVisible });this.addonButtonRef.current.bounceIn(800)} }>
+                            <TouchableWithoutFeedback activeOpacity={0.8} style={styles.footerConetntView} onPress={() => { this.setState({ addonVisible: !this.state.addonVisible }); this.addonButtonRef.current.bounceIn(800) }}>
                                 <Animatable.View useNativeDriver ref={this.addonButtonRef} style={styles.footerConetntView}>
                                     <Icon name='md-add' type={'Ionicons'} style={this.state.addonVisible ? { color: '#47309C', fontSize: 19 } : { color: '#bababa', fontSize: 19 }} />
                                     <Text style={this.state.addonVisible ? styles.footerTextActive : styles.footerTextInactive}>Add-on</Text>

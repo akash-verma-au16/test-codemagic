@@ -59,9 +59,7 @@ const ListSurveyStack = createStackNavigator({
 const TabNavigator = createBottomTabNavigator({
     Home: { screen: HomeStack },
     CreatePost: {
-        screen: CreatePostStack, navigationOptions: {
-            tabBarVisible: false
-        }
+        screen: CreatePostStack
     },
     ListSurvey: { screen: ListSurveyStack }
 },
