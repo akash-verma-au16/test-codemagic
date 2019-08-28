@@ -97,7 +97,7 @@ class CreatePost extends React.Component {
         this.props.navigation.setParams({ postSubmitHandler: this.postSubmitHandler });
         this.props.navigation.setParams({ goBack: this.goBack });
         // Hardware backpress handle
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.goBack)
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.goBack)
         this.keyboardDidShowListener = Keyboard.addListener(
             'keyboardDidShow',
             this._keyboardDidShow,
@@ -169,9 +169,8 @@ class CreatePost extends React.Component {
     }
 
     goBack = async() => {
-        if (JSON.stringify({...this.state,profileData:null}) === JSON.stringify(this.initialState)) {
+        if (JSON.stringify({...this.state,profileData:null, associateData:[]}) === JSON.stringify(this.initialState)) {
             await this.props.navigation.navigate('home')
-            return true
         }
         else {
             Alert.alert(
@@ -186,7 +185,6 @@ class CreatePost extends React.Component {
                         text: 'OK', onPress: () => {
                             this.setState(this.initialState)
                             this.props.navigation.navigate('home')
-                            return true
                         }
                     }
                 ],
@@ -777,6 +775,10 @@ class CreatePost extends React.Component {
                                 this.getProfile()
                             }
                         }
+                    }} 
+                    onWillBlur={() => {
+                        this.closeEndorseModal()
+                        this.closeGratitudeModal()
                     }}
                 />
 
