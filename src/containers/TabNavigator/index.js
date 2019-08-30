@@ -73,6 +73,7 @@ const TabNavigator = createBottomTabNavigator({
         inactiveTintColor: 'black',
         showLabel: false
     },
+    backBehavior: 'none',
     lazy: false
 }
 );

@@ -359,12 +359,12 @@ class LoginPage extends React.Component {
                                     type: 'success',
                                     duration: 3000
                                 })
-                                this.setState({ password:'' })
                                 /* navigate to forceChangePassword */
                                 this.props.navigation.navigate('ForceChangePassword', {
                                     email: this.state.email,
                                     password: this.state.password
                                 })
+                                this.setState({ password: '' })
                                 break;
                             case "ResourceNotFoundException":
                                 Toast.show({
