@@ -170,7 +170,7 @@ class Settings extends React.Component {
             onPress: () => this.props.navigation.navigate('Feedback')
         },
         {
-            key: 'App Version : ' + DeviceInfo.getVersion(),
+            key: 'App Version : ' + DeviceInfo.getVersion() + '(' + DeviceInfo.getBuildNumber() + ')',
             icon: 'md-phone-portrait'
         },
         {
