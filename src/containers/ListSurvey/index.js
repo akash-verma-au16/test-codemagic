@@ -148,7 +148,8 @@ class ListSurvey extends React.Component {
                                     surveyName: item.name,
                                     surveyDescription: item.description,
                                     surveyNote: '',
-                                    surveyLevel: item.level
+                                    surveyLevel: item.level,
+                                    surveyType: item.type
                                 })}
                                 key={index}
                             >
