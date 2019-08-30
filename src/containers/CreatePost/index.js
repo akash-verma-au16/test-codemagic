@@ -97,7 +97,7 @@ class CreatePost extends React.Component {
         this.props.navigation.setParams({ postSubmitHandler: this.postSubmitHandler });
         this.props.navigation.setParams({ goBack: this.goBack });
         // Hardware backpress handle
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.goBack)
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.goBack)
         this.keyboardDidShowListener = Keyboard.addListener(
             'keyboardDidShow',
             this._keyboardDidShow,
