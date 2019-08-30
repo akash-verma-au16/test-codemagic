@@ -62,7 +62,8 @@ class CreatePost extends React.Component {
             addPoints: 0,
             isProject: false,
             profileData: null,
-            associateData:[]
+            associateData:[],
+            createPostFocused: false
         }
         this.state = this.initialState
         this.inputTextRef = React.createRef();
@@ -93,11 +94,12 @@ class CreatePost extends React.Component {
     };
 
     componentDidMount() {
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.goBack(this.state.createPostFocused))
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
         this.props.navigation.setParams({ postSubmitHandler: this.postSubmitHandler });
         this.props.navigation.setParams({ goBack: this.goBack });
         // Hardware backpress handle
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.goBack)
+        
         this.keyboardDidShowListener = Keyboard.addListener(
             'keyboardDidShow',
             this._keyboardDidShow,
@@ -168,31 +170,31 @@ class CreatePost extends React.Component {
         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange)
     }
 
-    goBack = async() => {
-        if (JSON.stringify({...this.state,profileData:null}) === JSON.stringify(this.initialState)) {
-            await this.props.navigation.navigate('home')
-            return true
-        }
-        else {
-            Alert.alert(
-                'Are you sure?',
-                'Note will not be saved',
-                [
-                    {
-                        text: 'Cancel',
-                        style: 'cancel'
-                    },
-                    {
-                        text: 'OK', onPress: () => {
-                            this.setState(this.initialState)
-                            this.props.navigation.navigate('home')
-                            return true
+    goBack = async(isFocused) => {
+        if(isFocused) {
+            if (JSON.stringify({ ...this.state, profileData: null, associateData: [], createPostFocused: false }) === JSON.stringify(this.initialState)) {
+                await this.props.navigation.navigate('home')
+            }
+            else {
+                Alert.alert(
+                    'Are you sure?',
+                    'Note will not be saved',
+                    [
+                        {
+                            text: 'Cancel',
+                            style: 'cancel'
+                        },
+                        {
+                            text: 'OK', onPress: () => {
+                                this.setState(this.initialState)
+                                this.props.navigation.navigate('home')
+                            }
                         }
-                    }
-                ],
-                { cancelable: false },
-            )
-        }  
+                    ],
+                    { cancelable: false },
+                )
+            }  
+        }
         return true
     }
     // Submitting post handler function
@@ -769,6 +771,7 @@ class CreatePost extends React.Component {
 
                 <NavigationEvents
                     onWillFocus={async () => {
+                        await this.setState({ createPostFocused: this.props.navigation.isFocused() })
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl })
@@ -777,6 +780,11 @@ class CreatePost extends React.Component {
                                 this.getProfile()
                             }
                         }
+                    }} 
+                    onWillBlur={async() => {
+                        await this.setState({ createPostFocused: this.props.navigation.isFocused() })
+                        this.closeEndorseModal()
+                        this.closeGratitudeModal()
                     }}
                 />
 

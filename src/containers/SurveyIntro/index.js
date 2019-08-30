@@ -65,14 +65,20 @@ class SurveyIntro extends React.Component {
         if (this.surveyId) {
             this.setState({ isLoading: true }, () => {
                 if(this.props.isConnected) {
-                    read_survey(this.surveyId,headers).then(response => {
+                    read_survey(this.surveyId, headers).then(response => {
                         this.props.navigation.navigate('QuestionContainer', {
                             questionData: response.data.data
                         })
                         this.setState({ isLoading: false })
                     }).catch((e) => {
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
-                        this.setState({ isLoading: false })
+                        const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        if (!isSessionExpired) {
+                            this.readSurveyHandler()
+                            return
+                        }
+                        else {
+                            this.setState({ isLoading: false })
+                        }
                     })
                 } else {
                     this.setState({ isLoading: false })
@@ -194,14 +200,17 @@ const mapStateToProps = (state) => {
     return {
         isAuthenticate: state.isAuthenticate,
         isConnected: state.system.isConnected,
-        accessToken: state.user.accessToken
+        accessToken: state.user.accessToken,
+        associate_id: state.user.associate_id,
+        accountAlias: state.user.accountAlias
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
         authenticate: (props) => dispatch({ type: auth.AUTHENTICATE_USER, payload: props }),
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 

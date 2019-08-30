@@ -101,7 +101,7 @@ android {
         applicationId "com.joynaut"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 11
+        versionCode 12
         versionName "1.13"
     }
     signingConfigs {
@@ -145,6 +145,9 @@ android {
 }
 
 dependencies {
+    implementation (project(':react-native-device-info'), {
+        exclude group: "com.google.android.gms"
+        })
     implementation project(':@aws-amplify_pushnotification')
     implementation project(':rn-fetch-blob')
     implementation project(':react-native-image-crop-picker')

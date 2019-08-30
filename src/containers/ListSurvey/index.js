@@ -31,7 +31,10 @@ import { user_profile } from '../../services/profile'
 import nature1 from '../../assets/tileBackgrounds/nature1.jpg'
 import nature2 from '../../assets/tileBackgrounds/nature2.jpg'
 import nature3 from '../../assets/tileBackgrounds/nature3.jpeg'
+//Servicces
 import { list_survey } from '../../services/questionBank'
+import { get_survey_status } from '../../services/dataApi'
+
 import DailyStats from '../../components/DailyStats'
 //RBAC handler function
 import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
@@ -39,6 +42,7 @@ import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 import { IndicatorViewPager } from 'rn-viewpager';
 import {daily} from '../../services/mobileDashboard'
 import  moment from 'moment'
+
 class ListSurvey extends React.Component {
     constructor(props) {
         super(props)
@@ -49,7 +53,8 @@ class ListSurvey extends React.Component {
             orgPulse: [],
             funQuiz: [],
             isDailyStatsLoading:true,
-            dailyStatsPayload:{}
+            dailyStatsPayload:{},
+            listSurveyFocused: false
         }
         this.MyPulse = []
         this.OrgPulse = []
@@ -62,11 +67,18 @@ class ListSurvey extends React.Component {
     async componentDidMount() {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
         // Hardware backpress handle
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.goBack(this.state.listSurveyFocused));
+        await this.getProfile()
+    }
+
+    goBack = (isFocused) => {
+        if (isFocused) {
             this.props.navigation.navigate('home')
             return true;
-        });
-        await this.getProfile()
+        }
+        else {
+            return false
+        } 
     }
 
     getProfile = async () => {
@@ -91,6 +103,59 @@ class ListSurvey extends React.Component {
                     return
                 }
             })
+        }
+    }
+
+    getSurveyStatus = (item) => {
+        //Get a Date Object
+        var currentDate = new Date();
+        var utcDate = currentDate.toUTCString()
+
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
+        const payload = {
+            date: utcDate,
+            associate_id: this.props.associate_id,
+            survey_type: item.type,
+            survey_id: item.id,
+            tenant_id: this.props.accountAlias
+        }
+        try {
+            get_survey_status(payload, headers).then(() => {
+                this.props.navigation.navigate('SurveyIntro', {
+                    surveyId: item.id,
+                    surveyName: item.name,
+                    surveyDescription: item.description,
+                    surveyNote: '',
+                    surveyLevel: item.level
+                })
+            }).catch((e) => {
+                const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (e.response.status == 500) {
+                    ToastAndroid.showWithGravityAndOffset(
+                        e.response.data.code,
+                        ToastAndroid.SHORT,
+                        ToastAndroid.BOTTOM,
+                        25,
+                        100,
+                    );
+                    return
+                }
+                else if (!isSessionExpired) {
+                    this.getSurveyStatus(item)
+                    return
+                }
+                else {
+                    return
+                }
+            })
+        }
+        catch {
+            throw 'Something went wrong'
         }
     }
 
@@ -123,6 +188,10 @@ class ListSurvey extends React.Component {
                 tenant_id: this.props.accountAlias
             }, headers)
                 .then(response => {
+                    //Get a Date Object
+                    var currentDate = new Date();
+                    //Get Current hour
+                    const currentHour = currentDate.getHours()
                     this.MyPulse = []
                     this.OrgPulse = []
                     this.FunQuiz = []
@@ -139,13 +208,7 @@ class ListSurvey extends React.Component {
                         }
                         const card = (
                             <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate('SurveyIntro', {
-                                    surveyId: item.id,
-                                    surveyName: item.name,
-                                    surveyDescription: item.description,
-                                    surveyNote: '',
-                                    surveyLevel: item.level
-                                })}
+                                onPress={() => this.getSurveyStatus(item)}
                                 key={index}
                             >
                                 <View>
@@ -155,10 +218,16 @@ class ListSurvey extends React.Component {
                                 </View>
                             </TouchableOpacity>
                         )
-                        if (item.type === "Daily-Questionnaire") {
-                            this.MyPulse.push(card)
-
-                        } else if (item.type === "Weekly-Questionnaire") {
+                        if (item.pulse === "My Pulse") {
+                            if (item.name == "Wellbeing assessment") {
+                                this.MyPulse.push(card)
+                            }
+                            else {
+                                if (item.start_time <= currentHour && currentHour < item.end_time) {
+                                    this.MyPulse.push(card)
+                                }
+                            }
+                        } else if (item.pulse === "Org Pulse") {
                             this.OrgPulse.push(card)
                         } else {
                             this.FunQuiz.push(card)
@@ -364,11 +433,6 @@ class ListSurvey extends React.Component {
                                     Org Pulse
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.pager.setPage(2)}>
-                                <Text style={this.state.selectedTab === 2 ? styles.tabActive : styles.tabInactive}>
-                                    Fun Quiz
-                                </Text>
-                            </TouchableOpacity>
 
                         </View>
                         <IndicatorViewPager
@@ -420,33 +484,12 @@ class ListSurvey extends React.Component {
                                     {this.state.orgPulse}
                                 </ScrollView>
                             </View>
-                            <View>
-                                <ScrollView
-                                    contentContainerStyle={{ backgroundColor: '#eee', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
-                                    refreshControl={
-                                        <RefreshControl
-                                            refreshing={this.state.isLoading}
-                                            onRefresh={() => {
-                                                if (this.props.isConnected) {
-                                                    if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                                        this.loadSurveys()
-                                                    }
-                                                }
-                                                else {
-                                                    this.showToast()
-                                                }
-                                            }}
-                                        />
-                                    }
-                                >
-                                    {this.state.funQuiz}
-                                </ScrollView>
-                            </View>
                         </IndicatorViewPager>
 
                     </View>
                     <NavigationEvents
                         onWillFocus={async () => {
+                            await this.setState({ listSurveyFocused: this.props.navigation.isFocused() })
                             if (this.props.isConnected) {
                                 if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                     this.props.navigation.setParams({ 'imageUrl': this.props.imageUrl, 'associateId': this.props.associate_id })
@@ -454,6 +497,9 @@ class ListSurvey extends React.Component {
                                     this.loadDailyStats()
                                 }
                             }
+                        }}
+                        onWillBlur={async () => {
+                            await this.setState({ listSurveyFocused: this.props.navigation.isFocused() })
                         }}
                     />
 

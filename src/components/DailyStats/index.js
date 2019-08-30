@@ -77,7 +77,8 @@ export default class DailyStats extends Component {
     renderSleepCycle=()=>{
         const sleepHrs = this.props.dailyStatsPayload.sleepHrs
         this.activePortion = sleepHrs * 10
-        this.inactivePortion = 100 - this.activePortion
+        let inactivePortion = 80 - this.activePortion
+        this.inactivePortion = inactivePortion > 0 ? inactivePortion : 0
         //Circle Middle Label
         if(sleepHrs>1)
             this.sleepLabel = sleepHrs + ' hrs'

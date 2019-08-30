@@ -23,6 +23,9 @@ import {
     Icon,
     H3
 } from 'native-base';
+
+import DeviceInfo from 'react-native-device-info';
+
 /* Services */
 import { logout } from '../../services/bAuth'
 import { unregister, enable_status, disable_status } from '../../services/pushNotification'
@@ -167,7 +170,7 @@ class Settings extends React.Component {
             onPress: () => this.props.navigation.navigate('Feedback')
         },
         {
-            key: 'App Version : 1.13',
+            key: 'App Version : ' + DeviceInfo.getVersion() + '(' + DeviceInfo.getBuildNumber() + ')',
             icon: 'md-phone-portrait'
         },
         {
