@@ -23,16 +23,16 @@
             }
         }
     },
-    "qa": {
+    "prod": {
         "awscloudformation": {
-            "AuthRoleName": "happyworks-qa-20190827123336-authRole",
-            "UnauthRoleArn": "arn:aws:iam::717027884951:role/happyworks-qa-20190827123336-unauthRole",
-            "AuthRoleArn": "arn:aws:iam::717027884951:role/happyworks-qa-20190827123336-authRole",
-            "Region": "us-west-2",
-            "DeploymentBucketName": "happyworks-qa-20190827123336-deployment",
-            "UnauthRoleName": "happyworks-qa-20190827123336-unauthRole",
-            "StackName": "happyworks-qa-20190827123336",
-            "StackId": "arn:aws:cloudformation:us-west-2:717027884951:stack/happyworks-qa-20190827123336/cb55e8e0-c898-11e9-9652-0268a47876ba"
+            "AuthRoleName": "happyworks-prod-20190814154845-authRole",
+            "UnauthRoleArn": "arn:aws:iam::717027884951:role/happyworks-prod-20190814154845-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::717027884951:role/happyworks-prod-20190814154845-authRole",
+            "Region": "ap-south-1",
+            "DeploymentBucketName": "happyworks-prod-20190814154845-deployment",
+            "UnauthRoleName": "happyworks-prod-20190814154845-unauthRole",
+            "StackName": "happyworks-prod-20190814154845",
+            "StackId": "arn:aws:cloudformation:ap-south-1:717027884951:stack/happyworks-prod-20190814154845/e543d1c0-be7c-11e9-8271-06ba22c3467e"
         },
         "categories": {
             "auth": {
@@ -40,8 +40,8 @@
             },
             "notifications": {
                 "Pinpoint": {
-                    "Name": "happyworks-qa",
-                    "Id": "d9bd32ae08f54a3394ce7926acaadb00",
+                    "Name": "happyworks-prod",
+                    "Id": "0e5a9def3a544bb18a60af0273f07e9e",
                     "Region": "us-west-2"
                 }
             }
