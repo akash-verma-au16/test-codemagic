@@ -31,6 +31,7 @@ import icon from '../../assets/smily.png'
 import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Services */
 import { read_survey } from '../../services/questionBank'
+import { get_survey_status } from '../../services/dataApi'
 
 class SurveyIntro extends React.Component {
 
@@ -44,6 +45,7 @@ class SurveyIntro extends React.Component {
         this.surveyDescription = this.props.navigation.getParam('surveyDescription')
         this.surveyNote = this.props.navigation.getParam('surveyNote')
         this.surveyLevel = this.props.navigation.getParam('surveyLevel')
+        this.surveyType = this.props.navigation.getParam('surveyType')
     }
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -56,23 +58,60 @@ class SurveyIntro extends React.Component {
         this.backHandler.remove()
     }
     readSurveyHandler = () => {
+        //Get a Date Object
+        var currentDate = new Date();
+        var utcDate = currentDate.toUTCString()
         //Authorization headers
         const headers = {
             headers: {
                 Authorization: this.props.accessToken
             }
         }
+        const payload = {
+            date: utcDate,
+            associate_id: this.props.associate_id,
+            survey_type: this.surveyType,
+            survey_id: this.surveyId,
+            tenant_id: this.props.accountAlias
+        }
         if (this.surveyId) {
             this.setState({ isLoading: true }, () => {
                 if(this.props.isConnected) {
-                    read_survey(this.surveyId,headers).then(response => {
-                        this.props.navigation.navigate('QuestionContainer', {
-                            questionData: response.data.data
+                    get_survey_status(payload, headers).then(() => {
+                        read_survey(this.surveyId, headers).then(response => {
+                            this.props.navigation.navigate('QuestionContainer', {
+                                questionData: response.data.data
+                            })
+                            this.setState({ isLoading: false })
+                        }).catch((e) => {
+                            const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                            if (!isSessionExpired) {
+                                this.readSurveyHandler()
+                                return
+                            }
+                            else {
+                                this.setState({ isLoading: false })
+                            }
                         })
-                        this.setState({ isLoading: false })
                     }).catch((e) => {
-                        checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate)
-                        this.setState({ isLoading: false })
+                        const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                        if(e.response.status == 500) {
+                            ToastAndroid.showWithGravityAndOffset(
+                                e.response.data.code,
+                                ToastAndroid.LONG,
+                                ToastAndroid.BOTTOM,
+                                25,
+                                100,
+                            );
+                            this.props.navigation.goBack()
+                        }
+                        else if (!isSessionExpired) {
+                            this.readSurveyHandler()
+                            return
+                        }
+                        else {
+                            this.setState({ isLoading: false })
+                        }
                     })
                 } else {
                     this.setState({ isLoading: false })
@@ -194,14 +233,17 @@ const mapStateToProps = (state) => {
     return {
         isAuthenticate: state.isAuthenticate,
         isConnected: state.system.isConnected,
-        accessToken: state.user.accessToken
+        accessToken: state.user.accessToken,
+        associate_id: state.user.associate_id,
+        accountAlias: state.user.accountAlias
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
         authenticate: (props) => dispatch({ type: auth.AUTHENTICATE_USER, payload: props }),
-        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER })
+        deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
+        updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
     };
 }
 

@@ -123,6 +123,10 @@ class ListSurvey extends React.Component {
                 tenant_id: this.props.accountAlias
             }, headers)
                 .then(response => {
+                    //Get a Date Object
+                    var currentDate = new Date();
+                    //Get Current hour
+                    const currentHour = currentDate.getHours()
                     this.MyPulse = []
                     this.OrgPulse = []
                     this.FunQuiz = []
@@ -144,7 +148,8 @@ class ListSurvey extends React.Component {
                                     surveyName: item.name,
                                     surveyDescription: item.description,
                                     surveyNote: '',
-                                    surveyLevel: item.level
+                                    surveyLevel: item.level,
+                                    surveyType: item.type
                                 })}
                                 key={index}
                             >
@@ -156,8 +161,14 @@ class ListSurvey extends React.Component {
                             </TouchableOpacity>
                         )
                         if (item.type === "Daily-Questionnaire") {
-                            this.MyPulse.push(card)
-
+                            if (item.name == "Wellbeing assessment") {
+                                this.MyPulse.push(card)
+                            }
+                            else {
+                                if (item.start_time <= currentHour && currentHour < item.end_time) {
+                                    this.MyPulse.push(card)
+                                }
+                            }
                         } else if (item.type === "Weekly-Questionnaire") {
                             this.OrgPulse.push(card)
                         } else {
