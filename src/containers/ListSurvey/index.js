@@ -138,18 +138,19 @@ class ListSurvey extends React.Component {
                 if (e.response.status == 500) {
                     ToastAndroid.showWithGravityAndOffset(
                         e.response.data.code,
-                        ToastAndroid.LONG,
+                        ToastAndroid.SHORT,
                         ToastAndroid.BOTTOM,
                         25,
                         100,
                     );
+                    return
                 }
                 else if (!isSessionExpired) {
                     this.getSurveyStatus(item)
                     return
                 }
                 else {
-                    this.setState({ isLoading: false })
+                    return
                 }
             })
         }
