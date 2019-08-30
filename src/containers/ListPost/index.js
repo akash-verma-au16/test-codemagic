@@ -27,6 +27,7 @@ import {
 } from 'native-base';
 /* Services */
 import { news_feed, delete_post, liked_post, get_associate_name } from '../../services/post'
+import { get_survey_status } from '../../services/dataApi'
 // Config
 import { feedbackDisplayCount } from '../../../config'
 //Loading Modal
@@ -54,7 +55,7 @@ class ListPost extends React.Component {
             networkChanged: false,
             isPostDeleted: false,
             isFocused: false,
-            postList:[]
+            postList: []
         }
         this.likes = []
         this.posts = []
@@ -66,7 +67,7 @@ class ListPost extends React.Component {
         this.scrollPosition = 0
         //Carry Profile Data
         this.profileData = {}
-        this.counts = [] 
+        this.counts = []
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -182,7 +183,36 @@ class ListPost extends React.Component {
 
             if (value) {
                 // We have state!!
+
                 AsyncStorage.removeItem('pushNotificationSurvey')
+                this.getSurveyStatus(value)
+            }
+
+        } catch (error) {
+            // Error retrieving data
+        }
+    }
+
+    getSurveyStatus = (value) => {
+        //Get a Date Object
+        var currentDate = new Date();
+        var utcDate = currentDate.toUTCString()
+
+        //Authorization headers
+        const headers = {
+            headers: {
+                Authorization: this.props.accessToken
+            }
+        }
+        const payload = {
+            date: utcDate,
+            associate_id: this.props.associate_id,
+            survey_type: 'Daily-Questionnaire',
+            survey_id: value,
+            tenant_id: this.props.accountAlias
+        }
+        try {
+            get_survey_status(payload, headers).then(() => {
                 this.props.navigation.navigate('SurveyIntro', {
                     surveyId: value,
                     surveyName: 'Daily-Questionnaire',
@@ -190,12 +220,33 @@ class ListPost extends React.Component {
                     surveyNote: 'note',
                     surveyLevel: 'beginner'
                 })
-            }
+            }).catch((e) => {
+                const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (e.response.status == 500) {
+                    ToastAndroid.showWithGravityAndOffset(
+                        e.response.data.code,
+                        ToastAndroid.SHORT,
+                        ToastAndroid.BOTTOM,
+                        25,
+                        100,
+                    );
+                    return
+                }
+                else if (!isSessionExpired) {
+                    this.getSurveyStatus(value)
+                    return
+                }
+                else {
+                    return
+                }
 
-        } catch (error) {
-            // Error retrieving data
+            })
+        }
+        catch {
+            throw 'Something went wrong'
         }
     }
+
     goBack(isFocused) {
         if (isFocused) {
             Alert.alert(
@@ -219,7 +270,7 @@ class ListPost extends React.Component {
     }
 
     getAssociateNames = async () => {
-        if(this.props.isAuthenticate) {
+        if (this.props.isAuthenticate) {
             const payload = {
                 tenant_id: this.props.accountAlias
             }
@@ -281,13 +332,7 @@ class ListPost extends React.Component {
                     }
                     else if (data[2] == 'survey') {
                         if (data[3])
-                            this.props.navigation.navigate('SurveyIntro', {
-                                surveyId: data[3],
-                                surveyName: 'Daily-Questionnaire',
-                                surveyDescription: 'Daily Survey',
-                                surveyNote: 'note',
-                                surveyLevel: 'beginner'
-                            })
+                            this.getSurveyStatus(data[3])
                     }
                 }
             })
@@ -298,7 +343,7 @@ class ListPost extends React.Component {
         }
 
         this.interval = setInterval(() => {
-            if(!this.state.isPostDeleted) {
+            if (!this.state.isPostDeleted) {
                 this.loadPosts()
             }
         }, 10000);
@@ -311,9 +356,9 @@ class ListPost extends React.Component {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
         // Handling hardware backpress event
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.goBack(this.state.isFocused))
-        
+
         //  Loading profile
-        this.props.navigation.setParams({ 'profileData': this.profileData})
+        this.props.navigation.setParams({ 'profileData': this.profileData })
 
         this.gotoFeedbackPageAlert()
     }
@@ -369,7 +414,7 @@ class ListPost extends React.Component {
 
     //Loads news feed
     loadPosts = () => {
-        if(this.props.isAuthenticate) {
+        if (this.props.isAuthenticate) {
             this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
             const payload = {
                 tenant_id: this.props.accountAlias,
@@ -477,20 +522,20 @@ class ListPost extends React.Component {
                 headers: {
                     Authorization: this.props.accessToken
                 }
-            }       
+            }
             try {
                 await delete_post(payload, headers).then((res) => {
                     if (res.status === 200) {
                         var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
                         this.postList.splice(index, 1)
                         this.posts.splice(index, 1)
-                        this.setState({ postList: this.postList })  
+                        this.setState({ postList: this.postList })
                         setTimeout(() => this.setState({ isPostDeleted: false }), 2500)
                     }
                 }).catch((error) => {
                     //Error deleting Post
                     const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
-                    if(!isSessionExpired) {
+                    if (!isSessionExpired) {
                         this.deletePost(postId)
                         return
                     }
@@ -518,25 +563,25 @@ class ListPost extends React.Component {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id
             }
-            user_profile(profilePayload,headers).then((res) => {
+            user_profile(profilePayload, headers).then((res) => {
                 this.profileData = res.data.data
                 const payload = {
                     walletBalance: this.profileData.wallet_balance
                 }
                 this.props.updateWallet(payload)
-                this.props.navigation.setParams({ 'profileData': this.profileData})
-            }).catch((e) =>{
+                this.props.navigation.setParams({ 'profileData': this.profileData })
+            }).catch((e) => {
                 const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
                 if (!isSessionExpired) {
                     this.getProfile()
                     return
                 }
             })
-        }        
+        }
     }
 
     gotoFeedbackPageAlert = () => {
-        if(this.props.isAuthenticate) {
+        if (this.props.isAuthenticate) {
             if (this.props.feedbackCurrentCount % feedbackDisplayCount == 0) {
                 Alert.alert(
                     'Loving HappyWorks?',
@@ -564,16 +609,16 @@ class ListPost extends React.Component {
 
             /* Convert Array of objects to array of strings */
             let associateList = []
-            item.Item.tagged_associates.map((item)=>{
+            item.Item.tagged_associates.map((item) => {
                 associateList.push(item.associate_id)
             })
 
             /* retrive names in bulk */
-            let fetchedNameList= await AsyncStorage.multiGet(associateList)
+            let fetchedNameList = await AsyncStorage.multiGet(associateList)
 
             /* Convert to Array of objects */
-            let associateObjectList =[]
-            fetchedNameList.map(item=>{
+            let associateObjectList = []
+            fetchedNameList.map(item => {
                 associateObjectList.push({
                     associate_id: item[0],
                     associate_name: item[1]
@@ -597,13 +642,13 @@ class ListPost extends React.Component {
                     likeCount={item.Item.likeCount}
                     commentCount={item.Item.commentCount}
                     postDeleteHandler={this.deletePost}
-                    points={item.Item.points} 
+                    points={item.Item.points}
                     addOn={item.Item.addOnPoints}
                 />
             )
 
             if (posts.length == this.postList.length) {
-                setTimeout(() => this.setState({ refreshing: false, postList: this.postList}), 1500)
+                setTimeout(() => this.setState({ refreshing: false, postList: this.postList }), 1500)
             }
         })
     }
@@ -621,7 +666,7 @@ class ListPost extends React.Component {
                                 /* Show loader when manual refresh is triggered */
                                 this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
                                 if (this.props.isConnected) {
-                                    this.setState({ refreshing: true },()=> this.loadPosts())
+                                    this.setState({ refreshing: true }, () => this.loadPosts())
                                 } else {
                                     this.setState({ refreshing: false }, () => {
                                         Toast.show({
@@ -648,8 +693,8 @@ class ListPost extends React.Component {
                 </ScrollView>
 
                 <NavigationEvents
-                    onWillFocus={async() => {
-                        await this.setState({ isFocused: this.props.navigation.isFocused()})
+                    onWillFocus={async () => {
+                        await this.setState({ isFocused: this.props.navigation.isFocused() })
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
@@ -657,8 +702,8 @@ class ListPost extends React.Component {
                                 this.getAssociateNames()
                             }
                         }
-                    }} 
-                    onWillBlur = {async() => {
+                    }}
+                    onWillBlur={async () => {
                         await this.setState({ isFocused: this.props.navigation.isFocused() })
                     }}
                 />
