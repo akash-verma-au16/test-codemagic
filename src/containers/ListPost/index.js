@@ -84,7 +84,6 @@ class ListPost extends React.Component {
                 <TouchableOpacity
                     onPress={() => {
                         if (navigation.getParam('isConnected')) {
-                            const profileObj = navigation.getParam('profileData')
                             navigation.navigate('Profile', {
                                 // profileData: profileObj,
                                 associateId: navigation.getParam('associateId')
@@ -198,7 +197,7 @@ class ListPost extends React.Component {
         }
     }
     goBack(isFocused) {
-        if(isFocused) {
+        if (isFocused) {
             Alert.alert(
                 'Exit App?',
                 'Are you sure you want to exit the app?',
@@ -210,14 +209,13 @@ class ListPost extends React.Component {
                     {
                         text: 'Yes', onPress: () => {
                             BackHandler.exitApp()
-                            return true
                         }
                     }
                 ],
                 { cancelable: false },
             )
-            return true
         }
+        // return true
     }
 
     getAssociateNames = async () => {
@@ -661,7 +659,7 @@ class ListPost extends React.Component {
                         }
                     }} 
                     onWillBlur = {async() => {
-                        await this.setState({ isFocused: this.props.navigation.isFocused() }) 
+                        await this.setState({ isFocused: this.props.navigation.isFocused() })
                     }}
                 />
                 {this.state.newPostVisibility ?
