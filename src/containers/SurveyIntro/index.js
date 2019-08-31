@@ -62,35 +62,47 @@ class SurveyIntro extends React.Component {
                 Authorization: this.props.accessToken
             }
         }
-        if (this.surveyId) {
-            this.setState({ isLoading: true }, () => {
-                if(this.props.isConnected) {
-                    read_survey(this.surveyId, headers).then(response => {
-                        this.props.navigation.navigate('QuestionContainer', {
-                            questionData: response.data.data
-                        })
-                        this.setState({ isLoading: false })
-                    }).catch((e) => {
-                        const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
-                        if (!isSessionExpired) {
-                            this.readSurveyHandler()
-                            return
-                        }
-                        else {
+        if(this.props.isConnected) {
+            if (this.surveyId) {
+                this.setState({ isLoading: true }, () => {
+                    if (this.props.isConnected) {
+                        read_survey(this.surveyId, headers).then(response => {
+                            this.props.navigation.navigate('QuestionContainer', {
+                                questionData: response.data.data
+                            })
                             this.setState({ isLoading: false })
-                        }
-                    })
-                } else {
-                    this.setState({ isLoading: false })
-                    Toast.show({
-                        text: "Please connect to the internet.",
-                        type: "danger"
-                    })
-                }
+                        }).catch((e) => {
+                            const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                            if (!isSessionExpired) {
+                                this.readSurveyHandler()
+                                return
+                            }
+                            else {
+                                this.setState({ isLoading: false })
+                            }
+                        })
+                    } else {
+                        this.setState({ isLoading: false })
+                        Toast.show({
+                            text: "Please connect to the internet.",
+                            type: "danger"
+                        })
+                    }
 
-            })
+                })
 
+            }
         }
+        else {
+            ToastAndroid.showWithGravityAndOffset(
+                'Please, Connect to the internet',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+                25,
+                100,
+            );
+        }
+        
     }
 
     render() {
