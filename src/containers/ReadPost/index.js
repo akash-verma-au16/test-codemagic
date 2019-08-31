@@ -78,11 +78,6 @@ class ListPost extends React.Component {
         }
 
     }
-
-    goBack() {
-        return true
-    }
-
     async componentDidMount() {
         if (this.props.isAuthenticate) {
             this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
@@ -92,7 +87,8 @@ class ListPost extends React.Component {
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
         //Handling hardware backpress event
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            this.goBack()
+            this.props.navigation.goBack()
+            return true
         })
         //  Loading profile
         this.props.navigation.setParams({ 'profileData': this.profileData })
