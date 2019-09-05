@@ -66,14 +66,15 @@ class ForgotPassword extends React.Component {
                 if (this.state.email) {
                     forgotPassword({
                         email: this.state.email
-                    }).then(() => {
+                    }).then((res) => {
                         Toast.show({
                             text: 'OTP has been sent',
                             type: "success"
                         })
 
                         this.props.navigation.navigate('ConfirmPassword', {
-                            email: this.state.email
+                            email: this.state.email,
+                            message: res.data.message
                         })
                         this.setState({ isButtonLoading: false })
                     }).catch((error) => {
