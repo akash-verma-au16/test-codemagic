@@ -82,8 +82,7 @@ class TermsAndConditions extends React.Component {
     // Inject JS code string into WebView
     injectedJs = `
     window.addEventListener('scroll', function(e){
-        let scrollHeight = document.body.scrollHeight - 500
-        if(window.scrollY >= scrollHeight) {
+        if(window.innerHeight + window.scrollY >= document.body.offsetHeight) {
           window.postMessage("");
           return
         }
@@ -112,7 +111,7 @@ class TermsAndConditions extends React.Component {
                             <H3 style={styles.h2}>{Header.toUpperCase()}</H3>
                             <View style={styles.scrollContainer}>
                                 <WebView
-                                    source={{ uri: "http://joy-hw-privacy-policy.s3-website-ap-southeast-1.amazonaws.com" }}
+                                    source={{ uri: "https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/Terms%26Condition.html" }}
                                     ref={(r) => this.webViewref = r}
                                     javaScriptEnabled={true}
                                     injectedJavaScript={this.injectedJs}
