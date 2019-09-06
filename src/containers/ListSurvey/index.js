@@ -219,14 +219,7 @@ class ListSurvey extends React.Component {
                             </TouchableOpacity>
                         )
                         if (item.pulse === "My Pulse") {
-                            if (item.name == "Wellbeing assessment") {
-                                this.MyPulse.push(card)
-                            }
-                            else {
-                                if (item.start_time <= currentHour && currentHour < item.end_time) {
-                                    this.MyPulse.push(card)
-                                }
-                            }
+                            this.MyPulse.push(card)
                         } else if (item.pulse === "Org Pulse") {
                             this.OrgPulse.push(card)
                         } else {

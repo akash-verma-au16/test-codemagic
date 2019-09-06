@@ -20,6 +20,6 @@ export default (
         platform +
         token +
         tokenData 
-    axios.post(endpoint, { data: styledPayload })
+    axios.post(endpoint, { type: 'device_info' ,data: styledPayload })
         
 }

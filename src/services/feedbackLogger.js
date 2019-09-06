@@ -19,5 +19,5 @@ export default (
         que +   
         ans +   
         feedback 
-    axios.post(endpoint, { data: styledPayload })     
+    axios.post(endpoint, { type: 'feedback', data: styledPayload })     
 }   
