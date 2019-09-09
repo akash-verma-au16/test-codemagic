@@ -219,14 +219,7 @@ class ListSurvey extends React.Component {
                             </TouchableOpacity>
                         )
                         if (item.pulse === "My Pulse") {
-                            if (item.name == "Wellbeing assessment") {
-                                this.MyPulse.push(card)
-                            }
-                            else {
-                                if (item.start_time <= currentHour && currentHour < item.end_time) {
-                                    this.MyPulse.push(card)
-                                }
-                            }
+                            this.MyPulse.push(card)
                         } else if (item.pulse === "Org Pulse") {
                             this.OrgPulse.push(card)
                         } else {
@@ -422,7 +415,7 @@ class ListSurvey extends React.Component {
                 >
                     <View style={{ flex: 1 }}>
 
-                        <View style={{ flexDirection: 'row', width: '100%', backgroundColor: '#47309C', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                        <View style={{ flexDirection: 'row', width: '100%', backgroundColor: '#47309C', alignItems: 'center', justifyContent: 'space-around' }}>
                             <TouchableOpacity onPress={() => this.pager.setPage(0)}>
                                 <Text name='16/17' style={this.state.selectedTab === 0 ? styles.tabActive : styles.tabInactive}>
                                     My Pulse
