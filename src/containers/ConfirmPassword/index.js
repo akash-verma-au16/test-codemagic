@@ -42,6 +42,7 @@ class ConfirmPassword extends React.Component {
             shift: new Animated.Value(0),
             fade:new Animated.Value(1)
         }
+        this.message = this.props.navigation.getParam('message', 'We have sent OTP to your registered mobile number. Please check your message inbox')
         /* Refs are used to redirect the focus to the next component using keyboard button */
         this.textInputOtp = React.createRef();
         this.textInputPassword = React.createRef();
@@ -167,7 +168,7 @@ class ConfirmPassword extends React.Component {
                             <Animated.View style={styles.customForm}>
                                 <Text style={styles.header}>Enter OTP</Text>
                                 <Text style={styles.text}
-                                >We have sent OTP to your registered mobile number. Please check your message inbox</Text>
+                                >{this.message}</Text>
                                 <TextInput
                                     placeholder='One Time Password'
                                     value={this.state.otp}

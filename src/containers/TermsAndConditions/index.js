@@ -3,13 +3,14 @@ import {
     StyleSheet,
     ImageBackground,
     BackHandler,
-    ScrollView
+    NetInfo,
+    ToastAndroid,
+    WebView
 } from 'react-native';
 import {
     Form,
     Container,
     Content,
-    Text,
     H3,
     View,
     Toast
@@ -24,7 +25,6 @@ import RoundButton from '../../components/RoundButton'
 /* Assets */
 import image from '../../assets/rsz_gradient-background.png'
 
-const loremIpsum = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'
 class TermsAndConditions extends React.Component {
 
     constructor(props) {
@@ -32,45 +32,62 @@ class TermsAndConditions extends React.Component {
         this.state = {
             isButtonEnabled: false
         }
-
+        this.webViewref = React.createRef()
     }
 
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             return true;
         });
+        //Detecting network connectivity change
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+    }
+
+    handleConnectivityChange = (isConnected) => {
+        if (isConnected) {
+            this.webViewref.reload()
+        }
     }
 
     componentWillUnmount() {
+        //Removing Event Handlers
         this.backHandler.remove();
-    }
-
-    scrollHandler = (event) => {
-
-        if (!this.state.isButtonEnabled) {
-            const { contentSize, contentOffset, layoutMeasurement } = event.nativeEvent
-            const scrollPosition = Math.floor(layoutMeasurement.height + contentOffset.y)
-            const height = Math.floor(contentSize.height)
-
-            if (scrollPosition === height) {
-                this.setState({ isButtonEnabled: true })
-            }
-        }
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
     }
 
     buttonHandler = () => {
-        if(this.state.isButtonEnabled){
+        if (this.state.isButtonEnabled) {
             this.props.acceptTermsAndConditions()
             this.props.navigation.navigate('LoginPage')
-        }else{
+        } else {
             Toast.show({
                 text: 'Please read the complete document',
                 type: 'danger',
-                duration:1000
+                duration: 1000
             })
         }
-        
+
     }
+    handleOnload = () => {
+        if (!this.props.isConnected) {
+            ToastAndroid.showWithGravityAndOffset(
+                'Please, connect to the internet',
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM,
+                25,
+                100,
+            );
+        }
+    }
+    // Inject JS code string into WebView
+    injectedJs = `
+    window.addEventListener('scroll', function(e){
+        if(window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+          window.postMessage("");
+          return
+        }
+    })
+`;
 
     render() {
         const Header = 'Terms & Conditions'
@@ -93,13 +110,18 @@ class TermsAndConditions extends React.Component {
                             </React.Fragment>
                             <H3 style={styles.h2}>{Header.toUpperCase()}</H3>
                             <View style={styles.scrollContainer}>
-                                <ScrollView onScroll={this.scrollHandler} >
-                                    <Text>{loremIpsum}</Text>
-                                    <Text>{loremIpsum}</Text>
-                                    <Text>{loremIpsum}</Text>
-                                    <Text>{loremIpsum}</Text>
-                                    <Text>{loremIpsum}</Text>
-                                </ScrollView>
+                                <WebView
+                                    source={{ uri: "https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/Terms%26Condition.html" }}
+                                    ref={(r) => this.webViewref = r}
+                                    javaScriptEnabled={true}
+                                    injectedJavaScript={this.injectedJs}
+                                    onMessage={() => {
+                                        if (!this.state.isButtonEnabled) {
+                                            this.setState({ isButtonEnabled: true })
+                                        }
+                                    }}
+                                    onLoad={this.handleOnload}
+                                />
                             </View>
                             <RoundButton
                                 onPress={this.buttonHandler}
@@ -107,7 +129,7 @@ class TermsAndConditions extends React.Component {
                                 isDisabled={!this.state.isButtonEnabled}
                                 isLight={true}
                             />
-                            
+
                         </Form>
 
                     </ImageBackground>
@@ -130,25 +152,31 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%'
     },
-    h2:{
-        margin:15,
-        textAlign:"center",
-        color:'white',
-        fontWeight:"bold"
+    h2: {
+        margin: 15,
+        textAlign: "center",
+        color: 'white',
+        fontWeight: "bold"
     },
-    scrollContainer:{ 
+    scrollContainer: {
         flex: 1,
-        backgroundColor:'#fff',
-        padding:15,
-        marginBottom: 15
+        width: "100%",
+        marginBottom: 15,
+        overflow: 'hidden'
     }
 
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapStateToProps = (state) => {
     return {
-        acceptTermsAndConditions: () => dispatch({ type: system.AGREE_POLICY})
+        isConnected: state.system.isConnected
     };
 }
 
-export default connect(null, mapDispatchToProps)(TermsAndConditions)
+const mapDispatchToProps = (dispatch) => {
+    return {
+        acceptTermsAndConditions: () => dispatch({ type: system.AGREE_POLICY })
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TermsAndConditions)
