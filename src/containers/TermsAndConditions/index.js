@@ -82,8 +82,8 @@ class TermsAndConditions extends React.Component {
     // Inject JS code string into WebView
     injectedJs = `
     window.addEventListener('scroll', function(e){
-        if(window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-          window.postMessage("");
+        if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 1) {
+            window.postMessage("");
           return
         }
     })
