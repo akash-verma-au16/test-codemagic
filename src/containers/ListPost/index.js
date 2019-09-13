@@ -27,7 +27,7 @@ import {
 } from 'native-base';
 /* Services */
 import { news_feed, delete_post, liked_post, get_associate_name } from '../../services/post'
-import { get_survey_status } from '../../services/dataApi'
+
 // Config
 import { feedbackDisplayCount } from '../../../config'
 //Loading Modal
@@ -185,34 +185,6 @@ class ListPost extends React.Component {
                 // We have state!!
 
                 AsyncStorage.removeItem('pushNotificationSurvey')
-                this.getSurveyStatus(value)
-            }
-
-        } catch (error) {
-            // Error retrieving data
-        }
-    }
-
-    getSurveyStatus = (value) => {
-        //Get a Date Object
-        var currentDate = new Date();
-        var utcDate = currentDate.toUTCString()
-
-        //Authorization headers
-        const headers = {
-            headers: {
-                Authorization: this.props.accessToken
-            }
-        }
-        const payload = {
-            date: utcDate,
-            associate_id: this.props.associate_id,
-            survey_type: 'Daily-Questionnaire',
-            survey_id: value,
-            tenant_id: this.props.accountAlias
-        }
-        try {
-            get_survey_status(payload, headers).then(() => {
                 this.props.navigation.navigate('SurveyIntro', {
                     surveyId: value,
                     surveyName: 'Daily-Questionnaire',
@@ -220,30 +192,10 @@ class ListPost extends React.Component {
                     surveyNote: 'note',
                     surveyLevel: 'beginner'
                 })
-            }).catch((e) => {
-                const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
-                if (e.response.status == 500) {
-                    ToastAndroid.showWithGravityAndOffset(
-                        e.response.data.code,
-                        ToastAndroid.SHORT,
-                        ToastAndroid.BOTTOM,
-                        25,
-                        100,
-                    );
-                    return
-                }
-                else if (!isSessionExpired) {
-                    this.getSurveyStatus(value)
-                    return
-                }
-                else {
-                    return
-                }
+            }
 
-            })
-        }
-        catch {
-            throw 'Something went wrong'
+        } catch (error) {
+            // Error retrieving data
         }
     }
 
@@ -332,7 +284,13 @@ class ListPost extends React.Component {
                     }
                     else if (data[2] == 'survey') {
                         if (data[3])
-                            this.getSurveyStatus(data[3])
+                            this.props.navigation.navigate('SurveyIntro', {
+                                surveyId: data[3],
+                                surveyName: 'Daily-Questionnaire',
+                                surveyDescription: 'Daily Survey',
+                                surveyNote: 'note',
+                                surveyLevel: 'beginner'
+                            })
                     }
                 }
             })
