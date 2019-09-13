@@ -1,4 +1,3 @@
-
 export const feedbackDisplayCount = 37;
 
 const dev_env = {
@@ -214,7 +213,7 @@ const prod_env = {
         refresh_token: 'https://huykcf5gv2.execute-api.ap-south-1.amazonaws.com/prod/refresh_token',
         daily:"https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/daily_data",
         weekly_data:"https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/weekly_data",
-        get_survey_status: "https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/get_status"
+        get_survey_status:"https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/get_status"
     },
     api: {
         signup: "signup",
