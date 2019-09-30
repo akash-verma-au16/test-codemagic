@@ -162,7 +162,7 @@ class Settings extends React.Component {
         {
             key: 'Privacy Policy',
             icon: 'md-lock',
-            onPress: () => Linking.openURL('http://joy-hw-privacy-policy.s3-website-ap-southeast-1.amazonaws.com')
+            onPress: () => Linking.openURL('https://joy-hw-default-ind-m-prod.s3.ap-south-1.amazonaws.com/default/legal-documents/PrivacyPolicy.html')
         },
         {
             key: 'Feedback',

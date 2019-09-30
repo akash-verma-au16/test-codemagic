@@ -111,7 +111,7 @@ class TermsAndConditions extends React.Component {
                             <H3 style={styles.h2}>{Header.toUpperCase()}</H3>
                             <View style={styles.scrollContainer}>
                                 <WebView
-                                    source={{ uri: "https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/Terms%26Condition.html" }}
+                                    source={{ uri: "https://joy-hw-default-ind-m-prod.s3.ap-south-1.amazonaws.com/default/legal-documents/TermsOfUse.html" }}
                                     ref={(r) => this.webViewref = r}
                                     javaScriptEnabled={true}
                                     injectedJavaScript={this.injectedJs}
