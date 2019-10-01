@@ -90,7 +90,7 @@ class TermsAndConditions extends React.Component {
 `;
 
     render() {
-        const Header = 'Terms & Conditions'
+        const Header = 'Terms of Use'
         return (
 
             <Container>
@@ -125,7 +125,7 @@ class TermsAndConditions extends React.Component {
                             </View>
                             <RoundButton
                                 onPress={this.buttonHandler}
-                                value='Accept Terms & Conditions'
+                                value='Accept Terms of Use'
                                 isDisabled={!this.state.isButtonEnabled}
                                 isLight={true}
                             />
