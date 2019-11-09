@@ -74,7 +74,7 @@ const TabNavigator = createBottomTabNavigator({
         showLabel: false
     },
     backBehavior: 'none',
-    lazy: false
+    lazy: true
 }
 );
 
