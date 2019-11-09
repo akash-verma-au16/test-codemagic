@@ -42,7 +42,7 @@ import { withInAppNotification } from 'react-native-in-app-notification'
 import PushNotification from '@aws-amplify/pushnotification'
 import notificationIcon from '../../assets/Logo_High_black.png'
 
-class ListPost extends React.Component {
+class ListPost extends React.PureComponent {
     constructor(props) {
         super(props)
         this.state = {
@@ -114,19 +114,6 @@ class ListPost extends React.Component {
                 </TouchableOpacity>
             )
         };
-    };
-    componentWillMount() {
-        //Increment count to Display feedback alert
-        this.props.incrementCount()
-        this.props.navigation.setParams({ commingSoon: this.commingSoon });
-        if (this.props.isFreshInstall) {
-            this.props.navigation.navigate('TermsAndConditions')
-            return
-        } else if (!this.props.isAuthenticate) {
-            this.props.navigation.navigate('LoginPage')
-            return
-        }
-        this.loadLikes()
     }
 
     loadLikes = () => {
@@ -257,7 +244,21 @@ class ListPost extends React.Component {
         "tenant_id": this.props.accountAlias,
         "associate_id": this.props.associate_id
     }
-    async componentDidMount() {
+    
+    componentDidMount() {
+
+        //Increment count to Display feedback alert
+        this.props.incrementCount()
+        this.props.navigation.setParams({ commingSoon: this.commingSoon });
+        if (this.props.isFreshInstall) {
+            this.props.navigation.navigate('TermsAndConditions')
+            return
+        } else if (!this.props.isAuthenticate) {
+            this.props.navigation.navigate('LoginPage')
+            return
+        }
+        this.loadLikes()
+
         PushNotification.onNotification((notification) => {
             // Note that the notification object structure is different from Android and IOS
             //Display notification
@@ -504,7 +505,6 @@ class ListPost extends React.Component {
             this.showToast()
         }
     }
-  
 
     gotoFeedbackPageAlert = () => {
         if (this.props.isAuthenticate) {
