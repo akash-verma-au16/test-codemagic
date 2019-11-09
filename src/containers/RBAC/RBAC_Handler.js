@@ -32,11 +32,6 @@ export const checkIfSessionExpired = async (code, navigation, deAuthenticate, up
     try {
         let refreshingToken = await AsyncStorage.getItem('refreshingToken')
         if (code.status === 403 && (refreshingToken == 'false' || refreshingToken == null)) {
-            // const payload = {
-            //     errorCode: code.status,
-            //     source: 'Refreshing Tokens'
-            // }
-            // errorLogger(payload)
             refreshTokens(navigation, deAuthenticate, updateNewTokens)
             return false
         }

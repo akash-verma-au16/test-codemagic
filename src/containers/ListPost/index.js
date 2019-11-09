@@ -136,6 +136,8 @@ class ListPost extends React.PureComponent {
                 const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
                 if (!isSessionExpired) {
                     this.loadLikes()
+                    this.loadPosts()
+                    this.getAssociateNames()
                     return
                 }
             })
