@@ -188,10 +188,6 @@ class ListSurvey extends React.Component {
                 tenant_id: this.props.accountAlias
             }, headers)
                 .then(response => {
-                    //Get a Date Object
-                    var currentDate = new Date();
-                    //Get Current hour
-                    const currentHour = currentDate.getHours()
                     this.MyPulse = []
                     this.OrgPulse = []
                     this.FunQuiz = []

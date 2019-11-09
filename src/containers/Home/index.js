@@ -478,6 +478,7 @@ class Home extends React.Component {
                     duration: 2000
                 })
             }
+            // eslint-disable-next-line no-useless-escape
             else if (this.state.email == "" || /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.state.email) == false) {
                 Toast.show({
                     text: 'Please enter valid Email',

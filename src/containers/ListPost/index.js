@@ -34,8 +34,6 @@ import { feedbackDisplayCount } from '../../../config'
 import LoadingModal from '../LoadingModal'
 //RBAC handler function
 import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
-//Prefetch profile data
-import { user_profile } from '../../services/profile'
 /* Components */
 import { NavigationEvents } from 'react-navigation';
 
@@ -295,7 +293,6 @@ class ListPost extends React.Component {
                 }
             })
         })
-        await this.getProfile()
         if (this.props.isAuthenticate) {
             this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
         }
@@ -507,36 +504,7 @@ class ListPost extends React.Component {
             this.showToast()
         }
     }
-
-    getProfile = async () => {
-        if (this.props.isAuthenticate) {
-            //Authorization headers 
-            const headers = {
-                headers: {
-                    Authorization: this.props.accessToken
-                }
-            }
-            //profile payload
-            const profilePayload = {
-                tenant_id: this.props.accountAlias,
-                associate_id: this.props.associate_id
-            }
-            user_profile(profilePayload, headers).then((res) => {
-                this.profileData = res.data.data
-                const payload = {
-                    walletBalance: this.profileData.wallet_balance
-                }
-                this.props.updateWallet(payload)
-                this.props.navigation.setParams({ 'profileData': this.profileData })
-            }).catch((e) => {
-                const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
-                if (!isSessionExpired) {
-                    this.getProfile()
-                    return
-                }
-            })
-        }
-    }
+  
 
     gotoFeedbackPageAlert = () => {
         if (this.props.isAuthenticate) {
