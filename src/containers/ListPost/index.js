@@ -12,6 +12,8 @@ import {
     ActivityIndicator,
     Alert
 } from 'react-native';
+
+import { refreshToken } from '../../services/bAuth'
 import NetInfo from "@react-native-community/netinfo"
 import AsyncStorage from '@react-native-community/async-storage';
 import Post from '../../components/Post/index'
@@ -246,7 +248,7 @@ class ListPost extends React.PureComponent {
         "tenant_id": this.props.accountAlias,
         "associate_id": this.props.associate_id
     }
-    
+
     componentDidMount() {
 
         //Increment count to Display feedback alert
@@ -259,8 +261,6 @@ class ListPost extends React.PureComponent {
             this.props.navigation.navigate('LoginPage')
             return
         }
-        this.loadLikes()
-
         PushNotification.onNotification((notification) => {
             // Note that the notification object structure is different from Android and IOS
             //Display notification
@@ -580,6 +580,33 @@ class ListPost extends React.PureComponent {
             }
         })
     }
+    initializeAPIs = async () => {
+        const payload = {
+            refresh_token: this.props.refreshTokenKey,
+            tenant_id: this.props.accountAlias
+        }
+        const tokenExp = await AsyncStorage.getItem('accessTokenExp')
+        /* epoch time calculation */
+        const dateTime = Date.now();
+        const currentEpoc = Math.floor(dateTime / 1000);
+
+        if (tokenExp < currentEpoc) {
+            /* Token has expired */
+            refreshToken(payload).then((res) => {
+                this.props.updateNewTokens({ accessToken: res.data.payload.AccessToken })
+                // store token expire time in the local storage
+                AsyncStorage.setItem('accessTokenExp', JSON.stringify(res.data.payload.AccessTokenPayload.exp))
+                this.loadLikes()
+                this.loadPosts()
+                this.getAssociateNames()
+
+            }).catch(() => { })
+        } else {
+            this.loadLikes()
+            this.loadPosts()
+            this.getAssociateNames()
+        }
+    }
     render() {
 
         return (
@@ -626,8 +653,8 @@ class ListPost extends React.PureComponent {
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
-                                this.loadPosts()
-                                this.getAssociateNames()
+
+                                this.initializeAPIs()
                             }
                         }
                     }}
@@ -698,7 +725,8 @@ const mapStateToProps = (state) => {
         tenant_name: state.user.tenant_name,
         email: state.user.emailAddress,
         walletBalance: state.user.walletBalance,
-        feedbackCurrentCount: state.user.feedbackDisplayCount
+        feedbackCurrentCount: state.user.feedbackDisplayCount,
+        refreshTokenKey: state.user.refreshToken
     };
 }
 
