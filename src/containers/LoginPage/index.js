@@ -48,7 +48,6 @@ import { register_device } from '../../services/pushNotification'
 import { get_associate_name, liked_post } from '../../services/post'
 import slackLogger from '../../services/slackLogger'
 
-
 class LoginPage extends React.Component {
 
     constructor(props) {
@@ -69,7 +68,7 @@ class LoginPage extends React.Component {
         this.contentView = React.createRef()
     }
     componentDidMount() {
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress',this.goBack )
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.goBack)
         this.keyboardDidShowListener = Keyboard.addListener(
             'keyboardDidShow',
             this._keyboardDidShow,
@@ -252,6 +251,9 @@ class LoginPage extends React.Component {
                         email: this.state.email,
                         password: this.state.password
                     }).then((response) => {
+
+                        // store token expire time in the local storage
+                        AsyncStorage.setItem('accessTokenExp', JSON.stringify(response.data.payload.accessToken.payload.exp))
                         const accountAlias = response.data.payload.tenant_id
                         /* Restricting Super Admin Access as no Tenant Name is available to fetch */
                         if (accountAlias.trim().toLowerCase() === 'default') {
@@ -304,7 +306,7 @@ class LoginPage extends React.Component {
                                     this.likeSyncHandler({
                                         tenant_id: payload.accountAlias,
                                         associate_id: payload.associate_id
-                                    }, 
+                                    },
                                     {
                                         headers: {
                                             Authorization: payload.accessToken
@@ -320,7 +322,7 @@ class LoginPage extends React.Component {
                                             headers: {
                                                 Authorization: response.data.payload.accessToken.jwtToken
                                             }
-                                        }).then(async(res) => {
+                                        }).then(async (res) => {
                                             res.data.data.map((item) => {
                                                 AsyncStorage.setItem(item.associate_id, item.full_name)
                                             })

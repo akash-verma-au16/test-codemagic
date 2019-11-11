@@ -580,6 +580,33 @@ class ListPost extends React.PureComponent {
             }
         })
     }
+    initializeAPIs = async () => {
+        const payload = {
+            refresh_token: this.props.refreshTokenKey,
+            tenant_id: this.props.accountAlias
+        }
+        const tokenExp = await AsyncStorage.getItem('accessTokenExp')
+        /* epoch time calculation */
+        const dateTime = Date.now();
+        const currentEpoc = Math.floor(dateTime / 1000);
+
+        if (tokenExp < currentEpoc) {
+            /* Token has expired */
+            refreshToken(payload).then((res) => {
+                this.props.updateNewTokens({ accessToken: res.data.payload.AccessToken })
+                // store token expire time in the local storage
+                AsyncStorage.setItem('accessTokenExp', JSON.stringify(res.data.payload.AccessTokenPayload.exp))
+                this.loadLikes()
+                this.loadPosts()
+                this.getAssociateNames()
+
+            }).catch(() => { })
+        } else {
+            this.loadLikes()
+            this.loadPosts()
+            this.getAssociateNames()
+        }
+    }
     render() {
 
         return (
@@ -627,22 +654,7 @@ class ListPost extends React.PureComponent {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
                                 this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
 
-                                const payload = {
-                                    refresh_token: this.props.refreshTokenKey,
-                                    tenant_id: this.props.accountAlias
-                                }
-                                
-                                refreshToken(payload).then((res) => {
-
-                                    this.props.updateNewTokens({ accessToken: res.data.payload.AccessToken })
-
-                                    this.loadLikes()
-                                    this.loadPosts()
-                                    this.getAssociateNames()
-
-                                }).catch(() => {
-                                })
-
+                                this.initializeAPIs()
                             }
                         }
                     }}
