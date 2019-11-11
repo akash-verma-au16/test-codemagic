@@ -172,7 +172,7 @@ class LoginPage extends React.Component {
                         Authorization: payload.accessToken
                     }
                 }
-    
+
                 register_device(payload_2, headers).then(() => {
 
                 }).catch(() => {
@@ -210,7 +210,7 @@ class LoginPage extends React.Component {
         file_download(payload, header).then((response) => {
             this.props.imageUrl(response.data.data['download-signed-url'])
         }).catch(() => {
-            
+
         })
     }
 
@@ -469,12 +469,18 @@ class LoginPage extends React.Component {
                                 />
                                 <RoundButton
                                     onPress={this.signinHandler}
-                                    value='Sign In Now!'
+                                    value='Sign In'
                                     isLoading={this.state.isSignInLoading}
                                 />
-                                <TouchableOpacity onPress={this.forgotPasswordHandler}>
-                                    <Text style={styles.navigationLink}>Forgot Password?</Text>
-                                </TouchableOpacity>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '80%' }}>
+                                    <TouchableOpacity onPress={this.forgotPasswordHandler}>
+                                        <Text style={styles.navigationLink}>Forgot Password?</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={()=>this.props.navigation.navigate('Welcome')}>
+                                        <Text style={styles.navigationLink}>New to Happyworks?</Text>
+                                    </TouchableOpacity>
+                                </View>
+
                                 <Text style={styles.appVersion}>App Version: {DeviceInfo.getVersion()}({DeviceInfo.getBuildNumber()})</Text>
                             </Animated.View>
                         </Form>

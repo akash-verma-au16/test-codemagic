@@ -46,14 +46,16 @@ class Welcome extends React.Component {
                         <Image source={logo} style={{ width: '85%', height: 200, resizeMode: 'contain', marginTop: 30 }} />
                         <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 50 }}>
                             <Text style={styles.aboutAppText}>Healthy Minds... Healthy Returns...</Text>
-                            <Text style={styles.shortDescription}>We maximise engagement, happiness and meaning in the workplace by blending technology with psychology.</Text>
                         </View>
                         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', marginBottom: 36, width: '100%' }}>
-                            <TouchableOpacity onPress={() => Linking.openURL('http://www.modicleeinfosystem.com/Happyworks/')} activeOpacity={0.8}>
+                            <TouchableOpacity onPress={() => Linking.openURL('http://happyworks.io/')} activeOpacity={0.8}>
                                 <Text style={styles.knowMore}>KNOW MORE ABOUT HAPPYWORKS</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={() => Linking.openURL('http://portal-qa.happyworks.io/')}>
+                            <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={() => Linking.openURL('https://portal.happyworks.io/#/pages/signup-page')}>
                                 <Text style={styles.signUp}>SIGN UP</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate('LoginPage')}>
+                                <Text style={styles.backText}>Back to Login Page</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -74,15 +76,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#FFF'
     },
-    shortDescription: {
-        fontSize: 18,
+    backText:{
         textAlign: 'center',
-        color: '#ededed',
-        marginTop: 35
+        color: '#FFF'
     },
     knowMore: {
         fontWeight: '900',
-        fontSize: 17,
+        fontSize: 16,
         textAlign: 'center',
         color: '#FFF',
         textDecorationLine: 'underline'
@@ -99,7 +99,8 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#FFF',
         borderRadius: 7,
-        marginTop: 15
+        marginTop: 15,
+        marginBottom: 15
     }
 });
 
