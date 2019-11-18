@@ -193,26 +193,6 @@ class LoginPage extends React.Component {
             // Error retrieving data
         }
     }
-    /* Get image from S3 */
-    handleImageDownload = () => {
-        /* Request image*/
-        const payload = {
-            tenant_name: this.props.tenant_name + this.props.accountAlias,
-            file_name: 'logo.png',
-            associate_email: this.props.email
-        }
-        const header = {
-            headers: {
-                Authorization: this.props.accessToken
-            }
-        }
-
-        file_download(payload, header).then((response) => {
-            this.props.imageUrl(response.data.data['download-signed-url'])
-        }).catch(() => {
-
-        })
-    }
 
     showNewUserAlert = () => {
         Alert.alert(
@@ -314,7 +294,6 @@ class LoginPage extends React.Component {
                                     })
                                     this.props.authenticate(payload);
                                     //Activate Push Notofication
-                                    this.handleImageDownload()
                                     if (!this.sendToken(payload))
                                         return
                                     try {
@@ -326,7 +305,24 @@ class LoginPage extends React.Component {
                                             res.data.data.map((item) => {
                                                 AsyncStorage.setItem(item.associate_id, item.full_name)
                                             })
-                                            this.props.navigation.navigate('TabNavigator')
+
+                                            /* Request image*/
+                                            const file_download_payload = {
+                                                tenant_name: this.props.tenant_name + this.props.accountAlias,
+                                                file_name: 'logo.png',
+                                                associate_email: this.props.email
+                                            }
+                                            const header = {
+                                                headers: {
+                                                    Authorization: this.props.accessToken
+                                                }
+                                            }
+
+                                            file_download(file_download_payload, header).then((response) => {
+                                                this.props.imageUrl(response.data.data['download-signed-url'])
+                                                this.props.navigation.navigate('TabNavigator')
+                                            }).catch(() => { })
+
                                         }).catch(() => {
                                         })
                                     }
@@ -476,7 +472,7 @@ class LoginPage extends React.Component {
                                     <TouchableOpacity onPress={this.forgotPasswordHandler}>
                                         <Text style={styles.navigationLink}>Forgot Password?</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={()=>this.props.navigation.navigate('Welcome')}>
+                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('Welcome')}>
                                         <Text style={styles.navigationLink}>New to Happyworks?</Text>
                                     </TouchableOpacity>
                                 </View>
