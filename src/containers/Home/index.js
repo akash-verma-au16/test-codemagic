@@ -96,7 +96,7 @@ class Home extends React.Component {
             visibilityModalVisible: false,
             isImageLoading: false,
             photo: null,
-            imageUrl: null,
+            imageUrl: this.props.navigation.getParam('imageUrl'),
             isPostDeleted: false,
             walletBalance: this.props.walletBalance,
             strengthCount: "0"
@@ -569,7 +569,6 @@ class Home extends React.Component {
             lastName: this.props.lastName,
             email: this.userData.email,
             phoneNo: this.userData.phonenumber.slice(3).toString()
-
         })
     }
 
@@ -586,7 +585,7 @@ class Home extends React.Component {
                     {
                         text: 'Yes', onPress: () => {
                             this.setModalVisible(false)
-                            this.setState({ isEdit: false })
+                            this.setState({ isEdit: false,photo: this.state.imageUrl })
                         }
                     }
                 ],
@@ -772,7 +771,12 @@ class Home extends React.Component {
 
     /* Get image from S3 */
     handleImageDownload = () => {
-        this.setState({ isImageLoading: true })
+        if(this.props.navigation.getParam('imageUrl')){
+            this.setState({ isImageLoading: false })
+        }else{
+            this.setState({ isImageLoading: true })
+        }
+        
         /* Request image*/
         const payload = {
             tenant_name: this.props.tenantName + this.props.accountAlias,
@@ -878,15 +882,13 @@ class Home extends React.Component {
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: "100%", padding: 15 }}>
                         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '35%' }}>
                             <View style={styles.tbWrapper}>
-                                {!this.state.isImageLoading ?
+                                
                                     <Image
                                         style={{ borderRadius: 45, width: 90, height: 90 }}
                                         source={{ uri: this.state.imageUrl }}
                                         resizeMode='cover'
                                     />
-                                    :
-                                    <ActivityIndicator size='small' color='#47309C' />
-                                }
+                                    
 
                             </View>
                             {
@@ -1097,7 +1099,7 @@ class Home extends React.Component {
 
                                                 {!this.state.isImageLoading ? (
                                                     <Image
-                                                        source={{ uri: this.state.photo !== null ? this.state.photo : this.state.imageUrl }}
+                                                        source={{ uri: this.state.photo !== null ? this.state.photo : this.state.imageUrl }} 
                                                         style={styles.profilePic}
                                                     />
                                                 ) : (
