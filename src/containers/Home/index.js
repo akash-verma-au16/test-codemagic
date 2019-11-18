@@ -16,7 +16,6 @@ import {
     ToastAndroid
 } from 'react-native';
 
-import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from "@react-native-community/netinfo"
 import { user, auth } from '../../store/actions'
 import {
@@ -96,7 +95,7 @@ class Home extends React.Component {
             visibilityModalVisible: false,
             isImageLoading: false,
             photo: null,
-            imageUrl: null,
+            imageUrl: this.props.navigation.getParam('imageUrl'),
             isPostDeleted: false,
             walletBalance: this.props.walletBalance,
             strengthCount: "0"
@@ -171,12 +170,14 @@ class Home extends React.Component {
         }
 
         // Hardware backpress handle
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            this.props.navigation.goBack()
-            return true;
-        });
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress',this.goBack)
 
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange)
+    }
+
+    goBack = () => {
+        this.props.navigation.navigate('home')
+        return true
     }
 
     componentWillUnmount() {
@@ -351,23 +352,6 @@ class Home extends React.Component {
     createTiles = (posts) => {
         this.homeDataList = []
         posts.map(async (item) => {
-            /* Convert Array of objects to array of strings */
-            let associateList = []
-            item.Item.tagged_associates.map((item) => {
-                associateList.push(item.associate_id)
-            })
-
-            /* retrive names in bulk */
-            let fetchedNameList = await AsyncStorage.multiGet(associateList)
-
-            /* Convert to Array of objects */
-            let associateObjectList = []
-            fetchedNameList.map(item => {
-                associateObjectList.push({
-                    associate_id: item[0],
-                    associate_name: item[1]
-                })
-            })
 
             this.homeDataList.push(
                 // Post Component
@@ -380,7 +364,7 @@ class Home extends React.Component {
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time={item.Item.time}
                     postMessage={item.Item.message}
-                    taggedAssociates={associateObjectList}
+                    taggedAssociates={item.Item.tagged_associates}
                     strength={item.Item.sub_type}
                     type={item.Item.type}
                     associate={item.Item.associate_id}
@@ -569,7 +553,6 @@ class Home extends React.Component {
             lastName: this.props.lastName,
             email: this.userData.email,
             phoneNo: this.userData.phonenumber.slice(3).toString()
-
         })
     }
 
@@ -586,7 +569,7 @@ class Home extends React.Component {
                     {
                         text: 'Yes', onPress: () => {
                             this.setModalVisible(false)
-                            this.setState({ isEdit: false })
+                            this.setState({ isEdit: false,photo: this.state.imageUrl })
                         }
                     }
                 ],
@@ -772,7 +755,12 @@ class Home extends React.Component {
 
     /* Get image from S3 */
     handleImageDownload = () => {
-        this.setState({ isImageLoading: true })
+        if(this.props.navigation.getParam('imageUrl')){
+            this.setState({ isImageLoading: false })
+        }else{
+            this.setState({ isImageLoading: true })
+        }
+        
         /* Request image*/
         const payload = {
             tenant_name: this.props.tenantName + this.props.accountAlias,
@@ -878,16 +866,13 @@ class Home extends React.Component {
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: "100%", padding: 15 }}>
                         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '35%' }}>
                             <View style={styles.tbWrapper}>
-                                {!this.state.isImageLoading ?
-                                    <Image
-                                        style={{ borderRadius: 45, width: 90, height: 90 }}
-                                        source={{ uri: this.state.imageUrl }}
-                                        resizeMode='cover'
-                                    />
-                                    :
-                                    <ActivityIndicator size='small' color='#47309C' />
-                                }
-
+                                
+                                <Image
+                                    style={{ borderRadius: 45, width: 90, height: 90 }}
+                                    source={{ uri: this.state.imageUrl }}
+                                    resizeMode='cover'
+                                />
+                                      
                             </View>
                             {
                                 this.state.associate_id === this.props.associate_id ?
@@ -1097,7 +1082,7 @@ class Home extends React.Component {
 
                                                 {!this.state.isImageLoading ? (
                                                     <Image
-                                                        source={{ uri: this.state.photo !== null ? this.state.photo : this.state.imageUrl }}
+                                                        source={{ uri: this.state.photo !== null ? this.state.photo : this.state.imageUrl }} 
                                                         style={styles.profilePic}
                                                     />
                                                 ) : (

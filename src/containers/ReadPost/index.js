@@ -8,7 +8,6 @@ import {
     View
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
-import AsyncStorage from '@react-native-community/async-storage';
 import Post from '../../components/Post/index'
 /* Redux */
 import { connect } from 'react-redux'
@@ -180,23 +179,6 @@ class ListPost extends React.Component {
                         const likeCount = response.data.data.counts.likeCount
                         this.post = []
 
-                        /* Convert Array of objects to array of strings */
-                        let associateList = []
-                        item.tagged_associates.map((item) => {
-                            associateList.push(item.associate_id)
-                        })
-
-                        /* retrive names in bulk */
-                        let fetchedNameList = await AsyncStorage.multiGet(associateList)
-
-                        /* Convert to Array of objects */
-                        let associateObjectList = []
-                        fetchedNameList.map(item => {
-                            associateObjectList.push({
-                                associate_id: item[0],
-                                associate_name: item[1]
-                            })
-                        })
                         this.post.push(
                             // Post Component
                             <Post
@@ -208,7 +190,7 @@ class ListPost extends React.Component {
                                 time={item.time}
                                 type={item.type}
                                 postMessage={item.message}
-                                taggedAssociates={associateObjectList}
+                                taggedAssociates={item.Item.tagged_associates}
                                 strength={item.sub_type}
                                 associate={item.associate_id}
                                 likeCount={likeCount}

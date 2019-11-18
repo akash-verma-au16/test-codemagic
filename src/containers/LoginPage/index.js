@@ -45,7 +45,7 @@ import toSentenceCase from '../../utilities/toSentenceCase'
 
 /* Push notification */
 import { register_device } from '../../services/pushNotification'
-import { get_associate_name, liked_post } from '../../services/post'
+import {  liked_post } from '../../services/post'
 import slackLogger from '../../services/slackLogger'
 
 class LoginPage extends React.Component {
@@ -193,26 +193,6 @@ class LoginPage extends React.Component {
             // Error retrieving data
         }
     }
-    /* Get image from S3 */
-    handleImageDownload = () => {
-        /* Request image*/
-        const payload = {
-            tenant_name: this.props.tenant_name + this.props.accountAlias,
-            file_name: 'logo.png',
-            associate_email: this.props.email
-        }
-        const header = {
-            headers: {
-                Authorization: this.props.accessToken
-            }
-        }
-
-        file_download(payload, header).then((response) => {
-            this.props.imageUrl(response.data.data['download-signed-url'])
-        }).catch(() => {
-
-        })
-    }
 
     showNewUserAlert = () => {
         Alert.alert(
@@ -314,21 +294,29 @@ class LoginPage extends React.Component {
                                     })
                                     this.props.authenticate(payload);
                                     //Activate Push Notofication
-                                    this.handleImageDownload()
                                     if (!this.sendToken(payload))
                                         return
                                     try {
-                                        get_associate_name({ tenant_id: payload.accountAlias }, {
+                                       
+                                        /* Request image*/
+                                        const file_download_payload = {
+                                            tenant_name: this.props.tenant_name + this.props.accountAlias,
+                                            file_name: 'logo.png',
+                                            associate_email: this.props.email
+                                        }
+                                        const header = {
                                             headers: {
-                                                Authorization: response.data.payload.accessToken.jwtToken
+                                                Authorization: this.props.accessToken
                                             }
-                                        }).then(async (res) => {
-                                            res.data.data.map((item) => {
-                                                AsyncStorage.setItem(item.associate_id, item.full_name)
-                                            })
+                                        }
+
+                                        this.props.navigation.setParams({'associateId': this.props.associate_id })
+                                        
+                                        file_download(file_download_payload, header).then((response) => {
+                                            this.props.imageUrl(response.data.data['download-signed-url'])
                                             this.props.navigation.navigate('TabNavigator')
-                                        }).catch(() => {
-                                        })
+                                        }).catch(() => { })
+
                                     }
                                     catch (e) {/* error */ }
                                 }).catch((error) => {
@@ -476,7 +464,7 @@ class LoginPage extends React.Component {
                                     <TouchableOpacity onPress={this.forgotPasswordHandler}>
                                         <Text style={styles.navigationLink}>Forgot Password?</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={()=>this.props.navigation.navigate('Welcome')}>
+                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('Welcome')}>
                                         <Text style={styles.navigationLink}>New to Happyworks?</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -527,7 +515,8 @@ const mapStateToProps = (state) => {
         tenant_name: state.user.tenant_name,
         email: state.user.emailAddress,
         accountAlias: state.user.accountAlias,
-        accessToken: state.user.accessToken
+        accessToken: state.user.accessToken,
+        associate_id: state.user.associate_id
     };
 }
 
