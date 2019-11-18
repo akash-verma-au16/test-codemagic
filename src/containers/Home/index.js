@@ -171,12 +171,14 @@ class Home extends React.Component {
         }
 
         // Hardware backpress handle
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            this.props.navigation.goBack()
-            return true;
-        });
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress',this.goBack)
 
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange)
+    }
+
+    goBack = () => {
+        this.props.navigation.navigate('home')
+        return true
     }
 
     componentWillUnmount() {
@@ -883,13 +885,12 @@ class Home extends React.Component {
                         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '35%' }}>
                             <View style={styles.tbWrapper}>
                                 
-                                    <Image
-                                        style={{ borderRadius: 45, width: 90, height: 90 }}
-                                        source={{ uri: this.state.imageUrl }}
-                                        resizeMode='cover'
-                                    />
-                                    
-
+                                <Image
+                                    style={{ borderRadius: 45, width: 90, height: 90 }}
+                                    source={{ uri: this.state.imageUrl }}
+                                    resizeMode='cover'
+                                />
+                                      
                             </View>
                             {
                                 this.state.associate_id === this.props.associate_id ?

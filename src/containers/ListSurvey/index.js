@@ -76,9 +76,6 @@ class ListSurvey extends React.Component {
             this.props.navigation.navigate('home')
             return true;
         }
-        else {
-            return false
-        } 
     }
 
     getProfile = async () => {
