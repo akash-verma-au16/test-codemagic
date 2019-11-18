@@ -258,6 +258,7 @@ class Comments extends React.Component {
                     comment_id={item.comment_id} 
                     post_id={item.post_id}
                     id={item.associate_id}
+                    name={item.associate_name}
                     message={item.message}
                     time={item.time} 
                     onPress={() => this.setState({modalVisible: true})} 

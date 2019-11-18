@@ -128,6 +128,7 @@ class Likes extends React.Component {
                 <Like 
                     key={item.like_id} 
                     associateId = {item.associate_id} 
+                    associateName = {item.associate_name}
                     time= {item.time}
                 />
             )

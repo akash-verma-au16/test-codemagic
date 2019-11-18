@@ -30,7 +30,7 @@ import {
     Thumbnail
 } from 'native-base';
 /* Services */
-import { news_feed, delete_post, liked_post, get_associate_name } from '../../services/post'
+import { news_feed, delete_post, liked_post } from '../../services/post'
 
 // Config
 import { feedbackDisplayCount } from '../../../config'
@@ -140,7 +140,6 @@ class ListPost extends React.PureComponent {
                 if (!isSessionExpired) {
                     this.loadLikes()
                     this.loadPosts()
-                    this.getAssociateNames()
                     this.getProfile()
                     return
                 }
@@ -212,33 +211,6 @@ class ListPost extends React.PureComponent {
         return true
     }
 
-    getAssociateNames = async () => {
-        if (this.props.isAuthenticate) {
-            const payload = {
-                tenant_id: this.props.accountAlias
-            }
-            const headers = {
-                headers: {
-                    Authorization: this.props.accessToken
-                }
-            }
-            try {
-                await get_associate_name(payload, headers).then((res) => {
-                    res.data.data.map((item) => {
-                        AsyncStorage.setItem(item.associate_id, item.full_name)
-                    })
-                }).catch((error) => {
-                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
-                    if (!isSessionExpired) {
-                        this.getAssociateNames()
-                        return
-                    }
-                })
-            }
-            catch (e) {/* error */ }
-        }
-    }
-
     //Authorization headers
     headers = {
         headers: {
@@ -307,10 +279,6 @@ class ListPost extends React.PureComponent {
                 this.loadPosts()
             }
         }, 10000);
-
-        this.interval1 = setInterval(() => {
-            this.getAssociateNames()
-        }, 15000);
 
         //Detecting network connectivity change
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
@@ -565,26 +533,9 @@ class ListPost extends React.PureComponent {
     }
 
     createTiles = async (posts) => {
+  
         this.postList = []
         await posts.map(async (item) => {
-
-            /* Convert Array of objects to array of strings */
-            let associateList = []
-            item.Item.tagged_associates.map((item) => {
-                associateList.push(item.associate_id)
-            })
-
-            /* retrive names in bulk */
-            let fetchedNameList = await AsyncStorage.multiGet(associateList)
-
-            /* Convert to Array of objects */
-            let associateObjectList = []
-            fetchedNameList.map(item => {
-                associateObjectList.push({
-                    associate_id: item[0],
-                    associate_name: item[1]
-                })
-            })
 
             this.postList.push(
                 // Post Component
@@ -596,7 +547,7 @@ class ListPost extends React.PureComponent {
                     profileData={this.profileData}
                     time={item.Item.time}
                     postMessage={item.Item.message}
-                    taggedAssociates={associateObjectList}
+                    taggedAssociates={item.Item.tagged_associates}
                     strength={item.Item.sub_type}
                     type={item.Item.type}
                     associate={item.Item.associate_id}
@@ -631,14 +582,12 @@ class ListPost extends React.PureComponent {
                 AsyncStorage.setItem('accessTokenExp', JSON.stringify(res.data.payload.AccessTokenPayload.exp))
                 this.loadLikes()
                 this.loadPosts()
-                this.getAssociateNames()
                 this.getProfile()
 
             }).catch(() => { })
         } else {
             this.loadLikes()
             this.loadPosts()
-            this.getAssociateNames()
             this.getProfile()
         }
     }

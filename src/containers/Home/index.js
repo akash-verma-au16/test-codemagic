@@ -16,7 +16,6 @@ import {
     ToastAndroid
 } from 'react-native';
 
-import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from "@react-native-community/netinfo"
 import { user, auth } from '../../store/actions'
 import {
@@ -353,23 +352,6 @@ class Home extends React.Component {
     createTiles = (posts) => {
         this.homeDataList = []
         posts.map(async (item) => {
-            /* Convert Array of objects to array of strings */
-            let associateList = []
-            item.Item.tagged_associates.map((item) => {
-                associateList.push(item.associate_id)
-            })
-
-            /* retrive names in bulk */
-            let fetchedNameList = await AsyncStorage.multiGet(associateList)
-
-            /* Convert to Array of objects */
-            let associateObjectList = []
-            fetchedNameList.map(item => {
-                associateObjectList.push({
-                    associate_id: item[0],
-                    associate_name: item[1]
-                })
-            })
 
             this.homeDataList.push(
                 // Post Component
@@ -382,7 +364,7 @@ class Home extends React.Component {
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time={item.Item.time}
                     postMessage={item.Item.message}
-                    taggedAssociates={associateObjectList}
+                    taggedAssociates={item.Item.tagged_associates}
                     strength={item.Item.sub_type}
                     type={item.Item.type}
                     associate={item.Item.associate_id}
