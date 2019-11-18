@@ -209,7 +209,7 @@ class ListPost extends React.PureComponent {
                 { cancelable: false },
             )
         }
-        // return true
+        return true
     }
 
     getAssociateNames = async () => {
