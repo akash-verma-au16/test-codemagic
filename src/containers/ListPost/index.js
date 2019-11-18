@@ -12,6 +12,8 @@ import {
     ActivityIndicator,
     Alert
 } from 'react-native';
+//Prefetch Profile Data
+import { user_profile } from '../../services/profile'
 
 import { refreshToken } from '../../services/bAuth'
 import NetInfo from "@react-native-community/netinfo"
@@ -84,12 +86,11 @@ class ListPost extends React.PureComponent {
             headerLeft: (
                 <TouchableOpacity
                     onPress={() => {
-                        if (navigation.getParam('isConnected')) {
-                            navigation.navigate('Profile', {
-                                // profileData: profileObj,
-                                associateId: navigation.getParam('associateId')
-                            })
-                        }
+
+                        navigation.navigate('Profile', {
+                            associateId: navigation.getParam('associateId')
+                        })
+
                     }}
                     style={{
                         marginLeft: 13, alignItems: 'center', justifyContent: 'center'
@@ -140,6 +141,7 @@ class ListPost extends React.PureComponent {
                     this.loadLikes()
                     this.loadPosts()
                     this.getAssociateNames()
+                    this.getProfile()
                     return
                 }
             })
@@ -249,7 +251,7 @@ class ListPost extends React.PureComponent {
         "associate_id": this.props.associate_id
     }
 
-    componentDidMount() {
+    async componentDidMount() {
 
         //Increment count to Display feedback alert
         this.props.incrementCount()
@@ -319,6 +321,7 @@ class ListPost extends React.PureComponent {
         this.props.navigation.setParams({ 'profileData': this.profileData })
 
         this.gotoFeedbackPageAlert()
+        await this.getProfile()
     }
 
     componentWillUnmount() {
@@ -370,10 +373,40 @@ class ListPost extends React.PureComponent {
         );
     }
 
+    getProfile = async () => {
+        if (this.props.isAuthenticate) {
+            //Authorization headers 
+            const headers = {
+                headers: {
+                    Authorization: this.props.accessToken
+                }
+            }
+            //profile payload
+            const profilePayload = {
+                tenant_id: this.props.accountAlias,
+                associate_id: this.props.associate_id
+            }
+            user_profile(profilePayload, headers).then((res) => {
+                this.profileData = res.data.data
+                const payload = {
+                    walletBalance: this.profileData.wallet_balance
+                }
+                this.props.updateWallet(payload)
+                this.props.navigation.setParams({ 'profileData': this.profileData })
+            }).catch((e) => {
+                const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.getProfile()
+                    return
+                }
+            })
+        }
+    }
+
     //Loads news feed
     loadPosts = () => {
         if (this.props.isAuthenticate) {
-            this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
+            this.props.navigation.setParams({ 'imageUrl': this.props.imagelink, 'associateId': this.props.associate_id })
             const payload = {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id
@@ -599,12 +632,14 @@ class ListPost extends React.PureComponent {
                 this.loadLikes()
                 this.loadPosts()
                 this.getAssociateNames()
+                this.getProfile()
 
             }).catch(() => { })
         } else {
             this.loadLikes()
             this.loadPosts()
             this.getAssociateNames()
+            this.getProfile()
         }
     }
     render() {
@@ -619,7 +654,7 @@ class ListPost extends React.PureComponent {
                             refreshing={this.state.refreshing} //this.props.isConnected
                             onRefresh={() => {
                                 /* Show loader when manual refresh is triggered */
-                                this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
+                                this.props.navigation.setParams({ 'imageUrl': this.props.imagelink, 'associateId': this.props.associate_id })
                                 if (this.props.isConnected) {
                                     this.setState({ refreshing: true }, () => this.loadPosts())
                                 } else {
@@ -652,7 +687,7 @@ class ListPost extends React.PureComponent {
                         await this.setState({ isFocused: this.props.navigation.isFocused() })
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
+                                this.props.navigation.setParams({ 'imageUrl': this.props.imagelink, 'associateId': this.props.associate_id })
 
                                 this.initializeAPIs()
                             }

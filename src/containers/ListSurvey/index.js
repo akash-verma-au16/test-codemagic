@@ -296,11 +296,11 @@ class ListSurvey extends React.Component {
             headerLeft: (
                 <TouchableOpacity
                     onPress={() => {
-                        if (navigation.getParam('isConnected')) {
-                            navigation.navigate('Profile', {
-                                associateId: navigation.getParam('associateId')
-                            })
-                        }
+                        
+                        navigation.navigate('Profile', {
+                            associateId: navigation.getParam('associateId')
+                        })
+                        
                     }}
                     style={{ marginLeft: 13, alignItems: 'center', justifyContent: 'center' }}
                 >

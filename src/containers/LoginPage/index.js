@@ -318,6 +318,8 @@ class LoginPage extends React.Component {
                                                 }
                                             }
 
+                                            this.props.navigation.setParams({'associateId': this.props.associate_id })
+                                            
                                             file_download(file_download_payload, header).then((response) => {
                                                 this.props.imageUrl(response.data.data['download-signed-url'])
                                                 this.props.navigation.navigate('TabNavigator')
@@ -523,7 +525,8 @@ const mapStateToProps = (state) => {
         tenant_name: state.user.tenant_name,
         email: state.user.emailAddress,
         accountAlias: state.user.accountAlias,
-        accessToken: state.user.accessToken
+        accessToken: state.user.accessToken,
+        associate_id: state.user.associate_id
     };
 }
 
