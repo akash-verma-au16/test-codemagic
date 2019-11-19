@@ -186,6 +186,7 @@ class ListPost extends React.Component {
                                 postId={item.post_id}
                                 privacy={item.privacy}
                                 postCreator_id={item.associate_id}
+                                userName={item.Item.associate_name}
                                 profileData={item.associate_id == this.props.associate_id ? this.profileData : {}}
                                 time={item.time}
                                 type={item.type}

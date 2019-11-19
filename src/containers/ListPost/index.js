@@ -544,6 +544,7 @@ class ListPost extends React.PureComponent {
                     postId={item.Item.post_id}
                     privacy={item.Item.privacy}
                     postCreator_id={item.Item.associate_id}
+                    userName={item.Item.associate_name}
                     profileData={this.profileData}
                     time={item.Item.time}
                     postMessage={item.Item.message}

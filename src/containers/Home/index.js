@@ -361,6 +361,7 @@ class Home extends React.Component {
                     postId={item.Item.post_id}
                     privacy={item.Item.privacy}
                     postCreator_id={item.Item.associate_id}
+                    userName={item.Item.associate_name}
                     profileData={item.Item.associate_id == this.props.associate_id ? this.profileData : {}}
                     time={item.Item.time}
                     postMessage={item.Item.message}

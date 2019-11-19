@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "android-emulator": "emulator -avd Pixel_2_XL_API_28 -netdelay none -netspeed full",
+    "adb-connect": "adb reverse tcp:8081 tcp:8081",
     "android": "react-native run-android",
     "build-apk": "cd android && ./gradlew assembleRelease",
     "debug-windows": "cd debugger && react-native-debugger.exe",
