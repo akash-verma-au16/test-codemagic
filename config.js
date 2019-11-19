@@ -43,7 +43,8 @@ const dev_env = {
         disable_status: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/disable_status',
         refresh_token: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com/dev/refresh_token",
         daily:"https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/daily_data",
-        weekly_data:"https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/weekly_data",
+        weekly_sleep: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/weekly_sleep",
+        weekly_energy: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/weekly_energy",
         get_survey_status: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/get_status"
     },
     api: {
