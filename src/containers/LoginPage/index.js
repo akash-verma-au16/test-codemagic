@@ -121,7 +121,6 @@ class LoginPage extends React.Component {
     }
 
     componentWillUnmount() {
-        this.backHandler.remove()
         this.keyboardDidShowListener.remove();
         this.keyboardDidHideListener.remove();
     }
