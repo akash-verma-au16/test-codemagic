@@ -143,7 +143,6 @@ class DetailedInsights extends React.Component {
                 end_date: this.energyEndDate
             }
             this.energyData = await weekly_energy(payload, headers)
-            console.log('weekly_energy',this.energyData)
             this.energyPoints = []
             this.energyBarColors = []
             this.energyLabel = []
@@ -215,8 +214,9 @@ class DetailedInsights extends React.Component {
     }
 
     render() {
-        let sleepRange = moment().isBetween(this.sleepStartDate, this.sleepEndDate)
-        let energyRange = moment().isBetween(this.energyStartDate, this.energyEndDate)
+        // enable | disable to next button
+        let sleepRange = this.sleepEndDate === moment().format("YYYY-MM-DD") ? true : false
+        let energyRange = this.energyEndDate === moment().format("YYYY-MM-DD")? true : false
 
         return (
 
