@@ -192,6 +192,7 @@ class StrengthPosts extends React.Component {
                     postSource = 'StrengthCount'
                     privacy={item.Item.privacy}
                     postCreator_id={item.Item.associate_id}
+                    userName={item.Item.associate_name}
                     profileData={this.profileData}
                     time={item.Item.time}
                     postMessage={item.Item.message}

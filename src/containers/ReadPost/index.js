@@ -173,7 +173,6 @@ class ListPost extends React.Component {
 
                 read_post(read_post_payload, headers)
                     .then(async (response) => {
-
                         const item = response.data.data.posts.Item
                         const commentCount = response.data.data.counts.commentCount
                         const likeCount = response.data.data.counts.likeCount
@@ -186,11 +185,12 @@ class ListPost extends React.Component {
                                 postId={item.post_id}
                                 privacy={item.privacy}
                                 postCreator_id={item.associate_id}
+                                userName={item.associate_name}
                                 profileData={item.associate_id == this.props.associate_id ? this.profileData : {}}
                                 time={item.time}
                                 type={item.type}
                                 postMessage={item.message}
-                                taggedAssociates={item.Item.tagged_associates}
+                                taggedAssociates={item.tagged_associates}
                                 strength={item.sub_type}
                                 associate={item.associate_id}
                                 likeCount={likeCount}
