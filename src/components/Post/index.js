@@ -668,7 +668,6 @@ class Post extends Component {
 const mapStateToProps = (state) => {
     return {
         walletBalance: state.user.walletBalance,
-        userName: state.user.firstName + " " + state.user.lastName,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         isConnected: state.system.isConnected,
