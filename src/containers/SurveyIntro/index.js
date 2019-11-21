@@ -32,6 +32,9 @@ import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Services */
 import { read_survey } from '../../services/questionBank'
 
+import { refreshToken } from '../../services/bAuth'
+import AsyncStorage from '@react-native-community/async-storage';
+
 class SurveyIntro extends React.Component {
 
     constructor(props) {
@@ -54,6 +57,35 @@ class SurveyIntro extends React.Component {
 
     componentWillUnmount() {
         this.backHandler.remove()
+    }
+
+    updateRefreshToken = async () => {
+
+        this.setState({ isLoading: true })
+        const payload = {
+            refresh_token: this.props.refreshTokenKey,
+            tenant_id: this.props.accountAlias
+        }
+        
+        const tokenExp = await AsyncStorage.getItem('accessTokenExp')
+        /* epoch time calculation */
+        const dateTime = Date.now();
+        const currentEpoc = Math.floor(dateTime / 1000);
+
+        if (tokenExp < currentEpoc) {
+            /* Token has expired */
+            refreshToken(payload).then((res) => {
+                this.props.updateNewTokens({ accessToken: res.data.payload.AccessToken })
+                // store token expire time in the local storage
+                AsyncStorage.setItem('accessTokenExp', JSON.stringify(res.data.payload.AccessTokenPayload.exp))
+                this.readSurveyHandler()
+
+            }).catch(() => {
+                this.setState({ isLoading: false })
+            })
+        } else {
+            this.readSurveyHandler()
+        }
     }
     readSurveyHandler = () => {
         //Authorization headers
@@ -137,7 +169,7 @@ class SurveyIntro extends React.Component {
                                     
                                 </View>
                                 <RoundButton
-                                    onPress={this.readSurveyHandler}
+                                    onPress={this.updateRefreshToken}
                                     value='start'
                                     isLoading={this.state.isLoading}
                                     isLight={false}
@@ -214,7 +246,8 @@ const mapStateToProps = (state) => {
         isConnected: state.system.isConnected,
         accessToken: state.user.accessToken,
         associate_id: state.user.associate_id,
-        accountAlias: state.user.accountAlias
+        accountAlias: state.user.accountAlias,
+        refreshTokenKey: state.user.refreshToken
     };
 }
 
