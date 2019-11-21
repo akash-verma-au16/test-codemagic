@@ -30,6 +30,8 @@ import Analytics from '@aws-amplify/analytics';
 import PushNotification from '@aws-amplify/pushnotification';
 import awsconfig from '../../../aws-exports';
 
+import { refreshToken } from '../../services/bAuth'
+import AsyncStorage from '@react-native-community/async-storage';
 // retrieve temporary AWS credentials and sign requests
 Auth.configure(awsconfig);
 // send analytics events to Amazon Pinpoint
@@ -130,9 +132,36 @@ class ListPost extends React.Component {
             this.setState({
                 networkChanged: true
             }, async () => {
-                await this.getProfile()
-                this.loadPosts()
+                await this.updateRefreshToken()
             })
+        }
+    }
+
+    updateRefreshToken = async () => {
+
+        const payload = {
+            refresh_token: this.props.refreshTokenKey,
+            tenant_id: this.props.accountAlias
+        }
+        
+        const tokenExp = await AsyncStorage.getItem('accessTokenExp')
+        /* epoch time calculation */
+        const dateTime = Date.now();
+        const currentEpoc = Math.floor(dateTime / 1000);
+
+        if (tokenExp < currentEpoc) {
+            /* Token has expired */
+            refreshToken(payload).then((res) => {
+                this.props.updateNewTokens({ accessToken: res.data.payload.AccessToken })
+                // store token expire time in the local storage
+                AsyncStorage.setItem('accessTokenExp', JSON.stringify(res.data.payload.AccessTokenPayload.exp))
+                this.getProfile()
+                this.loadPosts()
+
+            }).catch(() => {})
+        } else {
+            this.getProfile()
+            this.loadPosts()
         }
     }
 
@@ -282,7 +311,8 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        accessToken: state.user.accessToken
+        accessToken: state.user.accessToken,
+        refreshTokenKey: state.user.refreshToken
     };
 }
 

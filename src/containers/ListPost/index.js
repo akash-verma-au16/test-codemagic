@@ -177,8 +177,8 @@ class ListPost extends React.PureComponent {
                 AsyncStorage.removeItem('pushNotificationSurvey')
                 this.props.navigation.navigate('SurveyIntro', {
                     surveyId: value,
-                    surveyName: 'Daily-Questionnaire',
-                    surveyDescription: 'Daily Survey',
+                    surveyName: 'Please Wait..',
+                    surveyDescription: '',
                     surveyNote: 'note',
                     surveyLevel: 'beginner'
                 })
@@ -261,8 +261,8 @@ class ListPost extends React.PureComponent {
                         if (data[3])
                             this.props.navigation.navigate('SurveyIntro', {
                                 surveyId: data[3],
-                                surveyName: 'Daily-Questionnaire',
-                                surveyDescription: 'Daily Survey',
+                                surveyName: 'Please Wait..',
+                                surveyDescription: '',
                                 surveyNote: 'note',
                                 surveyLevel: 'beginner'
                             })
