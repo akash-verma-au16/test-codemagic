@@ -1,5 +1,9 @@
 export const feedbackDisplayCount = 37;
 
+export const PrivacyPolicy = 'https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/PrivacyPolicy.html'
+
+export const TermsOfUse = 'https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/Terms%26Condition.html'
+
 const dev_env = {
     url: {
         dev: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com",
