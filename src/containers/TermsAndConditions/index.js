@@ -25,6 +25,7 @@ import RoundButton from '../../components/RoundButton'
 /* Assets */
 import image from '../../assets/rsz_gradient-background.png'
 
+import {TermsOfUse} from '../../../config'
 class TermsAndConditions extends React.Component {
 
     constructor(props) {
@@ -90,7 +91,7 @@ class TermsAndConditions extends React.Component {
 `;
 
     render() {
-        const Header = 'Terms & Conditions'
+        const Header = 'Terms of Use'
         return (
 
             <Container>
@@ -111,7 +112,7 @@ class TermsAndConditions extends React.Component {
                             <H3 style={styles.h2}>{Header.toUpperCase()}</H3>
                             <View style={styles.scrollContainer}>
                                 <WebView
-                                    source={{ uri: "https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/Terms%26Condition.html" }}
+                                    source={{ uri: TermsOfUse}}
                                     ref={(r) => this.webViewref = r}
                                     javaScriptEnabled={true}
                                     injectedJavaScript={this.injectedJs}
