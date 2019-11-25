@@ -1,5 +1,9 @@
 export const feedbackDisplayCount = 37;
 
+export const PrivacyPolicy = 'https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/PrivacyPolicy.html'
+
+export const TermsOfUse = 'https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/Terms%26Condition.html'
+
 const dev_env = {
     url: {
         dev: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com",
@@ -33,7 +37,6 @@ const dev_env = {
         edit_post_addon: "https://8pko2dfqvi.execute-api.ap-south-1.amazonaws.com/dev/reward/share_addon",
         new_associate_notify: "https://1ejdsllzmf.execute-api.ap-south-1.amazonaws.com/dev/push_notify/notify_event",
         read_posts: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/read_posts",
-        get_associate_name: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/get_associate_name",
         strength_details: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/strength_details",
         liked_post: "https://exf3yfki13.execute-api.ap-south-1.amazonaws.com/dev/post/liked_post",
         rewards_addon: "https://8pko2dfqvi.execute-api.ap-south-1.amazonaws.com/dev/reward/share_addon",
@@ -44,7 +47,8 @@ const dev_env = {
         disable_status: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/disable_status',
         refresh_token: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com/dev/refresh_token",
         daily:"https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/daily_data",
-        weekly_data:"https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/weekly_data",
+        weekly_sleep: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/weekly_sleep",
+        weekly_energy: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/weekly_energy",
         get_survey_status: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/get_status"
     },
     api: {
@@ -117,7 +121,6 @@ const qa_env = {
         edit_post_addon: "https://5950v28o48.execute-api.ap-south-1.amazonaws.com/qa/reward/share_addon",
         new_associate_notify: "https://2vx1jl8rv4.execute-api.ap-south-1.amazonaws.com/qa/push_notify/notify_event",
         read_posts: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/read_posts",
-        get_associate_name: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/get_associate_name",
         strength_details: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/strength_details",
         liked_post: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/liked_post",
         rewards_addon: "https://5950v28o48.execute-api.ap-south-1.amazonaws.com/qa/reward/share_addon",
@@ -201,7 +204,6 @@ const prod_env = {
         edit_post_addon: "https://0kc97jej7b.execute-api.ap-south-1.amazonaws.com/prod/reward/share_addon",
         new_associate_notify: "https://z4oiw0j9he.execute-api.ap-south-1.amazonaws.com/prod/push_notify/notify_event",
         read_posts: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/read_posts",
-        get_associate_name: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/get_associate_name",
         strength_details: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/strength_details",
         liked_post: "https://4itsp88mp7.execute-api.ap-south-1.amazonaws.com/prod/post/liked_post",
         rewards_addon: "https://0kc97jej7b.execute-api.ap-south-1.amazonaws.com/prod/reward/share_addon",
@@ -252,7 +254,6 @@ const prod_env = {
     }
 }
 
-
-let current_env = qa_env
+let current_env = dev_env
 
 export default current_env

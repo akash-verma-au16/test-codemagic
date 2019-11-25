@@ -11,9 +11,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 export default class Like extends Component {
     constructor(props) {
         super(props)
-        this.state ={
-            associateName: ""
-        }
 
         //formatting update locale
         Moment.globalMoment = moment;
@@ -41,20 +38,6 @@ export default class Like extends Component {
         });
     }
 
-    componentWillMount() {
-        this.getName()
-    }
-
-    getName = async () => {
-        try {
-            let name = await AsyncStorage.getItem(this.props.associateId)
-            this.setState({ associateName: name })
-        }
-        catch {
-            //Error retriving data
-        }
-    }
-
     render() {
         return(
             <View style={styles.tileContainer}>
@@ -65,7 +48,7 @@ export default class Like extends Component {
                         </View>
                     </View>
                     <View style={styles.textViewWrapper}>
-                        <Text style={styles.name}>{this.state.associateName}</Text>
+                        <Text style={styles.name}>{this.props.associateName}</Text>
                         <Moment style={{ fontSize: 14, paddingVertical: 3 }} element={Text} fromNow>{this.props.time * 1000}</Moment>
                     </View>
                 </View>

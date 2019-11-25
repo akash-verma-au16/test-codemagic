@@ -90,14 +90,6 @@ export const liked_post = (
     return axios.post(endpoint, payload, headers)
 }
 
-//Get Associate Names for Post
-export const get_associate_name = (
-    payload, headers
-) => {
-    const endpoint = config.url.get_associate_name
-    return axios.post(endpoint, payload, headers)
-}
-
 export const rewards_addon = (
     payload, headers
 ) => {

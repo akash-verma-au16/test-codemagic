@@ -6,7 +6,6 @@ import {
     BackHandler
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
-import AsyncStorage from '@react-native-community/async-storage';
 import Post from '../../components/Post/index'
 /* Redux */
 import { connect } from 'react-redux'
@@ -185,24 +184,6 @@ class StrengthPosts extends React.Component {
         this.postList = []
         await posts.map(async (item) => {
 
-            /* Convert Array of objects to array of strings */
-            let associateList = []
-            item.Item.tagged_associates.map((item)=>{
-                associateList.push(item.associate_id)
-            })
-
-            /* retrive names in bulk */
-            let fetchedNameList= await AsyncStorage.multiGet(associateList)
-
-            /* Convert to Array of objects */
-            let associateObjectList =[]
-            fetchedNameList.map(item=>{
-                associateObjectList.push({
-                    associate_id: item[0],
-                    associate_name: item[1]
-                })
-            })
-
             this.postList.push(
                 // Post Component
                 <Post
@@ -211,10 +192,11 @@ class StrengthPosts extends React.Component {
                     postSource = 'StrengthCount'
                     privacy={item.Item.privacy}
                     postCreator_id={item.Item.associate_id}
+                    userName={item.Item.associate_name}
                     profileData={this.profileData}
                     time={item.Item.time}
                     postMessage={item.Item.message}
-                    taggedAssociates={associateObjectList}
+                    taggedAssociates={item.Item.tagged_associates}
                     strength={item.Item.sub_type}
                     type={item.Item.type}
                     associate={item.Item.associate_id}

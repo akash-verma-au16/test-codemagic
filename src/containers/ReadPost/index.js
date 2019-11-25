@@ -8,7 +8,6 @@ import {
     View
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo"
-import AsyncStorage from '@react-native-community/async-storage';
 import Post from '../../components/Post/index'
 /* Redux */
 import { connect } from 'react-redux'
@@ -31,6 +30,8 @@ import Analytics from '@aws-amplify/analytics';
 import PushNotification from '@aws-amplify/pushnotification';
 import awsconfig from '../../../aws-exports';
 
+import { refreshToken } from '../../services/bAuth'
+import AsyncStorage from '@react-native-community/async-storage';
 // retrieve temporary AWS credentials and sign requests
 Auth.configure(awsconfig);
 // send analytics events to Amazon Pinpoint
@@ -131,9 +132,36 @@ class ListPost extends React.Component {
             this.setState({
                 networkChanged: true
             }, async () => {
-                await this.getProfile()
-                this.loadPosts()
+                await this.updateRefreshToken()
             })
+        }
+    }
+
+    updateRefreshToken = async () => {
+
+        const payload = {
+            refresh_token: this.props.refreshTokenKey,
+            tenant_id: this.props.accountAlias
+        }
+        
+        const tokenExp = await AsyncStorage.getItem('accessTokenExp')
+        /* epoch time calculation */
+        const dateTime = Date.now();
+        const currentEpoc = Math.floor(dateTime / 1000);
+
+        if (tokenExp < currentEpoc) {
+            /* Token has expired */
+            refreshToken(payload).then((res) => {
+                this.props.updateNewTokens({ accessToken: res.data.payload.AccessToken })
+                // store token expire time in the local storage
+                AsyncStorage.setItem('accessTokenExp', JSON.stringify(res.data.payload.AccessTokenPayload.exp))
+                this.getProfile()
+                this.loadPosts()
+
+            }).catch(() => {})
+        } else {
+            this.getProfile()
+            this.loadPosts()
         }
     }
 
@@ -174,29 +202,11 @@ class ListPost extends React.Component {
 
                 read_post(read_post_payload, headers)
                     .then(async (response) => {
-
                         const item = response.data.data.posts.Item
                         const commentCount = response.data.data.counts.commentCount
                         const likeCount = response.data.data.counts.likeCount
                         this.post = []
 
-                        /* Convert Array of objects to array of strings */
-                        let associateList = []
-                        item.tagged_associates.map((item) => {
-                            associateList.push(item.associate_id)
-                        })
-
-                        /* retrive names in bulk */
-                        let fetchedNameList = await AsyncStorage.multiGet(associateList)
-
-                        /* Convert to Array of objects */
-                        let associateObjectList = []
-                        fetchedNameList.map(item => {
-                            associateObjectList.push({
-                                associate_id: item[0],
-                                associate_name: item[1]
-                            })
-                        })
                         this.post.push(
                             // Post Component
                             <Post
@@ -204,11 +214,12 @@ class ListPost extends React.Component {
                                 postId={item.post_id}
                                 privacy={item.privacy}
                                 postCreator_id={item.associate_id}
+                                userName={item.associate_name}
                                 profileData={item.associate_id == this.props.associate_id ? this.profileData : {}}
                                 time={item.time}
                                 type={item.type}
                                 postMessage={item.message}
-                                taggedAssociates={associateObjectList}
+                                taggedAssociates={item.tagged_associates}
                                 strength={item.sub_type}
                                 associate={item.associate_id}
                                 likeCount={likeCount}
@@ -300,7 +311,8 @@ const mapStateToProps = (state) => {
         isAuthenticate: state.isAuthenticate,
         isFreshInstall: state.system.isFreshInstall,
         isConnected: state.system.isConnected,
-        accessToken: state.user.accessToken
+        accessToken: state.user.accessToken,
+        refreshTokenKey: state.user.refreshToken
     };
 }
 

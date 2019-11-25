@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 
 import { Icon } from 'native-base'
-import AsyncStorage from '@react-native-community/async-storage';
 
 //Cusotm component from VisibilityModal
 import VisibilityModal from '../../containers/VisibilityModal/index'
@@ -29,8 +28,7 @@ class Comment extends React.Component {
         let initialState = {
             modalVisible: false,
             isEdit: false,
-            comment: this.props.message,
-            associateName: ""
+            comment: this.props.message
         }
         this.state = initialState
         this.showToast = this.showToast.bind(this)
@@ -70,20 +68,6 @@ class Comment extends React.Component {
         { icon: 'report', type: 'MaterialIcons', text: 'Report Comment', name: 'report', key: 'report' }
     ]
 
-    componentWillMount() {
-        this.getName()
-    }
-
-    getName = async () => {
-        try {
-            let name = await AsyncStorage.getItem(this.props.id)
-            this.setState({ associateName: name })
-        }
-        catch {
-            //Error retriving data
-        }
-    }
-
     showToast() {
         ToastAndroid.showWithGravityAndOffset(
             'Coming soon',
@@ -112,7 +96,7 @@ class Comment extends React.Component {
                 <View style={{width: '88%'}}>
                     <View style={[styles.commentWrapper, { width: '100%' }]}>
                         <View style={[styles.footer, { justifyContent: 'space-between', width: '100%' }]}>
-                            <Text style={styles.commentor}>{this.props.id == this.props.associate_id ? this.props.userName : this.state.associateName }</Text>
+                            <Text style={styles.commentor}>{this.props.id == this.props.associate_id ? this.props.userName : this.props.name }</Text>
                             <TouchableOpacity 
                                 style={{ height: 20, width: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}
                                 underlayColor='#fff' 

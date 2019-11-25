@@ -8,9 +8,16 @@ export const daily = (
     return axios.post(endpoint, payload, headers)
 }
 
-export const weekly_data = (
+export const weekly_sleep = (
     payload, headers
 ) => {
-    const endpoint = config.url.weekly_data
+    const endpoint = config.url.weekly_sleep
+    return axios.post(endpoint, payload, headers)
+}
+
+export const weekly_energy = (
+    payload, headers
+) => {
+    const endpoint = config.url.weekly_energy
     return axios.post(endpoint, payload, headers)
 }

@@ -12,6 +12,10 @@ import {
     ActivityIndicator,
     Alert
 } from 'react-native';
+//Prefetch Profile Data
+import { user_profile } from '../../services/profile'
+
+import { refreshToken } from '../../services/bAuth'
 import NetInfo from "@react-native-community/netinfo"
 import AsyncStorage from '@react-native-community/async-storage';
 import Post from '../../components/Post/index'
@@ -26,7 +30,7 @@ import {
     Thumbnail
 } from 'native-base';
 /* Services */
-import { news_feed, delete_post, liked_post, get_associate_name } from '../../services/post'
+import { news_feed, delete_post, liked_post } from '../../services/post'
 
 // Config
 import { feedbackDisplayCount } from '../../../config'
@@ -34,8 +38,6 @@ import { feedbackDisplayCount } from '../../../config'
 import LoadingModal from '../LoadingModal'
 //RBAC handler function
 import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
-//Prefetch profile data
-import { user_profile } from '../../services/profile'
 /* Components */
 import { NavigationEvents } from 'react-navigation';
 
@@ -44,7 +46,7 @@ import { withInAppNotification } from 'react-native-in-app-notification'
 import PushNotification from '@aws-amplify/pushnotification'
 import notificationIcon from '../../assets/Logo_High_black.png'
 
-class ListPost extends React.Component {
+class ListPost extends React.PureComponent {
     constructor(props) {
         super(props)
         this.state = {
@@ -84,12 +86,11 @@ class ListPost extends React.Component {
             headerLeft: (
                 <TouchableOpacity
                     onPress={() => {
-                        if (navigation.getParam('isConnected')) {
-                            navigation.navigate('Profile', {
-                                // profileData: profileObj,
-                                associateId: navigation.getParam('associateId')
-                            })
-                        }
+
+                        navigation.navigate('Profile', {
+                            associateId: navigation.getParam('associateId')
+                        })
+
                     }}
                     style={{
                         marginLeft: 13, alignItems: 'center', justifyContent: 'center'
@@ -116,19 +117,6 @@ class ListPost extends React.Component {
                 </TouchableOpacity>
             )
         };
-    };
-    componentWillMount() {
-        //Increment count to Display feedback alert
-        this.props.incrementCount()
-        this.props.navigation.setParams({ commingSoon: this.commingSoon });
-        if (this.props.isFreshInstall) {
-            this.props.navigation.navigate('TermsAndConditions')
-            return
-        } else if (!this.props.isAuthenticate) {
-            this.props.navigation.navigate('LoginPage')
-            return
-        }
-        this.loadLikes()
     }
 
     loadLikes = () => {
@@ -151,6 +139,8 @@ class ListPost extends React.Component {
                 const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
                 if (!isSessionExpired) {
                     this.loadLikes()
+                    this.loadPosts()
+                    this.getProfile()
                     return
                 }
             })
@@ -187,8 +177,8 @@ class ListPost extends React.Component {
                 AsyncStorage.removeItem('pushNotificationSurvey')
                 this.props.navigation.navigate('SurveyIntro', {
                     surveyId: value,
-                    surveyName: 'Daily-Questionnaire',
-                    surveyDescription: 'Daily Survey',
+                    surveyName: 'Please Wait..',
+                    surveyDescription: '',
                     surveyNote: 'note',
                     surveyLevel: 'beginner'
                 })
@@ -218,34 +208,7 @@ class ListPost extends React.Component {
                 { cancelable: false },
             )
         }
-        // return true
-    }
-
-    getAssociateNames = async () => {
-        if (this.props.isAuthenticate) {
-            const payload = {
-                tenant_id: this.props.accountAlias
-            }
-            const headers = {
-                headers: {
-                    Authorization: this.props.accessToken
-                }
-            }
-            try {
-                await get_associate_name(payload, headers).then((res) => {
-                    res.data.data.map((item) => {
-                        AsyncStorage.setItem(item.associate_id, item.full_name)
-                    })
-                }).catch((error) => {
-                    const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
-                    if (!isSessionExpired) {
-                        this.getAssociateNames()
-                        return
-                    }
-                })
-            }
-            catch (e) {/* error */ }
-        }
+        return true
     }
 
     //Authorization headers
@@ -259,7 +222,19 @@ class ListPost extends React.Component {
         "tenant_id": this.props.accountAlias,
         "associate_id": this.props.associate_id
     }
+
     async componentDidMount() {
+
+        //Increment count to Display feedback alert
+        this.props.incrementCount()
+        this.props.navigation.setParams({ commingSoon: this.commingSoon });
+        if (this.props.isFreshInstall) {
+            this.props.navigation.navigate('TermsAndConditions')
+            return
+        } else if (!this.props.isAuthenticate) {
+            this.props.navigation.navigate('LoginPage')
+            return
+        }
         PushNotification.onNotification((notification) => {
             // Note that the notification object structure is different from Android and IOS
             //Display notification
@@ -286,8 +261,8 @@ class ListPost extends React.Component {
                         if (data[3])
                             this.props.navigation.navigate('SurveyIntro', {
                                 surveyId: data[3],
-                                surveyName: 'Daily-Questionnaire',
-                                surveyDescription: 'Daily Survey',
+                                surveyName: 'Please Wait..',
+                                surveyDescription: '',
                                 surveyNote: 'note',
                                 surveyLevel: 'beginner'
                             })
@@ -295,7 +270,6 @@ class ListPost extends React.Component {
                 }
             })
         })
-        await this.getProfile()
         if (this.props.isAuthenticate) {
             this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
         }
@@ -306,10 +280,6 @@ class ListPost extends React.Component {
             }
         }, 10000);
 
-        this.interval1 = setInterval(() => {
-            this.getAssociateNames()
-        }, 15000);
-
         //Detecting network connectivity change
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
         // Handling hardware backpress event
@@ -319,6 +289,7 @@ class ListPost extends React.Component {
         this.props.navigation.setParams({ 'profileData': this.profileData })
 
         this.gotoFeedbackPageAlert()
+        await this.getProfile()
     }
 
     componentWillUnmount() {
@@ -370,10 +341,40 @@ class ListPost extends React.Component {
         );
     }
 
+    getProfile = async () => {
+        if (this.props.isAuthenticate) {
+            //Authorization headers 
+            const headers = {
+                headers: {
+                    Authorization: this.props.accessToken
+                }
+            }
+            //profile payload
+            const profilePayload = {
+                tenant_id: this.props.accountAlias,
+                associate_id: this.props.associate_id
+            }
+            user_profile(profilePayload, headers).then((res) => {
+                this.profileData = res.data.data
+                const payload = {
+                    walletBalance: this.profileData.wallet_balance
+                }
+                this.props.updateWallet(payload)
+                this.props.navigation.setParams({ 'profileData': this.profileData })
+            }).catch((e) => {
+                const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
+                if (!isSessionExpired) {
+                    this.getProfile()
+                    return
+                }
+            })
+        }
+    }
+
     //Loads news feed
     loadPosts = () => {
         if (this.props.isAuthenticate) {
-            this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
+            this.props.navigation.setParams({ 'imageUrl': this.props.imagelink, 'associateId': this.props.associate_id })
             const payload = {
                 tenant_id: this.props.accountAlias,
                 associate_id: this.props.associate_id
@@ -508,36 +509,6 @@ class ListPost extends React.Component {
         }
     }
 
-    getProfile = async () => {
-        if (this.props.isAuthenticate) {
-            //Authorization headers 
-            const headers = {
-                headers: {
-                    Authorization: this.props.accessToken
-                }
-            }
-            //profile payload
-            const profilePayload = {
-                tenant_id: this.props.accountAlias,
-                associate_id: this.props.associate_id
-            }
-            user_profile(profilePayload, headers).then((res) => {
-                this.profileData = res.data.data
-                const payload = {
-                    walletBalance: this.profileData.wallet_balance
-                }
-                this.props.updateWallet(payload)
-                this.props.navigation.setParams({ 'profileData': this.profileData })
-            }).catch((e) => {
-                const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
-                if (!isSessionExpired) {
-                    this.getProfile()
-                    return
-                }
-            })
-        }
-    }
-
     gotoFeedbackPageAlert = () => {
         if (this.props.isAuthenticate) {
             if (this.props.feedbackCurrentCount % feedbackDisplayCount == 0) {
@@ -562,26 +533,9 @@ class ListPost extends React.Component {
     }
 
     createTiles = async (posts) => {
+  
         this.postList = []
         await posts.map(async (item) => {
-
-            /* Convert Array of objects to array of strings */
-            let associateList = []
-            item.Item.tagged_associates.map((item) => {
-                associateList.push(item.associate_id)
-            })
-
-            /* retrive names in bulk */
-            let fetchedNameList = await AsyncStorage.multiGet(associateList)
-
-            /* Convert to Array of objects */
-            let associateObjectList = []
-            fetchedNameList.map(item => {
-                associateObjectList.push({
-                    associate_id: item[0],
-                    associate_name: item[1]
-                })
-            })
 
             this.postList.push(
                 // Post Component
@@ -590,10 +544,11 @@ class ListPost extends React.Component {
                     postId={item.Item.post_id}
                     privacy={item.Item.privacy}
                     postCreator_id={item.Item.associate_id}
+                    userName={item.Item.associate_name}
                     profileData={this.profileData}
                     time={item.Item.time}
                     postMessage={item.Item.message}
-                    taggedAssociates={associateObjectList}
+                    taggedAssociates={item.Item.tagged_associates}
                     strength={item.Item.sub_type}
                     type={item.Item.type}
                     associate={item.Item.associate_id}
@@ -610,6 +565,33 @@ class ListPost extends React.Component {
             }
         })
     }
+    initializeAPIs = async () => {
+        const payload = {
+            refresh_token: this.props.refreshTokenKey,
+            tenant_id: this.props.accountAlias
+        }
+        const tokenExp = await AsyncStorage.getItem('accessTokenExp')
+        /* epoch time calculation */
+        const dateTime = Date.now();
+        const currentEpoc = Math.floor(dateTime / 1000);
+
+        if (tokenExp < currentEpoc) {
+            /* Token has expired */
+            refreshToken(payload).then((res) => {
+                this.props.updateNewTokens({ accessToken: res.data.payload.AccessToken })
+                // store token expire time in the local storage
+                AsyncStorage.setItem('accessTokenExp', JSON.stringify(res.data.payload.AccessTokenPayload.exp))
+                this.loadLikes()
+                this.loadPosts()
+                this.getProfile()
+
+            }).catch(() => { })
+        } else {
+            this.loadLikes()
+            this.loadPosts()
+            this.getProfile()
+        }
+    }
     render() {
 
         return (
@@ -622,7 +604,7 @@ class ListPost extends React.Component {
                             refreshing={this.state.refreshing} //this.props.isConnected
                             onRefresh={() => {
                                 /* Show loader when manual refresh is triggered */
-                                this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
+                                this.props.navigation.setParams({ 'imageUrl': this.props.imagelink, 'associateId': this.props.associate_id })
                                 if (this.props.isConnected) {
                                     this.setState({ refreshing: true }, () => this.loadPosts())
                                 } else {
@@ -655,9 +637,9 @@ class ListPost extends React.Component {
                         await this.setState({ isFocused: this.props.navigation.isFocused() })
                         if (this.props.isConnected) {
                             if (!this.props.isFreshInstall && this.props.isAuthenticate) {
-                                this.props.navigation.setParams({ 'imageUrl': this.props.imagelink })
-                                this.loadPosts()
-                                this.getAssociateNames()
+                                this.props.navigation.setParams({ 'imageUrl': this.props.imagelink, 'associateId': this.props.associate_id })
+
+                                this.initializeAPIs()
                             }
                         }
                     }}
@@ -728,7 +710,8 @@ const mapStateToProps = (state) => {
         tenant_name: state.user.tenant_name,
         email: state.user.emailAddress,
         walletBalance: state.user.walletBalance,
-        feedbackCurrentCount: state.user.feedbackDisplayCount
+        feedbackCurrentCount: state.user.feedbackDisplayCount,
+        refreshTokenKey: state.user.refreshToken
     };
 }
 

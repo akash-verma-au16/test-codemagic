@@ -4,7 +4,8 @@ import {
     ImageBackground,
     TouchableOpacity,
     Animated,
-    BackHandler
+    BackHandler,
+    Image
 } from 'react-native';
 import {
     Form,
@@ -19,8 +20,7 @@ import {
 import { connect } from 'react-redux'
 import { auth } from '../../store/actions'
 /* Custom components */
-import Logo from '../../components/Logo'
-import Slogan from '../../components/Slogan'
+import logo from '../../assets/Logo_High_black.png'
 import TextInput from '../../components/TextInput'
 import RoundButton from '../../components/RoundButton'
 /* Assets */
@@ -38,13 +38,13 @@ class ForgotPassword extends React.Component {
         /* prepopulate fields if data is available */
         this.state = {
             isButtonLoading: false,
-            email: this.props.navigation.getParam('email',''),
+            email: this.props.navigation.getParam('email', ''),
             shift: new Animated.Value(0),
-            fade:new Animated.Value(1)
+            fade: new Animated.Value(1)
         }
 
         /* Refs are used to redirect the focus to the next component using keyboard button */
-        this.textInputEmail = React.createRef(); 
+        this.textInputEmail = React.createRef();
     }
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -89,7 +89,7 @@ class ForgotPassword extends React.Component {
                                 text: 'Please, connect to the internet',
                                 type: "danger"
                             })
-                        }else {
+                        } else {
                             Toast.show({
                                 text: 'Invalid Credentials',
                                 type: "danger"
@@ -97,8 +97,8 @@ class ForgotPassword extends React.Component {
                         }
 
                         this.setState({ isButtonLoading: false })
-                    })  
-                    
+                    })
+
                 } else {
                     Toast.show({
                         text: 'Please enter an email',
@@ -118,58 +118,53 @@ class ForgotPassword extends React.Component {
     }
 
     render() {
-        const { fade } = this.state;
         return (
             <Container>
                 <Content
                     contentContainerStyle={styles.container}
                 >
-                    <ImageBackground
-                        source={image}
-                        style={styles.image}
-                    >
 
-                        <Form style={styles.form}>
+                    <Form style={styles.form}>
 
-                            <Logo />
+                        <Animated.View style={[{ alignItems: 'center' }]}>
 
-                            <Slogan />
-                            <View style={styles.imageWrapper}>
-                                {/* This wrapper will shrink based on screen size making room for other components */}
-                                <Animated.View style={[styles.imageContainer,{opacity:fade}]}>
-                                    <Icon name='ios-key' style={styles.icon} />
-                                </Animated.View>
-                            </View>
-                            <View
-                                style={styles.triangle}
+                            <Image
+                                source={logo}
+                                resizeMode={'cover'}
+                                style={{ height: 250, aspectRatio: 1 / 1 }}
                             />
-                            <Animated.View style={styles.customForm}>
-                                <Text style={styles.header}>Forgot Password?</Text>
-                                <Text style={styles.text}
-                                >We just need your registered Email id to send you password reset instructions</Text>
 
-                                <TextInput
-                                    placeholder='Registered Email Id'
-                                    value={this.state.email}
-                                    onChangeText={(text) => this.setState({ email: text })}
-                                    inputRef={input => this.textInputEmail = input}
-                                    onSubmitEditing={this.forgotPasswordHandler}
-                                    color='black'
-                                />
+                        </Animated.View>
+                        <View style={styles.imageWrapper}>
 
-                                <RoundButton
-                                    onPress={this.forgotPasswordHandler}
-                                    value='Reset Password'
-                                    isLoading={this.state.isButtonLoading}
-                                    isLight={false}
-                                />
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('LoginPage')}>
-                                    <Text style={styles.navigationLink}>Back to Login Page</Text>
-                                </TouchableOpacity>
-                            </Animated.View>
-                        </Form>
+                        </View>
 
-                    </ImageBackground>
+                        <Animated.View style={styles.customForm}>
+                            <Text style={styles.header}>Forgot Password?</Text>
+                            <Text style={styles.text}
+                            >We just need your registered Email id to send you password reset instructions</Text>
+
+                            <TextInput
+                                placeholder='Registered Email Id'
+                                value={this.state.email}
+                                onChangeText={(text) => this.setState({ email: text })}
+                                inputRef={input => this.textInputEmail = input}
+                                onSubmitEditing={this.forgotPasswordHandler}
+                                color='black'
+                            />
+
+                            <RoundButton
+                                onPress={this.forgotPasswordHandler}
+                                value='Reset Password'
+                                isLoading={this.state.isButtonLoading}
+                                isLight={false}
+                            />
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate('LoginPage')}>
+                                <Text style={styles.navigationLink}>Back to Login Page</Text>
+                            </TouchableOpacity>
+                        </Animated.View>
+                    </Form>
+
                 </Content>
             </Container>
 
