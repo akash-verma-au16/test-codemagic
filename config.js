@@ -1,8 +1,8 @@
 export const feedbackDisplayCount = 37;
 
-export const PrivacyPolicy = 'https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/PrivacyPolicy.html'
+export const PrivacyPolicy = 'https://joy-hw-default-ind-m-prod.s3.ap-south-1.amazonaws.com/default/legal-documents/PrivacyPolicy.html'
 
-export const TermsOfUse = 'https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/Terms%26Condition.html'
+export const TermsOfUse = 'https://joy-hw-default-ind-m-prod.s3.ap-south-1.amazonaws.com/default/legal-documents/TermsOfUse.html'
 
 const dev_env = {
     url: {
@@ -217,8 +217,8 @@ const prod_env = {
         refresh_token: 'https://huykcf5gv2.execute-api.ap-south-1.amazonaws.com/prod/refresh_token',
         daily:"https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/daily_data",
         weekly_data:"https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/weekly_data",
-        weekly_sleep: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_sleep",
-        weekly_energy: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_energy",
+        weekly_sleep: "https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/weekly_sleep",
+        weekly_energy: "https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/weekly_energy",
         get_survey_status:"https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/get_status"
     },
     api: {
@@ -258,6 +258,6 @@ const prod_env = {
     }
 }
 
-let current_env = qa_env
+let current_env = prod_env
 
 export default current_env
