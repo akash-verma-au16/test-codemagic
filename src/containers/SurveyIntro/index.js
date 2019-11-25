@@ -32,6 +32,9 @@ import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Services */
 import { read_survey } from '../../services/questionBank'
 
+import { refreshToken } from '../../services/bAuth'
+import AsyncStorage from '@react-native-community/async-storage';
+
 class SurveyIntro extends React.Component {
 
     constructor(props) {
@@ -44,16 +47,47 @@ class SurveyIntro extends React.Component {
         this.surveyDescription = this.props.navigation.getParam('surveyDescription')
         this.surveyNote = this.props.navigation.getParam('surveyNote')
         this.surveyLevel = this.props.navigation.getParam('surveyLevel')
+        this.APIResponse = null
     }
     componentDidMount() {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             this.props.navigation.navigate('TabNavigator')
             return true
         })
+        this.updateRefreshToken()
     }
 
     componentWillUnmount() {
         this.backHandler.remove()
+    }
+
+    updateRefreshToken = async () => {
+
+        this.setState({ isLoading: true })
+        const payload = {
+            refresh_token: this.props.refreshTokenKey,
+            tenant_id: this.props.accountAlias
+        }
+        
+        const tokenExp = await AsyncStorage.getItem('accessTokenExp')
+        /* epoch time calculation */
+        const dateTime = Date.now();
+        const currentEpoc = Math.floor(dateTime / 1000);
+
+        if (tokenExp < currentEpoc) {
+            /* Token has expired */
+            refreshToken(payload).then((res) => {
+                this.props.updateNewTokens({ accessToken: res.data.payload.AccessToken })
+                // store token expire time in the local storage
+                AsyncStorage.setItem('accessTokenExp', JSON.stringify(res.data.payload.AccessTokenPayload.exp))
+                this.readSurveyHandler()
+
+            }).catch(() => {
+                this.setState({ isLoading: false })
+            })
+        } else {
+            this.readSurveyHandler()
+        }
     }
     readSurveyHandler = () => {
         //Authorization headers
@@ -62,14 +96,14 @@ class SurveyIntro extends React.Component {
                 Authorization: this.props.accessToken
             }
         }
-        if(this.props.isConnected) {
+        if (this.props.isConnected) {
             if (this.surveyId) {
                 this.setState({ isLoading: true }, () => {
                     if (this.props.isConnected) {
                         read_survey(this.surveyId, headers).then(response => {
-                            this.props.navigation.navigate('QuestionContainer', {
-                                questionData: response.data.data
-                            })
+                            this.surveyName = response.data.data.survey.name
+                            this.surveyDescription = response.data.data.survey.description
+                            this.APIResponse = response
                             this.setState({ isLoading: false })
                         }).catch((e) => {
                             const isSessionExpired = checkIfSessionExpired(e.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
@@ -102,7 +136,7 @@ class SurveyIntro extends React.Component {
                 100,
             );
         }
-        
+
     }
 
     render() {
@@ -116,15 +150,15 @@ class SurveyIntro extends React.Component {
                     <ImageBackground
                         source={image}
                         style={styles.image}
-                        
+
                     >
                         <View name='header' style={styles.headerContainer}>
-                            <Icon name='ios-arrow-back' style={styles.header} onPress={()=>this.props.navigation.navigate('TabNavigator')} />
+                            <Icon name='ios-arrow-back' style={styles.header} onPress={() => this.props.navigation.navigate('TabNavigator')} />
                             <Image
                                 source={icon}
-                                style={{height: '50%',resizeMode:'contain'}}
+                                style={{ height: '50%', resizeMode: 'contain' }}
                             />
-                            <Icon style={styles.header}/>
+                            <Icon style={styles.header} />
                         </View>
 
                         <View name='content' style={styles.content}>
@@ -134,10 +168,15 @@ class SurveyIntro extends React.Component {
 
                                     <H1 style={styles.text}>{this.surveyName}</H1>
                                     <H3 style={styles.surveyDescription}>{this.surveyDescription}</H3>
-                                    
+
                                 </View>
                                 <RoundButton
-                                    onPress={this.readSurveyHandler}
+                                    onPress={() => {
+                                        if (this.APIResponse)
+                                            this.props.navigation.navigate('QuestionContainer', {
+                                                questionData: this.APIResponse.data.data
+                                            })
+                                    }}
                                     value='start'
                                     isLoading={this.state.isLoading}
                                     isLight={false}
@@ -177,8 +216,8 @@ const styles = StyleSheet.create({
     },
     header: {
         color: 'white',
-        width:50,
-        padding:10
+        width: 50,
+        padding: 10
     },
     semiSphere: {
         backgroundColor: '#fff',
@@ -196,9 +235,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-end'
     },
-    text:{
+    text: {
         marginVertical: 15,
-        color:'#47309C',
+        color: '#47309C',
         textAlign: 'center'
     },
     surveyDescription: {
@@ -214,7 +253,8 @@ const mapStateToProps = (state) => {
         isConnected: state.system.isConnected,
         accessToken: state.user.accessToken,
         associate_id: state.user.associate_id,
-        accountAlias: state.user.accountAlias
+        accountAlias: state.user.accountAlias,
+        refreshTokenKey: state.user.refreshToken
     };
 }
 

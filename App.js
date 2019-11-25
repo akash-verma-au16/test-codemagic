@@ -26,9 +26,8 @@ PushNotification.onRegister((token) => {
     AsyncStorage.setItem('token', token)
 
 });
-PushNotification.onNotificationOpened((notification) => {
-    //Navigate to the respective page with payload
-    const url = notification['pinpoint.deeplink']
+
+const navigate = async(url) => {
     let data = ''
     if (url)
         data = url.split('/')
@@ -46,7 +45,25 @@ PushNotification.onNotificationOpened((notification) => {
         if (data[3])
             AsyncStorage.setItem('pushNotificationSurvey', data[3])
     }
+}
 
+PushNotification.onNotification( notification => {
+    // Saving the notification data when notification is received
+    AsyncStorage.setItem('notification', notification)
+})
+
+PushNotification.onNotificationOpened((notification) => {
+    if(notification) {
+        //Navigate to the respective page with payload
+        const url = notification['pinpoint.deeplink']
+        navigate(url)
+    }
+    else {
+        let appNotification = AsyncStorage.getItem('notification')
+        const url = appNotification['pinpoint.deeplink']
+        navigate(url)
+    }
+    AsyncStorage.removeItem('notification')
 });
 const prefix = 'happyworks://';
 export default class App extends Component {

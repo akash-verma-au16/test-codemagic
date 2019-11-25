@@ -76,9 +76,6 @@ class ListSurvey extends React.Component {
             this.props.navigation.navigate('home')
             return true;
         }
-        else {
-            return false
-        } 
     }
 
     getProfile = async () => {
@@ -188,10 +185,6 @@ class ListSurvey extends React.Component {
                 tenant_id: this.props.accountAlias
             }, headers)
                 .then(response => {
-                    //Get a Date Object
-                    var currentDate = new Date();
-                    //Get Current hour
-                    const currentHour = currentDate.getHours()
                     this.MyPulse = []
                     this.OrgPulse = []
                     this.FunQuiz = []
@@ -300,11 +293,11 @@ class ListSurvey extends React.Component {
             headerLeft: (
                 <TouchableOpacity
                     onPress={() => {
-                        if (navigation.getParam('isConnected')) {
-                            navigation.navigate('Profile', {
-                                associateId: navigation.getParam('associateId')
-                            })
-                        }
+                        
+                        navigation.navigate('Profile', {
+                            associateId: navigation.getParam('associateId')
+                        })
+                        
                     }}
                     style={{ marginLeft: 13, alignItems: 'center', justifyContent: 'center' }}
                 >

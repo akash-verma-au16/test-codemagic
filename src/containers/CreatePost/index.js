@@ -170,10 +170,10 @@ class CreatePost extends React.Component {
         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange)
     }
 
-    goBack = async(isFocused) => {
+    goBack = (isFocused) => {
         if(isFocused) {
             if (JSON.stringify({ ...this.state, profileData: null, associateData: [], createPostFocused: false }) === JSON.stringify(this.initialState)) {
-                await this.props.navigation.navigate('home')
+                this.props.navigation.navigate('home')
             }
             else {
                 Alert.alert(
@@ -193,9 +193,10 @@ class CreatePost extends React.Component {
                     ],
                     { cancelable: false },
                 )
-            }  
+            } 
+            return true;
         }
-        return true
+        
     }
     // Submitting post handler function
     postSubmitHandler = () => {

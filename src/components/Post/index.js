@@ -48,8 +48,7 @@ class Post extends Component {
             comments: this.props.commentCount,
             taggedAssociates: this.props.taggedAssociates,
             rewardsPoints: this.props.points,
-            addonVisible: false,
-            postCreatorName: ""
+            addonVisible: false
         }
         this.state = initalState
         this.taggedAssociates = []
@@ -82,19 +81,8 @@ class Post extends Component {
         this.addonButtonRef = React.createRef();
     }
 
-    getName = async () => {
-        try {
-            let name = await AsyncStorage.getItem(this.props.postCreator_id)
-            this.setState({ postCreatorName: name })
-        }
-        catch {
-            //Error retriving data
-        }
-    }
-
     componentWillMount() {
         this.restoreLikes()
-        this.getName()
     }
 
     componentWillReceiveProps(nextProps) {
@@ -516,7 +504,7 @@ class Post extends Component {
                                 <Icon name='person' style={{ fontSize: 25, color: 'white' }} />
                             </View>
                             <Text style={{ marginHorizontal: 10, color: '#333', fontWeight: '500', fontSize: 16 }}>
-                                {this.props.postCreator_id === this.props.associate_id ? this.props.userName : this.state.postCreatorName}
+                                {this.props.userName}
                             </Text>
                         </TouchableOpacity>
                         {this.state.rewardsPoints > 0 ?
@@ -680,7 +668,6 @@ class Post extends Component {
 const mapStateToProps = (state) => {
     return {
         walletBalance: state.user.walletBalance,
-        userName: state.user.firstName + " " + state.user.lastName,
         accountAlias: state.user.accountAlias,
         associate_id: state.user.associate_id,
         isConnected: state.system.isConnected,

@@ -34,6 +34,7 @@ import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Custom Components */
 import LoadingModal from '../LoadingModal'
 
+import {PrivacyPolicy} from '../../../config'
 class Settings extends React.Component {
     constructor(props) {
         super(props)
@@ -162,7 +163,7 @@ class Settings extends React.Component {
         {
             key: 'Privacy Policy',
             icon: 'md-lock',
-            onPress: () => Linking.openURL('https://joy-hw-default-ind-m-prod.s3.ap-south-1.amazonaws.com/default/legal-documents/PrivacyPolicy.html')
+            onPress: () => Linking.openURL(PrivacyPolicy)
         },
         {
             key: 'Feedback',
