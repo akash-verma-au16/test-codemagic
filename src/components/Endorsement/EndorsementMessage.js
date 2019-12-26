@@ -2,7 +2,7 @@ export default EndorsementMessage = [
     {
         'name':'Perspective',
         'messages': [
-            "For taking the big picture view",
+            "For taking the big-picture view",
             "For providing wise and pertinent counsel",
             "For showing wisdom beyond your years",
             "For sharing a valued point-of-view"
@@ -37,7 +37,7 @@ export default EndorsementMessage = [
         'name': 'Zest',
         'messages': [
             "For showing extraordinary enthusiasm and energy towards tasks",
-            "For displaying extreme vitality and vigour while working",
+            "For displaying extreme vitality and vigor while working",
             "For bursting with life and energy and making everyone around active"
         ]
     },
@@ -54,15 +54,15 @@ export default EndorsementMessage = [
         'messages': [
             "For generously helping with your time and expertise",
             "For being a nice person and helping others",
-            "For the nurturing and caring environment you help create"
+            "For the nurturing and caring environment, you help create"
         ]
     },
     {
         'name': 'Social Intelligence',
         'messages': [
             "For making my day using your emotional intelligence",
-            "For being keenly aware of and responsive to needs of others",
-            "For displaying good understanding of people issues in the work context"
+            "For being keenly aware of and responsive to the needs of others,",
+            "For displaying a good understanding of people issues in the work context"
         ]
     },
     {
@@ -76,7 +76,7 @@ export default EndorsementMessage = [
     {
         'name': 'Fairness',
         'messages': [
-            "For being fair and just in dealing with tricky and thorny people issues",
+            "For being fair and just in dealing with tricky and thorny human issues",
             "For not letting your feelings overpower your rational thinking",
             "For equitable distribution of work/ resources"
         ]
@@ -84,7 +84,7 @@ export default EndorsementMessage = [
     {
         'name': 'Leadership',
         'messages': [
-            "For showing exceptional organisational abilities leading to better group outcomes",
+            "For showing exceptional organizational abilities leading to better group outcomes",
             "For getting things done by the team",
             "For encouraging and getting the best out of others"
         ]
@@ -118,14 +118,14 @@ export default EndorsementMessage = [
         'messages': [
             "For managing your emotions and feelings well",
             "For showing self - control and being disciplined in your",
-            "For taking care of long term gains in lieu of short term instant gratification’s"
+            "For taking care of long term gains in lieu of short term instant gratification"
         ]
     },
     {
         'name': 'Appreciation',
         'messages': [
             "For your sense of wonder and awe",
-            "For your aesthetics eyes and design sense",
+            "For your aesthetics eyes and sense of design",
             "For your four son excellence in all you do"
         ]
     },
@@ -159,14 +159,14 @@ export default EndorsementMessage = [
             "For having a strong sense of purpose and direction",
             "For creating and endowing meaning to all that you do",
             "For having strong and abiding values",
-            "For the connectedness and clam I feel when near you"
+            "For the connectedness and calm, I feel when near you"
         ]
     },
     {
         'name': 'Love of Learning',
         'messages': [
             "For developing deep expertise in the domain",
-            "For systemically adding to personal and team knowledge and skills",
+            "For systematically adding to personal and team knowledge and skills",
             "For easily mastering new topics and skills and exhibiting steep learning curve"
         ]
     },
@@ -175,14 +175,14 @@ export default EndorsementMessage = [
         'messages': [
             "For thinking out of the box",
             "Your personal passion and ingenuity brings best in you",
-            "For breaking out established pattern in order to look at things differently"
+            "For breaking out of established patterns in order to look at things differently"
         ]
     },
     {
         'name': 'Curiosity',
         'messages': [
-            "For not being afraid about trying, exploring and questioning",
-            "For leading us down to new paths #curiosity",
+            "For being a critical thinker, self-reflexiveness and sober-headed",
+            "For leading us down new paths #curiosity",
             "Your curiosity has always been a driving force for innovation"
         ]
     },
@@ -191,7 +191,7 @@ export default EndorsementMessage = [
         'messages': [
             "For being critical thinker, self-reflexiveness and sober-headed",
             "For being open-minded and patient in adverse or tense situations",
-            "You leave no stone unturned to deliver work with thoroughness, accuracy and reliability"
+            "You leave no stone unturned to deliver work with thoroughness, accuracy, and reliability"
         ]
     }
 ]
