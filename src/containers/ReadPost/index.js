@@ -24,20 +24,9 @@ import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 
 //Prefetch profile data
 import { user_profile } from '../../services/profile'
-// push notification
-import Auth from '@aws-amplify/auth';
-import Analytics from '@aws-amplify/analytics';
-import PushNotification from '@aws-amplify/pushnotification';
-import awsconfig from '../../../aws-exports';
 
 import { refreshToken } from '../../services/bAuth'
 import AsyncStorage from '@react-native-community/async-storage';
-// retrieve temporary AWS credentials and sign requests
-Auth.configure(awsconfig);
-// send analytics events to Amazon Pinpoint
-Analytics.configure(awsconfig);
-// configure push notification
-PushNotification.configure(awsconfig);
 
 class ListPost extends React.Component {
     constructor(props) {
