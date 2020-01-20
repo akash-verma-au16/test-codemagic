@@ -119,7 +119,6 @@ export default class App extends Component {
         await AsyncStorage.setItem("token", fcmToken);
       }
     }
-    console.log("fcmToken", fcmToken);
   }
 
   async createNotificationChannel() {
@@ -140,7 +139,6 @@ export default class App extends Component {
         notification.android.setChannelId(fcmChannelID);
         notification.android.setAutoCancel(true);
         firebase.notifications().displayNotification(notification);
-        console.log("onNotification");
       });
 
     this.notificationOpenedListener = firebase
@@ -166,7 +164,6 @@ export default class App extends Component {
       this.getToken();
     } catch (error) {
       // User has rejected permissions
-      console.log("permission rejected");
     }
   }
   componentWillUnmount() {
