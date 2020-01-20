@@ -19,3 +19,5 @@
 -keep class * {
     public private *;
 }
+-keep class io.invertase.firebase.** { *; }
+-dontwarn io.invertase.firebase.**
