@@ -126,7 +126,7 @@ android {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            //signingConfig signingConfigs.release
+            // signingConfig signingConfigs.release
         }
     }
     // applicationVariants are e.g. debug, release
@@ -145,10 +145,10 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-firebase')
     implementation (project(':react-native-device-info'), {
         exclude group: "com.google.android.gms"
         })
-    implementation project(':@aws-amplify_pushnotification')
     implementation project(':rn-fetch-blob')
     implementation project(':react-native-image-crop-picker')
     implementation project(':@react-native-community_netinfo')
@@ -162,9 +162,9 @@ dependencies {
     implementation 'com.android.support:animated-vector-drawable:28.0.0'
     implementation 'com.android.support:support-media-compat:28.0.0'
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation "com.google.android.gms:play-services-base:12.0.1"
-    implementation "com.google.firebase:firebase-core:12.0.1"
-    implementation "com.google.firebase:firebase-messaging:12.0.1"
+    implementation "com.google.android.gms:play-services-base:16.1.0"
+    implementation "com.google.firebase:firebase-core:16.0.9"
+    implementation "com.google.firebase:firebase-messaging:18.0.0"
     implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
 }
 

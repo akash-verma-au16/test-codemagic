@@ -37,9 +37,8 @@ import { checkIfSessionExpired } from "../RBAC/RBAC_Handler";
 import { NavigationEvents } from "react-navigation";
 
 // push notification
-import { withInAppNotification } from "react-native-in-app-notification";
-import PushNotification from "@aws-amplify/pushnotification";
-import notificationIcon from "../../assets/Logo_High_black.png";
+import { withInAppNotification } from 'react-native-in-app-notification'
+import notificationIcon from '../../assets/Logo_High_black.png'
 
 class ListPost extends React.PureComponent {
   constructor(props) {
@@ -321,9 +320,27 @@ class ListPost extends React.PureComponent {
             isConnected: true
           });
         }
-      );
-    } else {
-      this.props.navigation.setParams({ isConnected: false });
+
+        if (this.props.isAuthenticate) {
+            this.props.navigation.setParams({ 'isConnected': this.props.isConnected, 'associateId': this.props.associate_id })
+        }
+
+        this.interval = setInterval(() => {
+            if (!this.state.isPostDeleted) {
+                this.loadPosts()
+            }
+        }, 10000);
+
+        //Detecting network connectivity change
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+        // Handling hardware backpress event
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.goBack(this.state.isFocused))
+
+        //  Loading profile
+        this.props.navigation.setParams({ 'profileData': this.profileData })
+
+        this.gotoFeedbackPageAlert()
+        await this.getProfile()
     }
   };
 

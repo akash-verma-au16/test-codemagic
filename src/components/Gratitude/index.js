@@ -14,7 +14,7 @@ class Gratitude extends Component {
         this.endorsementData = [
             `I just wanted to say ThankYou`,
             `I really appreciate you`,
-            `Thanks you for setting a great example`,
+            `Thank you for setting a great example`,
             `Thanks for your support`
 
         ]
