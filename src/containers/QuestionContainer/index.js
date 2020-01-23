@@ -43,6 +43,7 @@ class QuestionContainer extends React.Component {
 
             answerSet: {}
         }
+        this.answerSet={}
         this.pager = React.createRef();
     }
 
@@ -101,8 +102,7 @@ class QuestionContainer extends React.Component {
             ...this.answerSet,
 
             [questionId]: answerObj
-
-        }
+        };
     }
     /* create questions based on payload */
     createQuestions = () => {
@@ -149,56 +149,78 @@ class QuestionContainer extends React.Component {
 
     submitHandler = () => {
         this.setState({ isSubmitLoading: true })
-
+        let ansObjLength = Object.keys(this.answerSet).length;
+        const { pageCount } = this.state;
         try {
             if (this.props.isConnected) {
-                if (this.answerSet) {
-                    let today = moment().format('ddd')
+                if (this.answerSet && ansObjLength === pageCount) {
+                    let today = moment().format("ddd");
                     let payload = {
                         tenant_id: this.props.tenant_id,
                         associate_id: this.props.associate_id,
                         survey_id: this.questionData.survey.id,
                         answer_set: this.answerSet,
                         day: today
-                    }
+                    };
                     //Authemtication header
                     const headers = {
                         headers: {
                             Authorization: this.props.accessToken
                         }
-                    }
-                    save_answers(payload, headers).then(() => {
-                        /* Give rewards */
-                        give_rewards(
-                            {
-                                "tenant_id": this.props.tenant_id,
-                                "associate_id": this.props.associate_id,
-                                "event_id": "a675055e-2d11-42e1-8938-57a4f5fc037b",
-                                "survey_name": this.questionData.survey.name
-                            }, headers).then((res) => {
-                            this.props.navigation.navigate('SurveyExit', {
-                                rewardPoints: res.data.points
-                            })
-                        }).catch((error) => {
-                            const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
-                            if (!isSessionExpired) {
-                                this.submitHandler()
-                                return
-                            }
-                            this.props.navigation.navigate('SurveyExit', {
-                                rewardPoints: 0
-                            })
+                    };
+                    save_answers(payload, headers)
+                        .then(() => {
+                            /* Give rewards */
+                            give_rewards(
+                                {
+                                    tenant_id: this.props.tenant_id,
+                                    associate_id: this.props.associate_id,
+                                    event_id: "a675055e-2d11-42e1-8938-57a4f5fc037b",
+                                    survey_name: this.questionData.survey.name
+                                },
+                                headers
+                            )
+                                .then(res => {
+                                    this.props.navigation.navigate("SurveyExit", {
+                                        rewardPoints: res.data.points
+                                    });
+                                })
+                                .catch(error => {
+                                    const isSessionExpired = checkIfSessionExpired(
+                                        error.response,
+                                        this.props.navigation,
+                                        this.props.deAuthenticate,
+                                        this.props.updateNewTokens
+                                    );
+                                    if (!isSessionExpired) {
+                                        this.submitHandler();
+                                        return;
+                                    }
+                                    this.props.navigation.navigate("SurveyExit", {
+                                        rewardPoints: 0
+                                    });
+                                });
                         })
-                    }).catch((error) => {
-                        const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
-                        if (!isSessionExpired) {
-                            this.submitHandler()
-                            return
-                        }
-                        this.setState({ isSubmitLoading: false })
-                    })
+                        .catch(error => {
+                            const isSessionExpired = checkIfSessionExpired(
+                                error.response,
+                                this.props.navigation,
+                                this.props.deAuthenticate,
+                                this.props.updateNewTokens
+                            );
+                            if (!isSessionExpired) {
+                                this.submitHandler();
+                                return;
+                            }
+                            this.setState({ isSubmitLoading: false });
+                        });
                 } else {
-                    throw 'answer questions first'
+                    this.setState({ isSubmitLoading: false });
+                    Alert.alert(
+                        "Unable to submit!",
+                        "Please make sure you have answered all the questions."
+                    );
+                    return
                 }
             } else {
                 Toast.show({
