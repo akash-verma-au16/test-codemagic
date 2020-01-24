@@ -17,7 +17,7 @@ import { dev, auth } from '../../store/actions'
 import VisibilityModal from '../../containers/VisibilityModal'
 
 import { like_post, unlike_post, like_id, rewards_addon } from '../../services/post'
-import { get_balance } from '../../services/profile'
+import { user_profile } from '../../services/profile'
 //React navigation
 import { withNavigation } from 'react-navigation';
 //RBAC Handler function
@@ -335,7 +335,7 @@ class Post extends Component {
     }
 
     getBalance = () => {
-        if(this.props.isConnected) {
+        if (this.props.isConnected) {
             //Get Balance request payload
             const payload = {
                 tenant_id: this.props.accountAlias,
@@ -349,8 +349,8 @@ class Post extends Component {
 
             }
             try {
-                return get_balance(payload, headers).then((res) => {
-                    return res.data.data.total_points
+                return user_profile(payload, headers).then((res) => {
+                    return res.data.data.wallet_balance
                 })
             }
             catch (error) {
