@@ -520,10 +520,13 @@ class CreatePost extends React.Component {
                         /* preventing self endorsing */
                         if (item.associate_id !== this.props.associate_id) {
                             this.projectAssociateData.push({ id: item.associate_id, name: fullName })
-                            this.setState({ associateData: this.projectAssociateData})
                         }
                     })
-                    this.setState({ isTagerLoading: false, isProject: true })
+                    this.setState({
+                        isTagerLoading: false,
+                        isProject: true,
+                        associateData: this.projectAssociateData
+                    });
                 })
                 .catch((error) => {
                     const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)
