@@ -94,7 +94,7 @@ const dev_env = {
 
 const qa_env = {
     url: {
-        dev: "https://htzgm6e757.execute-api.ap-south-1.amazonaws.com",
+        dev: "https://5790eji7u8.execute-api.ap-south-1.amazonaws.com",
         create_post: "https://6iwbpat27k.execute-api.ap-south-1.amazonaws.com/qa/post/create_post",
         get_visibility: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/get_visibility",
         news_feed: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/news_feed",
