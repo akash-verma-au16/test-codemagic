@@ -126,7 +126,7 @@ class TermsAndConditions extends React.Component {
                             </View>
                             <RoundButton
                                 onPress={this.buttonHandler}
-                                value='Accept Terms & Conditions'
+                                value='Accept Terms of Use'
                                 isDisabled={!this.state.isButtonEnabled}
                                 isLight={true}
                             />
