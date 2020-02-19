@@ -4,6 +4,8 @@ export const PrivacyPolicy = 'https://joy-hw-default-ind-m-dev.s3.ap-south-1.ama
 
 export const TermsOfUse = 'https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/Terms%26Condition.html'
 
+export const SubscriptionAgreement = 'https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/SubscriptionAgreement.html'
+
 const dev_env = {
     url: {
         dev: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com",
@@ -58,6 +60,8 @@ const dev_env = {
         resend_code: "resend_code",
         forgot_password: "forgot_password",
         confirm_password: "confirm_password",
+        change_password: "change_password",
+        accept_subscription: "accept_subscription",
         signout: "signout",
         read_tenant: "read_tenant",
         list_survey: "list_survey",
@@ -78,7 +82,7 @@ const dev_env = {
         post: "post"
     },
     env: {
-        dev: "dev",
+        dev: "dev/auth",
         devhw: "devhw",
         qa: "qa"
     },
@@ -143,6 +147,8 @@ const qa_env = {
         resend_code: "resend_code",
         forgot_password: "forgot_password",
         confirm_password: "confirm_password",
+        change_password: "change_password",
+        accept_subscription: "accept_subscription",
         signout: "signout",
         read_tenant: "read_tenant",
         list_survey: "list_survey",
@@ -163,7 +169,7 @@ const qa_env = {
         post: "post"
     },
     env: {
-        dev: "qa",
+        dev: "qa/auth",
         devhw: "devhw",
         qa: "qa"
     },
@@ -228,6 +234,8 @@ const prod_env = {
         resend_code: "resend_code",
         forgot_password: "forgot_password",
         confirm_password: "confirm_password",
+        change_password: "change_password",
+        accept_subscription: "accept_subscription",
         signout: "signout",
         read_tenant: "read_tenant",
         list_survey: "list_survey",
@@ -248,7 +256,7 @@ const prod_env = {
         post: "post"
     },
     env: {
-        dev: "prod",
+        dev: "prod/auth",
         devhw: "devhw",
         qa: "qa"
     },
