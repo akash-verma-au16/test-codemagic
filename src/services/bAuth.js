@@ -44,6 +44,16 @@ export const confirmPassword = ({email, password, otp}) =>{
     }
 }
 
+export const changePassword = (payload, headers) => {
+    const endpoint = url + "/" + env + "/" + config.api.change_password
+    return axios.post(endpoint, payload, headers);
+}
+
+export const acceptSubscription = payload => {
+    const endpoint = url + "/" + env + "/" + config.api.accept_subscription
+    return axios.post(endpoint, payload);
+}
+
 export const forceChangePassword = ({email, password, new_password}) =>{
     const endpoint = url + "/" + env + "/" + config.api.force_password_change
     if(email && password && new_password){
