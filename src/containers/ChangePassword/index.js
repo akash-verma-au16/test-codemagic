@@ -19,7 +19,7 @@ export class ChangePassword extends Component {
     }
 
     errorToast = (data) => {
-        return(
+        return (
             ToastAndroid.showWithGravity(
                 data.message,
                 ToastAndroid.LONG,
@@ -99,9 +99,6 @@ export class ChangePassword extends Component {
                     const errorResponse = e.response.data
                     this.setState({ isLoading: false });
                     switch (errorResponse.code) {
-                    case "LimitExceededException":
-                        this.errorToast(errorResponse)
-                        break;
                     case "INVALID_PASSWORD":
                         this.errorToast(errorResponse)
                         break;
