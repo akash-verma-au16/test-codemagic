@@ -62,7 +62,8 @@ class LoginPage extends React.Component {
             logoShift: new Animated.Value(-50),
             logoFade: new Animated.Value(0),
             sloganFade: new Animated.Value(0),
-            modalVisible: false
+            modalVisible: false,
+            authPayload: {}
         }
         this.tenantName = ""
         /* Refs are used to redirect the focus to the next component using keyboard button */
@@ -222,11 +223,13 @@ class LoginPage extends React.Component {
     }
 
     submitSubscription = () => {
+        const { authPayload } = this.state;
         const payload = {
             tenant_id: this.state.tenant,
             email: this.state.email.trim()
         }
         acceptSubscription(payload).then((res) => {
+            this.props.authenticate(authPayload);
             this.setState({ modalVisible: false })
             ToastAndroid.showWithGravityAndOffset(
                 res.data.message,
@@ -237,9 +240,40 @@ class LoginPage extends React.Component {
             );
             this.props.navigation.navigate('TabNavigator')
         }).catch(e => {
+            ToastAndroid.showWithGravityAndOffset(
+                Some,
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+                25,
+                50,
+            );
             this.setState({ modalVisible: false })
         })
-        // this.props.navigation.navigate('TabNavigator')
+    }
+
+    imageDownload = () => {
+        const { tenant_name, accountAlias, emailAddress, accessToken, associate_id } = this.state.authPayload
+        try {
+            /* Request image*/
+            const file_download_payload = {
+                tenant_name: tenant_name + accountAlias,
+                file_name: 'logo.png',
+                associate_email: emailAddress
+            }
+            const header = {
+                headers: {
+                    Authorization: accessToken
+                }
+            }
+
+            this.props.navigation.setParams({ 'associateId': associate_id })
+
+            file_download(file_download_payload, header).then((response) => {
+                this.props.imageUrl(response.data.data['download-signed-url'])
+            }).catch(() => { })
+
+        }
+        catch (e) {/* error */ }
     }
 
     signinHandler = () => {
@@ -305,7 +339,7 @@ class LoginPage extends React.Component {
                                         accessToken: response.data.payload.accessToken.jwtToken,
                                         refreshToken: response.data.payload.refreshToken.token
                                     };
-
+                                    this.setState({ authPayload: payload })
                                     this.likeSyncHandler({
                                         tenant_id: payload.accountAlias,
                                         associate_id: payload.associate_id
@@ -315,36 +349,16 @@ class LoginPage extends React.Component {
                                             Authorization: payload.accessToken
                                         }
                                     })
-                                    this.props.authenticate(payload);
+                                    this.imageDownload()
                                     //Activate Push Notofication
                                     if (!this.sendToken(payload))
                                         return
-                                    try {
 
-                                        /* Request image*/
-                                        const file_download_payload = {
-                                            tenant_name: this.props.tenant_name + this.props.accountAlias,
-                                            file_name: 'logo.png',
-                                            associate_email: this.props.email
-                                        }
-                                        const header = {
-                                            headers: {
-                                                Authorization: this.props.accessToken
-                                            }
-                                        }
-
-                                        this.props.navigation.setParams({ 'associateId': this.props.associate_id })
-
-                                        file_download(file_download_payload, header).then((response) => {
-                                            this.props.imageUrl(response.data.data['download-signed-url'])
-                                        }).catch(() => { })
-
-                                    }
-                                    catch (e) {/* error */ }
                                     if (!response.data.payload.is_agreement_accepted) {
                                         this.setState({ modalVisible: true, isSignInLoading: false });
                                     }
                                     else {
+                                        this.props.authenticate(payload);
                                         this.setState({ isSignInLoading: false });
                                         this.props.navigation.navigate('TabNavigator')
                                     }
@@ -502,7 +516,7 @@ class LoginPage extends React.Component {
                             </Animated.View>
                         </Form>
                     </View>
-                    <SubscriptionModal visible={this.state.modalVisible} subscribe={this.submitSubscription} />
+                    <SubscriptionModal visible={this.state.modalVisible} subscribe={this.submitSubscription} onRequestClose={() => this.setState({ modalVisible: false })} />
                 </Content>
             </Container>
         );

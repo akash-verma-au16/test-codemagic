@@ -102,7 +102,6 @@ export class ChangePassword extends Component {
                 })
             }
             catch (error) {
-                console.log('catch', error);
                 ToastAndroid.showWithGravity(
                     'Something went wrong, please try again!',
                     ToastAndroid.LONG,
