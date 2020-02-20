@@ -18,6 +18,16 @@ export class ChangePassword extends Component {
         }
     }
 
+    errorToast = (data) => {
+        return (
+            ToastAndroid.showWithGravity(
+                data.message,
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM,
+            )
+        )
+    }
+
     saveChanges = () => {
         this.setState({ isLoading: true });
         const { oldPass, newPass, confirmPass, validNewPass } = this.state;
@@ -86,16 +96,18 @@ export class ChangePassword extends Component {
                     }
 
                 }).catch(e => {
+                    const errorResponse = e.response.data
                     this.setState({ isLoading: false });
-                    switch (e.code) {
-                    case "LimitExceededException":
-                        ToastAndroid.showWithGravity(
-                            e.message,
-                            ToastAndroid.LONG,
-                            ToastAndroid.BOTTOM,
-                        );
+                    switch (errorResponse.code) {
+                    case "INVALID_PASSWORD":
+                        this.errorToast(errorResponse)
                         break;
-
+                    case "USER_INCORRECT_PASSWORD":
+                        this.errorToast(errorResponse)
+                        break;
+                    case "ATTEMPT_LIMIT_EXCEED":
+                        this.errorToast(errorResponse)
+                        break;
                     default:
                         break;
                     }
