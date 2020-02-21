@@ -5,7 +5,8 @@ import {
     BackHandler,
     NetInfo,
     ToastAndroid,
-    WebView
+    WebView,
+    Linking
 } from 'react-native';
 import {
     Form,
@@ -25,7 +26,7 @@ import RoundButton from '../../components/RoundButton'
 /* Assets */
 import image from '../../assets/rsz_gradient-background.png'
 
-import {TermsOfUse} from '../../../config'
+import { TermsOfUse } from '../../../config'
 class TermsAndConditions extends React.Component {
 
     constructor(props) {
@@ -112,7 +113,7 @@ class TermsAndConditions extends React.Component {
                             <H3 style={styles.h2}>{Header.toUpperCase()}</H3>
                             <View style={styles.scrollContainer}>
                                 <WebView
-                                    source={{ uri: TermsOfUse}}
+                                    source={{ uri: TermsOfUse }}
                                     ref={(r) => this.webViewref = r}
                                     javaScriptEnabled={true}
                                     injectedJavaScript={this.injectedJs}
@@ -122,11 +123,17 @@ class TermsAndConditions extends React.Component {
                                         }
                                     }}
                                     onLoad={this.handleOnload}
+                                    onNavigationStateChange={async (event) => {
+                                        if (event.url !== TermsOfUse) {
+                                            await this.webViewref.goBack();
+                                            Linking.openURL(event.url);
+                                        }
+                                    }}
                                 />
                             </View>
                             <RoundButton
                                 onPress={this.buttonHandler}
-                                value='Accept Terms & Conditions'
+                                value='Accept Terms of Use'
                                 isDisabled={!this.state.isButtonEnabled}
                                 isLight={true}
                             />

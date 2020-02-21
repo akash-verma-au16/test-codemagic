@@ -48,7 +48,7 @@ const dev_env = {
         enable_status: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/enable_status',
         disable_status: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/disable_status',
         refresh_token: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com/dev/refresh_token",
-        daily:"https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/daily_data",
+        daily: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/daily_data",
         weekly_sleep: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/weekly_sleep",
         weekly_energy: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/weekly_energy",
         get_survey_status: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/get_status"
@@ -134,9 +134,11 @@ const qa_env = {
         enable_status: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/enable_status',
         disable_status: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/disable_status',
         refresh_token: 'https://htzgm6e757.execute-api.ap-south-1.amazonaws.com/qa/refresh_token',
-        daily:"https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/daily_data",
-        weekly_data:"https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_data",
-        get_survey_status:"https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/get_status",
+        daily: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/daily_data",
+        weekly_data: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_data",
+        weekly_sleep: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_sleep",
+        weekly_energy: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_energy",
+        get_survey_status: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/get_status"
     },
     api: {
         signup: "signup",
@@ -219,9 +221,11 @@ const prod_env = {
         enable_status: 'https://zlrm5hjdw3.execute-api.ap-south-1.amazonaws.com/prod/push_notification/enable_status',
         disable_status: 'https://zlrm5hjdw3.execute-api.ap-south-1.amazonaws.com/prod/push_notification/disable_status',
         refresh_token: 'https://huykcf5gv2.execute-api.ap-south-1.amazonaws.com/prod/refresh_token',
-        daily:"https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/daily_data",
-        weekly_data:"https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/weekly_data",
-        get_survey_status:"https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/get_status"
+        daily: "https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/daily_data",
+        weekly_data: "https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/weekly_data",
+        weekly_sleep: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_sleep",
+        weekly_energy: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_energy",
+        get_survey_status: "https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/get_status"
     },
     api: {
         signup: "signup",
@@ -262,6 +266,6 @@ const prod_env = {
     }
 }
 
-let current_env = dev_env
+let current_env = qa_env
 
 export default current_env
