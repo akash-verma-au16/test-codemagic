@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, TextInput, Dimensions, KeyboardAvoidingView, ToastAndroid, ActivityIndicator } from 'react-native'
+import { View, StyleSheet, TextInput, Dimensions, KeyboardAvoidingView, ToastAndroid, ActivityIndicator, Keyboard } from 'react-native'
 import { Button, Text } from 'native-base'
 import { changePassword } from '../../services/bAuth'
 import { connect } from 'react-redux'
@@ -29,6 +29,7 @@ export class ChangePassword extends Component {
     }
 
     saveChanges = () => {
+        Keyboard.dismiss();
         this.setState({ isLoading: true });
         const { oldPass, newPass, confirmPass, validNewPass } = this.state;
         const { accessToken, accountAlias } = this.props;
@@ -99,17 +100,17 @@ export class ChangePassword extends Component {
                     const errorResponse = e.response.data
                     this.setState({ isLoading: false });
                     switch (errorResponse.code) {
-                    case "INVALID_PASSWORD":
-                        this.errorToast(errorResponse)
-                        break;
-                    case "USER_INCORRECT_PASSWORD":
-                        this.errorToast(errorResponse)
-                        break;
-                    case "ATTEMPT_LIMIT_EXCEED":
-                        this.errorToast(errorResponse)
-                        break;
-                    default:
-                        break;
+                        case "INVALID_PASSWORD":
+                            this.errorToast(errorResponse)
+                            break;
+                        case "USER_INCORRECT_PASSWORD":
+                            this.errorToast(errorResponse)
+                            break;
+                        case "ATTEMPT_LIMIT_EXCEED":
+                            this.errorToast(errorResponse)
+                            break;
+                        default:
+                            break;
                     }
                 })
             }
@@ -133,7 +134,7 @@ export class ChangePassword extends Component {
                 return;
             }
             else if (!regexForNewpass.test(newPass)) {
-                this.setState({ showNote: true });
+                this.setState({ showNote: true, validNewPass: false });
             }
             else {
                 this.setState({ showNote: false, validNewPass: true });
