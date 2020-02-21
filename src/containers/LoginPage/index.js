@@ -310,11 +310,11 @@ class LoginPage extends React.Component {
                                         tenant_id: payload.accountAlias,
                                         associate_id: payload.associate_id
                                     },
-                                    {
-                                        headers: {
-                                            Authorization: payload.accessToken
-                                        }
-                                    })
+                                        {
+                                            headers: {
+                                                Authorization: payload.accessToken
+                                            }
+                                        })
                                     this.props.authenticate(payload);
                                     //Activate Push Notofication
                                     if (!this.sendToken(payload))
@@ -372,42 +372,42 @@ class LoginPage extends React.Component {
                     }).catch((error) => {
                         try {
                             switch (error.response.data.code) {
-                            case "ForceChangePassword":
-                                Toast.show({
-                                    text: 'Please change the password to continue',
-                                    type: 'success',
-                                    duration: 3000
-                                })
-                                /* navigate to forceChangePassword */
-                                this.props.navigation.navigate('ForceChangePassword', {
-                                    email: this.state.email,
-                                    password: this.state.password
-                                })
-                                this.setState({ password: '' })
-                                break;
-                            case "ResourceNotFoundException":
-                                Toast.show({
-                                    text: 'Account not found please contact your administrator',
-                                    type: 'danger',
-                                    duration: 3000
-                                })
-                                break;
-                            case "TenantDoesNotExist":
-                                this.showNewUserAlert()
-                                break;
-                            case "UserNotFound":
-                                Toast.show({
-                                    text: 'Invalid username',
-                                    type: 'danger',
-                                    duration: 3000
-                                })
-                                break;
-                            default:
-                                Toast.show({
-                                    text: error.response.data.message,
-                                    type: 'danger',
-                                    duration: 3000
-                                })
+                                case "ForceChangePassword":
+                                    Toast.show({
+                                        text: 'Please change the password to continue',
+                                        type: 'success',
+                                        duration: 3000
+                                    })
+                                    /* navigate to forceChangePassword */
+                                    this.props.navigation.navigate('ForceChangePassword', {
+                                        email: this.state.email,
+                                        password: this.state.password
+                                    })
+                                    this.setState({ password: '' })
+                                    break;
+                                case "ResourceNotFoundException":
+                                    Toast.show({
+                                        text: 'Account not found please contact your administrator',
+                                        type: 'danger',
+                                        duration: 3000
+                                    })
+                                    break;
+                                case "TenantDoesNotExist":
+                                    this.showNewUserAlert()
+                                    break;
+                                case "UserNotFound":
+                                    Toast.show({
+                                        text: 'Invalid username',
+                                        type: 'danger',
+                                        duration: 3000
+                                    })
+                                    break;
+                                default:
+                                    Toast.show({
+                                        text: error.response.data.message,
+                                        type: 'danger',
+                                        duration: 3000
+                                    })
                             }
 
                         } catch (error) {
@@ -474,6 +474,7 @@ class LoginPage extends React.Component {
                                     }}
                                     keyboardType={'email-address'}
                                     style={styles.color111}
+                                    autoCapitalize='none'
                                 />
                                 <TextInput
                                     placeholder='Password'
