@@ -4,7 +4,7 @@ export const PrivacyPolicy = 'https://joy-hw-default-ind-m-prod.s3.ap-south-1.am
 
 export const TermsOfUse = 'https://joy-hw-default-ind-m-prod.s3.ap-south-1.amazonaws.com/default/legal-documents/TermsOfUse.html'
 
-export const SubscriptionAgreement = 'https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/SubscriptionAgreement.html'
+export const SubscriptionAgreement = 'https://joy-hw-default-ind-m-prod.s3.ap-south-1.amazonaws.com/default/legal-documents/SubscriptionAgreement.html'
 
 const dev_env = {
     url: {
