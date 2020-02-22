@@ -4,6 +4,8 @@ export const PrivacyPolicy = 'https://joy-hw-default-ind-m-prod.s3.ap-south-1.am
 
 export const TermsOfUse = 'https://joy-hw-default-ind-m-prod.s3.ap-south-1.amazonaws.com/default/legal-documents/TermsOfUse.html'
 
+export const SubscriptionAgreement = 'https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/SubscriptionAgreement.html'
+
 const dev_env = {
     url: {
         dev: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com",
@@ -46,7 +48,7 @@ const dev_env = {
         enable_status: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/enable_status',
         disable_status: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/disable_status',
         refresh_token: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com/dev/refresh_token",
-        daily:"https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/daily_data",
+        daily: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/daily_data",
         weekly_sleep: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/weekly_sleep",
         weekly_energy: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/weekly_energy",
         get_survey_status: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/get_status"
@@ -58,6 +60,8 @@ const dev_env = {
         resend_code: "resend_code",
         forgot_password: "forgot_password",
         confirm_password: "confirm_password",
+        change_password: "change_password",
+        accept_subscription: "accept_subscription",
         signout: "signout",
         read_tenant: "read_tenant",
         list_survey: "list_survey",
@@ -78,7 +82,7 @@ const dev_env = {
         post: "post"
     },
     env: {
-        dev: "dev",
+        dev: "dev/auth",
         devhw: "devhw",
         qa: "qa"
     },
@@ -90,7 +94,7 @@ const dev_env = {
 
 const qa_env = {
     url: {
-        dev: "https://htzgm6e757.execute-api.ap-south-1.amazonaws.com",
+        dev: "https://5790eji7u8.execute-api.ap-south-1.amazonaws.com",
         create_post: "https://6iwbpat27k.execute-api.ap-south-1.amazonaws.com/qa/post/create_post",
         get_visibility: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/get_visibility",
         news_feed: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/news_feed",
@@ -130,11 +134,11 @@ const qa_env = {
         enable_status: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/enable_status',
         disable_status: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/disable_status',
         refresh_token: 'https://htzgm6e757.execute-api.ap-south-1.amazonaws.com/qa/refresh_token',
-        daily:"https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/daily_data",
-        weekly_data:"https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_data",
+        daily: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/daily_data",
+        weekly_data: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_data",
         weekly_sleep: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_sleep",
         weekly_energy: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_energy",
-        get_survey_status:"https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/get_status"
+        get_survey_status: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/get_status"
     },
     api: {
         signup: "signup",
@@ -143,6 +147,8 @@ const qa_env = {
         resend_code: "resend_code",
         forgot_password: "forgot_password",
         confirm_password: "confirm_password",
+        change_password: "change_password",
+        accept_subscription: "accept_subscription",
         signout: "signout",
         read_tenant: "read_tenant",
         list_survey: "list_survey",
@@ -163,7 +169,7 @@ const qa_env = {
         post: "post"
     },
     env: {
-        dev: "qa",
+        dev: "qa/auth",
         devhw: "devhw",
         qa: "qa"
     },
@@ -215,11 +221,11 @@ const prod_env = {
         enable_status: 'https://zlrm5hjdw3.execute-api.ap-south-1.amazonaws.com/prod/push_notification/enable_status',
         disable_status: 'https://zlrm5hjdw3.execute-api.ap-south-1.amazonaws.com/prod/push_notification/disable_status',
         refresh_token: 'https://huykcf5gv2.execute-api.ap-south-1.amazonaws.com/prod/refresh_token',
-        daily:"https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/daily_data",
-        weekly_data:"https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/weekly_data",
-        weekly_sleep: "https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/weekly_sleep",
-        weekly_energy: "https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/weekly_energy",
-        get_survey_status:"https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/get_status"
+        daily: "https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/daily_data",
+        weekly_data: "https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/weekly_data",
+        weekly_sleep: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_sleep",
+        weekly_energy: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_energy",
+        get_survey_status: "https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/get_status"
     },
     api: {
         signup: "signup",
@@ -228,6 +234,8 @@ const prod_env = {
         resend_code: "resend_code",
         forgot_password: "forgot_password",
         confirm_password: "confirm_password",
+        change_password: "change_password",
+        accept_subscription: "accept_subscription",
         signout: "signout",
         read_tenant: "read_tenant",
         list_survey: "list_survey",
@@ -248,7 +256,7 @@ const prod_env = {
         post: "post"
     },
     env: {
-        dev: "prod",
+        dev: "prod/auth",
         devhw: "devhw",
         qa: "qa"
     },

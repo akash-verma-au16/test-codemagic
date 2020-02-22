@@ -22,6 +22,7 @@ import StrengthPosts from '../StrengthPosts'
 import DetailedInsights from '../DetailedInsights'
 import Welcome from '../WelcomeScreen/index'
 import Feedback from '../Feedback/index'
+import ChangePassword from '../ChangePassword'
 /* This stack will contain list of all pages */
 const RootStack = createStackNavigator(
     {
@@ -35,7 +36,7 @@ const RootStack = createStackNavigator(
                 headerTintColor: '#fff',
                 headerTitleStyle: {
                     fontWeight: 'bold',
-                    textAlign:"center",
+                    textAlign: "center",
                     flex: 1
                 }
             }
@@ -44,50 +45,50 @@ const RootStack = createStackNavigator(
         'LoginPage': {
             screen: LoginPage,
             navigationOptions: {
-                header:null
+                header: null
             }
         },
-        
+
         'ForgotPassword': {
             screen: ForgotPassword,
             navigationOptions: {
-                header:null
+                header: null
             }
         },
-        
+
         'ConfirmPassword': {
             screen: ConfirmPassword,
             navigationOptions: {
-                header:null
+                header: null
             }
         },
-        
+
         'TermsAndConditions': {
             screen: TermsAndConditions,
             navigationOptions: {
-                header:null
+                header: null
             }
         },
-        
+
         'SurveyIntro': {
             screen: SurveyIntro,
             navigationOptions: {
-                header:null
+                header: null
             }
         },
-        
+
         'SurveyExit': {
             screen: SurveyExit,
             path: 'SurveyExit',
             navigationOptions: {
-                header:null
+                header: null
             }
         },
-        
+
         'QuestionContainer': {
             screen: QuestionContainer,
             navigationOptions: {
-                header:null
+                header: null
             }
         },
         'InAppNotifier': {
@@ -215,11 +216,11 @@ const RootStack = createStackNavigator(
                 }
             }
         },
-        
+
         'ForceChangePassword': {
             screen: ForceChangePassword,
             navigationOptions: {
-                header:null
+                header: null
             }
         },
         'Welcome': {
@@ -231,7 +232,7 @@ const RootStack = createStackNavigator(
         'TabNavigator': {
             screen: TabNavigator,
             navigationOptions: {
-                header:null
+                header: null
             }
         },
 
@@ -245,7 +246,7 @@ const RootStack = createStackNavigator(
                 headerTintColor: '#fff',
                 headerTitleStyle: {
                     fontWeight: 'bold',
-                    textAlign:"center",
+                    textAlign: "center",
                     flex: 1
                 }
             }
@@ -256,10 +257,24 @@ const RootStack = createStackNavigator(
                 header: null
             }
         },
+        'ChangePassword': {
+            screen: ChangePassword,
+            navigationOptions: {
+                headerStyle: {
+                    backgroundColor: '#47309C'
+                },
+                title: 'Change Password',
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                    flex: 1
+                }
+            }
+        }
     },
     {
         initialRouteName: 'TabNavigator'
-        
+
     }
 );
 

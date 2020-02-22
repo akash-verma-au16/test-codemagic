@@ -33,19 +33,20 @@ import { auth } from '../../store/actions'
 // import Slogan from '../../components/Slogan'
 import TextInput from '../../components/TextInput'
 import RoundButton from '../../components/RoundButton'
+import SubscriptionModal from '../../components/SubscriptionModal'
 
 /* Assets */
 // import image from '../../assets/image.png'
 import logo from '../../assets/Logo_High_black.png'
 /* Services */
-import { login } from '../../services/bAuth'
+import { login, acceptSubscription } from '../../services/bAuth'
 import { read_member, read_tenant } from '../../services/tenant'
 /* Utilities */
 import toSentenceCase from '../../utilities/toSentenceCase'
 
 /* Push notification */
 import { register_device } from '../../services/pushNotification'
-import {  liked_post } from '../../services/post'
+import { liked_post } from '../../services/post'
 import slackLogger from '../../services/slackLogger'
 
 class LoginPage extends React.Component {
@@ -56,10 +57,13 @@ class LoginPage extends React.Component {
             isShowingKeyboard: false,
             isSignInLoading: false,
             email: "",
+            tenant: "",
             password: "",
             logoShift: new Animated.Value(-50),
             logoFade: new Animated.Value(0),
-            sloganFade: new Animated.Value(0)
+            sloganFade: new Animated.Value(0),
+            modalVisible: false,
+            authPayload: {}
         }
         this.tenantName = ""
         /* Refs are used to redirect the focus to the next component using keyboard button */
@@ -218,6 +222,60 @@ class LoginPage extends React.Component {
         )
     }
 
+    submitSubscription = () => {
+        const { authPayload } = this.state;
+        const payload = {
+            tenant_id: this.state.tenant,
+            email: this.state.email.trim()
+        }
+        acceptSubscription(payload).then((res) => {
+            this.props.authenticate(authPayload);
+            this.setState({ modalVisible: false })
+            ToastAndroid.showWithGravityAndOffset(
+                res.data.message,
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+                25,
+                50,
+            );
+            this.props.navigation.navigate('TabNavigator')
+        }).catch(e => {
+            ToastAndroid.showWithGravityAndOffset(
+                Some,
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+                25,
+                50,
+            );
+            this.setState({ modalVisible: false })
+        })
+    }
+
+    imageDownload = () => {
+        const { tenant_name, accountAlias, emailAddress, accessToken, associate_id } = this.state.authPayload
+        try {
+            /* Request image*/
+            const file_download_payload = {
+                tenant_name: tenant_name + accountAlias,
+                file_name: 'logo.png',
+                associate_email: emailAddress
+            }
+            const header = {
+                headers: {
+                    Authorization: accessToken
+                }
+            }
+
+            this.props.navigation.setParams({ 'associateId': associate_id })
+
+            file_download(file_download_payload, header).then((response) => {
+                this.props.imageUrl(response.data.data['download-signed-url'])
+            }).catch(() => { })
+
+        }
+        catch (e) {/* error */ }
+    }
+
     signinHandler = () => {
         /* Hiding the keyboard to prevent Toast overlap */
         Keyboard.dismiss()
@@ -230,10 +288,10 @@ class LoginPage extends React.Component {
                         email: this.state.email,
                         password: this.state.password
                     }).then((response) => {
-
                         // store token expire time in the local storage
                         AsyncStorage.setItem('accessTokenExp', JSON.stringify(response.data.payload.accessToken.payload.exp))
                         const accountAlias = response.data.payload.tenant_id
+                        this.setState({ tenant: accountAlias })
                         /* Restricting Super Admin Access as no Tenant Name is available to fetch */
                         if (accountAlias.trim().toLowerCase() === 'default') {
                             Toast.show({
@@ -281,7 +339,7 @@ class LoginPage extends React.Component {
                                         accessToken: response.data.payload.accessToken.jwtToken,
                                         refreshToken: response.data.payload.refreshToken.token
                                     };
-
+                                    this.setState({ authPayload: payload })
                                     this.likeSyncHandler({
                                         tenant_id: payload.accountAlias,
                                         associate_id: payload.associate_id
@@ -291,33 +349,19 @@ class LoginPage extends React.Component {
                                             Authorization: payload.accessToken
                                         }
                                     })
-                                    this.props.authenticate(payload);
+                                    this.imageDownload()
                                     //Activate Push Notofication
                                     if (!this.sendToken(payload))
                                         return
-                                    try {
-                                       
-                                        /* Request image*/
-                                        const file_download_payload = {
-                                            tenant_name: this.props.tenant_name + this.props.accountAlias,
-                                            file_name: 'logo.png',
-                                            associate_email: this.props.email
-                                        }
-                                        const header = {
-                                            headers: {
-                                                Authorization: this.props.accessToken
-                                            }
-                                        }
 
-                                        this.props.navigation.setParams({'associateId': this.props.associate_id })
-                                        
-                                        file_download(file_download_payload, header).then((response) => {
-                                            this.props.imageUrl(response.data.data['download-signed-url'])
-                                            this.props.navigation.navigate('TabNavigator')
-                                        }).catch(() => { })
-
+                                    if (!response.data.payload.is_agreement_accepted) {
+                                        this.setState({ modalVisible: true, isSignInLoading: false });
                                     }
-                                    catch (e) {/* error */ }
+                                    else {
+                                        this.props.authenticate(payload);
+                                        this.setState({ isSignInLoading: false });
+                                        this.props.navigation.navigate('TabNavigator')
+                                    }
                                 }).catch((error) => {
                                     this.setState({ isSignInLoading: false });
                                     if (this.props.isConnected) {
@@ -342,42 +386,42 @@ class LoginPage extends React.Component {
                     }).catch((error) => {
                         try {
                             switch (error.response.data.code) {
-                            case "ForceChangePassword":
-                                Toast.show({
-                                    text: 'Please change the password to continue',
-                                    type: 'success',
-                                    duration: 3000
-                                })
-                                /* navigate to forceChangePassword */
-                                this.props.navigation.navigate('ForceChangePassword', {
-                                    email: this.state.email,
-                                    password: this.state.password
-                                })
-                                this.setState({ password: '' })
-                                break;
-                            case "ResourceNotFoundException":
-                                Toast.show({
-                                    text: 'Account not found please contact your administrator',
-                                    type: 'danger',
-                                    duration: 3000
-                                })
-                                break;
-                            case "TenantDoesNotExist":
-                                this.showNewUserAlert()
-                                break;
-                            case "UserNotFound":
-                                Toast.show({
-                                    text: 'Invalid username',
-                                    type: 'danger',
-                                    duration: 3000
-                                })
-                                break;
-                            default:
-                                Toast.show({
-                                    text: error.response.data.message,
-                                    type: 'danger',
-                                    duration: 3000
-                                })
+                                case "ForceChangePassword":
+                                    Toast.show({
+                                        text: 'Please change the password to continue',
+                                        type: 'success',
+                                        duration: 3000
+                                    })
+                                    /* navigate to forceChangePassword */
+                                    this.props.navigation.navigate('ForceChangePassword', {
+                                        email: this.state.email,
+                                        password: this.state.password
+                                    })
+                                    this.setState({ password: '' })
+                                    break;
+                                case "ResourceNotFoundException":
+                                    Toast.show({
+                                        text: 'Account not found please contact your administrator',
+                                        type: 'danger',
+                                        duration: 3000
+                                    })
+                                    break;
+                                case "TenantDoesNotExist":
+                                    this.showNewUserAlert()
+                                    break;
+                                case "UserNotFound":
+                                    Toast.show({
+                                        text: 'Invalid username',
+                                        type: 'danger',
+                                        duration: 3000
+                                    })
+                                    break;
+                                default:
+                                    Toast.show({
+                                        text: error.response.data.message,
+                                        type: 'danger',
+                                        duration: 3000
+                                    })
                             }
 
                         } catch (error) {
@@ -444,6 +488,7 @@ class LoginPage extends React.Component {
                                     }}
                                     keyboardType={'email-address'}
                                     style={styles.color111}
+                                    autoCapitalize='none'
                                 />
                                 <TextInput
                                     placeholder='Password'
@@ -472,6 +517,7 @@ class LoginPage extends React.Component {
                             </Animated.View>
                         </Form>
                     </View>
+                    <SubscriptionModal visible={this.state.modalVisible} subscribe={this.submitSubscription} onRequestClose={() => this.setState({ modalVisible: false })} />
                 </Content>
             </Container>
         );
@@ -480,7 +526,9 @@ class LoginPage extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     form: {
         flex: 1,

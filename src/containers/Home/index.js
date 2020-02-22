@@ -105,7 +105,7 @@ class Home extends React.Component {
         this.pager = React.createRef();
         this.posts = []
         this.counts = []
-        this.homeDataList = [] 
+        this.homeDataList = []
         this.homeDataRowList = []
         this.projectList = []
         this.transactionList = []
@@ -135,7 +135,7 @@ class Home extends React.Component {
     };
 
     async componentWillMount() {
-        this.setState({homeRefreshing: true, summaryRefreshing: true})
+        this.setState({ homeRefreshing: true, summaryRefreshing: true })
         if (this.state.associate_id !== this.props.associate_id) {
             if (this.state.associate_id == undefined || this.state.associate_id == "") {
                 await this.setState({ associate_id: this.props.associate_id })
@@ -143,7 +143,7 @@ class Home extends React.Component {
             }
         }
         else {
-            this.setState({refreshing: true})
+            this.setState({ refreshing: true })
             if (this.userData == {}) {
                 this.loadProfile()
             }
@@ -158,7 +158,7 @@ class Home extends React.Component {
         this.interval = setInterval(() => {
             // Calling transaction list API after render method
             this.loadTransactions()
-            if(!this.state.isPostDeleted) {
+            if (!this.state.isPostDeleted) {
                 // avoid collision between two methods
                 this.loadHome()
             }
@@ -170,7 +170,7 @@ class Home extends React.Component {
         }
 
         // Hardware backpress handle
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress',this.goBack)
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.goBack)
 
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange)
     }
@@ -209,7 +209,7 @@ class Home extends React.Component {
         }
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
-                user_profile(payload,headers).then((response) => {
+                user_profile(payload, headers).then((response) => {
                     this.userData = response.data.data
                     if (this.state.associate_id !== this.props.associate_id) {
                         this.handleImageDownload()
@@ -255,7 +255,7 @@ class Home extends React.Component {
             }
 
             try {
-                delete_post(payload,headers).then(async(res) => {
+                delete_post(payload, headers).then(async (res) => {
                     if (res.status === 200) {
                         var index = this.posts.findIndex((post) => { return post.Item.post_id == postId })
                         this.homeDataList.splice(index, 1)
@@ -296,12 +296,12 @@ class Home extends React.Component {
         try {
             if (payload.tenant_id !== "" && payload.associate_id !== "") {
 
-                await list_posts(payload,headers).then((response) => {
-                    if(this.homeDataBackup.length === response.data.data.posts.length) {
-                        if(response.data.data.posts.length === 0) {
+                await list_posts(payload, headers).then((response) => {
+                    if (this.homeDataBackup.length === response.data.data.posts.length) {
+                        if (response.data.data.posts.length === 0) {
                             this.homeDataList = []
                             this.homeDataList.push(
-                                <Text style={{ textAlign: 'center', width: '100%', alignItems: 'center', justifyContent: 'center' }}>No posts found.</Text>
+                                <Text key={0} style={{ textAlign: 'center', width: '100%', alignItems: 'center', justifyContent: 'center' }}>No posts found.</Text>
                             )
                             this.setState({ postList: this.homeDataList, homeRefreshing: false })
                             return
@@ -356,8 +356,8 @@ class Home extends React.Component {
             this.homeDataList.push(
                 // Post Component
                 <Post
-                    key={item.Item.post_id} 
-                    postSource= 'Profile'
+                    key={item.Item.post_id}
+                    postSource='Profile'
                     postId={item.Item.post_id}
                     privacy={item.Item.privacy}
                     postCreator_id={item.Item.associate_id}
@@ -376,7 +376,7 @@ class Home extends React.Component {
                     addOn={item.Item.addOnPoints}
                 />
             )
-            if(posts.length == this.homeDataList.length) {
+            if (posts.length == this.homeDataList.length) {
                 setTimeout(() => this.setState({ homeRefreshing: false, postList: this.homeDataList }), 1500)
             }
         })
@@ -395,9 +395,9 @@ class Home extends React.Component {
         }
 
         try {
-            strength_counts(payload,headers).then((response) => {
-                this.setState({ strengthCount: response.data.data.length})
-                if(response.data.data.length == 0) {
+            strength_counts(payload, headers).then((response) => {
+                this.setState({ strengthCount: response.data.data.length })
+                if (response.data.data.length == 0) {
                     this.summeryRawList = []
                     this.summeryRawList.push(<Text key={0} style={{ textAlign: 'center', width: '100%', alignItems: 'center', justifyContent: 'center' }}>No strengths to display.</Text>)
                     this.setState({ summaryRefreshing: false })
@@ -419,7 +419,7 @@ class Home extends React.Component {
                                 />
                             </View>
                         )
-                        this.setState({summeryList: this.summeryList, summaryRefreshing: false})
+                        this.setState({ summeryList: this.summeryList, summaryRefreshing: false })
                     })
                 }
             }).catch((error) => {
@@ -496,7 +496,7 @@ class Home extends React.Component {
                                 Authorization: this.props.accessToken
                             }
                         }
-                        await update_profile(payload,headers).then(() => {
+                        await update_profile(payload, headers).then(() => {
                             if (this.state.photo !== null) {
                                 ToastAndroid.showWithGravityAndOffset(
                                     'Updating...',
@@ -570,7 +570,7 @@ class Home extends React.Component {
                     {
                         text: 'Yes', onPress: () => {
                             this.setModalVisible(false)
-                            this.setState({ isEdit: false,photo: this.state.imageUrl })
+                            this.setState({ isEdit: false, photo: this.state.imageUrl })
                         }
                     }
                 ],
@@ -667,7 +667,7 @@ class Home extends React.Component {
                                         :
                                         <Text style={styles.tText}>
                                             {
-                                                (item.sevice_name == "add_on") ? 
+                                                (item.sevice_name == "add_on") ?
                                                     item.t_type == 'cr' ?
                                                         'You have been gifted points for ' :
                                                         'You have gifted points for '
@@ -728,7 +728,7 @@ class Home extends React.Component {
                 Authorization: this.props.accessToken
             }
         }
-        file_upload(payload,headers)
+        file_upload(payload, headers)
             .then((response) => {
                 const headers = {
                     'Content-Type': 'multipart/form-data'
@@ -756,12 +756,12 @@ class Home extends React.Component {
 
     /* Get image from S3 */
     handleImageDownload = () => {
-        if(this.props.navigation.getParam('imageUrl')){
+        if (this.props.navigation.getParam('imageUrl')) {
             this.setState({ isImageLoading: false })
-        }else{
+        } else {
             this.setState({ isImageLoading: true })
         }
-        
+
         /* Request image*/
         const payload = {
             tenant_name: this.props.tenantName + this.props.accountAlias,
@@ -775,7 +775,7 @@ class Home extends React.Component {
                 Authorization: this.props.accessToken
             }
         }
-        file_download(payload,headers).then((response) => {
+        file_download(payload, headers).then((response) => {
             /* Store the image */
             this.setState({ isImageLoading: false, imageUrl: response.data.data['download-signed-url'] })
             if (payload.associate_email === this.props.email)
@@ -867,13 +867,13 @@ class Home extends React.Component {
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: "100%", padding: 15 }}>
                         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '35%' }}>
                             <View style={styles.tbWrapper}>
-                                
+
                                 <Image
                                     style={{ borderRadius: 45, width: 90, height: 90 }}
                                     source={{ uri: this.state.imageUrl }}
                                     resizeMode='cover'
                                 />
-                                      
+
                             </View>
                             {
                                 this.state.associate_id === this.props.associate_id ?
@@ -895,7 +895,7 @@ class Home extends React.Component {
                             }
                             <Text style={[styles.coloredText, styles.textLeft]} allowFontScaling numberOfLines={2}>{this.userData.email}</Text>
                             <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={1}>Mobile: <Text style={styles.mobilNo}>{this.userData.phonenumber}</Text></Text>
-                            {this.projectList.toString().length===0?null:
+                            {this.projectList.toString().length === 0 ? null :
                                 <Text style={[styles.textLeft, styles.helperText]} allowFontScaling numberOfLines={2}>Projects: <Text style={styles.companyName}>{this.projectList.toString()}</Text></Text>
                             }
                         </View>
@@ -965,7 +965,7 @@ class Home extends React.Component {
                             style={styles.viewPager}
                             onPageSelected={(page) => this.setState({ selectedTab: page.position })}
                         >
-                            <View style={{ flex: 1, backgroundColor: '#efefef'}}>
+                            <View style={{ flex: 1, backgroundColor: '#efefef' }}>
                                 <ScrollView
                                     showsVerticalScrollIndicator={false}
                                     contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingTop: 3, backgroundColor: '#eee' }}
@@ -984,7 +984,7 @@ class Home extends React.Component {
                                             }}
                                         />
                                     }>
-                                    { this.state.postList } 
+                                    {this.state.postList}
                                 </ScrollView>
                             </View>
                             {
@@ -1083,12 +1083,12 @@ class Home extends React.Component {
 
                                                 {!this.state.isImageLoading ? (
                                                     <Image
-                                                        source={{ uri: this.state.photo !== null ? this.state.photo : this.state.imageUrl }} 
+                                                        source={{ uri: this.state.photo !== null ? this.state.photo : this.state.imageUrl }}
                                                         style={styles.profilePic}
                                                     />
                                                 ) : (
-                                                    <ActivityIndicator size='large' color='#47309C' />
-                                                )
+                                                        <ActivityIndicator size='large' color='#47309C' />
+                                                    )
                                                 }
                                             </View>
                                             <TouchableOpacity onPress={() => this.setState({ visibilityModalVisible: true })}>

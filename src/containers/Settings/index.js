@@ -21,7 +21,8 @@ import {
     Container,
     Content,
     Icon,
-    H3
+    H3,
+    Item
 } from 'native-base';
 
 import DeviceInfo from 'react-native-device-info';
@@ -34,7 +35,7 @@ import { checkIfSessionExpired } from '../RBAC/RBAC_Handler'
 /* Custom Components */
 import LoadingModal from '../LoadingModal'
 
-import {PrivacyPolicy} from '../../../config'
+import { PrivacyPolicy } from '../../../config'
 class Settings extends React.Component {
     constructor(props) {
         super(props)
@@ -63,7 +64,7 @@ class Settings extends React.Component {
         }
         try {
             if (this.props.isConnected) {
-                enable_status(this.statusApiPayload,headers).then(() => {
+                enable_status(this.statusApiPayload, headers).then(() => {
                     this.props.updatePushNotifStatus({ pushNotifStatus: true })
                     // }
                 }).catch((error) => {
@@ -93,7 +94,7 @@ class Settings extends React.Component {
         }
         try {
             if (this.props.isConnected) {
-                disable_status(this.statusApiPayload,headers).then((response) => {
+                disable_status(this.statusApiPayload, headers).then((response) => {
                     if (response.status == 200) {
                         this.props.updatePushNotifStatus({ pushNotifStatus: false })
                     }
@@ -159,6 +160,12 @@ class Settings extends React.Component {
         {
             key: 'Push Notification',
             icon: 'md-notifications'
+        },
+        {
+            key: 'Change Password',
+            icon: 'user-lock',
+            iconType: 'FontAwesome5',
+            onPress: () => this.props.navigation.navigate('ChangePassword')
         },
         {
             key: 'Privacy Policy',
@@ -275,7 +282,7 @@ class Settings extends React.Component {
                 onPress={item.onPress}
             >
                 <View style={{ flexDirection: 'row' }}>
-                    <Icon name={item.icon} style={styles.icon} />
+                    <Icon name={item.icon} style={[styles.icon, item.iconType ? { fontSize: 16 } : {}]} type={item.iconType ? item.iconType : 'Ionicons'} />
 
                     <H3 style={{
                         color: 'black',
@@ -367,7 +374,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         deAuthenticate: () => dispatch({ type: auth.DEAUTHENTICATE_USER }),
         clearData: () => dispatch({ type: dev.CLEAR_DATA }),
-        updatePushNotifStatus: (props) => dispatch({ type: user.UPDATE_PUSH_STATUS, payload: props}),
+        updatePushNotifStatus: (props) => dispatch({ type: user.UPDATE_PUSH_STATUS, payload: props }),
         updateNewTokens: (props) => dispatch({ type: auth.REFRESH_TOKEN, payload: props })
 
     };
