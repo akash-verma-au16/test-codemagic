@@ -1,8 +1,8 @@
 export const feedbackDisplayCount = 37;
 
-export const PrivacyPolicy = 'https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/PrivacyPolicy.html'
+export const PrivacyPolicy = 'https://joy-hw-default-ind-m-prod.s3.ap-south-1.amazonaws.com/default/legal-documents/PrivacyPolicy.html'
 
-export const TermsOfUse = 'https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/Terms%26Condition.html'
+export const TermsOfUse = 'https://joy-hw-default-ind-m-prod.s3.ap-south-1.amazonaws.com/default/legal-documents/TermsOfUse.html'
 
 export const SubscriptionAgreement = 'https://joy-hw-default-ind-m-dev.s3.ap-south-1.amazonaws.com/default/legal+documents/SubscriptionAgreement.html'
 
@@ -266,6 +266,6 @@ const prod_env = {
     }
 }
 
-let current_env = qa_env
+let current_env = prod_env
 
 export default current_env
