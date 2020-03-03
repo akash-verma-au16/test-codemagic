@@ -133,9 +133,9 @@ class ListPost extends React.PureComponent {
             liked_post(payload, headers)
                 .then(res => {
                     if (res.status == "success") {
-                        res.data.data.map(postId => {
+                        res.data.data.map( async (postId) => {
                             /* Store likes */
-                            AsyncStorage.setItem(postId, "true");
+                            await AsyncStorage.setItem(postId, "true");
                         });
                     }
                 })
@@ -595,12 +595,12 @@ class ListPost extends React.PureComponent {
         if (tokenExp < currentEpoc) {
             /* Token has expired */
             refreshToken(payload)
-                .then(res => {
+                .then(async (res) => {
                     this.props.updateNewTokens({
                         accessToken: res.data.payload.AccessToken
                     });
                     // store token expire time in the local storage
-                    AsyncStorage.setItem(
+                    await AsyncStorage.setItem(
                         "accessTokenExp",
                         JSON.stringify(res.data.payload.AccessTokenPayload.exp)
                     );

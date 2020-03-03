@@ -167,10 +167,10 @@ class Post extends Component {
         }
 
         try {
-            like_post(payload, headers).then((res) => {
+            like_post(payload, headers).then(async (res) => {
                 if (res.status === 200) {
                     this.setState({ isLiked: true })
-                    AsyncStorage.setItem(this.props.postId, 'true')
+                    await AsyncStorage.setItem(this.props.postId, 'true')
                 }
 
             }).catch((error) => {
@@ -212,10 +212,10 @@ class Post extends Component {
 
             like_id(payload_2, headers).then((response) => {
                 payload.Data.like.like_id = response.data.data.like_id
-                unlike_post(payload, headers).then((res) => {
+                unlike_post(payload, headers).then(async (res) => {
                     if (res.status === 200) {
                         this.setState({ isLiked: false })
-                        AsyncStorage.setItem(this.props.postId, 'false')
+                        await AsyncStorage.setItem(this.props.postId, 'false')
                     }
                 }).catch((error) => {
                     const isSessionExpired = checkIfSessionExpired(error.response, this.props.navigation, this.props.deAuthenticate, this.props.updateNewTokens)

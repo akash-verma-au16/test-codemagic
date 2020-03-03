@@ -68,7 +68,7 @@ class SurveyIntro extends React.Component {
             refresh_token: this.props.refreshTokenKey,
             tenant_id: this.props.accountAlias
         }
-        
+
         const tokenExp = await AsyncStorage.getItem('accessTokenExp')
         /* epoch time calculation */
         const dateTime = Date.now();
@@ -76,10 +76,10 @@ class SurveyIntro extends React.Component {
 
         if (tokenExp < currentEpoc) {
             /* Token has expired */
-            refreshToken(payload).then((res) => {
+            refreshToken(payload).then(async (res) => {
                 this.props.updateNewTokens({ accessToken: res.data.payload.AccessToken })
                 // store token expire time in the local storage
-                AsyncStorage.setItem('accessTokenExp', JSON.stringify(res.data.payload.AccessTokenPayload.exp))
+                await AsyncStorage.setItem('accessTokenExp', JSON.stringify(res.data.payload.AccessTokenPayload.exp))
                 this.readSurveyHandler()
 
             }).catch(() => {

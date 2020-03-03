@@ -7,10 +7,10 @@ import {
     Alert,
     BackHandler,
     ToastAndroid,
-    AsyncStorage,
     Switch,
     Linking
 } from 'react-native';
+import AsyncStorage from "@react-native-community/async-storage";
 
 /* Redux */
 import { connect } from 'react-redux'
@@ -21,8 +21,7 @@ import {
     Container,
     Content,
     Icon,
-    H3,
-    Item
+    H3
 } from 'native-base';
 
 import DeviceInfo from 'react-native-device-info';
@@ -197,10 +196,10 @@ class Settings extends React.Component {
             await AsyncStorage.clear()
             // restore the tokens
             if (pushNotificationToken) {
-                AsyncStorage.setItem('token', pushNotificationToken)
+                await AsyncStorage.setItem('token', pushNotificationToken)
             }
             if (redux) {
-                AsyncStorage.setItem('reduxState', redux)
+                await AsyncStorage.setItem('reduxState', redux)
             }
         } catch (error) {
             // Error retrieving data

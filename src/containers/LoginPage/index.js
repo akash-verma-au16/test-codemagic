@@ -7,10 +7,10 @@ import {
     Animated,
     BackHandler,
     ToastAndroid,
-    AsyncStorage,
     Platform,
     Alert
 } from 'react-native';
+import AsyncStorage from "@react-native-community/async-storage";
 
 /* Native Base */
 import {
@@ -93,7 +93,7 @@ class LoginPage extends React.Component {
     /* Restore Likes from the server */
     likeSyncHandler = (payload, header) => {
         liked_post(payload, header)
-            .then((response) => {
+            .then(async (response) => {
                 response.data.data.map((postId) => {
                     /* Store likes */
                     AsyncStorage.setItem(postId, 'true')
@@ -287,9 +287,9 @@ class LoginPage extends React.Component {
                     login({
                         email: this.state.email,
                         password: this.state.password
-                    }).then((response) => {
+                    }).then(async (response) => {
                         // store token expire time in the local storage
-                        AsyncStorage.setItem('accessTokenExp', JSON.stringify(response.data.payload.accessToken.payload.exp))
+                        await AsyncStorage.setItem('accessTokenExp', JSON.stringify(response.data.payload.accessToken.payload.exp))
                         const accountAlias = response.data.payload.tenant_id
                         this.setState({ tenant: accountAlias })
                         /* Restricting Super Admin Access as no Tenant Name is available to fetch */
@@ -386,42 +386,42 @@ class LoginPage extends React.Component {
                     }).catch((error) => {
                         try {
                             switch (error.response.data.code) {
-                                case "ForceChangePassword":
-                                    Toast.show({
-                                        text: 'Please change the password to continue',
-                                        type: 'success',
-                                        duration: 3000
-                                    })
-                                    /* navigate to forceChangePassword */
-                                    this.props.navigation.navigate('ForceChangePassword', {
-                                        email: this.state.email,
-                                        password: this.state.password
-                                    })
-                                    this.setState({ password: '' })
-                                    break;
-                                case "ResourceNotFoundException":
-                                    Toast.show({
-                                        text: 'Account not found please contact your administrator',
-                                        type: 'danger',
-                                        duration: 3000
-                                    })
-                                    break;
-                                case "TenantDoesNotExist":
-                                    this.showNewUserAlert()
-                                    break;
-                                case "UserNotFound":
-                                    Toast.show({
-                                        text: 'Invalid username',
-                                        type: 'danger',
-                                        duration: 3000
-                                    })
-                                    break;
-                                default:
-                                    Toast.show({
-                                        text: error.response.data.message,
-                                        type: 'danger',
-                                        duration: 3000
-                                    })
+                            case "ForceChangePassword":
+                                Toast.show({
+                                    text: 'Please change the password to continue',
+                                    type: 'success',
+                                    duration: 3000
+                                })
+                                /* navigate to forceChangePassword */
+                                this.props.navigation.navigate('ForceChangePassword', {
+                                    email: this.state.email,
+                                    password: this.state.password
+                                })
+                                this.setState({ password: '' })
+                                break;
+                            case "ResourceNotFoundException":
+                                Toast.show({
+                                    text: 'Account not found please contact your administrator',
+                                    type: 'danger',
+                                    duration: 3000
+                                })
+                                break;
+                            case "TenantDoesNotExist":
+                                this.showNewUserAlert()
+                                break;
+                            case "UserNotFound":
+                                Toast.show({
+                                    text: 'Invalid username',
+                                    type: 'danger',
+                                    duration: 3000
+                                })
+                                break;
+                            default:
+                                Toast.show({
+                                    text: error.response.data.message,
+                                    type: 'danger',
+                                    duration: 3000
+                                })
                             }
 
                         } catch (error) {
