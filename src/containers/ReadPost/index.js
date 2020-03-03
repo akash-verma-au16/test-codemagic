@@ -140,10 +140,10 @@ class ListPost extends React.Component {
 
         if (tokenExp < currentEpoc) {
             /* Token has expired */
-            refreshToken(payload).then((res) => {
+            refreshToken(payload).then(async (res) => {
                 this.props.updateNewTokens({ accessToken: res.data.payload.AccessToken })
                 // store token expire time in the local storage
-                AsyncStorage.setItem('accessTokenExp', JSON.stringify(res.data.payload.AccessTokenPayload.exp))
+                await AsyncStorage.setItem('accessTokenExp', JSON.stringify(res.data.payload.AccessTokenPayload.exp))
                 this.getProfile()
                 this.loadPosts()
 

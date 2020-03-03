@@ -1,5 +1,7 @@
 //use either react-native or react specific components and libraries in this file to logout the user
-import { ToastAndroid, AsyncStorage } from 'react-native'
+import { ToastAndroid } from 'react-native'
+import AsyncStorage from '@react-native-community/async-storage'
+
 import { StackActions, NavigationActions } from 'react-navigation';
 import { unregister } from '../../services/pushNotification'
 import { logout } from '../../services/bAuth'
@@ -35,7 +37,7 @@ export async function reactNativeHelper(navigation, deAuthenticate) {
         associate_id: userState.associate_id
     }
 
-    logout(payload).then(async() => {
+    logout(payload).then(async () => {
         // Signout
         deAuthenticate()
         await clearLikeHandler()
