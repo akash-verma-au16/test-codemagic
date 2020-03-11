@@ -47,7 +47,6 @@ const dev_env = {
         get_status: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/get_status',
         enable_status: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/enable_status',
         disable_status: 'https://d0pc2376t5.execute-api.ap-south-1.amazonaws.com/dev/push_notification/disable_status',
-        refresh_token: "https://dk6s3qlklh.execute-api.ap-south-1.amazonaws.com/dev/refresh_token",
         daily: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/daily_data",
         weekly_sleep: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/weekly_sleep",
         weekly_energy: "https://ieiyaqol00.execute-api.ap-south-1.amazonaws.com/dev/data_apis/weekly_energy",
@@ -61,6 +60,7 @@ const dev_env = {
         forgot_password: "forgot_password",
         confirm_password: "confirm_password",
         change_password: "change_password",
+        refresh_token: "refresh_token",
         accept_subscription: "accept_subscription",
         signout: "signout",
         read_tenant: "read_tenant",
@@ -119,7 +119,7 @@ const qa_env = {
         list_comments: "https://kruibpi4m0.execute-api.ap-south-1.amazonaws.com/qa/post/list_comments",
         edit_comment: "https://6iwbpat27k.execute-api.ap-south-1.amazonaws.com/qa/post/edit_comment",
         delete_comment: "https://6iwbpat27k.execute-api.ap-south-1.amazonaws.com/qa/post/delete_comment",
-        read_tenant: "https://kgr1mcpif2.execute-api.ap-south-1.amazonaws.com/qa/super_admin/read_tenant",
+        read_tenant: "https://mvfds2qfh3.execute-api.ap-south-1.amazonaws.com/qa/super_admin/read_tenant",
         delete_post: "https://6iwbpat27k.execute-api.ap-south-1.amazonaws.com/qa/post/delete_post",
         edit_post: "https://6iwbpat27k.execute-api.ap-south-1.amazonaws.com/qa/post/edit_post",
         edit_post_addon: "https://5950v28o48.execute-api.ap-south-1.amazonaws.com/qa/reward/share_addon",
@@ -133,7 +133,6 @@ const qa_env = {
         get_status: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/get_status',
         enable_status: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/enable_status',
         disable_status: 'https://0f6986pual.execute-api.ap-south-1.amazonaws.com/qa/push_notification/disable_status',
-        refresh_token: 'https://htzgm6e757.execute-api.ap-south-1.amazonaws.com/qa/refresh_token',
         daily: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/daily_data",
         weekly_data: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_data",
         weekly_sleep: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/weekly_sleep",
@@ -148,6 +147,7 @@ const qa_env = {
         forgot_password: "forgot_password",
         confirm_password: "confirm_password",
         change_password: "change_password",
+        refresh_token: "refresh_token",
         accept_subscription: "accept_subscription",
         signout: "signout",
         read_tenant: "read_tenant",
@@ -156,7 +156,7 @@ const qa_env = {
         force_password_change: "force_password_change",
         save_answers: "https://7mih3pbw19.execute-api.ap-south-1.amazonaws.com/qa/data_apis/save_answers",
         give_rewards: "give_rewards",
-        read_member: "https://kgr1mcpif2.execute-api.ap-south-1.amazonaws.com/qa/admin/read_member",
+        read_member: "https://mvfds2qfh3.execute-api.ap-south-1.amazonaws.com/qa/admin/read_member",
         create_post: "create_post",
         list_posts: "list_posts",
         list_associate: "list_associate",
@@ -220,7 +220,6 @@ const prod_env = {
         get_status: 'https://zlrm5hjdw3.execute-api.ap-south-1.amazonaws.com/prod/push_notification/get_status',
         enable_status: 'https://zlrm5hjdw3.execute-api.ap-south-1.amazonaws.com/prod/push_notification/enable_status',
         disable_status: 'https://zlrm5hjdw3.execute-api.ap-south-1.amazonaws.com/prod/push_notification/disable_status',
-        refresh_token: 'https://huykcf5gv2.execute-api.ap-south-1.amazonaws.com/prod/refresh_token',
         daily: "https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/daily_data",
         weekly_data: "https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/weekly_data",
         weekly_sleep: "https://dqf9dgveg6.execute-api.ap-south-1.amazonaws.com/prod/data_apis/weekly_sleep",
@@ -235,6 +234,7 @@ const prod_env = {
         forgot_password: "forgot_password",
         confirm_password: "confirm_password",
         change_password: "change_password",
+        refresh_token: "refresh_token",
         accept_subscription: "accept_subscription",
         signout: "signout",
         read_tenant: "read_tenant",
@@ -266,6 +266,6 @@ const prod_env = {
     }
 }
 
-let current_env = prod_env
+let current_env = qa_env
 
 export default current_env
